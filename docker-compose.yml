@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  frontend:
+    container_name: frontend
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - '3001:3001' # different port probably change later
+
+  # backend:
+  #   container_name: backend
+  #   build:
+  #     context: backend
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ./backend:/app    # Dot at the begining make it a mounted volume
+  #     - /app/node_modules # Named volume = no dot
+  #   ports:
+  #     - '3000:3000'
+  #   # depends_on:
+  #   #   - frontend
+
+  # postgresql:
+  #   container_name: postgresql
+  #   image: postgres:11-alpine
+  #   volumes:
+  #     - ./database-data:/var/lib/postgresql/data # Database volume
+  #   ports:
+  #     - '5432:5432' # double check later, default port?
+  #   # env_file: .env
+  #   # depends_on:
+  #   #   - backend
