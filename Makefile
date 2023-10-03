@@ -17,4 +17,4 @@ rebuild: down
 
 # Literally nuke everything docker related out of existence
 nuke:
-	yes yes | tools/docker_utils.sh 5
+	tools/docker_utils.sh 5
