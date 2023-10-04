@@ -15,7 +15,7 @@ services:
   backend:
     container_name: backend
     build:
-      context: backend
+      context: ./backend
       dockerfile: Dockerfile
     volumes:
       - ./backend:/app    # Dot at the begining make it a mounted volume
