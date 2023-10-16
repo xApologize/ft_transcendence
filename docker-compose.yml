@@ -32,6 +32,6 @@ services:
       - ./database-data:/var/lib/postgresql/data # Database volume
     ports:
       - '5432:5432' # double check later, default port?
-    # env_file: .env
+    env_file: .env
     # depends_on:
     #   - backend
