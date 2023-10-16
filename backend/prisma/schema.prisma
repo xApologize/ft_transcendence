@@ -1,11 +1,110 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL") // Add later
+}
 
 generator client {
   provider = "prisma-client-js"
 }
 
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+model User {
+  userID                Int            @id @default(autoincrement())
+  nickname              String         @unique
+  email                 String         @unique
+  avatar                String
+  token                 String         @unique
+  status                Status
+  admin                 Boolean        @default(false)
+  winnerMatchHistory    MatchHistory[] @relation("Winner")
+  loserMatchHistory     MatchHistory[] @relation("Loser")
+  friendList            FriendList[]   @relation("userFriend")
+  friends               FriendList[]   @relation("Friendof")
+  blockList             BlockList[]    @relation("userBlock")
+  blocked               BlockList[]    @relation("blockedUser")
+  messageSentPrivate    PrivateChat[]  @relation("privateSent")
+  messageReceivePrivate PrivateChat[]  @relation("privateReceive")
+  channelUser           ChannelUser[]
+  channelMessageSent    ChannelChat[]
+}
+
+model MatchHistory {
+  matchID     Int      @id @default(autoincrement())
+  winnerScore Int
+  loserScore  Int
+  dateOfMatch DateTime
+  winner      User     @relation("Winner", fields: [winnerName], references: [nickname])
+  winnerName  String
+  loser       User     @relation("Loser", fields: [loserName], references: [nickname])
+  loserName   String
+}
+
+model FriendList {
+  id           Int     @id @default(autoincrement())
+  user         User    @relation("userFriend", fields: [userString], references: [nickname])
+  userString   String
+  friend       User    @relation("Friendof", fields: [friendString], references: [nickname])
+  friendString String
+  status       Request
+}
+
+model BlockList {
+  id               Int    @id @default(autoincrement())
+  currentUser      User   @relation("userBlock", fields: [userString], references: [nickname])
+  userString       String
+  blockedUser      User   @relation("blockedUser", fields: [blockedUserSting], references: [nickname])
+  blockedUserSting String
+}
+
+model PrivateChat {
+  id             Int      @id @default(autoincrement())
+  sender         User     @relation("privateSent", fields: [senderString], references: [nickname])
+  senderString   String
+  receiver       User     @relation("privateReceive", fields: [receiverString], references: [nickname])
+  receiverString String
+  timestamp      DateTime
+}
+
+model Channel {
+  channelName String        @id // double check later if good idea
+  type        ChannelType
+  password    String?       @default("") //NULLABLE BABY
+  channelUser ChannelUser[]
+  channelChat ChannelChat[]
+}
+
+model ChannelUser {
+  id         Int     @id @default(autoincrement())
+  channel    Channel @relation(fields: [channelID], references: [channelName])
+  channelID  String
+  userId     User    @relation(fields: [userString], references: [nickname])
+  userString String
+  admin      Boolean @default(false)
+}
+
+model ChannelChat {
+  id         Int      @id @default(autoincrement())
+  channel    Channel  @relation(fields: [channelID], references: [channelName])
+  channelID  String
+  sender     User     @relation(fields: [senderName], references: [nickname])
+  senderName String
+  timeStamp  DateTime
+}
+
+enum Status {
+  ONLINE
+  OFFLINE
+  INGAME
+  BUSY
+}
+
+enum Request {
+  PENDING
+  ACCEPTED
+  REFUSED
+}
+
+enum ChannelType {
+  Private
+  Public
+  Protected
 }
