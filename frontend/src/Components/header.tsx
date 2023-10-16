@@ -1,17 +1,58 @@
-import { AppBar, Container, Typography, Toolbar } from '@mui/material'
-import Adbicon from '@mui/icons-material/adb'
+import * as React from 'react'
+import {
+    AppBar,
+    Typography,
+    Toolbar,
+    IconButton,
+    Avatar,
+    Box,
+    Menu,
+    Button,
+    MenuItem,
+} from '@mui/material'
+import MenuIcon from '@mui/icons-material/Menu'
+
+import '../css/Components/header.css'
+
 function header() {
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
+    const open = Boolean(anchorEl)
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget)
+    }
+    const handleClose = () => {
+        setAnchorEl(null)
+    }
     return (
         <>
-            <AppBar position="static" color="secondary">
-                <Container fixed>
-                    <Toolbar disableGutters variant="dense">
-                        <Adbicon
-                            sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }}
-                        />
-                        <Typography>Transcendance</Typography>
-                    </Toolbar>
-                </Container>
+            <AppBar color="secondary" className="appbar">
+                <Toolbar>
+                    <IconButton edge="start" size="medium" color="inherit">
+                        <MenuIcon />
+                    </IconButton>
+                    <Typography>Transcendance</Typography>
+                    <Box className="avatar">
+                        <Button
+                            id="basic-button"
+                            aria-controls={open ? 'basic-menu' : undefined}
+                            aria-haspopup="true"
+                            aria-expanded={open ? 'true' : undefined}
+                            onClick={handleClick}
+                        >
+                            <Avatar>T</Avatar>
+                        </Button>
+                        <Menu
+                            id="basic-menu"
+                            anchorEl={anchorEl}
+                            open={open}
+                            onClose={handleClose}
+                        >
+                            <MenuItem>Profile</MenuItem>
+                            <MenuItem>Settings</MenuItem>
+                            <MenuItem>Logout</MenuItem>
+                        </Menu>
+                    </Box>
+                </Toolbar>
             </AppBar>
         </>
     )
