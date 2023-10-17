@@ -3,33 +3,64 @@ import {
     AppBar,
     Typography,
     Toolbar,
-    IconButton,
     Avatar,
     Box,
     Menu,
     Button,
     MenuItem,
-} from '@mui/material'
-import MenuIcon from '@mui/icons-material/Menu'
+} from '@mui/material';
+import { AccountBox, Logout, Settings } from '@mui/icons-material';
+import styled from '@emotion/styled';
 
-import '../css/Components/header.css'
+import '../css/Components/header.css';
+
+interface HomeMenuItem {
+    icon: React.ReactNode;
+    menuItem: string;
+}
+
+const StyledMenu = styled(Menu)`
+    .MuiMenu-paper {
+        width: 120px;
+    }
+`;
+
+const StyledMenuItem = styled(MenuItem)`
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+`;
 
 function header() {
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
-    const open = Boolean(anchorEl)
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const open = Boolean(anchorEl);
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setAnchorEl(event.currentTarget)
-    }
+        setAnchorEl(event.currentTarget);
+    };
     const handleClose = () => {
-        setAnchorEl(null)
-    }
+        setAnchorEl(null);
+    };
+
+    const renderMenuItems: HomeMenuItem[] = [
+        {
+            menuItem: 'Profile',
+            icon: <AccountBox />,
+        },
+        {
+            menuItem: 'Settings',
+            icon: <Settings />,
+        },
+        {
+            menuItem: 'Logout',
+            icon: <Logout />,
+        },
+    ];
+
     return (
         <>
             <AppBar color="secondary" className="appbar">
                 <Toolbar>
-                    <IconButton edge="start" size="medium" color="inherit">
-                        <MenuIcon />
-                    </IconButton>
                     <Typography>Transcendance</Typography>
                     <Box className="avatar">
                         <Button
@@ -41,21 +72,26 @@ function header() {
                         >
                             <Avatar>T</Avatar>
                         </Button>
-                        <Menu
+                        <StyledMenu
                             id="basic-menu"
                             anchorEl={anchorEl}
                             open={open}
                             onClose={handleClose}
                         >
-                            <MenuItem>Profile</MenuItem>
-                            <MenuItem>Settings</MenuItem>
-                            <MenuItem>Logout</MenuItem>
-                        </Menu>
+                            {renderMenuItems.map((item: HomeMenuItem) => {
+                                return (
+                                    <StyledMenuItem>
+                                        {item.icon}
+                                        {item.menuItem}
+                                    </StyledMenuItem>
+                                );
+                            })}
+                        </StyledMenu>
                     </Box>
                 </Toolbar>
             </AppBar>
         </>
-    )
+    );
 }
 
 export default header
