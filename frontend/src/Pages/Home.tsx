@@ -1,6 +1,7 @@
-import Header from "../Components/header";
-import Chat from '../Components/chat';
-import Game from '../Components/game';
+import Header from '../Components/Header';
+import Footer from '../Components/Footer';
+import Chat from '../Components/Chat';
+import Game from '../Components/Game';
 import styled from '@emotion/styled';
 
 const MainLayout = styled.div`
@@ -25,6 +26,7 @@ function Home() {
                 <Chat />
                 <Game />
             </Container>
+            <Footer />
         </MainLayout>
     );
 }
