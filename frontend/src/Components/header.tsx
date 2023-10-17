@@ -1,4 +1,4 @@
-import * as React from 'react'
+import * as React from 'react';
 import {
     AppBar,
     Typography,
@@ -84,9 +84,9 @@ function header() {
                         open={open}
                         onClose={handleClose}
                     >
-                        {renderMenuItems.map((item: HomeMenuItem) => {
+                        {renderMenuItems.map((item: HomeMenuItem, index) => {
                             return (
-                                <StyledMenuItem>
+                                <StyledMenuItem key={index}>
                                     {item.icon}
                                     {item.menuItem}
                                 </StyledMenuItem>
@@ -99,4 +99,4 @@ function header() {
     );
 }
 
-export default header
+export default header;
