@@ -12,12 +12,19 @@ import {
 import { AccountBox, Logout, Settings } from '@mui/icons-material';
 import styled from '@emotion/styled';
 
-import '../css/Components/header.css';
-
 interface HomeMenuItem {
     icon: React.ReactNode;
     menuItem: string;
 }
+
+const StyledAppBar = styled(AppBar)`
+    width: 100%;
+    color: secondary;
+`;
+
+const StyledBoxAvatar = styled(Box)`
+    margin-left: auto;
+`;
 
 const StyledMenu = styled(Menu)`
     .MuiMenu-paper {
@@ -58,39 +65,37 @@ function header() {
     ];
 
     return (
-        <>
-            <AppBar color="secondary" className="appbar">
-                <Toolbar>
-                    <Typography>Transcendance</Typography>
-                    <Box className="avatar">
-                        <Button
-                            id="basic-button"
-                            aria-controls={open ? 'basic-menu' : undefined}
-                            aria-haspopup="true"
-                            aria-expanded={open ? 'true' : undefined}
-                            onClick={handleClick}
-                        >
-                            <Avatar>T</Avatar>
-                        </Button>
-                        <StyledMenu
-                            id="basic-menu"
-                            anchorEl={anchorEl}
-                            open={open}
-                            onClose={handleClose}
-                        >
-                            {renderMenuItems.map((item: HomeMenuItem) => {
-                                return (
-                                    <StyledMenuItem>
-                                        {item.icon}
-                                        {item.menuItem}
-                                    </StyledMenuItem>
-                                );
-                            })}
-                        </StyledMenu>
-                    </Box>
-                </Toolbar>
-            </AppBar>
-        </>
+        <StyledAppBar color="secondary">
+            <Toolbar>
+                <Typography variant="h5">Transcendance</Typography>
+                <StyledBoxAvatar>
+                    <Button
+                        id="basic-button"
+                        aria-controls={open ? 'basic-menu' : undefined}
+                        aria-haspopup="true"
+                        aria-expanded={open ? 'true' : undefined}
+                        onClick={handleClick}
+                    >
+                        <Avatar>T</Avatar>
+                    </Button>
+                    <StyledMenu
+                        id="basic-menu"
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleClose}
+                    >
+                        {renderMenuItems.map((item: HomeMenuItem) => {
+                            return (
+                                <StyledMenuItem>
+                                    {item.icon}
+                                    {item.menuItem}
+                                </StyledMenuItem>
+                            );
+                        })}
+                    </StyledMenu>
+                </StyledBoxAvatar>
+            </Toolbar>
+        </StyledAppBar>
     );
 }
 
