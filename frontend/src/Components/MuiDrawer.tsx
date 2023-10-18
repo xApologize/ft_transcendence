@@ -1,24 +1,24 @@
 import * as React from 'react';
-import { styled, useTheme } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
-import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { MenuOpen, ChatBubble } from '@mui/icons-material';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
+import styledEmotion from '@emotion/styled';
 
 interface DrawerItem {
     icon: React.ReactNode;
     item: string;
 }
 
-const drawerWidth = 240;
+const drawerWidth = 160;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
     open?: boolean;
@@ -46,8 +46,15 @@ const DrawerHeader = styled('div')(({ theme }) => ({
     justifyContent: 'flex-end',
 }));
 
+const StyledListItemIcon = styledEmotion(ListItemIcon)`
+    color: #242424;
+`;
+
+const StyledListItemText = styledEmotion(ListItemText)`
+    color: #242424;
+`;
+
 export default function PersistentDrawerLeft() {
-    const theme = useTheme();
     const [openDrawer, setOpen] = React.useState(false);
 
     const handleDrawerOpen = () => {
@@ -103,8 +110,12 @@ export default function PersistentDrawerLeft() {
                     {renderDrawerMenu.map((item: DrawerItem, index) => {
                         return (
                             <ListItemButton key={index}>
-                                <ListItemIcon>{item.icon}</ListItemIcon>
-                                <ListItemText> {item.item}</ListItemText>
+                                <StyledListItemIcon>
+                                    {item.icon}
+                                </StyledListItemIcon>
+                                <StyledListItemText>
+                                    {item.item}
+                                </StyledListItemText>
                             </ListItemButton>
                         );
                     })}

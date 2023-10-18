@@ -2,38 +2,39 @@ import { AppBar, Toolbar, Typography } from '@mui/material';
 import styled from '@emotion/styled';
 
 const StyledAppBarFooter = styled(AppBar)`
-    height: 32px;
     top: auto;
     bottom: 0;
-`;
-
-const StyledToolbar = styled(Toolbar)`
+    height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
 `;
 
 const StyledCopyrightDiv = styled.div`
-    height: 55px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 `;
 
 const StyledAboutUsDiv = styled.div`
     position: absolute;
     right: 20px;
-    height: 55px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 `;
 
 function Footer() {
     return (
         <StyledAppBarFooter color="secondary">
-            <StyledToolbar>
-                <StyledCopyrightDiv>
-                    <Typography>Copyright &copy;</Typography>
-                </StyledCopyrightDiv>
-                <StyledAboutUsDiv>
-                    <Typography>about us</Typography>
-                </StyledAboutUsDiv>
-            </StyledToolbar>
+            <StyledCopyrightDiv>
+                <Typography>Copyright &copy;</Typography>
+            </StyledCopyrightDiv>
+            <StyledAboutUsDiv>
+                <Typography>about us</Typography>
+            </StyledAboutUsDiv>
         </StyledAppBarFooter>
     );
 }
