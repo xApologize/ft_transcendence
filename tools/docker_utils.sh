@@ -49,6 +49,8 @@ clean_volumes() {
 			echo -e "${Green}All docker volumes have been deleted${Reset}"
 		fi
 	fi
+	sudo rm -rf ../database-data
+	# echo test
 }
 
 clean_images() {

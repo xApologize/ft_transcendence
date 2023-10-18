@@ -2,7 +2,6 @@ version: '3.8'
 
 services:
   frontend:
-    container_name: frontend
     build:
       context: frontend
       dockerfile: Dockerfile
@@ -13,7 +12,6 @@ services:
       - '3001:3001' # different port probably change later
 
   backend:
-    container_name: backend
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -22,16 +20,15 @@ services:
       - /app/node_modules # Named volume = no dot
     ports:
       - '3000:3000'
-    # depends_on:
-    #   - frontend
 
-  postgresql:
-    container_name: postgresql
+  postgres:
     image: postgres:11-alpine
+    restart: unless-stopped
     volumes:
-      - ./database-data:/var/lib/postgresql/data # Database volume
+      - ./database-data:/var/lib/postgresql/data
     ports:
-      - '5432:5432' # double check later, default port?
-    env_file: .env
-    # depends_on:
-    #   - backend
+      - '5432:5432'
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB}
