@@ -14,7 +14,9 @@ function Game() {
     return (
         <StyledBox>
             <Typography variant="h4" align="center">
-                Game
+                Game setting
+                <br />
+                Game will be pop over
             </Typography>
         </StyledBox>
     );
