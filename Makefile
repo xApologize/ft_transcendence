@@ -17,10 +17,4 @@ rebuild: down
 
 # Literally nuke everything docker related out of existence
 nuke:
-	tools/docker_utils.sh 5
-
-# Setup local host to be able to dev
-dev front:
-	docker compose up && cd frontend && rm -rf node_modules && npm install
-dev backend:
-	docker compose up && cd backend && rm -rf node_modules && npm install
+	tools/docker_utils.sh 6
