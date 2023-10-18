@@ -8,4 +8,8 @@ COPY package.json .
 
 RUN npm install -g pnpm && pnpm install
 
+COPY prisma /app/prisma
+
+RUN npx prisma generate
+
 ENTRYPOINT ["dumb-init", "pnpm", "run", "start:dev"]

@@ -15,6 +15,9 @@ clean:
 rebuild: down
 	docker compose up --build
 
+studio:
+	cd backend && npx prisma studio
+
 # Literally nuke everything docker related out of existence
 nuke:
 	tools/docker_utils.sh 6

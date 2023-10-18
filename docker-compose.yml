@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   frontend:
+    container_name: frontend
     build:
       context: frontend
       dockerfile: Dockerfile
@@ -12,6 +13,7 @@ services:
       - '3001:3001' # different port probably change later
 
   backend:
+    container_name: backend
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -20,12 +22,16 @@ services:
       - /app/node_modules # Named volume = no dot
     ports:
       - '3000:3000'
+    depends_on:
+      - postgres
 
   postgres:
+    container_name: postgres
     image: postgres:11-alpine
     restart: unless-stopped
     volumes:
       - ./database-data:/var/lib/postgresql/data
+      - ./postgres/config/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - '5432:5432'
     environment:
