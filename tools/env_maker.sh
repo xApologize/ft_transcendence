@@ -36,7 +36,7 @@ done
 databasePassword="POSTGRES_PASSWORD=${dataBasePasswordPrompt}"
 
 # Setup .env at the root of the directory with the result from the prompts
-echo -e -n "$databaseName\n$databaseUser\n$databasePassword" > ../.env
+echo -e -n "$databaseName\n$databaseUser\n$databasePassword" > .env
 
 # Setup variables for the .env in the backend (for prisma)
 DB_HOST="DB_HOST=postgres"
@@ -46,4 +46,4 @@ DB_NAME="DB_NAME=$dataBaseNamePrompt"
 DB_PORT="DB_PORT=5432"
 DATABASE_URL="DATABASE_URL=postgresql://\${DB_USER}:\${DB_PASSWORD}@\${DB_HOST}/\${DB_NAME}"
 
-echo -e -n "$DB_HOST\n$DB_USER\n$DB_PASSWORD\n$DB_NAME\n$DB_PORT\n\n$DATABASE_URL" > ../backend/.env
+echo -e -n "$DB_HOST\n$DB_USER\n$DB_PASSWORD\n$DB_NAME\n$DB_PORT\n\n$DATABASE_URL" > backend/.env

@@ -19,7 +19,7 @@ studio:
 	cd backend && npx prisma studio
 
 env:
-	
+	tools/env_maker.sh
 
 # Literally nuke everything docker related out of existence
 nuke:
