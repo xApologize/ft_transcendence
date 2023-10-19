@@ -68,13 +68,14 @@ function header() {
         {
             menuItem: 'Settings',
             icon: <Settings />,
-            onClickHandler: () => goToPage('/Setting'),
+            onClickHandler: () => goToPage('/Settings'),
         },
-        {
-            menuItem: 'Logout',
-            icon: <Logout />,
-            onClickHandler: () => goToPage('/Logout'),
-        },
+        //keep commented until i have a login page to redirect to
+        // {
+        //     menuItem: 'Logout',
+        //     icon: <Logout />,
+        //     onClickHandler: () => goToPage('/Logout'),
+        // },
     ];
 
     const handleTypoClick = () => {
