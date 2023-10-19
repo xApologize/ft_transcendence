@@ -1,4 +1,4 @@
-import { AppBar, Toolbar, Typography } from '@mui/material';
+import { AppBar, Typography } from '@mui/material';
 import styled from '@emotion/styled';
 
 const StyledAppBarFooter = styled(AppBar)`
