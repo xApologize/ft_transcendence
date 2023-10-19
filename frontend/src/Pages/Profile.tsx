@@ -1,6 +1,10 @@
-import Header from "../Components/Header"
+import Header from '../Components/Header';
 function Profile() {
-    return <><Header/></>;
+    return (
+        <>
+            <Header />
+        </>
+    );
 }
 
 export default Profile;
