@@ -16,7 +16,7 @@ import { useNavigate } from 'react-router-dom';
 interface HomeMenuItem {
     icon: React.ReactNode;
     menuItem: string;
-    onClick: (path: string) => void;
+    onClickHandler: (path: string) => void;
 }
 
 const StyledAppBar = styled(AppBar)`
@@ -60,17 +60,17 @@ function header() {
         {
             menuItem: 'Profile',
             icon: <AccountBox />,
-            onClick: goToProfile('/Profile'),
+            onClickHandler: () => goToProfile('/Profile'),
         },
         {
             menuItem: 'Settings',
             icon: <Settings />,
-            onClick: goToProfile,
+            onClickHandler: () => goToProfile('/Profile'),
         },
         {
             menuItem: 'Logout',
             icon: <Logout />,
-            onClick: goToProfile,
+            onClickHandler: () => goToProfile('/Profile'),
         },
     ];
 
@@ -98,7 +98,7 @@ function header() {
                             return (
                                 <StyledMenuItem
                                     key={index}
-                                    onClick={item.onClick}
+                                    onClick={item.onClickHandler}
                                 >
                                     {item.icon}
                                     {item.menuItem}
