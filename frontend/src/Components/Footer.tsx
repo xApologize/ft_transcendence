@@ -19,7 +19,7 @@ const StyledCopyrightDiv = styled.div`
 
 const StyledAboutUsDiv = styled.div`
     position: absolute;
-    right: 20px;
+    right: 1%;
     height: 100%;
     display: flex;
     align-items: center;
