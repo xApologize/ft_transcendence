@@ -30,7 +30,7 @@ function Footer() {
     return (
         <StyledAppBarFooter color="secondary">
             <StyledCopyrightDiv>
-                <Typography>Copyright &copy;</Typography>
+                <Typography>Copyright &copy; Dream Team 2023</Typography>
             </StyledCopyrightDiv>
             <StyledAboutUsDiv>
                 <Typography>about us</Typography>
