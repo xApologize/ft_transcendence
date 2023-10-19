@@ -12,6 +12,7 @@ model User {
   nickname              String         @unique
   email                 String         @unique
   avatar                String
+  
   token                 String         @unique
   status                Status
   admin                 Boolean        @default(false)

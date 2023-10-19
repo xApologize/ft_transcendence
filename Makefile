@@ -18,6 +18,9 @@ rebuild: down
 studio:
 	cd backend && npx prisma studio
 
+env:
+	
+
 # Literally nuke everything docker related out of existence
 nuke:
 	tools/docker_utils.sh 6
