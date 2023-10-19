@@ -11,10 +11,12 @@ import {
 } from '@mui/material';
 import { AccountBox, Logout, Settings } from '@mui/icons-material';
 import styled from '@emotion/styled';
+import { useNavigate } from 'react-router-dom';
 
 interface HomeMenuItem {
     icon: React.ReactNode;
     menuItem: string;
+    onClick: (path: string) => void;
 }
 
 const StyledAppBar = styled(AppBar)`
@@ -49,18 +51,26 @@ function header() {
         setAnchorEl(null);
     };
 
+    const navigate = useNavigate();
+    const goToProfile = (path: string) => {
+        navigate(path);
+    };
+
     const renderMenuItems: HomeMenuItem[] = [
         {
             menuItem: 'Profile',
             icon: <AccountBox />,
+            onClick: goToProfile('/Profile'),
         },
         {
             menuItem: 'Settings',
             icon: <Settings />,
+            onClick: goToProfile,
         },
         {
             menuItem: 'Logout',
             icon: <Logout />,
+            onClick: goToProfile,
         },
     ];
 
@@ -86,7 +96,10 @@ function header() {
                     >
                         {renderMenuItems.map((item: HomeMenuItem, index) => {
                             return (
-                                <StyledMenuItem key={index}>
+                                <StyledMenuItem
+                                    key={index}
+                                    onClick={item.onClick}
+                                >
                                     {item.icon}
                                     {item.menuItem}
                                 </StyledMenuItem>
