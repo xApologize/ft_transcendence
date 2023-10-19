@@ -13,12 +13,6 @@ import { AccountBox, Logout, Settings } from '@mui/icons-material';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
-interface HomeMenuItem {
-    icon: React.ReactNode;
-    menuItem: string;
-    onClickHandler: (path: string) => void;
-}
-
 const StyledAppBar = styled(AppBar)`
     width: 100%;
     color: secondary;
@@ -41,6 +35,15 @@ const StyledMenuItem = styled(MenuItem)`
     width: 100%;
 `;
 
+interface HomeMenuItem {
+    icon: React.ReactNode;
+    menuItem: string;
+    onClickHandler: (
+        event: React.MouseEvent<HTMLElement, MouseEvent>,
+        path: string
+    ) => void;
+}
+
 function header() {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
@@ -52,7 +55,7 @@ function header() {
     };
 
     const navigate = useNavigate();
-    const goToProfile = (path: string) => {
+    const goToPage = (path: string) => {
         navigate(path);
     };
 
@@ -60,17 +63,17 @@ function header() {
         {
             menuItem: 'Profile',
             icon: <AccountBox />,
-            onClickHandler: () => goToProfile('/Profile'),
+            onClickHandler: () => goToPage('/Profile'),
         },
         {
             menuItem: 'Settings',
             icon: <Settings />,
-            onClickHandler: () => goToProfile('/Profile'),
+            onClickHandler: () => goToPage('/Setting'),
         },
         {
             menuItem: 'Logout',
             icon: <Logout />,
-            onClickHandler: () => goToProfile('/Profile'),
+            onClickHandler: () => goToPage('/Logout'),
         },
     ];
 
@@ -98,7 +101,12 @@ function header() {
                             return (
                                 <StyledMenuItem
                                     key={index}
-                                    onClick={item.onClickHandler}
+                                    onClick={(click) =>
+                                        item.onClickHandler(
+                                            click,
+                                            item.menuItem
+                                        )
+                                    }
                                 >
                                     {item.icon}
                                     {item.menuItem}
