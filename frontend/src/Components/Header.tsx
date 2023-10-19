@@ -77,10 +77,16 @@ function header() {
         },
     ];
 
+    const handleTypoClick = () => {
+        navigate('/Home');
+    };
+
     return (
         <StyledAppBar color="secondary">
             <Toolbar>
-                <Typography variant="h5">Transcendance</Typography>
+                <Typography onClick={handleTypoClick} variant="h5">
+                    Transcendance
+                </Typography>
                 <StyledBoxAvatar>
                     <Button
                         id="basic-button"
