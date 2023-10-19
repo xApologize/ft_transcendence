@@ -7,104 +7,106 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model User {
-  userID                Int            @id @default(autoincrement())
-  nickname              String         @unique
-  email                 String         @unique
-  avatar                String
-  
-  token                 String         @unique
-  status                Status
-  admin                 Boolean        @default(false)
-  winnerMatchHistory    MatchHistory[] @relation("Winner")
-  loserMatchHistory     MatchHistory[] @relation("Loser")
-  friendList            FriendList[]   @relation("userFriend")
-  friends               FriendList[]   @relation("Friendof")
-  blockList             BlockList[]    @relation("userBlock")
-  blocked               BlockList[]    @relation("blockedUser")
-  messageSentPrivate    PrivateChat[]  @relation("privateSent")
-  messageReceivePrivate PrivateChat[]  @relation("privateReceive")
-  channelUser           ChannelUser[]
-  channelMessageSent    ChannelChat[]
+model user {
+  userID   Int    @id @default(autoincrement())
+  nickname String @unique
+  email    String @unique
+  avatar   String
+
+  token                 String          @unique
+  status                status
+  admin                 Boolean         @default(false)
+  winnerMatchHistory    match_history[] @relation("Winner")
+  loserMatchHistory     match_history[] @relation("Loser")
+  friendList            friend_list[]   @relation("userFriend")
+  friends               friend_list[]   @relation("Friendof")
+  blockList             block_list[]    @relation("userBlock")
+  blocked               block_list[]    @relation("blockedUser")
+  messageSentPrivate    private_chat[]  @relation("privateSent")
+  messageReceivePrivate private_chat[]  @relation("privateReceive")
+  channelUser           channel_user[]
+  channelMessageSent    channel_chat[]
 }
 
-model MatchHistory {
+model match_history {
   matchID     Int      @id @default(autoincrement())
   winnerScore Int
   loserScore  Int
   dateOfMatch DateTime
-  winner      User     @relation("Winner", fields: [winnerName], references: [nickname])
+  winner      user     @relation("Winner", fields: [winnerName], references: [nickname])
   winnerName  String
-  loser       User     @relation("Loser", fields: [loserName], references: [nickname])
+  loser       user     @relation("Loser", fields: [loserName], references: [nickname])
   loserName   String
 }
 
-model FriendList {
+model friend_list {
   id           Int     @id @default(autoincrement())
-  user         User    @relation("userFriend", fields: [userString], references: [nickname])
+  user         user    @relation("userFriend", fields: [userString], references: [nickname])
   userString   String
-  friend       User    @relation("Friendof", fields: [friendString], references: [nickname])
+  friend       user    @relation("Friendof", fields: [friendString], references: [nickname])
   friendString String
-  status       Request
+  status       request
 }
 
-model BlockList {
+model block_list {
   id               Int    @id @default(autoincrement())
-  currentUser      User   @relation("userBlock", fields: [userString], references: [nickname])
+  currentUser      user   @relation("userBlock", fields: [userString], references: [nickname])
   userString       String
-  blockedUser      User   @relation("blockedUser", fields: [blockedUserSting], references: [nickname])
+  blockedUser      user   @relation("blockedUser", fields: [blockedUserSting], references: [nickname])
   blockedUserSting String
 }
 
-model PrivateChat {
+model private_chat {
   id             Int      @id @default(autoincrement())
-  sender         User     @relation("privateSent", fields: [senderString], references: [nickname])
+  sender         user     @relation("privateSent", fields: [senderString], references: [nickname])
   senderString   String
-  receiver       User     @relation("privateReceive", fields: [receiverString], references: [nickname])
+  receiver       user     @relation("privateReceive", fields: [receiverString], references: [nickname])
   receiverString String
+  message        String
   timestamp      DateTime
 }
 
-model Channel {
-  channelName String        @id // double check later if good idea
-  type        ChannelType
-  password    String?       @default("") //NULLABLE BABY
-  channelUser ChannelUser[]
-  channelChat ChannelChat[]
+model channel {
+  channelName String         @id // double check later if good idea
+  type        channel_type
+  password    String?        @default("") //NULLABLE BABY
+  channelUser channel_user[]
+  channelChat channel_chat[]
 }
 
-model ChannelUser {
+model channel_user {
   id         Int     @id @default(autoincrement())
-  channel    Channel @relation(fields: [channelID], references: [channelName])
+  channel    channel @relation(fields: [channelID], references: [channelName])
   channelID  String
-  userId     User    @relation(fields: [userString], references: [nickname])
+  userId     user    @relation(fields: [userString], references: [nickname])
   userString String
   admin      Boolean @default(false)
 }
 
-model ChannelChat {
+model channel_chat {
   id         Int      @id @default(autoincrement())
-  channel    Channel  @relation(fields: [channelID], references: [channelName])
+  channel    channel  @relation(fields: [channelID], references: [channelName])
   channelID  String
-  sender     User     @relation(fields: [senderName], references: [nickname])
+  sender     user     @relation(fields: [senderName], references: [nickname])
   senderName String
+  message    String
   timeStamp  DateTime
 }
 
-enum Status {
-  ONLINE
-  OFFLINE
-  INGAME
-  BUSY
+enum status {
+  Online
+  Offline
+  Ingame
+  Busy
 }
 
-enum Request {
-  PENDING
-  ACCEPTED
-  REFUSED
+enum request {
+  Pending
+  Accepted
+  Refused
 }
 
-enum ChannelType {
+enum channel_type {
   Private
   Public
   Protected

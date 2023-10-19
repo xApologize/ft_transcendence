@@ -1,6 +1,6 @@
 #!/bin/bash
 # Clean up docker related containers, images, volumes and caches
-# Author producks 9/1/2023, updated 10/17/2023
+# Author producks 9/1/2023, updated 10/19/2023
 
 # Reset
 Reset='\033[0m'       # Text Reset
@@ -138,6 +138,9 @@ case $input in
 	clean_images
 	clean_folders_nuke
 	clean_caches
+	;;
+	"7")
+	clean_folders_nuke
 	;;
 	*)
 	echo -e "${Red}Invalid input provided${Reset}"
