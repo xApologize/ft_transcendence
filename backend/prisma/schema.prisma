@@ -8,18 +8,17 @@ generator client {
 }
 
 model user {
-  userID   Int    @id @default(autoincrement())
-  nickname String @unique
-  email    String @unique
-  avatar   String
-
+  userID                Int             @id @default(autoincrement())
+  nickname              String          @unique
+  email                 String          @unique
+  avatar                String
   token                 String          @unique
   status                status
   admin                 Boolean         @default(false)
-  winnerMatchHistory    match_history[] @relation("Winner")
-  loserMatchHistory     match_history[] @relation("Loser")
-  friendList            friend_list[]   @relation("userFriend")
-  friends               friend_list[]   @relation("Friendof")
+  winnerMatchHistory    match_history[] @relation("winner")
+  loserMatchHistory     match_history[] @relation("loser")
+  friend1               friend_list[]   @relation("friend1")
+  friend2               friend_list[]   @relation("friend2")
   blockList             block_list[]    @relation("userBlock")
   blocked               block_list[]    @relation("blockedUser")
   messageSentPrivate    private_chat[]  @relation("privateSent")
@@ -33,25 +32,26 @@ model match_history {
   winnerScore Int
   loserScore  Int
   dateOfMatch DateTime
-  winner      user     @relation("Winner", fields: [winnerName], references: [nickname])
+  winner      user     @relation("winner", fields: [winnerName], references: [nickname])
   winnerName  String
-  loser       user     @relation("Loser", fields: [loserName], references: [nickname])
+  loser       user     @relation("loser", fields: [loserName], references: [nickname])
   loserName   String
 }
 
+//https://www.thescalable.net/p/user-friends-system-and-database#%C2%A7two-way-friend-system
 model friend_list {
-  id           Int     @id @default(autoincrement())
-  user         user    @relation("userFriend", fields: [userString], references: [nickname])
-  userString   String
-  friend       user    @relation("Friendof", fields: [friendString], references: [nickname])
-  friendString String
-  status       request
+  id            Int     @id @default(autoincrement())
+  friend1       user    @relation("friend1", fields: [friend1String], references: [nickname])
+  friend1String String
+  friend2       user    @relation("friend2", fields: [friend2String], references: [nickname])
+  friend2String String
+  status        request
 }
 
 model block_list {
   id               Int    @id @default(autoincrement())
-  currentUser      user   @relation("userBlock", fields: [userString], references: [nickname])
-  userString       String
+  blocker          user   @relation("userBlock", fields: [blockerString], references: [nickname])
+  blockerString    String
   blockedUser      user   @relation("blockedUser", fields: [blockedUserSting], references: [nickname])
   blockedUserSting String
 }

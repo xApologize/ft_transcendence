@@ -35,8 +35,8 @@ CREATE TABLE "match_history" (
 -- CreateTable
 CREATE TABLE "friend_list" (
     "id" SERIAL NOT NULL,
-    "userString" TEXT NOT NULL,
-    "friendString" TEXT NOT NULL,
+    "friend1String" TEXT NOT NULL,
+    "friend2String" TEXT NOT NULL,
     "status" "request" NOT NULL,
 
     CONSTRAINT "friend_list_pkey" PRIMARY KEY ("id")
@@ -45,7 +45,7 @@ CREATE TABLE "friend_list" (
 -- CreateTable
 CREATE TABLE "block_list" (
     "id" SERIAL NOT NULL,
-    "userString" TEXT NOT NULL,
+    "blockerString" TEXT NOT NULL,
     "blockedUserSting" TEXT NOT NULL,
 
     CONSTRAINT "block_list_pkey" PRIMARY KEY ("id")
@@ -108,13 +108,13 @@ ALTER TABLE "match_history" ADD CONSTRAINT "match_history_winnerName_fkey" FOREI
 ALTER TABLE "match_history" ADD CONSTRAINT "match_history_loserName_fkey" FOREIGN KEY ("loserName") REFERENCES "user"("nickname") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "friend_list" ADD CONSTRAINT "friend_list_userString_fkey" FOREIGN KEY ("userString") REFERENCES "user"("nickname") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "friend_list" ADD CONSTRAINT "friend_list_friend1String_fkey" FOREIGN KEY ("friend1String") REFERENCES "user"("nickname") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "friend_list" ADD CONSTRAINT "friend_list_friendString_fkey" FOREIGN KEY ("friendString") REFERENCES "user"("nickname") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "friend_list" ADD CONSTRAINT "friend_list_friend2String_fkey" FOREIGN KEY ("friend2String") REFERENCES "user"("nickname") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "block_list" ADD CONSTRAINT "block_list_userString_fkey" FOREIGN KEY ("userString") REFERENCES "user"("nickname") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "block_list" ADD CONSTRAINT "block_list_blockerString_fkey" FOREIGN KEY ("blockerString") REFERENCES "user"("nickname") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "block_list" ADD CONSTRAINT "block_list_blockedUserSting_fkey" FOREIGN KEY ("blockedUserSting") REFERENCES "user"("nickname") ON DELETE RESTRICT ON UPDATE CASCADE;
