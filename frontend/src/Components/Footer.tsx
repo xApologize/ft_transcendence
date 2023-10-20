@@ -1,5 +1,6 @@
 import { AppBar, Typography } from '@mui/material';
 import styled from '@emotion/styled';
+import { useNavigate } from 'react-router-dom';
 
 const StyledAppBarFooter = styled(AppBar)`
     top: auto;
@@ -19,7 +20,7 @@ const StyledCopyrightDiv = styled.div`
 
 const StyledAboutUsDiv = styled.div`
     position: absolute;
-    right: 20px;
+    right: 1%;
     height: 100%;
     display: flex;
     align-items: center;
@@ -27,13 +28,17 @@ const StyledAboutUsDiv = styled.div`
 `;
 
 function Footer() {
+    const navigate = useNavigate();
+    const handleClick = () => {
+        navigate('/AboutUs');
+    };
     return (
         <StyledAppBarFooter color="secondary">
             <StyledCopyrightDiv>
-                <Typography>Copyright &copy;</Typography>
+                <Typography>Copyright &copy; Dream Team 2023</Typography>
             </StyledCopyrightDiv>
             <StyledAboutUsDiv>
-                <Typography>about us</Typography>
+                <Typography onClick={handleClick}>About us</Typography>
             </StyledAboutUsDiv>
         </StyledAppBarFooter>
     );

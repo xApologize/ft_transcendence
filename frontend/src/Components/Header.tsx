@@ -11,11 +11,7 @@ import {
 } from '@mui/material';
 import { AccountBox, Logout, Settings } from '@mui/icons-material';
 import styled from '@emotion/styled';
-
-interface HomeMenuItem {
-    icon: React.ReactNode;
-    menuItem: string;
-}
+import { useNavigate } from 'react-router-dom';
 
 const StyledAppBar = styled(AppBar)`
     width: 100%;
@@ -39,6 +35,15 @@ const StyledMenuItem = styled(MenuItem)`
     width: 100%;
 `;
 
+interface HomeMenuItem {
+    icon: React.ReactNode;
+    menuItem: string;
+    onClickHandler: (
+        event: React.MouseEvent<HTMLElement, MouseEvent>,
+        path: string
+    ) => void;
+}
+
 function header() {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
@@ -49,25 +54,40 @@ function header() {
         setAnchorEl(null);
     };
 
+    const navigate = useNavigate();
+    const goToPage = (path: string) => {
+        navigate(path);
+    };
+
     const renderMenuItems: HomeMenuItem[] = [
         {
             menuItem: 'Profile',
             icon: <AccountBox />,
+            onClickHandler: () => goToPage('/Profile'),
         },
         {
             menuItem: 'Settings',
             icon: <Settings />,
+            onClickHandler: () => goToPage('/Settings'),
         },
-        {
-            menuItem: 'Logout',
-            icon: <Logout />,
-        },
+        //keep commented until i have a login page to redirect to
+        // {
+        //     menuItem: 'Logout',
+        //     icon: <Logout />,
+        //     onClickHandler: () => goToPage('/Logout'),
+        // },
     ];
+
+    const handleTypoClick = () => {
+        navigate('/Home');
+    };
 
     return (
         <StyledAppBar color="secondary">
             <Toolbar>
-                <Typography variant="h5">Transcendance</Typography>
+                <Typography onClick={handleTypoClick} variant="h5">
+                    Transcendance
+                </Typography>
                 <StyledBoxAvatar>
                     <Button
                         id="basic-button"
@@ -86,7 +106,15 @@ function header() {
                     >
                         {renderMenuItems.map((item: HomeMenuItem, index) => {
                             return (
-                                <StyledMenuItem key={index}>
+                                <StyledMenuItem
+                                    key={index}
+                                    onClick={(click) =>
+                                        item.onClickHandler(
+                                            click,
+                                            item.menuItem
+                                        )
+                                    }
+                                >
                                     {item.icon}
                                     {item.menuItem}
                                 </StyledMenuItem>
