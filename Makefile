@@ -1,5 +1,11 @@
+# Check by default if the user has the required .env, if not call the script to make them
 up:
+	@if [ ! -f ".env" ] || [ ! -f "backend/.env" ]; then \
+		tools/env_maker.sh; \
+	fi
 	docker compose up
+
+# Read the name
 down:
 	docker compose down
 
