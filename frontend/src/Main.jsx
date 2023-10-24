@@ -8,7 +8,7 @@ import Settings from './Pages/Settings';
 import AboutUs from './Pages/AboutUs';
 import NotFound from './Pages/404page';
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
         <BrowserRouter>
             <Routes>
