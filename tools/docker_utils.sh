@@ -1,6 +1,6 @@
 #!/bin/bash
 # Clean up docker related containers, images, volumes and caches
-# Author producks 9/1/2023, updated 9/24/2023
+# Author producks 9/1/2023, updated 10/19/2023
 
 # Reset
 Reset='\033[0m'       # Text Reset
@@ -49,6 +49,7 @@ clean_volumes() {
 			echo -e "${Green}All docker volumes have been deleted${Reset}"
 		fi
 	fi
+	sudo rm -rf ../database-data
 }
 
 clean_images() {
@@ -67,6 +68,20 @@ clean_images() {
 clean_caches() {
 	docker builder prune --all
 }
+
+clean_folders() {
+	echo -e "${Red}SENT THE FOLDERS TO THE SHADOW REALMS${Reset}"
+	sudo rm -rf ../database-data 
+	sudo rm -rf ../backend/dist
+	sudo rm -rf ../backend/node_modules
+	sudo rm -rf ../frontend/node_modules
+}
+
+clean_folders_nuke() {
+	echo -e "${Red}SENT THE FOLDERS TO THE SHADOW REALMS${Reset}"
+	sudo rm -rf database-data backend/dist backend/node_modules frontend/node_modules
+}
+
 
 if [ $# -eq 1 ]; then
 	input="$1"
@@ -113,7 +128,19 @@ case $input in
 	clean_containers
 	clean_volumes
 	clean_images
+	clean_folders
 	clean_caches
+	;;
+	"6")
+	stop_all_containers
+	clean_containers
+	clean_volumes
+	clean_images
+	clean_folders_nuke
+	clean_caches
+	;;
+	"7")
+	clean_folders_nuke
 	;;
 	*)
 	echo -e "${Red}Invalid input provided${Reset}"

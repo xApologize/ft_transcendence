@@ -22,16 +22,27 @@ services:
       - /app/node_modules # Named volume = no dot
     ports:
       - '3000:3000'
-    # depends_on:
-    #   - frontend
+    depends_on:
+      - postgres
 
-  postgresql:
-    container_name: postgresql
+  postgres:
+    container_name: postgres
     image: postgres:11-alpine
+    restart: unless-stopped
     volumes:
-      - ./database-data:/var/lib/postgresql/data # Database volume
+      - ./database-data:/var/lib/postgresql/data
+      - ./postgres/config/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
-      - '5432:5432' # double check later, default port?
-    # env_file: .env
-    # depends_on:
-    #   - backend
+      - '5432:5432'
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB}
+
+  nginx:
+    container_name: nginx
+    image: nginx:1.24-bullseye
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
