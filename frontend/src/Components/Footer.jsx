@@ -1,4 +1,4 @@
-import { AppBar, Typography } from '@mui/material';
+import { AppBar, Link, Typography } from '@mui/material';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
@@ -38,7 +38,14 @@ function Footer() {
                 <Typography>Copyright &copy; Dream Team 2023</Typography>
             </StyledCopyrightDiv>
             <StyledAboutUsDiv>
-                <Typography onClick={handleClick}>About us</Typography>
+                <Link
+                    underline="none"
+                    component="button"
+                    color="inherit"
+                    onClick={handleClick}
+                >
+                    About us
+                </Link>
             </StyledAboutUsDiv>
         </StyledAppBarFooter>
     );

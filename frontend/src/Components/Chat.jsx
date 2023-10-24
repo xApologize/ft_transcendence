@@ -2,7 +2,7 @@ import { Box, Typography } from '@mui/material';
 import styled from '@emotion/styled';
 
 const StyledBox = styled(Box)`
-    background-color: purple;
+    background-color: var(--secondary-main);
     width: 33%;
     height: 33%;
     display: flex;

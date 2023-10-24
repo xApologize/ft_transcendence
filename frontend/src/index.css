@@ -9,6 +9,9 @@
   background-color: #242424;
   width: 100vw;
   height: 100vh;
+  --secondary-main: #9c27b0;
+  --secondary-light: #ba68c8;
+  --secondary-dark: #7b1fa2;
 }
 
 body {
