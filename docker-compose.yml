@@ -11,27 +11,28 @@ services:
       - /app/node_modules
     ports:
       - '3001:3001' # different port probably change later
-
+  
   backend:
     container_name: backend
     build:
-      context: ./backend
+      context: backend
       dockerfile: Dockerfile
     volumes:
-      - ./backend:/app    # Dot at the begining make it a mounted volume
-      - /app/node_modules # Named volume = no dot
+      - ./backend:/usr/src/app/
     ports:
-      - '3000:3000'
+      - '8000:8000'
+    env_file:
+      - ./backend/.env
     depends_on:
       - postgres
 
   postgres:
     container_name: postgres
-    image: postgres:11-alpine
+    image: postgres:alpine3.18
     restart: unless-stopped
     volumes:
       - ./database-data:/var/lib/postgresql/data
-      - ./postgres/config/init.sql:/docker-entrypoint-initdb.d/init.sql
+      # - ./postgres/config/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - '5432:5432'
     environment:
@@ -41,7 +42,7 @@ services:
 
   nginx:
     container_name: nginx
-    image: nginx:1.24-bullseye
+    image: nginx:mainline-alpine3.18-slim
     ports:
       - "8080:80"
     volumes:

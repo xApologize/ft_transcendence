@@ -1,15 +1,17 @@
-FROM node:18.16-alpine3.16
+FROM python:3.9.18-slim-bullseye
 
-RUN apk add dumb-init
+RUN apt-get update && apt-get install -y dumb-init
 
-WORKDIR /app
+WORKDIR /usr/src/app
 
-COPY package.json .
+ENV PYTHONDONTWRITEBYTECODE 1
 
-RUN npm install -g pnpm && pnpm install
+ENV PYTHONUNBUFFERED 1
 
-COPY prisma /app/prisma
+RUN pip install --upgrade pip
 
-RUN npx prisma generate
+COPY requirements.txt .
 
-ENTRYPOINT ["dumb-init", "pnpm", "run", "start:dev"]
+RUN pip install -r requirements.txt
+
+ENTRYPOINT ["dumb-init", "./start.sh"]
