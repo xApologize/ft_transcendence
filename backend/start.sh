@@ -13,8 +13,9 @@ MIGRATION_FLAG="/usr/src/app/.flag"
 #     echo -n "1" > "$MIGRATION_FLAG"
 # fi
 
-sleep 5
-python manage.py migrate
+sleep 5 # temp fix
+python manage.py makemigrations # temp fix
+python manage.py migrate # temp fix
 
 # Start server
 echo "Starting server"
