@@ -31,6 +31,7 @@ env:
 nuke:
 	tools/docker_utils.sh 6
 
-# Start prisma studio, dev tool for database
-studio:
-	cd backend && npx prisma studio
+# Setup venv for the backend
+venv:
+	cd backend && rm -rf venv && python3 -m venv venv
+	cd backend && . venv/bin/activate && pip install -r requirements.txt

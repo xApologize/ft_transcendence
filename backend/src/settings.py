@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "user",
 ]
 
 MIDDLEWARE = [
@@ -78,7 +79,7 @@ WSGI_APPLICATION = 'src.wsgi.application'
 
 DATABASES = {
     'default': {
-        "ENGINE": os.environ.get("django.db.backends.postgresql", "django.db.backends.sqlite3"),
+        "ENGINE": 'django.db.backends.postgresql', # THIS IS SO STUPID FIX YOUR PDF
         "NAME": os.environ.get("POSTGRES_DB", BASE_DIR / "db.sqlite3"),
         "USER": os.environ.get("POSTGRES_USER", "user"),
         "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "password"),

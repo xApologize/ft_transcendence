@@ -1,16 +1,16 @@
 version: '3.8'
 
 services:
-  # frontend:
-  #   container_name: frontend
-  #   build:
-  #     context: frontend
-  #     dockerfile: Dockerfile
-  #   volumes:
-  #     - ./frontend:/app
-  #     - /app/node_modules
-  #   ports:
-  #     - '3001:3001' # different port probably change later
+  frontend:
+    container_name: frontend
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - '3001:3001' # different port probably change later
   
   backend:
     container_name: backend
@@ -18,7 +18,7 @@ services:
       context: backend
       dockerfile: Dockerfile
     volumes:
-      - ./backend/app/:/usr/src/app/
+      - ./backend:/usr/src/app/
     ports:
       - '8000:8000'
     env_file:
@@ -28,7 +28,7 @@ services:
 
   postgres:
     container_name: postgres
-    image: postgres:11-alpine
+    image: postgres:alpine3.18
     restart: unless-stopped
     volumes:
       - ./database-data:/var/lib/postgresql/data

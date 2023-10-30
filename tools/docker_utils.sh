@@ -72,8 +72,6 @@ clean_caches() {
 clean_folders() {
 	echo -e "${Red}SENT THE FOLDERS TO THE SHADOW REALMS${Reset}"
 	sudo rm -rf ../database-data 
-	sudo rm -rf ../backend/dist
-	sudo rm -rf ../backend/node_modules
 	sudo rm -rf ../frontend/node_modules
 }
 

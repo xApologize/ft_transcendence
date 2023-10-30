@@ -1,5 +1,6 @@
 #!/bin/bash
 # Author producks 10/18/2023
+# updated 10/29/2023
 
 # Reset
 Reset='\033[0m'       # Text Reset
@@ -39,11 +40,14 @@ databasePassword="POSTGRES_PASSWORD=${dataBasePasswordPrompt}"
 echo -e -n "$databaseName\n$databaseUser\n$databasePassword" > .env
 
 # Setup variables for the .env in the backend (for prisma)
-DB_HOST="DB_HOST=postgres"
-DB_USER="DB_USER=$dataBaseUserPrompt"
-DB_PASSWORD="DB_PASSWORD=$dataBasePasswordPrompt"
-DB_NAME="DB_NAME=$dataBaseNamePrompt"
-DB_PORT="DB_PORT=5432"
-DATABASE_URL="DATABASE_URL=postgresql://\${DB_USER}:\${DB_PASSWORD}@\${DB_HOST}/\${DB_NAME}"
+POSTGRES_HOST="POSTGRES_HOST=postgres"
+POSTGRES_USER="POSTGRES_USER=$dataBaseUserPrompt"
+POSTGRES_PASSWORD="POSTGRES_PASSWORD=$dataBasePasswordPrompt"
+POSTGRES_DB="POSTGRES_DB=$dataBaseNamePrompt"
+POSTGRES_PORT="POSTGRES_PORT=5432"
 
-echo -e -n "$DB_HOST\n$DB_USER\n$DB_PASSWORD\n$DB_NAME\n$DB_PORT\n\n$DATABASE_URL" > backend/.env
+DEBUG="DEBUG=1"
+SECRET_KEY="SECRET_KEY=foo"
+DJANGO_ALLOWED_HOSTS="DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]"
+
+echo -e -n "$POSTGRES_HOST\n$POSTGRES_USER\n$POSTGRES_PASSWORD\n$POSTGRES_DB\n$POSTGRES_PORT\n\n$DEBUG\n$SECRET_KEY\n$DJANGO_ALLOWED_HOSTS" > backend/.env
