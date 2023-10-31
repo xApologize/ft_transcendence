@@ -42,8 +42,9 @@ services:
 
   nginx:
     container_name: nginx
-    image: nginx:mainline-alpine3.18-slim
+    build:
+      context: nginx
+      dockerfile: Dockerfile
     ports:
       - "8080:80"
-    volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - "443:443"
