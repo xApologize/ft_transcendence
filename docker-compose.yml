@@ -10,7 +10,7 @@ services:
       - ./frontend:/app
       - /app/node_modules
     ports:
-      - '3001:3001' # different port probably change later
+      - '3001:3001'
   
   backend:
     container_name: backend

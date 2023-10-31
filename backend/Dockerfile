@@ -2,6 +2,8 @@ FROM python:3.9.18-slim-bullseye
 
 RUN apt-get update && apt-get install -y dumb-init
 
+RUN apt-get install -y netcat
+
 WORKDIR /usr/src/app
 
 ENV PYTHONDONTWRITEBYTECODE 1
