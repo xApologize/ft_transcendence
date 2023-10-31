@@ -20,10 +20,6 @@ MIGRATION_FLAG="/usr/src/app/.flag"
 while true; do
     if nc -z -w 2 $POSTGRES_HOST $POSTGRES_PORT; then
         echo -e "${Green}Database is up! Migrating..."
-        sleep 2
-        clear
-        cat .lol.txt
-        sleep 2
         python manage.py makemigrations # temp fix
         python manage.py migrate # temp fix
         break
