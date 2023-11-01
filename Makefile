@@ -24,7 +24,7 @@ clean_school:
 	tools/docker_utils.sh 1
 	tools/docker_utils.sh 2
 	tools/docker_utils.sh 3
-	tools/docker_utils.sh 8
+	tools/docker_utils.sh 9
 
 # Not sure if this work, double check during dev
 rebuild: down

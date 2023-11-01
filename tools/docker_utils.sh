@@ -152,6 +152,9 @@ case $input in
 	"7")
 	clean_folders_nuke
 	;;
+	"9")
+	clean_folder_nuke_school_mac
+	;;
 	*)
 	echo -e "${Red}Invalid input provided${Reset}"
 esac
