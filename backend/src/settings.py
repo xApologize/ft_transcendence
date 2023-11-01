@@ -28,7 +28,7 @@ DEBUG = bool(os.environ.get("DEBUG", default=0))
 
 # 'DJANGO_ALLOWED_HOSTS' should be a single string of hosts with a space between each.
 # For example: 'DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]'
-ALLOWED_HOSTS = "backend 127.0.0.1 [::1]".split(" ") # FIX LATER, BOZO BANDAID FIX FOR NOW
+ALLOWED_HOSTS = "localhost backend 127.0.0.1 [::1]".split(" ") # FIX LATER, BOZO BANDAID FIX FOR NOW
 
 
 # Application definition
