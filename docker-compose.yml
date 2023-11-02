@@ -10,7 +10,7 @@ services:
       - ./frontend:/app
       - /app/node_modules
     ports:
-      - '3001:3001' # different port probably change later
+      - '3001:3001'
   
   backend:
     container_name: backend
@@ -42,8 +42,11 @@ services:
 
   nginx:
     container_name: nginx
-    image: nginx:mainline-alpine3.18-slim
+    build:
+      context: nginx
+      dockerfile: Dockerfile
     ports:
       - "8080:80"
-    volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - "443:443"
+    depends_on:
+      - postgres

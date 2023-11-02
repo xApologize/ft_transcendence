@@ -8,4 +8,4 @@ COPY package.json .
 
 RUN npm install
 
-ENTRYPOINT ["dumb-init", "npm", "run", "dev", "--", "--host"]
+ENTRYPOINT ["dumb-init", "npm", "run", "80%"]

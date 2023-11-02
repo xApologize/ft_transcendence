@@ -49,7 +49,7 @@ clean_volumes() {
 			echo -e "${Green}All docker volumes have been deleted${Reset}"
 		fi
 	fi
-	sudo rm -rf ../database-data
+	rm -rf ../database-data
 }
 
 clean_images() {
@@ -78,6 +78,10 @@ clean_folders() {
 clean_folders_nuke() {
 	echo -e "${Red}SENT THE FOLDERS TO THE SHADOW REALMS${Reset}"
 	sudo rm -rf database-data backend/dist backend/node_modules frontend/node_modules
+}
+
+clean_folder_nuke_school_mac() {
+	rm -rf database-data backend/dist backend/node_modules frontend/node_modules
 }
 
 
@@ -137,8 +141,19 @@ case $input in
 	clean_folders_nuke
 	clean_caches
 	;;
+	"8")
+	stop_all_containers
+	clean_containers
+	clean_volumes
+	clean_images
+	clean_folder_nuke_school_mac
+	clean_caches
+	;;
 	"7")
 	clean_folders_nuke
+	;;
+	"9")
+	clean_folder_nuke_school_mac
 	;;
 	*)
 	echo -e "${Red}Invalid input provided${Reset}"

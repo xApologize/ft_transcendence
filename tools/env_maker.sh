@@ -45,7 +45,7 @@ done
 # Setup .env at the root of the directory with the result from the prompts
 echo -e -n "$databaseName\n$databaseUser\n$databasePassword" > .env
 
-# Setup variables for the .env in the backend (for prisma)
+# Setup variables for the .env in the backend (for django)
 POSTGRES_HOST="POSTGRES_HOST=postgres"
 POSTGRES_USER="POSTGRES_USER=$dataBaseUserPrompt"
 POSTGRES_PASSWORD="POSTGRES_PASSWORD=$dataBasePasswordPrompt"
