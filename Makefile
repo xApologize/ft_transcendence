@@ -19,6 +19,13 @@ clean:
 	tools/docker_utils.sh 3
 	tools/docker_utils.sh 7
 
+# For school mac
+clean_school:
+	tools/docker_utils.sh 1
+	tools/docker_utils.sh 2
+	tools/docker_utils.sh 3
+	tools/docker_utils.sh 9
+
 # Not sure if this work, double check during dev
 rebuild: down
 	docker compose up --build
@@ -31,6 +38,11 @@ env:
 nuke:
 	tools/docker_utils.sh 6
 
-# Start prisma studio, dev tool for database
-studio:
-	cd backend && npx prisma studio
+# For school mac
+nuke_mac:
+	tools/docker_utils.sh 8
+
+# Setup venv for the backend
+venv:
+	cd backend && rm -rf venv && python3 -m venv venv
+	cd backend && . venv/bin/activate && pip install -r requirements.txt
