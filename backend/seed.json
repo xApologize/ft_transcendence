@@ -1,0 +1,24 @@
+[
+    {
+        "model": "user_profile.User",
+        "pk": 1,
+        "fields": {
+            "nickname": "Dave",
+            "email": "bozo@gmail.com",
+            "avatar": "gwerioghoierwjhrwi",
+            "status": "OF",
+            "admin": false
+        }
+    },
+    {
+        "model": "user_profile.User",
+        "pk": 2,
+        "fields": {
+            "nickname": "80%",
+            "email": "abc@gmail.com",
+            "avatar": "gwerioghoierwjhrwi",
+            "status": "OF",
+            "admin": false
+        }
+    }
+]
