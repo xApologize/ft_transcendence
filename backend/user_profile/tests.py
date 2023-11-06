@@ -9,7 +9,7 @@ class UserTestCase(TestCase):
             nickname="TestUser",
             email="TestUser@gmail.com",
             avatar="geropgjieriogjer",
-            status="OF",
+            status="OFF",
             admin=False
         )
         User.objects.create(
@@ -24,11 +24,11 @@ class UserTestCase(TestCase):
         user = User.objects.get(nickname="TestUser")
         self.assertEqual(user.nickname, "TestUser")
         self.assertEqual(user.email, "TestUser@gmail.com")
-        self.assertEqual(user.status, "OF")
+        self.assertEqual(user.status, "OFF")
 
     def test_user_two(self):
         '''Check if the default is really set to status O(offline)'''
         user_two = User.objects.get(nickname="Clown")
         self.assertEqual(user_two.nickname, "Clown")
-        self.assertEqual(user_two.status, "O")
+        self.assertEqual(user_two.status, "ONL")
         self.assertEqual(user_two.admin, True)

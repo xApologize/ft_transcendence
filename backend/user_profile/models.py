@@ -11,5 +11,5 @@ class User(models.Model):
     nickname = models.CharField(max_length=50, unique=True)
     email = models.TextField()
     avatar = models.TextField()
-    status = models.CharField(max_length=10, choices=status_enum, default="O")
+    status = models.CharField(max_length=10, choices=status_enum, default="ONL")
     admin = models.BooleanField(default=False)
