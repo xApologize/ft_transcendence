@@ -6,7 +6,7 @@
             "nickname": "Dave",
             "email": "bozo@gmail.com",
             "avatar": "gwerioghoierwjhrwi",
-            "status": "OF",
+            "status": "OFF",
             "admin": false
         }
     },
@@ -17,7 +17,7 @@
             "nickname": "80%",
             "email": "abc@gmail.com",
             "avatar": "gwerioghoierwjhrwi",
-            "status": "OF",
+            "status": "ONL",
             "admin": false
         }
     }

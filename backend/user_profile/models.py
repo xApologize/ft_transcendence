@@ -3,12 +3,12 @@ from django.db import models
 
 class User(models.Model):
     status_enum = [
-        ("O", "Online"),
-        ("OF", "Offline"),
-        ("I", "Ingame"),
-        ("B", "Busy"),
+        ("ONL", "Online"),
+        ("OFF", "Offline"),
+        ("ING", "Ingame"),
+        ("BUS", "Busy"),
     ]
-    nickname = models.CharField(max_length=50)
+    nickname = models.CharField(max_length=50, unique=True)
     email = models.TextField()
     avatar = models.TextField()
     status = models.CharField(max_length=10, choices=status_enum, default="O")

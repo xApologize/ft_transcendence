@@ -1,11 +1,10 @@
-from django.shortcuts import render
 from django.http import HttpResponse, HttpRequest, JsonResponse
 from .models import User
-from django.core import serializers
 
 
 def index(request: HttpRequest):
     return HttpResponse("This is a test!")
+
 
 def bozo(request: HttpRequest):
     print(request.get_full_path)
@@ -21,7 +20,7 @@ def bozo(request: HttpRequest):
                 'admin': user.admin,
             }
             return JsonResponse(user_data)
-        except:
+        except Exception:
             return HttpResponse("Couldn't find the user")
     elif request.method == "POST":
-         return HttpResponse("Hello! POST!")
+        return HttpResponse("Hello! POST!")
