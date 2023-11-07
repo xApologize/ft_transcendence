@@ -1,120 +1,110 @@
-from django.http import HttpResponse, HttpRequest, JsonResponse
 from .models import User
+from django.db.utils import IntegrityError
+from django.http import JsonResponse, HttpResponseForbidden, HttpResponse, Http404, HttpResponseNotFound, HttpResponseBadRequest
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+from django.views import View
+import json
 
 
-def index(request: HttpRequest):
-    return HttpResponse("This is a test!")
-
-
-def bozo(request: HttpRequest):
-    print(request)
-    if request.method == "GET":
-        try:
-            user = User.objects.get(pk=1)
-            user_data = {
-                'id': user.id,
+@method_decorator(csrf_exempt, name='dispatch') #- to apply to every function in the class.
+class Users(View):
+    # Get All Users
+    def get(self, request: HttpResponse):
+        users = User.objects.all()
+        user_data = [
+            {
                 'nickname': user.nickname,
                 'email': user.email,
                 'avatar': user.avatar,
                 'status': user.status,
                 'admin': user.admin,
             }
-            return JsonResponse(user_data)
-        except Exception:
-            return HttpResponse("Couldn't find the user")
-    elif request.method == "POST":
-        return HttpResponse("Hello! POST!")
+            for user in users
+        ]
 
-
-import json
-from django.http import JsonResponse, HttpResponseForbidden, HttpResponse, Http404, HttpResponseNotFound, HttpResponseBadRequest
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
-from django.views import View
-
-# temp
-users = [
-            {
-                'userID': 1,
-                'nickname': 'User1Nickname',
-                'email': 'user1@example.com',
-                'avatar': 'user1_avatar.jpg',
-                'token': 'user1_token',
-                'status': 0,
-                'admin': False
-            },
-            {
-                'userID': 2,
-                'nickname': 'User2Nickname',
-                'email': 'user2@example.com',
-                'avatar': 'user2_avatar.jpg',
-                'token': 'user2_token',
-                'status': 0,
-                'admin': False
-            },
-            {
-                'userID': 3,
-                'nickname': 'User3Nickname',
-                'email': 'user3@example.com',
-                'avatar': 'user3_avatar.jpg',
-                'token': 'user3_token',
-                'status': 0,
-                'admin': False
-            },
-            {
-                'userID': 4,
-                'nickname': 'User4Nickname',
-                'email': 'user4@example.com',
-                'avatar': 'user4_avatar.jpg',
-                'token': 'user4_token',
-                'status': 0,
-                'admin': False
-            },
-]
-
-
-@method_decorator(csrf_exempt, name='dispatch') #- to apply to every function in the class.
-class Users(View):
-    # Check if at least 1 user exist.
-    # Get All Users
-    def get(self, request: HttpResponse):
-        return JsonResponse({'users': users})
-
+        response_data = {'users': user_data}
+        return JsonResponse(response_data)
 
     # Create a user
-    def post(self, request:HttpResponse):
+    def post(self, request: HttpResponse):
         try:
-            # check si le user_data a plus de champ que nécessaire.
             user_data = json.loads(request.body)
             required_fields = ['userID', 'nickname', 'email', 'avatar', 'token', 'status', 'admin']
-            if all(field in user_data for field in required_fields):
-                users.append(user_data)
-                return HttpResponse(f'User {user_data["nickname"]} created successfully')
-            else:
-                return HttpResponseBadRequest('Missing one or more required fields')
+
+            extra_fields = user_data.keys() - required_fields
+            if extra_fields:
+                return HttpResponseBadRequest(f'Unexpected fields: {", ".join(extra_fields)}')
+            try:
+                if all(field in user_data for field in required_fields):
+                    user = User.objects.create(
+                        nickname=user_data['nickname'],
+                        email=user_data['email'],
+                        avatar=user_data['avatar'],
+                        status=user_data['status'],
+                        admin=user_data['admin']
+                    )
+                    user.save()
+                else:
+                    return HttpResponseBadRequest('Missing one or more required fields')
+            except IntegrityError:
+                return HttpResponseBadRequest(f'Nickname is already in use.')
         except json.JSONDecodeError:
             return HttpResponseBadRequest('Invalid JSON data in the request body')
+        return JsonResponse({'message': f'User {user_data["nickname"]} created successfully'})
 
 
 @method_decorator(csrf_exempt, name='dispatch') #- to apply to every function in the class.
 class SpecificUser(View):
     # Get specific user.
     def get(self, request: HttpResponse, user_nickname: str):
-        user = [u for u in users if u['nickname'] == user_nickname] 
-        if user:
-            return JsonResponse({'user': user})
-        return HttpResponseNotFound(f'User {user_nickname} not found')
+        try:
+            user = User.objects.get(nickname=user_nickname)
+            user_data = {
+                'nickname': user.nickname,
+                'email': user.email,
+                'avatar': user.avatar,
+                'status': user.status,
+                'admin': user.admin,
+            }
+            return JsonResponse({'user': user_data})
+        except User.DoesNotExist:
+            return HttpResponseNotFound(f'User {user_nickname} not found')
 
 
     # Delete specific user.
     def delete(self, request: HttpResponse, user_nickname: str):
-        user = [u for u in users if u['nickname'] == user_nickname]
-        if user:
-            users.remove(user[0])
+        try:
+            user = User.objects.get(nickname=user_nickname)
+            user.delete()
             return HttpResponse(f'User {user_nickname} deleted successfully')
-        return HttpResponseNotFound(f'User {user_nickname} not found')
-
+        except User.DoesNotExist:
+            return HttpResponseNotFound(f'User {user_nickname} not found')
 
     # Update specific user
     def patch(self, request: HttpResponse, user_nickname: str):
-        return HttpResponse('Not setup')
+        try:
+            user = User.objects.get(nickname=user_nickname)
+
+            try:
+                user_data = json.loads(request.body)
+            except json.JSONDecodeError:
+                return HttpResponseBadRequest('Invalid JSON data in the request body')
+
+            # Autoriser plusieurs changements en une seule requête ? Sécuritaire?
+            for field in ['userID', 'nickname', 'email', 'avatar', 'token', 'status', 'admin']:
+                if field in user_data:
+                    setattr(user, field, user_data[field])
+            user.save()
+
+            user_data = {
+                'nickname': user.nickname,
+                'email': user.email,
+                'avatar': user.avatar,
+                'status': user.status,
+                'admin': user.admin,
+            }
+            return JsonResponse({'user': user_data})
+
+        except User.DoesNotExist:
+            return HttpResponseNotFound(f'User {user_nickname} not found')
