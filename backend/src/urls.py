@@ -19,7 +19,8 @@ from django.urls import path, include
 
 urlpatterns = [
     path('api/admin/', admin.site.urls),
-    path("api/user/", include("user_profile.urls")),
+    path('api/user/', include('user_profile.urls')),
+    path('api/friend/', include('friend_list.urls'))
 ]
 
 ####
@@ -36,7 +37,8 @@ urlpatterns = [
 # }
 #
 ####
-# [USER]
+#
+# [USER] [NEED and will add tests.py later]
 #
 # /api/user/, GET -> get all users | POST -> create a user. 
 # /api/user/?nickname=dave, GET -> get a specific user by it's nickname | DELETE -> delete specific user by it's nickname | PATCH -> Update specific user by it's nickname.
@@ -44,13 +46,13 @@ urlpatterns = [
 #### [NOT SETUP] What's under is only a DRAFT and not implemented. [NOT SETUP]
 # [FRIENDLIST]
 #
+# V1.0
 # /api/friends/<str:user_nickname>/, GET -> get all friends interaction of the specific users. Include accepted, refused and pending request | {POST?} -> would create a new friend request?
 # /api/friends/<str:user_nickname>/accepted, GET -> get all the accepted friends.
-# /api/friends/<str:user_nickname>/accepted/online, GET -> get all the accepted online friends.
-# /api/friends/<str:user_nickname>/accepted/offline, GET -> get all the accepted offline friends.
-# /api/friends/<str:user_nickname>/accepted/ingame, GET -> get all the accepted ingame friends.
-# /api/friends/<str:user_nickname>/accepted/busy, GET -> get all the accepted busy friends.
-# /api/friends/<str:user_nickname>/refused, GET -> get all the refused request. (?) | PATCH ->
+# /api/friends/<str:user_nickname>/refused, GET -> get all the refused request. | PATCH -> Change the state of the request (?)
 # /api/friends/<str:user_nickname>/pending, GET -> get all the pending request.
+#
+# V1.1
+# /api/friends/?nickname=Dave&status=accepted
 #
 ####

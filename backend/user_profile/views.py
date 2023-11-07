@@ -10,7 +10,7 @@ import json
 @method_decorator(csrf_exempt, name='dispatch') #- to apply to every function in the class.
 class Users(View):
     # Get All Users or specific users
-    def get(self, request):
+    def get(self, request: HttpResponse):
         nicknames = request.GET.getlist('nickname')
 
         if nicknames:
@@ -42,7 +42,7 @@ class Users(View):
 
             extra_fields = user_data.keys() - required_fields
             if extra_fields:
-                return HttpResponseBadRequest(f'Can\'t use POST: Unexpected fields: {", ".join(extra_fields)}')
+                return HttpResponseBadRequest(f'Unexpected fields: {", ".join(extra_fields)}')
             try:
                 if all(field in user_data for field in required_fields):
                     user = User.objects.create(
@@ -54,11 +54,11 @@ class Users(View):
                     )
                     user.save()
                 else:
-                    return HttpResponseBadRequest('Can\'t use POST: Missing one or more required fields in JSON')
+                    return HttpResponseBadRequest('Missing one or more required fields in JSON')
             except IntegrityError:
                 return HttpResponseBadRequest(f'Nickname {user_data["nickname"]} is already in use.')
         except json.JSONDecodeError:
-            return HttpResponseBadRequest('Can\'t use POST: Invalid JSON data in the request body')
+            return HttpResponseBadRequest('Invalid JSON data in the request body')
         return HttpResponse(f'User {user_data["nickname"]} created successfully', status=201)
 
 
