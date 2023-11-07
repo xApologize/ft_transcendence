@@ -9,9 +9,14 @@ import json
 
 @method_decorator(csrf_exempt, name='dispatch') #- to apply to every function in the class.
 class Users(View):
-    # Get All Users
-    def get(self, request: HttpResponse):
-        users = User.objects.all()
+    # Get All Users or specific users
+    def get(self, request):
+        nicknames = request.GET.getlist('nickname')
+
+        if nicknames:
+            users = User.objects.filter(nickname__in=nicknames)
+        else:
+            users = User.objects.all()
         user_data = [
             {
                 'nickname': user.nickname,
@@ -23,11 +28,13 @@ class Users(View):
             for user in users
         ]
 
-        response_data = {'users': user_data}
-        return JsonResponse(response_data)
+        if user_data:
+            return JsonResponse({'users': user_data})
+        return HttpResponseNotFound(f'User not found')
 
 
     # Create a user
+    # Check si quoi a été passer en param?
     def post(self, request: HttpResponse):
         try:
             user_data = json.loads(request.body)
@@ -52,62 +59,41 @@ class Users(View):
                 return HttpResponseBadRequest(f'Nickname {user_data["nickname"]} is already in use.')
         except json.JSONDecodeError:
             return HttpResponseBadRequest('Can\'t use POST: Invalid JSON data in the request body')
-        return JsonResponse({'message': f'User {user_data["nickname"]} created successfully'}, status=201)
+        return HttpResponse(f'User {user_data["nickname"]} created successfully', status=201)
 
+    # Delete a specific users
+    def delete(self, request):
+        nickname = request.GET.get('nickname')
+        if not nickname:
+            return HttpResponseBadRequest('No nickname provided for deletion.')
 
+        user = User.objects.filter(nickname=nickname).first()
+        if not user:
+            return HttpResponseNotFound(f'No user found with the nickname: {nickname}')
 
-@method_decorator(csrf_exempt, name='dispatch') #- to apply to every function in the class.
-class SpecificUser(View):
-    # Get specific user.
-    def get(self, request: HttpResponse, user_nickname: str):
+        user.delete()
+        return HttpResponse(f'User with nickname {nickname} deleted successfully.', status=204)
+
+    # update specific user
+    def patch(self, request):
+        nickname = request.GET.get('nickname')
+        if not nickname:
+            return HttpResponseBadRequest('No nickname provided for update.')
+
+        user = User.objects.filter(nickname=nickname).first()
+        if not user:
+            return HttpResponseNotFound(f'No user found with the nickname: {nickname}')
+
         try:
-            user = User.objects.get(nickname=user_nickname)
-            user_data = {
-                'nickname': user.nickname,
-                'email': user.email,
-                'avatar': user.avatar,
-                'status': user.status,
-                'admin': user.admin,
-            }
-            return JsonResponse({'user': user_data})
-        except User.DoesNotExist:
-            return HttpResponseNotFound(f'Can\'t use GET: User {user_nickname} not found')
 
-
-    # Delete specific user.
-    def delete(self, request: HttpResponse, user_nickname: str):
-        try:
-            user = User.objects.get(nickname=user_nickname)
-            user.delete()
-            return HttpResponse(f'User {user_nickname} deleted successfully')
-        except User.DoesNotExist:
-            return HttpResponseNotFound(f'Can\'t use DELETE: User {user_nickname} not found')
-
-
-    # Update specific user
-    def patch(self, request: HttpResponse, user_nickname: str):
-        try:
-            user = User.objects.get(nickname=user_nickname)
-
-            try:
-                user_data = json.loads(request.body)
-            except json.JSONDecodeError:
-                return HttpResponseBadRequest('Can\'t use PATCH: Invalid JSON data in the request body')
-
-            # Autoriser plusieurs changements en une seule requête ? Sécuritaire?
+            user_data = json.loads(request.body)
             for field in ['nickname', 'email', 'avatar', 'status', 'admin']:
                 if field in user_data:
                     setattr(user, field, user_data[field])
             user.save()
+        except json.JSONDecodeError:
+            return HttpResponseBadRequest('Invalid JSON data in the request body.')
+        except IntegrityError:
+            return HttpResponseBadRequest(f'Nickname {user_data["nickname"]} is already in use.')
 
-            user_data = {
-                'nickname': user.nickname,
-                'email': user.email,
-                'avatar': user.avatar,
-                'status': user.status,
-                'admin': user.admin,
-            }
-            return JsonResponse({'user': user_data})
-
-        except User.DoesNotExist:
-            return HttpResponseNotFound(f'Can\'t use PATCH: User {user_nickname} not found')
+        return HttpResponse(f'User with nickname {nickname} updated successfully.')
