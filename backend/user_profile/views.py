@@ -61,6 +61,7 @@ class Users(View):
             return HttpResponseBadRequest('Can\'t use POST: Invalid JSON data in the request body')
         return HttpResponse(f'User {user_data["nickname"]} created successfully', status=201)
 
+
     # Delete a specific users
     def delete(self, request):
         nickname = request.GET.get('nickname')
@@ -73,6 +74,7 @@ class Users(View):
 
         user.delete()
         return HttpResponse(f'User with nickname {nickname} deleted successfully.', status=204)
+
 
     # update specific user
     def patch(self, request):
