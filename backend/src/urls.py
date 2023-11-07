@@ -42,9 +42,9 @@ urlpatterns = [
 # /api/users/<str:user_nickname>/, GET -> get a specific user by it's nickname | DELETE -> delete specific user by it's nickname | PATCH -> Update specific user by it's nickname.
 #
 #### [NOT SETUP] What's under is only a draft and not implemented. [NOT SETUP]
-# [Friendlist]
+# [FRIENDLIST]
 #
-# /api/friends/<str:user_nickname>/, GET -> get all friends interaction of the specific users. Include accepted, refused and pending request | {POST?} -> would create a new friend request
+# /api/friends/<str:user_nickname>/, GET -> get all friends interaction of the specific users. Include accepted, refused and pending request | {POST?} -> would create a new friend request?
 # /api/friends/<str:user_nickname>/accepted, GET -> get all the accepted friends.
 # /api/friends/<str:user_nickname>/accepted/online, GET -> get all the accepted online friends.
 # /api/friends/<str:user_nickname>/accepted/offline, GET -> get all the accepted offline friends.
