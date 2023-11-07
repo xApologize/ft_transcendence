@@ -7,7 +7,7 @@ def index(request: HttpRequest):
 
 
 def bozo(request: HttpRequest):
-    print(request.get_full_path)
+    print(request)
     if request.method == "GET":
         try:
             user = User.objects.get(pk=1)
