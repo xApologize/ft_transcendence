@@ -53,7 +53,7 @@
         "model": "friend_list.FriendList",
         "pk": 2,
         "fields":{
-            "friend1": 2,
+            "friend1": 3,
             "friend2": 1,
             "status": "PENDING"
         }
