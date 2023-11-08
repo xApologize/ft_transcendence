@@ -18,11 +18,13 @@ class UserTestCase(TestCase):
             admin=True
         )
 
+
     def test_get_all_users(self):
         response = self.client.get(reverse('users'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'TestUser')
         self.assertContains(response, 'Clown')
+
 
     def test_create_user(self):
         data = {
@@ -58,12 +60,14 @@ class UserTestCase(TestCase):
         # response.json()['users'] return a list that CONTAIN a dictionnary. that's why [0].
         self.assertDictEqual(response.json()['users'][0], expected_user_data)
 
+
     def test_delete_specific_user(self):
         response = self.client.delete(f"{reverse('users')}?nickname=TestUser")
         self.assertEqual(response.status_code, 204)
 
         user1_exists = User.objects.filter(nickname="TestUser").exists()
         self.assertFalse(user1_exists)
+
 
     def test_patch_specific_user(self):
         data = {
@@ -78,4 +82,3 @@ class UserTestCase(TestCase):
         user1_updated = User.objects.get(nickname="TestUser")
         self.assertEqual(user1_updated.email, "new-email@example.com")
         self.assertEqual(user1_updated.status, "BUS")
-
