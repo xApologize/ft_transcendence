@@ -20,13 +20,37 @@ class UserTestCase(TestCase):
 
 
     def test_get_all_users(self):
+        """
+            Test to check whether all users are successfully obtained.
+        """
         response = self.client.get(reverse('users'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'TestUser')
         self.assertContains(response, 'Clown')
 
 
+    def test_get_specific_user(self):
+        """
+            Test that checks whether a specific user's access works
+        """
+        response = self.client.get(f"{reverse('users')}?nickname=TestUser")
+        self.assertEqual(response.status_code, 200)
+
+        expected_user_data = {
+            "nickname": "TestUser",
+            "email": "TestUser@gmail.com",
+            "avatar": "geropgjieriogjer",
+            "status": "OFF",
+            "admin": False
+        }
+        # response.json()['users'] return a list that CONTAIN a dictionnary. that's why [0].
+        self.assertDictEqual(response.json()['users'][0], expected_user_data)
+
+
     def test_create_user(self):
+        """
+            Test to check if user creation is working.
+        """
         data = {
             "nickname": "NewUser",
             "email": "newuser@example.com",
@@ -46,22 +70,10 @@ class UserTestCase(TestCase):
         self.assertEqual(new_user.admin, False)
 
 
-    def test_get_specific_user(self):
-        response = self.client.get(f"{reverse('users')}?nickname=TestUser")
-        self.assertEqual(response.status_code, 200)
-
-        expected_user_data = {
-            "nickname": "TestUser",
-            "email": "TestUser@gmail.com",
-            "avatar": "geropgjieriogjer",
-            "status": "OFF",
-            "admin": False
-        }
-        # response.json()['users'] return a list that CONTAIN a dictionnary. that's why [0].
-        self.assertDictEqual(response.json()['users'][0], expected_user_data)
-
-
     def test_delete_specific_user(self):
+        """
+            Test to check whether deleting a user works.
+        """
         response = self.client.delete(f"{reverse('users')}?nickname=TestUser")
         self.assertEqual(response.status_code, 204)
 
@@ -70,6 +82,9 @@ class UserTestCase(TestCase):
 
 
     def test_patch_specific_user(self):
+        """
+            Test to check whether a user modification works.
+        """
         data = {
             "email": "new-email@example.com",
             "status": "BUS"
