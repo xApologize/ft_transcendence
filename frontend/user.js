@@ -40,7 +40,7 @@ document.getElementById('getUser').addEventListener('click', function () {
           userDiv.className = 'user-container';
 
           const avatarDiv = document.createElement('div');
-          avatarDiv.className = 'avatar-container';
+          avatarDiv.className = 'img-thumbnail';
           const avatar = document.createElement('img');
           avatar.src = user.avatar;
           avatar.alt = `Avatar of ${user.nickname}`;
@@ -74,7 +74,9 @@ document.getElementById('getUser').addEventListener('click', function () {
           userData.textContent = 'User not found.';
         }
       })
-      .catch(error => console.error('Error:', error));
+      .catch(error => {
+        // Handle the error without printing it
+      });
   });
 
 
@@ -96,6 +98,7 @@ document.getElementById('getUsers').addEventListener('click', function () {
           email.textContent = `Email: ${user.email}`;
 
           const avatar = document.createElement('img');
+          avatar.className = 'img-thumbnail'
           avatar.src = user.avatar;
           avatar.alt = `Avatar of ${user.nickname}`;
 
@@ -105,13 +108,15 @@ document.getElementById('getUsers').addEventListener('click', function () {
           const admin = document.createElement('p');
           admin.textContent = `Admin: ${user.admin ? 'Yes' : 'No'}`;
 
+          const separator = document.createElement('hr');
           userDiv.appendChild(nickname);
           userDiv.appendChild(email);
           userDiv.appendChild(avatar);
           userDiv.appendChild(status);
           userDiv.appendChild(admin);
-
+        
           userData.appendChild(userDiv);
+          userData.appendChild(separator);
         });
       })
       .catch(error => console.error('Error:', error));
@@ -155,8 +160,8 @@ document.getElementById('createUser').addEventListener('click', function () {
       .then(response => {
         if (response.status === 201) {
           // User created successfully
-          document.getElementById('errorMessage').textContent = `User ${nickname} created successfully`;
           document.getElementById('errorMessage').style.color = 'green';
+          document.getElementById('errorMessage').textContent = `User ${nickname} created successfully`;
         } else if (response.status === 400) {
           return response.json();
         } else {
@@ -165,7 +170,7 @@ document.getElementById('createUser').addEventListener('click', function () {
         }
       })
       .then(data => {
-        if (data.error) {
+        if (data.Error) {
           // Display the specific error message
           document.getElementById('errorMessage').textContent = data.error;
           document.getElementById('errorMessage').style.color = 'red';
