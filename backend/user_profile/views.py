@@ -1,6 +1,6 @@
 from .models import User
 from django.db.utils import IntegrityError
-from django.http import JsonResponse, HttpResponseForbidden, HttpResponse, Http404, HttpResponseNotFound, HttpResponseBadRequest
+from django.http import JsonResponse, HttpResponseForbidden, HttpResponse, Http404, HttpResponseNotFound, HttpResponseBadRequest, HttpRequest
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views import View
@@ -10,7 +10,7 @@ import json
 @method_decorator(csrf_exempt, name='dispatch') #- to apply to every function in the class.
 class Users(View):
     # Get All Users or specific users
-    def get(self, request: HttpResponse):
+    def get(self, request: HttpRequest):
         nicknames = request.GET.getlist('nickname')
 
         if nicknames:
@@ -42,7 +42,7 @@ class Users(View):
 
             extra_fields = user_data.keys() - required_fields
             if extra_fields:
-                return HttpResponseBadRequest(f'Unexpected fields: {", ".join(extra_fields)}')
+                return JsonResponse({'error': f'Unexpected fields: {", ".join(extra_fields)}'}, status=400)
             try:
                 if all(field in user_data for field in required_fields):
                     user = User.objects.create(
@@ -54,16 +54,16 @@ class Users(View):
                     )
                     user.save()
                 else:
-                    return HttpResponseBadRequest('Missing one or more required fields in JSON')
+                    return JsonResponse({'error': 'Missing one or more required fields in JSON'}, status=400)
             except IntegrityError:
-                return HttpResponseBadRequest(f'Nickname {user_data["nickname"]} is already in use.')
+                    return JsonResponse({'error': f'User {user_data["nickname"]} already exists'}, status=400)
         except json.JSONDecodeError:
-            return HttpResponseBadRequest('Invalid JSON data in the request body')
-        return HttpResponse(f'User {user_data["nickname"]} created successfully', status=201)
+            return JsonResponse({'error': 'Invalid JSON data in the request body'}, status=400)
+        return JsonResponse({'message': f'User {user_data["nickname"]} created successfully'}, status=201)
 
 
     # Delete a specific users
-    def delete(self, request):
+    def delete(self, request: HttpRequest):
         nickname = request.GET.get('nickname')
         if not nickname:
             return HttpResponseBadRequest('No nickname provided for deletion.')
@@ -77,7 +77,7 @@ class Users(View):
 
 
     # update specific user
-    def patch(self, request):
+    def patch(self, request: HttpRequest):
         nickname = request.GET.get('nickname')
         if not nickname:
             return HttpResponseBadRequest('No nickname provided for update.')
