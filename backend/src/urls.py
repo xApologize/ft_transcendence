@@ -37,22 +37,16 @@ urlpatterns = [
 # }
 #
 ####
-#
-# [USER] [NEED and will add tests.py later]
+# [USER]
 #
 # /api/user/, GET -> get all users | POST -> create a user. 
 # /api/user/?nickname=dave, GET -> get a specific user by it's nickname | DELETE -> delete specific user by it's nickname | PATCH -> Update specific user by it's nickname.
 #
-#### [NOT SETUP] What's under is only a DRAFT and not implemented. [NOT SETUP]
+####
 # [FRIENDLIST]
 #
-# V1.0
-# /api/friends/<str:user_nickname>/, GET -> get all friends interaction of the specific users. Include accepted, refused and pending request | {POST?} -> would create a new friend request?
-# /api/friends/<str:user_nickname>/accepted, GET -> get all the accepted friends.
-# /api/friends/<str:user_nickname>/refused, GET -> get all the refused request. | PATCH -> Change the state of the request (?)
-# /api/friends/<str:user_nickname>/pending, GET -> get all the pending request.
-#
-# V1.1
-# /api/friends/?nickname=Dave&status=accepted
+# /api/friends/, Nothing wil work. Need at least nickname as parameter.
+# /api/friends/?nickname=Dave, GET -> will return all friends relation Dave has.
+# /api/friends/?nickname=Dave&status=ACCEPTED, GET -> will return all friend dave is friend with. Status can be ACCEPTED, PENDING or REFUSED.
 #
 ####
