@@ -4,8 +4,29 @@
   <title>My Web App</title>
 </head>
 <body>
-  <img src="https://i.imgur.com/bZ6nXdv.png" alt="Italian Trulli">
-  <p>test</p>
+  <div>
+    <input type="text" id="userInput" placeholder="Enter nickname">
+    <input type="text" id="emailInput" placeholder="Enter email">
+    <input type="text" id="avatarInput" placeholder="Enter avatar URL">
+    <button id="createUser">CREATE NEW USER</button>
+  </div>
+  <p>--------</p>
+<!----------------------------------------------->
+  <div>
+    <input type="text" id="nicknameInput" placeholder="Enter nickname">
+    <button id="getUser">GET SPECIFIC USER</button>
+  </div>
+  <p>--------</p>
+  <!----------------------------------------------->
+  <div>
+    <button id="getUsers">GET ALL USERS</button>
+  </div>
+  <p>--------</p>
+  <!----------------------------------------------->
+  <button id="reset">Reset</button>
+  <div id="userData" class="user-list"></div> <!-- Ce qui permet d'afficher les users -->
+  <p id="errorMessage"></p>
+  <script src="user.js"></script>
 </body>
 </html>
 
@@ -16,5 +37,15 @@
   }
   body{
     margin: 0;
+  }
+  .user-container {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+
+  img {
+    max-width: 100px;
+    max-height: 100px;
   }
 </style>
