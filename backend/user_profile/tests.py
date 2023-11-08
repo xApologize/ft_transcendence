@@ -19,6 +19,21 @@ class UserTestCase(TestCase):
         )
 
 
+    def test_user(self):
+        '''Normal check for user that was added to the database'''
+        user = User.objects.get(nickname="TestUser")
+        self.assertEqual(user.nickname, "TestUser")
+        self.assertEqual(user.email, "TestUser@gmail.com")
+        self.assertEqual(user.status, "OFF")
+
+    def test_user_two(self):
+        '''Check if the default is really set to status O(offline)'''
+        user_two = User.objects.get(nickname="Clown")
+        self.assertEqual(user_two.nickname, "Clown")
+        self.assertEqual(user_two.status, "ONL")
+        self.assertEqual(user_two.admin, True)
+
+
     def test_get_all_users(self):
         """
             Test to check whether all users are successfully obtained.
