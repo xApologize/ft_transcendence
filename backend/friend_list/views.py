@@ -10,6 +10,7 @@ import json
 from django.core import serializers
 
 # Need to check if the user that he's looking for exist ?
+# If someone block the other one and is friend, remove from friendlist.
 # Create your views here.
 class FriendListView(View):
     def get(self, request):
