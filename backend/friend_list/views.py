@@ -10,9 +10,10 @@ import json
 from django.core import serializers
 
 # Need to check if the user that he's looking for exist ?
-# If someone block the other one and is friend, remove from friendlist.
-# Create your views here.
+# Add timestamp to friend model ?
+# Not forget: If someone block the other one and is friend, remove from friendlist.
 class FriendListView(View):
+    # Retrieve a user's friend list by their nickname. You can filter friends by the status of their relationship (ACCEPTED, PENDING, or REFUSED).
     def get(self, request):
         user_nickname = request.GET.get('nickname')
         user_status = request.GET.get('status')
