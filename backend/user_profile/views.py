@@ -30,11 +30,11 @@ class Users(View):
 
         if user_data:
             return JsonResponse({'users': user_data})
-        return HttpResponseNotFound(f'User not found')
+        return HttpResponseNotFound('User not found')
 
 
     # Create a user
-    # Check si quoi a été passer en param?
+    # Check quoi a été passer en param?
     def post(self, request: HttpResponse):
         try:
             user_data = json.loads(request.body)
