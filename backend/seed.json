@@ -5,7 +5,7 @@
         "fields": {
             "nickname": "Dave",
             "email": "bozo@gmail.com",
-            "avatar": "gwerioghoierwjhrwi",
+            "avatar": "https://i.imgur.com/bZ6nXdv.png",
             "status": "OFF",
             "admin": false
         }
@@ -16,7 +16,7 @@
         "fields": {
             "nickname": "80%",
             "email": "abc@gmail.com",
-            "avatar": "gwerioghoierwjhrwi",
+            "avatar": "https://i.imgur.com/bZ6nXdv.png",
             "status": "ONL",
             "admin": false
         }
@@ -27,7 +27,7 @@
         "fields": {
             "nickname": "81%",
             "email": "def@gmail.com",
-            "avatar": "gwerio80%ghoierwjhrwi",
+            "avatar": "https://i.imgur.com/bZ6nXdv.png",
             "status": "OFF",
             "admin": true
         }
