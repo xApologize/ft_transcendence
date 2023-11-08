@@ -9,9 +9,9 @@ from django.db.models import Q  # Import the Q object
 import json
 from django.core import serializers
 
+# Need to check if the user that he's looking for exist ?
 # Create your views here.
-# Not working
-class Friendlist(View):
+class FriendListView(View):
     def get(self, request):
         user_nickname = request.GET.get('nickname')
         user_status = request.GET.get('status')
@@ -24,6 +24,7 @@ class Friendlist(View):
         friend_relations = FriendList.objects.filter(
             Q(friend1__nickname=user_nickname) | Q(friend2__nickname=user_nickname)
         )
+    
         if user_status and user_status in status_friend_list:
             friend_relations = friend_relations.filter(status=user_status)
         elif user_status and user_status not in status_friend_list:
