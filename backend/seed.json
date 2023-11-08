@@ -22,6 +22,17 @@
         }
     },
     {
+        "model": "user_profile.User",
+        "pk": 3,
+        "fields": {
+            "nickname": "81%",
+            "email": "def@gmail.com",
+            "avatar": "gwerio80%ghoierwjhrwi",
+            "status": "OFF",
+            "admin": true
+        }
+    },
+    {
         "model": "block_list.BlockList",
         "pk": 1,
         "fields": {
@@ -36,6 +47,15 @@
             "friend1": 1,
             "friend2": 2,
             "status": "ACCEPTED"
+        }
+    },
+    {
+        "model": "friend_list.FriendList",
+        "pk": 2,
+        "fields":{
+            "friend1": 2,
+            "friend2": 1,
+            "status": "PENDING"
         }
     },
     {
