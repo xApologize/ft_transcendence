@@ -19,19 +19,15 @@ class FriendListView(View):
         user_status = request.GET.get('status')
         friend_relations = []
         status_friend_list = ("ACCEPTED", "REFUSED", "PENDING")
-
         if not user_nickname:
             return JsonResponse({'error': 'No nickname provided for friendlist'}, status=400)
-
         friend_relations = FriendList.objects.filter(
             Q(friend1__nickname=user_nickname) | Q(friend2__nickname=user_nickname)
         )
-    
         if user_status and user_status in status_friend_list:
             friend_relations = friend_relations.filter(status=user_status)
         elif user_status and user_status not in status_friend_list:
             return JsonResponse({'error': 'Status provided is not recognized'}, status=400)
-
         friend_data = [
             {
                 "friend1": friend.friend1.nickname,
@@ -40,5 +36,4 @@ class FriendListView(View):
             }
             for friend in friend_relations
         ]
-
         return JsonResponse({"friends": friend_data})

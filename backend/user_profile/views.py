@@ -12,7 +12,6 @@ class Users(View):
     # Get All Users or specific users
     def get(self, request: HttpRequest):
         nicknames = request.GET.getlist('nickname')
-
         if nicknames:
             users = User.objects.filter(nickname__in=nicknames)
         else:
@@ -27,7 +26,6 @@ class Users(View):
             }
             for user in users
         ]
-
         if user_data:
             return JsonResponse({'users': user_data})
         return HttpResponseNotFound('User not found')
@@ -39,7 +37,6 @@ class Users(View):
         try:
             user_data = json.loads(request.body)
             required_fields = ['nickname', 'email', 'avatar', 'status', 'admin']
-
             extra_fields = user_data.keys() - required_fields
             if extra_fields:
                 return JsonResponse({'error': f'Unexpected fields: {", ".join(extra_fields)}'}, status=400)
@@ -67,11 +64,9 @@ class Users(View):
         nickname = request.GET.get('nickname')
         if not nickname:
             return HttpResponseBadRequest('No nickname provided for deletion.')
-
         user = User.objects.filter(nickname=nickname).first()
         if not user:
             return HttpResponseNotFound(f'No user found with the nickname: {nickname}')
-
         user.delete()
         return HttpResponse(f'User with nickname {nickname} deleted successfully.', status=204)
 
@@ -81,13 +76,10 @@ class Users(View):
         nickname = request.GET.get('nickname')
         if not nickname:
             return HttpResponseBadRequest('No nickname provided for update.')
-
         user = User.objects.filter(nickname=nickname).first()
         if not user:
             return HttpResponseNotFound(f'No user found with the nickname: {nickname}')
-
         try:
-
             user_data = json.loads(request.body)
             for field in ['nickname', 'email', 'avatar', 'status', 'admin']:
                 if field in user_data:
@@ -97,5 +89,4 @@ class Users(View):
             return HttpResponseBadRequest('Invalid JSON data in the request body.')
         except IntegrityError:
             return HttpResponseBadRequest(f'Nickname {user_data["nickname"]} is already in use.')
-
         return HttpResponse(f'User with nickname {nickname} updated successfully.')
