@@ -15,12 +15,12 @@ export async function showHome() {
         alert("Fill in the nickname");
         return;
       }
-      user = await fetchUser('GET', nicknameInput)
-        if (typeof user === 'string') {
-            displayErrorMessage(user);
-          } else {
-            displayUsers(user); // Use displayUser for a single user
-          }
+      let user = await fetchUser('GET', nicknameInput)
+      if (typeof user === 'string') {
+          displayErrorMessage(user);
+        } else {
+          displayUsers(user); // Use displayUser for a single user
+        }
     });
 
     document.getElementById('getUsers').addEventListener('click', async () => {
