@@ -6,6 +6,16 @@ const port = 3001;
 
 const server = http.createServer((req, res) => {
     console.log(req.url);
+
+    // if (!req.url.includes('.')) {
+    //     req.url = '/index.html';
+    // }
+
+    // If the requested URL doesn't have a known file extension, redirect to index.html
+    if (!/\.(html|js|css|jpg|png|map)$/.test(req.url)) {
+        req.url = '/index.html';
+    }
+
     const filePath = path.join(__dirname, req.url);
 
     // Determine the content type based on the file extension
