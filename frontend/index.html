@@ -8,12 +8,24 @@
   <link href="./node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
+  <nav id="navbar" class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand nav-link" href="#" data-route="/">Your App Name</a>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a href="#" data-route="/" class="nav-link" id="homeLink">Home</a>
+        </li>
+        <li class="nav-item">
+          <a href="#" data-route="/about" class="nav-link" id="aboutLink">About</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  
   <main id="app">
-    <!-- Href is not obligatory. it's only to have an underline blue looking like button-->
-    <a href="#" data-route="/" class="nav-link" id="homeLink">Home</a>
-    <a href="#" data-route="/about" class="nav-link" id="aboutLink">About</a>
     <div id="contentContainer"></div>
   </main>
+
   <script src="./node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
   <script type="module" src="./js/router.js"></script>
 </body>
