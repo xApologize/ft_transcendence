@@ -2,6 +2,8 @@ from django.test import TestCase
 from friend_list.models import FriendList
 from user_profile.models import User
 from django.urls import reverse
+from django.db.utils import IntegrityError
+
 
 # Create your tests here.
 class UserTestCase(TestCase):
@@ -26,13 +28,29 @@ class UserTestCase(TestCase):
             status="ACCEPTED"
         )
 
-
     def test_block_list(self):
         '''Normal check for blocked list'''
-        self.assertEqual(FriendList.objects.get(friend1__nickname="BozoCat").friend1.nickname, "BozoCat")
-        self.assertEqual(FriendList.objects.get(friend2__nickname="BozoDog").friend2.nickname, "BozoDog")
-        self.assertEqual(FriendList.objects.get(friend2__nickname="BozoDog").status, "ACCEPTED")
+        self.assertEqual(
+            FriendList.objects.get(friend1__nickname="BozoCat").friend1.nickname, "BozoCat")
+        self.assertEqual(
+            FriendList.objects.get(friend2__nickname="BozoDog").friend2.nickname, "BozoDog")
+        self.assertEqual(
+            FriendList.objects.get(friend2__nickname="BozoDog").status, "ACCEPTED")
 
+    def test_self_friend(self):
+        '''Check if constraints doesn't let you friend yourself'''
+        user = FriendList.objects.get(friend1__nickname="BozoCat").friend1
+        with self.assertRaises(IntegrityError):
+            FriendList.objects.create(friend1=user, friend2=user, status="ACCEPTED")
+
+    def test_integretity_friend_list(self):
+        '''Check for integretity in the friend list'''
+        with self.assertRaises(IntegrityError):
+            FriendList.objects.create(
+                friend1=FriendList.objects.get(friend1__nickname="BozoCat").friend1,
+                friend2=FriendList.objects.get(friend2__nickname="BozoDog").friend2,
+                status="ACCEPTED"
+            )
 
     def test_get_friend(self):
         """
