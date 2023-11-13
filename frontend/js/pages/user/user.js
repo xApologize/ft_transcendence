@@ -109,18 +109,12 @@ function displayErrorMessage(errorMessage) {
   const error = document.getElementById('errorMessage');
   error.classList.remove('d-none');
   error.textContent = errorMessage;
-  setTimeout(function() {
-    error.classList.add('d-none');
-  }, 10000);
 }
 
 function displaySuccessMessage(responseText, SuccessElement) {
   const successMessage = document.getElementById(SuccessElement);
   successMessage.textContent = responseText
   successMessage.classList.remove('d-none');
-  setTimeout(function() {
-      successMessage.classList.add('d-none');
-  }, 10000);
 }
 
 
