@@ -1,6 +1,7 @@
 from django.db import models
 from user_profile.models import User
 
+
 # Create your models here.
 class TournamentHistory(models.Model):
     winner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="winnerTournament")
