@@ -1,8 +1,8 @@
 import { loadHTMLContent } from '../../api/fetchData.js';
 
-export async function showHome() {
+export async function showLogin() {
   try {
-    await loadHTMLContent('./js/pages/home/home.html')
+    await loadHTMLContent('./js/pages/login/login.html')
   } catch (error) {
     console.error('Error fetching home.html:', error);
   }

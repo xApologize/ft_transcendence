@@ -2,6 +2,7 @@ import { showHome } from './pages/home/home.js';
 import { showUser } from './pages/user/user.js';
 import { showAbout } from './pages/about/about.js';
 import { show404 } from './pages/404/404.js';
+import { showLogin } from './pages/login/login.js';
 
 
 function showPage(pageFunction) {
@@ -19,6 +20,7 @@ function handleRoute() {
     '/': showHome,
     '/about': showAbout,
     '/user': showUser,
+    '/login': showLogin,
   };
   const pageFunction = routes[path] || show404;
   showPage(pageFunction);
