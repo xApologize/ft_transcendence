@@ -19,9 +19,8 @@ function handleRoute() {
     '/': showHome,
     '/about': showAbout,
     '/user': showUser,
-    '/404': show404,
   };
-  const pageFunction = routes[path] || routes['/404'];
+  const pageFunction = routes[path] || show404;
   showPage(pageFunction);
 }
 

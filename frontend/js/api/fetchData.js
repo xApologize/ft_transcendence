@@ -32,7 +32,7 @@ const performFetch = async (url, method, data = null) => {
 
 const buildApiUrl = (path, parameter = null) => {
     // Known issue: fetching port 52021 does not work when not at school.
-    const baseUrl = "https://localhost:52021/api/";
+    const baseUrl = "/api/";
     const queryString = parameter ? `?${parameter.toString()}` : '';
     return `${baseUrl}${path}${queryString}`;
 };
