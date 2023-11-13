@@ -1,48 +1,38 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>My Web App</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transcendance</title>
+  <link href="./css/style.css" rel="stylesheet">
   <link href="./node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-  <div class="container mt-4">
-    <!-- Create New User Section -->
-    <div class="form-group">
-      <input type="text" class="form-control" id="userInput" placeholder="Enter nickname">
-      <input type="text" class="form-control" id="emailInput" placeholder="Enter email">
-      <input type="text" class="form-control" id="avatarInput" placeholder="Enter avatar URL">
-      <button class="btn btn-primary" id="createUser">CREATE NEW USER</button>
+  <nav id="navbar" class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand nav-link" href="#" data-route="/">Your App Name</a>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a href="#" data-route="/" class="nav-link" id="homeLink">Home</a>
+        </li>
+        <li class="nav-item">
+          <a href="#" data-route="/user" class="nav-link" id="userLink">User</a>
+        </li>
+        <li class="nav-item">
+          <a href="#" data-route="/about" class="nav-link" id="aboutLink">About</a>
+        </li>
+        <li class="nav-item">
+          <a href="#" data-route="/login" class="nav-link" id="loginLink">Login</a>
+        </li>
+      </ul>
     </div>
-    <hr>
+  </nav>
+  
+  <main id="app">
+    <div id="contentContainer"></div>
+  </main>
 
-    <!-- Get Specific User Section -->
-    <div class="form-group">
-      <input type="text" class="form-control" id="nicknameInput" placeholder="Enter nickname">
-      <button class="btn btn-primary" id="getUser">GET SPECIFIC USER</button>
-    </div>
-    <hr>
-
-    <!-- Get All Users Section -->
-    <div class="form-group">
-      <button class="btn btn-primary" id="getUsers">GET ALL USERS</button>
-    </div>
-    <hr>
-
-    <!-- Reset Button -->
-    <button class="btn btn-secondary" id="reset">Reset</button>
-
-    <!-- User Data Display -->
-    <div id="userData" class="user-list"></div>
-    <p id="errorMessage"></p>
-  </div>
-  <script src="user.js"></script>
   <script src="./node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+  <script type="module" src="./js/router.js"></script>
 </body>
 </html>
-
-<style>
-  img.img-thumbnail {
-    max-width: 200px;
-    max-height: 200px;
-  }
-</style>

@@ -1,0 +1,48 @@
+<div class="container mt-4">
+    <!-- Create New User Section -->
+    <div class="form-group">
+      <input type="text" class="form-control" id="userInput" placeholder="Enter nickname">
+      <input type="text" class="form-control" id="emailInput" placeholder="Enter email">
+      <input type="text" class="form-control" id="avatarInput" placeholder="Enter avatar URL">
+      <button class="btn btn-primary" id="createUser">CREATE NEW USER</button>
+      <div id="successCreate" class="text-success d-none"></div>
+    </div>
+    <hr>
+
+    <!-- Get Specific User Section -->
+    <div class="form-group">
+      <input type="text" class="form-control" id="nicknameInput" placeholder="Enter nickname">
+      <button class="btn btn-primary" id="getUser">GET SPECIFIC USER</button>
+      <div id="successUser" class="text-success d-none"></div>
+    </div>
+    <hr>
+
+    <!-- Delete User Section -->
+    <div class="form-group">
+      <input type="text" class="form-control" id="deleteInput" placeholder="Enter nickname">
+      <button class="btn btn-danger" id="deleteUser">DELETE USER</button>
+      <div id="deleteUserMsg" class="alert alert-warning d-none"></div>
+    </div>
+    <hr>
+
+    <!-- Reset Button -->
+    <button class="btn btn-secondary" id="reset">Reset</button>
+
+    <!-- User Data Display -->
+    <p id="errorMessage" class="alert alert-danger d-none"></p>
+    <div id="userData" class="user-list"></div>
+
+    <!-- User Template (Hidden by Default) -->
+    <div class="user-template d-none">
+      <div class="card mb-3">
+        <img src="" class="card-img-top user-avatar img-thumbnail" alt="User Avatar">
+        <div class="card-body">
+          <h5 class="card-title user-nickname"></h5>
+          <p class="card-text user-email"></p>
+          <p class="card-text user-status"></p>
+          <p class="card-text user-admin"></p>
+        </div>
+      </div>
+    </div>
+    <!-- TEMPLATE -->
+</div>

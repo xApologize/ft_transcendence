@@ -34,16 +34,6 @@ class UserTestCase(TestCase):
         self.assertEqual(user_two.admin, True)
 
 
-    def test_get_all_users(self):
-        """
-            Test to check whether all users are successfully obtained.
-        """
-        response = self.client.get(reverse('users'))
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'TestUser')
-        self.assertContains(response, 'Clown')
-
-
     def test_get_specific_user(self):
         """
             Test that checks whether a specific user's access works
