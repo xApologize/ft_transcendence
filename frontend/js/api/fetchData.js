@@ -25,7 +25,9 @@ const performFetch = async (url, method, data = null) => {
     try {
         const response = await fetch(url, options);
         return response
-    } catch (error) {}
+    } catch (error) {
+        return "Error fetching URL: " + url
+    }
 };
 
 const buildApiUrl = (path, parameter = null) => {
@@ -53,7 +55,7 @@ export const fetchUser = async (method, parameter = null, data = null) => {
         var result = await performFetch(url, method, data);
     } catch (error) {}
     // console.log(result)
-    const userReponse = assembleUser(result);
-    return userReponse
+    // const userReponse = assembleUser(result);
+    return result
 };
 

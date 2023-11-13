@@ -1,4 +1,5 @@
 import { showHome } from './pages/home/home.js';
+import { showUser } from './pages/user/user.js';
 import { showAbout } from './pages/about/about.js';
 import { show404 } from './pages/404/404.js';
 
@@ -17,6 +18,7 @@ function handleRoute() {
   const routes = {
     '/': showHome,
     '/about': showAbout,
+    '/user': showUser,
     '/404': show404,
   };
   const pageFunction = routes[path] || routes['/404'];

@@ -27,8 +27,8 @@ class Users(View):
             for user in users
         ]
         if user_data:
-            return JsonResponse({'users': user_data})
-        return HttpResponseNotFound('User not found')
+            return JsonResponse({'users': user_data}, status=200)
+        return HttpResponseNotFound('User not found') # 404
 
 
     # Create a user
@@ -39,7 +39,8 @@ class Users(View):
             required_fields = ['nickname', 'email', 'avatar', 'status', 'admin']
             extra_fields = user_data.keys() - required_fields
             if extra_fields:
-                return JsonResponse({'error': f'Unexpected fields: {", ".join(extra_fields)}'}, status=400)
+                error_message = f'Unexpected fields: {", ".join(extra_fields)}'
+                return HttpResponseBadRequest(error_message) # 400
             try:
                 if all(field in user_data for field in required_fields):
                     user = User.objects.create(
@@ -51,34 +52,34 @@ class Users(View):
                     )
                     user.save()
                 else:
-                    return JsonResponse({'error': 'Missing one or more required fields in JSON'}, status=400)
+                    return HttpResponseBadRequest('Missing one or more required fields in JSON') # 400
             except IntegrityError:
-                    return JsonResponse({'error': f'User {user_data["nickname"]} already exists'}, status=400)
+                return HttpResponseBadRequest(f'User {user_data["nickname"]} already exists') # 400    
         except json.JSONDecodeError:
-            return JsonResponse({'error': 'Invalid JSON data in the request body'}, status=400)
-        return JsonResponse({'message': f'User {user_data["nickname"]} created successfully'}, status=201)
+            return HttpResponseBadRequest('Invalid JSON data in the request body') # 400
+        return HttpResponse(f'User {user_data["nickname"]} created successfully', status=201)
 
 
     # Delete a specific users
     def delete(self, request: HttpRequest):
         nickname = request.GET.get('nickname')
         if not nickname:
-            return HttpResponseBadRequest('No nickname provided for deletion.')
+            return HttpResponseBadRequest('No nickname provided for deletion.') # 400
         user = User.objects.filter(nickname=nickname).first()
         if not user:
-            return HttpResponseNotFound(f'No user found with the nickname: {nickname}')
+            return HttpResponseNotFound(f'No user found with the nickname: {nickname}') # 404
         user.delete()
-        return HttpResponse(f'User with nickname {nickname} deleted successfully.', status=204)
+        return HttpResponse(status=204)
 
 
     # update specific user
     def patch(self, request: HttpRequest):
         nickname = request.GET.get('nickname')
         if not nickname:
-            return HttpResponseBadRequest('No nickname provided for update.')
+            return HttpResponseBadRequest('No nickname provided for update.') # 400
         user = User.objects.filter(nickname=nickname).first()
         if not user:
-            return HttpResponseNotFound(f'No user found with the nickname: {nickname}')
+            return HttpResponseNotFound(f'No user found with the nickname: {nickname}') # 404
         try:
             user_data = json.loads(request.body)
             for field in ['nickname', 'email', 'avatar', 'status', 'admin']:
@@ -86,7 +87,7 @@ class Users(View):
                     setattr(user, field, user_data[field])
             user.save()
         except json.JSONDecodeError:
-            return HttpResponseBadRequest('Invalid JSON data in the request body.')
+            return HttpResponseBadRequest('Invalid JSON data in the request body.') # 400
         except IntegrityError:
-            return HttpResponseBadRequest(f'Nickname {user_data["nickname"]} is already in use.')
-        return HttpResponse(f'User with nickname {nickname} updated successfully.')
+            return HttpResponseBadRequest(f'Nickname {user_data["nickname"]} is already in use.') # 400
+        return HttpResponse(f'User with nickname {nickname} updated successfully.', status=200)
