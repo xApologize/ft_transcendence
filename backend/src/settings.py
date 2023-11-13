@@ -26,9 +26,11 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(os.environ.get("DEBUG", default=0))
 
-# 'DJANGO_ALLOWED_HOSTS' should be a single string of hosts with a space between each.
+# 'DJANGO_ALLOWED_HOSTS' should be a single string of hosts with a
+#  space between each.
 # For example: 'DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]'
-ALLOWED_HOSTS = "localhost backend 127.0.0.1 [::1]".split(" ") # FIX LATER, BOZO BANDAID FIX FOR NOW
+ALLOWED_HOSTS = "localhost backend 127.0.0.1 [::1]".split(" ")  # FIX LATER, 
+# BOZO BANDAID FIX FOR NOW
 
 
 # Application definition
@@ -40,7 +42,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "user",
+    "user_profile",
+    "friend_list",
+    "block_list",
+    "match_history",
+    "tournament_history",
 ]
 
 MIDDLEWARE = [

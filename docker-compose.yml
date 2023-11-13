@@ -11,6 +11,8 @@ services:
       - /app/node_modules
     ports:
       - '3001:3001'
+    depends_on:
+      - backend
   
   backend:
     container_name: backend
@@ -49,4 +51,4 @@ services:
       - "8080:80"
       - "443:443"
     depends_on:
-      - postgres
+      - frontend

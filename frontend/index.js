@@ -1,64 +1,48 @@
-var http = require('http'),
-    fs = require('fs');
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
 
-http.createServer(function (req, res) {
+const port = 3001;
 
-    if(req.url.indexOf('.html') != -1){ //req.url has the pathname, check if it conatins '.html'
+const server = http.createServer((req, res) => {
+    console.log(req.url);
 
-      fs.readFile(__dirname + req.url, function (err, data) {
-        if (err) console.log(err);
-        res.writeHead(200, {'Content-Type': 'text/html'});
-        res.write(data);
-        res.end();
-      });
+    // if (!req.url.includes('.')) {
+    //     req.url = '/index.html';
+    // }
 
+    // If the requested URL doesn't have a known file extension, redirect to index.html
+    if (!/\.(html|js|css|jpg|png|map)$/.test(req.url)) {
+        req.url = '/index.html';
     }
 
-    if(req.url.indexOf('.js') != -1){ //req.url has the pathname, check if it conatins '.js'
+    const filePath = path.join(__dirname, req.url);
 
-      fs.readFile(__dirname + req.url, function (err, data) {
-        if (err) console.log(err);
-        res.writeHead(200, {'Content-Type': 'text/javascript'});
-        res.write(data);
-        res.end();
-      });
+    // Determine the content type based on the file extension
+    const extname = String(path.extname(filePath)).toLowerCase();
+    const contentType = {
+        '.html': 'text/html',
+        '.js': 'text/javascript', // Set the content type for JavaScript files
+        '.css': 'text/css',
+        '.jpg': 'image/jpg',
+        '.png': 'image/png',
+    };
 
-    }
+    const type = contentType[extname] || 'application/octet-stream';
 
-    if(req.url.indexOf('.css') != -1){ //req.url has the pathname, check if it conatins '.css'
+    fs.readFile(filePath, (err, data) => {
+        if (err) {
+            console.log("Couldn't open file");
+            res.writeHead(404, { 'Content-Type': 'text/html' });
+            res.end('File not found');
+            console.log(__dirname);
+        } else {
+            res.writeHead(200, { 'Content-Type': type }); // Set the appropriate content type
+            res.end(data);
+        }
+    });
+});
 
-      fs.readFile(__dirname + req.url, function (err, data) {
-        if (err) console.log(err);
-        res.writeHead(200, {'Content-Type': 'text/css'});
-        res.write(data);
-        res.end();
-      });
-
-    }
-	
-}).listen(3001);
-
-// }).listen(3001, '127.0.0.1');
-// console.log('Server running at http://127.0.0.1:3001/');
-
-// const http = require('http');
-// const fs = require('fs');
-// const path = require('path');
-
-// const port = 3001;
-
-// const server = http.createServer((req, res) => {
-// 	const filePath = path.join(__dirname, 'index.html');
-// 	fs.readFile(filePath, (err, data) => {
-// 		if (err)
-// 			console.log("Couldn't open HTML file");
-// 		else {
-// 			res.writeHead(200, { 'Content-Type': 'text/html' });
-// 			res.end(data);
-// 		}
-// 	});
-// });
-
-// server.listen(port, () => {
-// 	console.log(`\nHosted on: http://localhost:${port}/`); // Link should be clickable in the terminal this way
-// });
+server.listen(port, () => {
+    console.log(`\nHosted on: http://localhost:${port}/`);
+});

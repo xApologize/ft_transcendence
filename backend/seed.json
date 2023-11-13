@@ -1,0 +1,85 @@
+[
+    {
+        "model": "user_profile.User",
+        "pk": 1,
+        "fields": {
+            "nickname": "Dave",
+            "email": "bozo@gmail.com",
+            "avatar": "https://i.imgur.com/bZ6nXdv.png",
+            "status": "OFF",
+            "admin": false
+        }
+    },
+    {
+        "model": "user_profile.User",
+        "pk": 2,
+        "fields": {
+            "nickname": "80%",
+            "email": "abc@gmail.com",
+            "avatar": "https://i.imgur.com/bZ6nXdv.png",
+            "status": "ONL",
+            "admin": false
+        }
+    },
+    {
+        "model": "user_profile.User",
+        "pk": 3,
+        "fields": {
+            "nickname": "81%",
+            "email": "def@gmail.com",
+            "avatar": "https://i.imgur.com/bZ6nXdv.png",
+            "status": "OFF",
+            "admin": true
+        }
+    },
+    {
+        "model": "block_list.BlockList",
+        "pk": 1,
+        "fields": {
+            "blocker": 1,
+            "blocked_user": 2
+        }
+    },
+    {
+        "model": "friend_list.FriendList",
+        "pk": 1,
+        "fields":{
+            "friend1": 1,
+            "friend2": 2,
+            "status": "ACCEPTED"
+        }
+    },
+    {
+        "model": "friend_list.FriendList",
+        "pk": 2,
+        "fields":{
+            "friend1": 3,
+            "friend2": 1,
+            "status": "PENDING"
+        }
+    },
+    {
+        "model": "match_history.MatchHistory",
+        "pk": 1,
+        "fields":{
+            "winner_score": 50,
+            "loser_score": 69,
+            "date_of_match": "12:00:00.000000",
+            "winner": 1,
+            "loser": 2
+        }
+    },
+    {
+        "model": "tournament_history.TournamentHistory",
+        "pk": 1,
+        "fields":{
+            "winner": 1,
+            "loser": 2,
+            "winner_score": 69,
+            "loser_score": 420,
+            "tournament_ID": 1,
+            "match_position": 2,
+            "time_of_match": "12:00:00.000000"
+        }
+    }
+]
