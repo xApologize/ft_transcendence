@@ -16,14 +16,11 @@ export const loadHTMLComponent = async (filePath) => {
     try {
         const response = await fetch(filePath);
         const html = await response.text();
-        
         const tempContainer = document.createElement('div');
         tempContainer.innerHTML = html;
         return tempContainer.children.length === 1
             ? tempContainer.children[0]
             : tempContainer.children;
-        return html
-        // document.getElementById(componentID).innerHTML = html
     } catch (error) {
         console.error(`Error fetching component: ${filePath} -> `, error);
     }
