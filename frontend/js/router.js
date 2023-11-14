@@ -1,5 +1,6 @@
 import { showHome } from './pages/home/home.js';
 import { showUser } from './pages/user/user.js';
+import { showGame } from './pages/game/game.js';
 import { showAbout } from './pages/about/about.js';
 import { show404 } from './pages/404/404.js';
 import { showLogin } from './pages/login/login.js';
@@ -20,6 +21,7 @@ function handleRoute() {
   const routes = {
     '/': showHome,
     '/about': showAbout,
+    '/game': showGame,
     '/user': showUser,
     '/login': showLogin,
   };
