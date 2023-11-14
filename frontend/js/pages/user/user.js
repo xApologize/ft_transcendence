@@ -1,10 +1,10 @@
 import { fetchUser } from '../../api/fetchData.js';
-import { loadHTMLContent } from '../../api/fetchData.js';
+import { loadHTMLPage } from '../../api/fetchData.js';
 import { assembleUser } from '../../api/assembler.js';
 
 export async function showUser() {
   try {
-    await loadHTMLContent('./js/pages/user/user.html')
+    await loadHTMLPage('./js/pages/user/user.html')
 
     document.getElementById('createUser').addEventListener('click', () => {
       createUser();
