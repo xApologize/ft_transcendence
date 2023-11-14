@@ -12,11 +12,11 @@ export const loadHTMLPage = async (filePath) => {
 }
 
 // Load frontend components
-export const loadHTMLComponent = async (filePath) => {
+export const loadHTMLComponent = async (componentID, filePath) => {
     try {
         const response = await fetch(filePath);
         const html = await response.text();
-        return html;
+        document.getElementById(componentID).innerHTML = html
     } catch (error) {
         console.error(`Error fetching component: ${filePath} -> `, error);
     }
