@@ -2,6 +2,7 @@ class GameModal {
     constructor(modalId) {
       this.modal = new bootstrap.Modal(document.getElementById(modalId));
       this.fullHeader = document.getElementById('full-header');
+      this.closeButton = document.getElementById('closeButtonModal')
     }
   
     show() {
@@ -16,11 +17,12 @@ class GameModal {
       this.modal._config.backdrop = backdrop;
     }
   
-    removeCloseButton() {
-      const closeBtn = this.modal._element.querySelector('.close');
-      if (closeBtn) {
-        document.getElementById('full-header').removeChild(closeBtn);
-      }
+    hideCloseButton() {
+      this.closeButton.style.display = 'none'
+    }
+
+    showCloseButton() {
+      this.closeButton.style.display = ''
     }
 
     hideTitle() {

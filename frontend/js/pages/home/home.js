@@ -19,11 +19,12 @@ async function startLookingForPlayers() {
   gameModal.setBackdrop('static');
 
   gameModal.showTitle()
+  gameModal.showCloseButton()
   updateModalContent('Looking for other players...', 'Searching...');
   gameModal.show();
 
   setTimeout(() => {
-    gameModal.removeCloseButton();
+    gameModal.hideCloseButton();
     updateModalContent('Game is starting!', 'Match Found');
   }, 10000);
   
