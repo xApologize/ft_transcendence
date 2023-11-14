@@ -3,7 +3,7 @@ import { showUser } from './pages/user/user.js';
 import { showAbout } from './pages/about/about.js';
 import { show404 } from './pages/404/404.js';
 import { showLogin } from './pages/login/login.js';
-
+import { headerComponent } from './components/header/header.js'
 
 function showPage(pageFunction) {
   pageFunction();
@@ -26,11 +26,17 @@ function handleRoute() {
   showPage(pageFunction);
 }
 
+async function loadPage(navContainer) {
+  headerComponent(navContainer)
+  handleRoute()
+}
+
 // Load the page at first launch.
 // will listen at everything that has the class "nav-link" in <nav> in index.html
 document.addEventListener('DOMContentLoaded', () => {
-  handleRoute()
   const navContainer = document.getElementById('navbar');
+  loadPage(navContainer.id)
+
   navContainer.addEventListener('click', (event) => {
     const target = event.target;
     if (target.classList.contains('nav-link')) {
