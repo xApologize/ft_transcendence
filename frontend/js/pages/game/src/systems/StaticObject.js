@@ -1,7 +1,9 @@
+import { Object3D } from "three";
 import { World } from "../World.js";
 
-class StaticObject {
+class StaticObject extends Object3D {
 	constructor( ) {
+		super();
 		this.start.apply( this, arguments );
 		World.add( this.object );
 	}

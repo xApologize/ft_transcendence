@@ -1,27 +1,38 @@
-import { MonoBehaviour } from '../systems/MonoBehaviour.js';
+import { DynamicObject } from '../systems/DynamicObject.js';
 import {
 	BoxGeometry,
 	Mesh,
 	MeshBasicMaterial,
 	MeshStandardMaterial,
-	Vector2
-} from '../../../node_modules/three/build/three.module.js';
+	Vector3
+} from 'three';
 
-class Player extends MonoBehaviour {
-	constructor( position, size ) {
-		super();
-		this.position = position;
-		this.size = size;
-	}
+let g_movement = 0;
+let g_speed = 5;
 
-	get mesh() {
-		const g_box = new BoxGeometry( size );
+class Player extends DynamicObject {
+	start( position, size ) {
+		const g_box = new BoxGeometry( 0.3, 2.4, 2 );
 		const m_white = new MeshStandardMaterial({ color: 'white' });
-		return paddle = new Mesh(g_box, m_white);
+		this.object = new Mesh( g_box, m_white );
+		this.object.position.copy( position );
+
+		document.onkeydown = function(e) {
+			if ( e.key == "w" )
+				g_movement = 1;
+			if ( e.key == "s" )
+				g_movement = -1;
+		}
+		document.onkeyup = function(e) {
+			if ( e.key == "w" && g_movement > 0 )
+				g_movement = 0;
+			if ( e.key == "s" && g_movement < 0 )
+				g_movement = 0;
+		}
 	}
 
-	update() {
-
+	update( dt ) {
+		this.object.position.y += g_movement * dt * g_speed;
 	}
 }
 

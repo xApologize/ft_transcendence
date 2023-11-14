@@ -12,7 +12,7 @@ class DynamicObject extends StaticObject {
 	}
 	
 	delete() {
-		this.delete.super();
+		// super.delete();
 		Loop.removeUpdatable( this );
 	}
 }

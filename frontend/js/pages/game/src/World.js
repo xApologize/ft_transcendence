@@ -8,7 +8,8 @@ import { Loop } from './systems/Loop.js';
 
 import { Terrain } from './components/Terrain.js';
 import { Ball } from './components/Ball.js';
-import { Vector2 } from 'three';
+import { Player } from './components/Player.js';
+import { Vector2, Vector3 } from 'three';
 
 let scene;
 let camera;
@@ -24,6 +25,9 @@ class World {
 		container.append(renderer.domElement);
 
 		const terrain = new Terrain(new Vector2(16, 10), 0.1, 0.2);
+		const p1 = new Player( new Vector3( -7.5, 0, 2 ) );
+		const p2 = new Player( new Vector3( 7.5, 0, 2 ) );
+		terrain.object.add( p1.object, p2.object );
 		const ball = new Ball( terrain );
 		const { ambientLight, mainLight } = createLights();
 
