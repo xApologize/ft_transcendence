@@ -5,6 +5,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views import View
 import json
+import re
 
 
 @method_decorator(csrf_exempt, name='dispatch') #- to apply to every function in the class.
@@ -12,10 +13,9 @@ class Users(View):
     # Get All Users or specific users
     def get(self, request: HttpRequest):
         nicknames = request.GET.getlist('nickname')
-        if nicknames:
-            users = User.objects.filter(nickname__in=nicknames)
-        else:
-            users = User.objects.all()
+        if not nicknames:
+            return HttpResponseBadRequest('No user given.')
+        users = User.objects.filter(nickname__in=nicknames)
         user_data = [
             {
                 'nickname': user.nickname,
@@ -42,17 +42,22 @@ class Users(View):
                 error_message = f'Unexpected fields: {", ".join(extra_fields)}'
                 return HttpResponseBadRequest(error_message) # 400
             try:
-                if all(field in user_data for field in required_fields):
-                    user = User.objects.create(
-                        nickname=user_data['nickname'],
-                        email=user_data['email'],
-                        avatar=user_data['avatar'],
-                        status=user_data['status'],
-                        admin=user_data['admin']
-                    )
-                    user.save()
-                else:
-                    return HttpResponseBadRequest('Missing one or more required fields in JSON') # 400
+                # not empty
+                if any(user_data.get(field, '') == '' for field in ['nickname', 'email', 'avatar']):
+                    return HttpResponseBadRequest('Missing one or more required fields') # 400
+                # does not contain space
+                if any(' ' in user_data.get(field, '') for field in ['nickname', 'email', 'avatar']):
+                    return HttpResponseBadRequest('Field contain space') 
+                print(f"'{user_data['nickname']}'")
+                print(f"'{user_data['email']}'")
+                user = User.objects.create(
+                    nickname=user_data['nickname'],
+                    email=user_data['email'],
+                    avatar=user_data['avatar'],
+                    status=user_data['status'],
+                    admin=user_data['admin']
+                )
+                user.save()
             except IntegrityError:
                 return HttpResponseBadRequest(f'User {user_data["nickname"]} already exists') # 400    
         except json.JSONDecodeError:
@@ -91,3 +96,10 @@ class Users(View):
         except IntegrityError:
             return HttpResponseBadRequest(f'Nickname {user_data["nickname"]} is already in use.') # 400
         return HttpResponse(f'User with nickname {nickname} updated successfully.', status=200)
+
+                # if all(
+                #     field in user_data and
+                #     user_data[field] and
+                #     not any(c.isspace() for c in user_data[field])
+                #     for field in required_fields
+                # ):

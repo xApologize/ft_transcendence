@@ -1,10 +1,9 @@
-
 import { World } from './src/World.js';
-import { loadHTMLContent } from '../../api/fetchData.js';
+import { loadHTMLPage } from '../../api/fetchData.js';
 
 export async function showGame() {
   try {
-    await loadHTMLContent('./js/pages/game/game.html')
+    await loadHTMLPage('./js/pages/game/game.html')
 
 	// Get a reference to the container element
 	const container = document.querySelector('#scene-container');

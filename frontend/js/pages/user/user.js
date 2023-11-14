@@ -1,10 +1,10 @@
 import { fetchUser } from '../../api/fetchData.js';
-import { loadHTMLContent } from '../../api/fetchData.js';
+import { loadHTMLPage } from '../../api/fetchData.js';
 import { assembleUser } from '../../api/assembler.js';
 
 export async function showUser() {
   try {
-    await loadHTMLContent('./js/pages/user/user.html')
+    await loadHTMLPage('./js/pages/user/user.html')
 
     document.getElementById('createUser').addEventListener('click', () => {
       createUser();
@@ -16,10 +16,6 @@ export async function showUser() {
 
     document.getElementById('deleteUser').addEventListener('click', async () => {
       deleteUser()
-    });
-
-    document.getElementById('getUsers').addEventListener('click', async () => {
-      getAllUsers()
     });
   
     document.getElementById('reset').addEventListener('click', () => {
@@ -49,6 +45,7 @@ async function createUser() {
     admin: false, // Set the default admin value here
   };
 
+  console.log(`'${userData['nickname']}'`)
   const users = await fetchUser('POST', null, userData);
   const responseText = await users.text();
   if (users.ok) {
@@ -97,20 +94,6 @@ async function deleteUser() {
 
 ///////
 
-async function getAllUsers() {
-  const usersResponse = await fetchUser('GET');
-  if (usersResponse.ok) {
-    const users = await assembleUser(usersResponse);
-    displaySuccessMessage('Users Found!', 'successUsers')
-    displayUsers(users);
-  } else {
-    responseText = await usersResponse.text()
-    displayErrorMessage(responseText)
-  }
-}
-
-///////
-
 function resetPage() {
   const error = document.getElementById('errorMessage');
   error.classList.add('d-none')
@@ -126,18 +109,12 @@ function displayErrorMessage(errorMessage) {
   const error = document.getElementById('errorMessage');
   error.classList.remove('d-none');
   error.textContent = errorMessage;
-  setTimeout(function() {
-    error.classList.add('d-none');
-  }, 5000);
 }
 
 function displaySuccessMessage(responseText, SuccessElement) {
   const successMessage = document.getElementById(SuccessElement);
   successMessage.textContent = responseText
   successMessage.classList.remove('d-none');
-  setTimeout(function() {
-      successMessage.classList.add('d-none');
-  }, 3000);
 }
 
 

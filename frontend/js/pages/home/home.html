@@ -1,34 +1,24 @@
-<div class="container">
-  <div class="row">
-      <div class="col-md-12">
-          <h1>Welcome to Your Website</h1>
-          <p>This is a more complex home page without a navbar. You can add various elements to enhance your content.</p>
-
-          <div class="jumbotron">
-              <h2>About Us</h2>
-              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tincidunt odio at quam consectetur, ut
-                  gravida
-                  eros
-                  scelerisque. Integer sit amet leo euismod, ultrices elit in, finibus ex.</p>
-          </div>
-
-          <div class="row">
-              <div class="col-md-6">
-                  <h3>Services</h3>
-                  <ul>
-                      <li>Web Design</li>
-                      <li>Graphic Design</li>
-                      <li>SEO Optimization</li>
-                  </ul>
-              </div>
-              <div class="col-md-6">
-                  <h3>Contact Us</h3>
-                  <p>Email: info@example.com</p>
-                  <p>Phone: +1 (123) 456-7890</p>
-              </div>
-          </div>
-
-          <p>This is just a simple example. Feel free to customize and add more content as needed.</p>
-      </div>
+  <div class="container d-flex align-items-center justify-content-center" style="height: 70vh;">
+    <!-- Button trigger modal -->
+    <button id="button_test" type="button" class="btn btn-primary">
+      Start Looking for Players
+    </button>
   </div>
-</div>
+
+  <!-- Modal for different stages -->
+  <div class="modal fade" id="gameModal" tabindex="-1" role="dialog" aria-labelledby="gameModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header" id="full-header">
+          <h5 id="gameModalTitle" class="modal-title mx-auto">Searching...</h5>
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>       
+          <div class="modal-body" id="gameModalBody">
+           <!-- Content will be dynamically changed here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

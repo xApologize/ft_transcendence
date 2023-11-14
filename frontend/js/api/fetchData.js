@@ -1,13 +1,28 @@
 import { assembleUser } from "./assembler.js";
 
-// Load frontend.
-export const loadHTMLContent = async (filePath) => {
+// Load frontend page.
+export const loadHTMLPage = async (filePath) => {
     try {
         const response = await fetch(filePath);
         const html = await response.text();
         document.getElementById('contentContainer').innerHTML = html;
     } catch (error) {
-        console.error(`Error fetching ${filePath}:`, error);
+        console.error(`Error fetching page: ${filePath} -> `, error);
+    }
+}
+
+// Load frontend components
+export const loadHTMLComponent = async (filePath) => {
+    try {
+        const response = await fetch(filePath);
+        const html = await response.text();
+        const tempContainer = document.createElement('div');
+        tempContainer.innerHTML = html;
+        return tempContainer.children.length === 1
+            ? tempContainer.children[0]
+            : tempContainer.children;
+    } catch (error) {
+        console.error(`Error fetching component: ${filePath} -> `, error);
     }
 }
 
@@ -26,13 +41,13 @@ const performFetch = async (url, method, data = null) => {
         const response = await fetch(url, options);
         return response
     } catch (error) {
-        return "Error fetching URL: " + url
+        return "Error fetching: " + url
     }
 };
 
 const buildApiUrl = (path, parameter = null) => {
     // Known issue: fetching port 52021 does not work when not at school.
-    const baseUrl = "https://localhost:52021/api/";
+    const baseUrl = "/api/";
     const queryString = parameter ? `?${parameter.toString()}` : '';
     return `${baseUrl}${path}${queryString}`;
 };
@@ -53,9 +68,9 @@ export const fetchUser = async (method, parameter = null, data = null) => {
     const url = buildApiUrl(path, params);
     try {
         var result = await performFetch(url, method, data);
-    } catch (error) {}
-    // console.log(result)
-    // const userReponse = assembleUser(result);
-    return result
+    } catch (error) {
+        console.log("Error: " + error)
+    }
+     return result
 };
 
