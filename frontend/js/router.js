@@ -32,6 +32,7 @@ async function loadPage() {
   const body = document.getElementById('content');
   const header = await headerComponent();
   const template = await templateComponent()
+  // const footer = await footerComponent()
 
   body.append(header)
   body.append(template)
