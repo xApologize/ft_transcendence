@@ -27,7 +27,7 @@ function handleRoute() {
   showPage(pageFunction);
 }
 
-// !! Do not change the order in which it's loaded !!
+// !! Do not change the order in which it's append !!
 async function loadPage() {
   const body = document.getElementById('content');
   const header = await headerComponent();
