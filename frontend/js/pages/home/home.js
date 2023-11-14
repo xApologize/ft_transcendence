@@ -18,6 +18,7 @@ async function startLookingForPlayers() {
   const gameModal = new GameModal('gameModal');
   gameModal.setBackdrop('static');
 
+  gameModal.showTitle()
   updateModalContent('Looking for other players...', 'Searching...');
   gameModal.show();
 
@@ -32,6 +33,9 @@ async function startLookingForPlayers() {
     showGame(gameModal);
   }, 15000);
 
+  setTimeout(() => {
+    gameModal.hide()
+  }, 20000)
 }
 
 function showGame() {

@@ -26,6 +26,10 @@ class GameModal {
     hideTitle() {
       this.fullHeader.style.display = 'none';
     }
+
+    showTitle() {
+      this.fullHeader.style.display = '';
+    }
   }
 
   export default GameModal;
