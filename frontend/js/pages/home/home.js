@@ -18,26 +18,17 @@ export async function showHome() {
 
 async function testShowGame() {
   const gameModal = new GameModal('gameModal');
-  gameModal.setBackdrop('static');
-
-  var modalBody = document.getElementById('gameModalBody');
-  const game = await loadHTMLComponent('./js/pages/game/game.html')
   
-  modalBody.appendChild(game)
-  const container = document.querySelector('#scene-container');
-
-	// 1. Create an instance of the World app
+  const container = document.querySelector('#gameModalBody');
 	const world = new World(container);
 
-	// start animation loop
-	world.start();
+
   gameModal.show();
-	// document.addEventListener( 'visibilitychange', () => {
-	// 	if (document.hidden)
-	// 		world.stop();
-	// 	else
-	// 		world.start();
-	// });
+	world.start();
+  gameModal.modal._element.addEventListener('hidden.bs.modal', () => {
+    console.log('stop');
+    world.stop();
+  });
 }
 
 async function startLookingForPlayers() {

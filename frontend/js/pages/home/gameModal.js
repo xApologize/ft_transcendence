@@ -1,10 +1,16 @@
 class GameModal {
     constructor(modalId) {
-      this.modal = new bootstrap.Modal(document.getElementById(modalId));
-      this.fullHeader = document.getElementById('full-header');
-      this.closeButton = document.getElementById('closeButtonModal')
+      this.modal = new bootstrap.Modal(document.getElementById(modalId), {
+        animate: false,     // Disable modal animation
+        backdrop: 'static', // Prevent closing by clicking on the backdrop
+        keyboard: false,    // Disable closing with the escape key
+        scrollable: false,  // Prevent page scrolling when modal is open
+      });
+      this.modalID = modalId;
+      // this.fullHeader = document.getElementById('full-header');
+      // this.closeButton = document.getElementById('closeButtonModal/');
+      
     }
-  
     show() {
       this.modal.show();
     }
