@@ -29,16 +29,19 @@ class GameModal {
     }
 
     clearTimeouts() {
+      console.log('timeout break!')
       clearTimeout(this.firstTimeoutId);
       clearTimeout(this.secondTimeoutId);
     }
   
     openModal() {
+      console.log('open modal')
       this.modal.show();
       this.modal._element.addEventListener('hidden.bs.modal', this.closeModal)
     }
 
     closeModal() {
+      console.log('close Modal')
       this.updateModalContent('', '')
       this.modal.hide();
       this.modal._element.removeEventListener('hidden.bs.modal', this.closeModal);
@@ -105,13 +108,17 @@ class GameModal {
 
     launchWorld() {
       if (this.isModalShown()) {
+        console.log('launch world')
         this.world = new World(this.modalBody);
         this.world.start();
         this.modal._element.addEventListener('hidden.bs.modal', this.closeWorld);
+      } else {
+        console.log('World not launch because model not shown.')
       }
     }
 
     closeWorld() {
+      console.log('stop world')
       this.world.stop();
       this.modalToggleFullscreen(false)
       this.removeCanvas()

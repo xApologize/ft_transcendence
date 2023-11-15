@@ -32,6 +32,7 @@ export async function showHome() {
 async function testShowGame(gameModal) {
     gameModal.openModal();
     gameModal.modalToggleFullscreen(true)
+    gameModal.modal._element.classList.add('show')
 
     showGame(gameModal)
 }

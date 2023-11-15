@@ -7,6 +7,8 @@ import { showLogin } from './pages/login/login.js';
 import { headerComponent } from './components/header/header.js'
 import { templateComponent } from './components/template/template.js';
 
+var currentRoute;
+
 function showPage(pageFunction) {
   pageFunction();
 }
@@ -17,6 +19,8 @@ function navigateTo(route) {
 }
 
 function handleRoute() {
+  var pageFunction = "";
+
   const path = window.location.pathname;
   const routes = {
     '/': showHome,
@@ -25,8 +29,25 @@ function handleRoute() {
     '/user': showUser,
     '/login': showLogin,
   };
-  const pageFunction = routes[path] || show404;
+  if (routes[path]) {
+    pageFunction = routes[path]
+    currentRoute = path
+  } else {
+    pageFunction = show404
+  }
   showPage(pageFunction);
+}
+
+function handlePopState() {
+  const gameModal = document.getElementById('gameModal');
+  if (gameModal && gameModal.classList.contains('show')) {
+    console.log('here');
+    // gameModal.classList.remove('show');
+    const backdrop = document.querySelector('.modal-backdrop');
+    if (backdrop)
+      backdrop.remove()
+  }
+  handleRoute();
 }
 
 // !! Do not change the order in which it's append !!
@@ -55,5 +76,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  window.addEventListener('popstate', handleRoute);
+  window.addEventListener('popstate', handlePopState);
 });
+
