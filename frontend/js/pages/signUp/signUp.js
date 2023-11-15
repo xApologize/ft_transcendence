@@ -1,0 +1,46 @@
+import { fetchUser } from '../../api/fetchData.js';
+import { loadHTMLPage } from '../../api/fetchData.js';
+
+export async function showSignUp() {
+    try {
+        await loadHTMLPage('./js/pages/SignUp/signUp.html');
+        document
+            .getElementById('signUpButton')
+            .addEventListener('click', () => {
+                signUp();
+            });
+    } catch (error) {
+        console.error('Error fetching signUp.html:', error);
+    }
+}
+
+async function signUp() {
+    const nickname = document.getElementById('inputUsername').value;
+    const email = document.getElementById('inputEmail').value;
+    const emailConfirm = document.getElementById('inputEmailConfirm').value;
+    const password = document.getElementById('inputPassword').value;
+    const passwordConfirm = document.getElementById(
+        'inputPasswordConfirm'
+    ).value;
+    const avatar = document.getElementById('inputAvatar').value;
+    if (!nickname || !email || !emailConfirm || !password || !passwordConfirm) {
+        alert('Fill the form.');
+        return;
+    }
+    const userData = {
+        nickname,
+        email,
+        avatar,
+        status: 'ONL', // Set the default status here
+        admin: false, // Set the default admin value here
+    };
+
+    console.log(`'${userData['nickname']}'`);
+    const users = await fetchUser('POST', null, userData);
+    const responseText = await users.text();
+    if (users.ok) {
+        displaySuccessMessage(responseText, 'successCreate');
+    } else {
+        displayErrorMessage(responseText);
+    }
+}
