@@ -1,0 +1,11 @@
+.form-div {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    width: 100%;
+}
+
+form {
+    width: 80%;
+    max-width: 350px;
+}
