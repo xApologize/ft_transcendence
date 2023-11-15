@@ -1,16 +1,20 @@
-  <div class="container d-flex align-items-center justify-content-center" style="height: 70vh;">
-    <!-- Button trigger modal -->
-    <button id="button_test" type="button" class="btn btn-primary">
-      Start Looking for Players
-    </button>
-  </div>
+<div class="container d-flex flex-column align-items-center justify-content-center" style="height: 50vh;">
+  <!-- Button trigger modal -->
+  <button id="game" type="button" class="btn btn-primary mb-3">
+    Game
+  </button>
+  <!-- Button trigger modal -->
+  <button id="fake_matchmaking" type="button" class="btn btn-primary">
+    Fake Matchmaking
+  </button>
+</div>
 
   <!-- Modal for different stages -->
-  <div class="modal fade" id="gameModal" tabindex="-1" role="dialog" aria-labelledby="gameModalTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-fullscreen" role="document">
+  <div id="gameModal" class="modal" tabindex="-1" role="dialog" aria-labelledby="gameModalTitle" aria-hidden="true">
+    <div id="gameModalWindow" class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content" style="background-color: pink;">
-        <div class="modal-header" id="full-header">
-          <h5 id="gameModalTitle" class="modal-title mx-auto">Game</h5>
+        <div id="gameModalHeader" class="modal-header">
+            <h5 id="gameModalTitle" class="modal-title mx-auto">Game</h5>
             <button id="closeButtonModal" type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>

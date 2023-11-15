@@ -2,75 +2,82 @@ import { loadHTMLComponent, loadHTMLPage } from '../../api/fetchData.js';
 import { World } from '../game/src/World.js';
 import GameModal from './gameModal.js';
 
+//////////////
+// [GAME]
+// - Gérer event listener quand popup est close & page reload pour le modal ET le world.
+// - Gérer les ressources world (Faire une fonction qui permet de bien tout stop)
+// - 
+//
+//////////////
+
 export async function showHome() {
   try {
     await loadHTMLPage('./js/pages/home/home.html')
-    // document.getElementById('button_test').addEventListener('click', () => {
-    //   startLookingForPlayers()
-    // });
-    document.getElementById('button_test').addEventListener('click', () => {
-      testShowGame()
+    
+    document.getElementById('game').addEventListener('click', () => {
+      const gameModal = new GameModal('gameModal');
+      testShowGame(gameModal)
+    });
+
+    document.getElementById('fake_matchmaking').addEventListener('click', () => {
+      const gameModal = new GameModal('gameModal');
+      startLookingForPlayers(gameModal)
     });
   } catch (error) {
     console.error('Error fetching home.html:', error);
   }
 }
 
-async function testShowGame() {
-  const gameModal = new GameModal('gameModal');
-  
-  const container = document.querySelector('#gameModalBody');
-	const world = new World(container);
+// Handle when page is refresh ? Local Storage ?
+async function testShowGame(gameModal) {
+    gameModal.openModal();
+    gameModal.modalToggleFullscreen(true)
 
-
-  gameModal.show();
-	world.start();
-  gameModal.modal._element.addEventListener('hidden.bs.modal', () => {
-    console.log('stop');
-    world.stop();
-  });
+    showGame(gameModal)
 }
 
-async function startLookingForPlayers() {
-  const gameModal = new GameModal('gameModal');
-  gameModal.setBackdrop('static');
+async function startLookingForPlayers(gameModal) {
+    gameModal.openModal();
+    gameModal.modalToggleFullscreen(false)
+    gameModal.showHeader()
+    gameModal.updateModalContent('Looking for other players...', 'Searching...');
 
-  gameModal.showTitle()
-  gameModal.showCloseButton()
-  updateModalContent('Looking for other players...', 'Searching...');
-  gameModal.show();
+    const firstTimeout = setTimeout(() => {
+      if (!gameModal.isModalShown()) {
+        gameModal.clearTimeouts();
+        return ;
+      }
+      gameModal.hideCloseButton();
+      gameModal.updateModalContent('Game is starting!', 'Match Found');
+    }, 5000);
+    
+    const secondTimeout = setTimeout(() => {
+      if (!gameModal.isModalShown()) {
+        gameModal.clearTimeouts();
+        return ;
+      }
+      gameModal.updateModalContent('', 'Game')
+      gameModal.showCloseButton()
+      gameModal.modalToggleFullscreen(true)
+      showGame(gameModal)
+    }, 10000);
 
-  setTimeout(() => {
-    gameModal.hideCloseButton();
-    updateModalContent('Game is starting!', 'Match Found');
-  }, 10000);
-  
-  setTimeout(() => {
-    gameModal.hideTitle();
-    showGame(gameModal);
-  }, 15000);
-
-  setTimeout(() => {
-    gameModal.hide()
-  }, 20000)
+    gameModal.setTimeoutIds(firstTimeout, secondTimeout)
 }
 
-function showGame() {
-  var modalBody = document.getElementById('gameModalBody');
-  modalBody.innerHTML = '<div class="text-center"><img src="https://i.imgur.com/hiarmpU.png" alt="Your Image Alt Text"></div>';
+function showGame(gameModal) {
+  gameModal.setTitle('Game')
+  gameModal.launchWorld()
+  // const container = document.querySelector('#gameModalBody');
+	// const world = new World(container);
+
+	// world.start();
+  // gameModal.modal._element.addEventListener('hidden.bs.modal', () => {
+  //   console.log('stop');
+  //   world.stop();
+  //   gameModal.modalToggleFullscreen(false)
+  //   gameModal.removeCanvas()
+  // });
 }
 
-function updateModalContent(content, title) {
-  var modalBody = document.getElementById('gameModalBody');
-  var modalTitle = document.getElementById('gameModalTitle');
-
-  console.log(content)
-  if (content !== null && content !== undefined) {
-    modalBody.innerHTML = content;
-  }
-
-  if (title !== null && title !== undefined) {
-    modalTitle.innerHTML = title;
-  }
-}
 

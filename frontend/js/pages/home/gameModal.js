@@ -1,3 +1,5 @@
+import { World } from '../game/src/World.js';
+
 class GameModal {
     constructor(modalId) {
       this.modal = new bootstrap.Modal(document.getElementById(modalId), {
@@ -7,18 +9,44 @@ class GameModal {
         scrollable: false,  // Prevent page scrolling when modal is open
       });
       this.modalID = modalId;
-      // this.fullHeader = document.getElementById('full-header');
-      // this.closeButton = document.getElementById('closeButtonModal/');
+      this.modalWindow = document.getElementById('gameModalWindow')
+      this.modalHeader = document.getElementById('gameModalHeader');
+      this.modalTitle = document.getElementById('gameModalTitle');
+      this.modalBody = document.getElementById('gameModalBody')
+      this.closeButton = document.getElementById('closeButtonModal');
       
+      this.firstTimeoutID = -1;
+      this.secondTimeoutID = -1;
+
+      this.world = null;
+      this.closeWorld = this.closeWorld.bind(this);
+      this.closeModal = this.closeModal.bind(this)
     }
-    show() {
+
+    setTimeoutIds(firstTimeoutId, secondTimeoutId) {
+      this.firstTimeoutId = firstTimeoutId;
+      this.secondTimeoutId = secondTimeoutId;
+    }
+
+    clearTimeouts() {
+      console.log('timeout break!')
+      clearTimeout(this.firstTimeoutId);
+      clearTimeout(this.secondTimeoutId);
+    }
+  
+    openModal() {
+      console.log('open modal')
       this.modal.show();
+      this.modal._element.addEventListener('hidden.bs.modal', this.closeModal)
     }
-  
-    hide() {
+
+    closeModal() {
+      console.log('close Modal')
+      this.updateModalContent('', '')
       this.modal.hide();
+      this.modal._element.removeEventListener('hidden.bs.modal', this.closeModal);
     }
-  
+
     setBackdrop(backdrop) {
       this.modal._config.backdrop = backdrop;
     }
@@ -31,12 +59,73 @@ class GameModal {
       this.closeButton.style.display = ''
     }
 
-    hideTitle() {
-      this.fullHeader.style.display = 'none';
+    hideHeader() {
+      this.modalHeader.style.display = 'none';
+    }
+
+    showHeader() {
+      this.showCloseButton()
+      this.showTitle()
+      this.modalHeader.style.display = '';
     }
 
     showTitle() {
-      this.fullHeader.style.display = '';
+      this.modalTitle.style.display = ''
+    }
+
+    hideTitle() {
+      this.modalTitle.style.display = 'none'
+    }
+
+    setTitle(newTitle) {
+      this.modalTitle.innerHTML = newTitle
+    }
+
+    modalToggleFullscreen(state) {
+      this.modalWindow.classList.toggle('modal-fullscreen', state);
+    }
+
+    removeCanvas() {
+      const canvasElement = this.modalBody.querySelector('canvas');
+      if (canvasElement) {
+        this.modalBody.removeChild(canvasElement);
+      }
+    }
+
+    isModalShown() {
+      return this.modal._isShown;
+    }
+
+    updateModalContent(content, title) {
+      if (content !== null && content !== undefined) {
+        this.modalBody.innerHTML = content;
+      }
+    
+      if (title !== null && title !== undefined) {
+        this.modalTitle.innerHTML = title;
+      }
+    }
+
+    launchWorld() {
+      if (this.isModalShown()) {
+        console.log('launch world')
+        this.world = new World(this.modalBody);
+        this.world.start();
+        this.modal._element.addEventListener('hidden.bs.modal', this.closeWorld);
+      } else {
+        console.log('World not launch because model not shown.')
+      }
+    }
+
+    closeWorld() {
+      console.log('stop world')
+      this.world.stop();
+      this.modalToggleFullscreen(false)
+      this.removeCanvas()
+      this.modal._element.removeEventListener('hidden.bs.modal', this.closeWorld)
+      this.modal.dispose();
+      this.world = null
+
     }
   }
 
