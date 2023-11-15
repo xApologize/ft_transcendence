@@ -1,11 +1,13 @@
 .form-div {
     display: flex;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
-    align-content: center;
     width: 100%;
 }
 
-form {
+.form {
     width: 80%;
     max-width: 350px;
+    border-radius: 15%;
 }
