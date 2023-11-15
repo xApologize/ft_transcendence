@@ -1,4 +1,6 @@
 import { StaticObject } from '../systems/StaticObject.js';
+import { addSolid } from '../systems/Solid.js';
+import { Layers } from '../systems/LayersMap.js';
 import {
 	BoxGeometry,
 	Mesh,
@@ -28,15 +30,11 @@ class Terrain extends StaticObject {
 		
 		this.object.position.z = -2;
 
-		this.SetLayers( 0 );
+		this.SetLayers( Layers.Default, Layers.Solid );
+		addSolid( this.object );
+		// addSolid( this.linetop );
+		// addSolid( this.linebot );
 	}
-
-	get colliders() { return this.object.children; }
-	// get lt() { return this.linetop; }
-	// get lb() { return this.linebot; }
-	// get lr() { return this.lineright; }
-	// get ll() { return this.lineleft; }
-
 }
 
 export { Terrain };

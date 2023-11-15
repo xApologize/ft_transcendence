@@ -1,19 +1,18 @@
 import { DynamicObject } from '../systems/DynamicObject.js';
+import { Layers } from '../systems/LayersMap.js';
+import { getSolids } from '../systems/Solid.js';
 import {
 	ArrowHelper,
-	Box3,
 	MathUtils,
 	Mesh,
 	MeshStandardMaterial,
 	Raycaster,
-	Sphere,
 	SphereGeometry,
 	Vector3
 } from 'three';
 
 class Ball extends DynamicObject {	
-	start( terrain ) {
-		this.terrain = terrain;
+	start() {
 		this.radius = 0.2;
 		this.dir = new Vector3(MathUtils.randFloat( -1, 1 ), MathUtils.randFloat( -0.5, 0.5 ), 0);
 		this.dir.normalize();
@@ -23,7 +22,7 @@ class Ball extends DynamicObject {
 		const m_white = new MeshStandardMaterial({ color: 'white' });
 		this.object = new Mesh( g_sphere, m_white );
 		
-		this.object.position.set(MathUtils.randFloat( -4, 4 ), MathUtils.randFloat( -2, 2 ), -2);
+		this.object.position.set(MathUtils.randFloat( -4, 4 ), MathUtils.randFloat( -2, 2 ), 0);
 		
 		this.SetLayers( 0, 1, 2, 3 );
 		
@@ -49,7 +48,7 @@ class Ball extends DynamicObject {
 			origin.add( pos );
 			this.ray.set( origin, this.dir );
 			this.ray.far = dist;
-			const hits = this.ray.intersectObjects( this.terrain.colliders );
+			const hits = this.ray.intersectObjects( getSolids() );
 			if ( hits.length > 0 ) {
 				if (closerHit == undefined || hits[0].distance < closerHit.distance ) {
 					closerHit = hits[0];
@@ -61,11 +60,11 @@ class Ball extends DynamicObject {
 		// Process collision on closerHit
 		if ( closerHit != undefined ) {
 			this.dir.subVectors(this.dir, closerHit.normal.multiplyScalar(2 * (this.dir.dot(closerHit.normal))));
-			// closerHit.object.material.color.set( MathUtils.randInt( 0, 0xFFFFFF ) );
-			this.speed += 1;
-			const truepos = closerHit.point;
-			truepos.sub(offset);
-			return this.calcCollision( truepos, dist - closerHit.distance );
+			if (closerHit.object.layers.isEnabled( Layers.Player )) {
+				this.speed += 1;
+				console.log("PlayerHit!");
+			}
+			return this.calcCollision( closerHit.point.clone().sub(offset), dist - closerHit.distance );
 		}
 
 		// Return final position
@@ -78,6 +77,9 @@ class Ball extends DynamicObject {
 
 	update( dt ) {
 		this.object.position.copy( this.calcCollision( this.object.position, this.speed * dt ) );
+		this.object.lookAt(this.dir.clone().add(this.object.position));
+		this.object.scale.x = 1 + this.speed / 200;
+		this.object.scale.y = 2 - this.object.scale.x;
 
 		// DebugRay
 		// for (let i = 0; i < 8; i++) {

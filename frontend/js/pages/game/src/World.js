@@ -5,6 +5,7 @@ import { createScene } from './components/scene.js';
 import { createRenderer } from './systems/renderer.js';
 import { Resizer } from './systems/Resizer.js';
 import { Loop } from './systems/Loop.js';
+import { Player1InputMap, Player2InputMap } from './systems/InputMaps.js';
 
 import { Terrain } from './components/Terrain.js';
 import { Ball } from './components/Ball.js';
@@ -25,9 +26,9 @@ class World {
 		container.append(renderer.domElement);
 
 		const terrain = new Terrain(new Vector2(16, 10), 0.1, 0.2);
-		const p1 = new Player( new Vector3( -7.5, 0, 2 ) );
-		const p2 = new Player( new Vector3( 7.5, 0, 2 ) );
-		terrain.object.add( p1.object, p2.object );
+		const p1 = new Player( new Vector3( -7.5, 0, 0 ), Player1InputMap, terrain );
+		const p2 = new Player( new Vector3( 7.5, 0, 0 ), Player2InputMap, terrain );
+		// terrain.object.add( p1.object, p2.object );
 		const ball = new Ball( terrain );
 		const { ambientLight, mainLight } = createLights();
 
