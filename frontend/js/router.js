@@ -7,14 +7,23 @@ import { showLogin } from './pages/login/login.js';
 import { headerComponent } from './components/header/header.js'
 import { templateComponent } from './components/template/template.js';
 
-var currentRoute;
+// Not currently use
+var currentRoute = "";
 
 function showPage(pageFunction) {
   pageFunction();
 }
 
 function navigateTo(route) {
-  history.pushState(null, null, route);
+  if (route == currentRoute)
+    return ;
+
+  const eventData = { route: route };
+  history.pushState(eventData, null, route);
+  
+  const popstateEvent = new CustomEvent('popstate', { detail: eventData });
+  window.dispatchEvent(popstateEvent);
+
   handleRoute();
 }
 
@@ -50,10 +59,9 @@ async function loadPage() {
   handleRoute();
 }
 
-// Load the page at first launch.
-// will listen at everything that has the class "nav-link" in <nav> in index.html
 document.addEventListener('DOMContentLoaded', async () => {
   await loadPage()
+
   const navContainer = document.getElementById('navbar');
   navContainer.addEventListener('click', (event) => {
     const target = event.target;
@@ -64,6 +72,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  window.addEventListener('popstate', handleRoute);
+  window.addEventListener('popstate', handlePopState);
 });
 
+function handlePopState(event) {
+  // Check if event.detail is present, indicating a manually triggered popstate event
+  if (event.detail) {
+    console.log('Popstate event triggered manually, Detail:', event.detail);
+  } else {
+    console.log('Popstate event triggered by browser navigation');
+    handleRoute();
+  }
+}
