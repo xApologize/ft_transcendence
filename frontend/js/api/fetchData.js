@@ -5,7 +5,9 @@ export const loadHTMLPage = async (filePath) => {
     try {
         const response = await fetch(filePath);
         const html = await response.text();
-        document.getElementById('contentContainer').innerHTML = html;
+        let container = document.getElementById('contentContainer')
+        container.innerHTML = ''
+        container.innerHTML = html
     } catch (error) {
         console.error(`Error fetching page: ${filePath} -> `, error);
     }
@@ -39,9 +41,10 @@ const performFetch = async (url, method, data = null) => {
         },
         body: data ? JSON.stringify(data) : null,
     };
-  
+
     try {
         const response = await fetch(url, options);
+        // Set the access token in localStorage.
         return response;
     } catch (error) {
         return "Error fetching: " + url;
@@ -49,7 +52,6 @@ const performFetch = async (url, method, data = null) => {
 };
 
 const buildApiUrl = (path, parameter = null) => {
-    // Known issue: fetching port 52021 does not work when not at school.
     const baseUrl = "/api/";
     const queryString = parameter ? `?${parameter.toString()}` : '';
     return `${baseUrl}${path}${queryString}`;

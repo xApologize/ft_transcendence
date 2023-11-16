@@ -20,10 +20,9 @@ export async function showHome() {
     await loadHTMLPage('./js/pages/home/home.html')
     const gameModal = new GameModal('gameModal');
     
-    localStorage.setItem("myCat", "Tom");
-    console.log(localStorage.getItem("myCat"))
-  
     document.getElementById('game').addEventListener('click', () => {
+      const modalState = { route: '/' };
+      history.pushState(modalState, null, '/game');
       testShowGame(gameModal)
     });
 
@@ -34,10 +33,10 @@ export async function showHome() {
 
 // Handle when page is refresh ? Local Storage ?
 async function testShowGame(gameModal) {
-    gameModal.openModal();
     gameModal.setTitle('Game')
+    gameModal.openModal();
     gameModal.launchWorld()
-    showGame(gameModal)
+
 }
 
 

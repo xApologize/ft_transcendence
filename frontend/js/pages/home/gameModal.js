@@ -1,5 +1,14 @@
 import { World } from '../game/src/World.js';
 
+export function securityUnload(event) {
+  event.preventDefault();
+  event.returnValue = '';
+  
+  const message = 'Are you sure you want to leave?';
+  event.returnValue = message;
+  return message; // For modern browsers
+}
+
 class GameModal {
     constructor(modalId) {
       this.modal = new bootstrap.Modal(document.getElementById(modalId), {
@@ -22,11 +31,13 @@ class GameModal {
 
     openModal() {
       console.log('open modal')
+
       this.modalToggleFullscreen(true)
       this.modal.show();
       this.modal._element.addEventListener('hidden.bs.modal', this.closeModal)
+      window.addEventListener('beforeunload', securityUnload)
     }
-
+  
     closeModal() {
       console.log('close Modal')
       this.modalToggleFullscreen(false)
@@ -36,6 +47,9 @@ class GameModal {
         this.closeWorld()
       }
       this.modal._element.removeEventListener('hidden.bs.modal', this.closeModal);
+      window.removeEventListener('beforeunload', securityUnload)
+      history.replaceState({ route: '/' }, null, '/')
+      // Remove it when going <- and -> in browser ?
     }
 
     setBackdrop(backdrop) {
@@ -111,9 +125,6 @@ class GameModal {
     closeWorld() {
       console.log('stop world')
       this.world.stop();
-      // this.removeCanvas()
-      // this.modal._element.removeEventListener('hidden.bs.modal', this.closeWorld)
-      // this.modal.dispose();
       this.world = null
 
     }

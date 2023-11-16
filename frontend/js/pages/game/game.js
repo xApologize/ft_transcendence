@@ -12,7 +12,8 @@ export async function showGame() {
 	  console.log('add !')
 	  window.addEventListener('popstate', unloadGame);
 
-	  function unloadGame() {
+	  function unloadGame(event) {
+		event.preventDefault()
 		console.log('remove !')
 		world.stop();
 		world = null
