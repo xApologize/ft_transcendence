@@ -2,26 +2,21 @@ import { World } from './src/World.js';
 import { loadHTMLPage } from '../../api/fetchData.js';
 
 export async function showGame() {
-  try {
-    await loadHTMLPage('./js/pages/game/game.html')
+	try {
+	  await loadHTMLPage('./js/pages/game/game.html');
 
-	// Get a reference to the container element
-	const container = document.querySelector('#scene-container');
+	  const container = document.querySelector('#scene-container');
+	  var world = new World(container);
+	  world.start();
+  
+	  window.addEventListener('popstate', unloadGame);
 
-	// 1. Create an instance of the World app
-	const world = new World(container);
-
-	// start animation loop
-	world.start();
-
-	document.addEventListener( 'visibilitychange', () => {
-		if (document.hidden)
-			world.stop();
-		else
-			world.start();
-	});
-
+	  function unloadGame() {
+      world.stop();
+      world = null
+      window.removeEventListener('popstate', unloadGame);
+	  }
   } catch (error) {
-    console.error('Error fetching game.html:', error);
+	  console.error('Error fetching game.html:', error);
   }
 }
