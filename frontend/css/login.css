@@ -11,3 +11,7 @@
     max-width: 350px;
     border-radius: 5%;
 }
+
+.loginButton {
+    width: 100%;
+}
