@@ -11,10 +11,10 @@ import { Ball } from './components/Ball.js';
 import { Player } from './components/Player.js';
 import { Vector2, Vector3 } from 'three';
 
-let scene;
-let camera;
-let renderer;
-let loop;
+let scene = undefined;
+let camera = undefined;
+let renderer = undefined;
+let loop = undefined;
 
 class World {
 	constructor( container ) {
@@ -36,8 +36,20 @@ class World {
 		const resizer = new Resizer(container, camera, renderer);
 
 		this.render = function() { renderer.render(scene, camera); }
-		this.start = function() { loop.start();	}
-		this.stop = function() { loop.stop(); }
+		this.start = function() {
+			loop.start();
+		}
+
+		this.stop = function() {
+			loop.stop();
+			renderer.dispose()
+			renderer.forceContextLoss()
+			scene = null
+			renderer = null;
+			camera = null;
+			loop = null;
+			container = null
+		}
 	}
 
 	static add( mesh ) {

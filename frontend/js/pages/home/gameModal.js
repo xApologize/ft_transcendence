@@ -15,35 +15,26 @@ class GameModal {
       this.modalBody = document.getElementById('gameModalBody')
       this.closeButton = document.getElementById('closeButtonModal');
       
-      this.firstTimeoutID = -1;
-      this.secondTimeoutID = -1;
-
       this.world = null;
       this.closeWorld = this.closeWorld.bind(this);
       this.closeModal = this.closeModal.bind(this)
     }
 
-    setTimeoutIds(firstTimeoutId, secondTimeoutId) {
-      this.firstTimeoutId = firstTimeoutId;
-      this.secondTimeoutId = secondTimeoutId;
-    }
-
-    clearTimeouts() {
-      console.log('timeout break!')
-      clearTimeout(this.firstTimeoutId);
-      clearTimeout(this.secondTimeoutId);
-    }
-  
     openModal() {
       console.log('open modal')
+      this.modalToggleFullscreen(true)
       this.modal.show();
       this.modal._element.addEventListener('hidden.bs.modal', this.closeModal)
     }
 
     closeModal() {
       console.log('close Modal')
+      this.modalToggleFullscreen(false)
       this.updateModalContent('', '')
       this.modal.hide();
+      if (this.world !== null) {
+        this.closeWorld()
+      }
       this.modal._element.removeEventListener('hidden.bs.modal', this.closeModal);
     }
 
@@ -111,7 +102,7 @@ class GameModal {
         console.log('launch world')
         this.world = new World(this.modalBody);
         this.world.start();
-        this.modal._element.addEventListener('hidden.bs.modal', this.closeWorld);
+        // this.modal._element.addEventListener('hidden.bs.modal', this.closeWorld);
       } else {
         console.log('World not launch because model not shown.')
       }
@@ -120,10 +111,9 @@ class GameModal {
     closeWorld() {
       console.log('stop world')
       this.world.stop();
-      this.modalToggleFullscreen(false)
-      this.removeCanvas()
-      this.modal._element.removeEventListener('hidden.bs.modal', this.closeWorld)
-      this.modal.dispose();
+      // this.removeCanvas()
+      // this.modal._element.removeEventListener('hidden.bs.modal', this.closeWorld)
+      // this.modal.dispose();
       this.world = null
 
     }

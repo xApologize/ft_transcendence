@@ -9,12 +9,14 @@ export async function showGame() {
 	  var world = new World(container);
 	  world.start();
   
+	  console.log('add !')
 	  window.addEventListener('popstate', unloadGame);
 
 	  function unloadGame() {
-      world.stop();
-      world = null
-      window.removeEventListener('popstate', unloadGame);
+		console.log('remove !')
+		world.stop();
+		world = null
+		window.removeEventListener('popstate', unloadGame);
 	  }
   } catch (error) {
 	  console.error('Error fetching game.html:', error);
