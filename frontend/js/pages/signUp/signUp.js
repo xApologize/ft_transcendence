@@ -10,7 +10,8 @@ export async function showSignUp() {
                 signUp();
             });
     } catch (error) {
-        console.error('Error fetching signUp.html:', error);
+        if (error) console.error('Error fetching signUp.html:', error);
+        else console.log('error null');
     }
 }
 
@@ -23,7 +24,14 @@ async function signUp() {
         'inputPasswordConfirm'
     ).value;
     const avatar = document.getElementById('inputAvatar').value;
-    if (!nickname || !email || !emailConfirm || !password || !passwordConfirm) {
+    if (
+        !nickname ||
+        !email ||
+        !emailConfirm ||
+        !password ||
+        !passwordConfirm ||
+        !avatar
+    ) {
         alert('Fill the form.');
         return;
     }
@@ -38,9 +46,19 @@ async function signUp() {
     console.log(`'${userData['nickname']}'`);
     const users = await fetchUser('POST', null, userData);
     const responseText = await users.text();
-    if (users.ok) {
-        displaySuccessMessage(responseText, 'successCreate');
-    } else {
+    if (!users.ok) {
         displayErrorMessage(responseText);
     }
+}
+
+function displayErrorMessage(errorMessage) {
+    const error = document.getElementById('errorMessage');
+    error.classList.remove('d-none');
+    error.textContent = errorMessage;
+}
+
+function displaySuccessMessage(responseText, SuccessElement) {
+    const successMessage = document.getElementById(SuccessElement);
+    successMessage.textContent = responseText;
+    successMessage.classList.remove('d-none');
 }
