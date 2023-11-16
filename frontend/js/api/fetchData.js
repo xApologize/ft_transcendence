@@ -27,21 +27,24 @@ export const loadHTMLComponent = async (filePath) => {
 }
 
 const performFetch = async (url, method, data = null) => {
-    const headers = {
-      'Content-Type': 'application/json',
-    };
-  
+    // const accessToken = localStorage.getItem('access_token');
+    const accessToken = null;
+
     const options = {
-      method,
-      headers: data ? headers : {},
-      body: data ? JSON.stringify(data) : null,
+        method,
+        credentials: 'include',
+        headers: {
+          ...(accessToken ? { 'Authorization': `Bearer ${accessToken}` } : {}),
+          ...(data ? { 'Content-Type': 'application/json' } : {}),
+        },
+        body: data ? JSON.stringify(data) : null,
     };
   
     try {
         const response = await fetch(url, options);
-        return response
+        return response;
     } catch (error) {
-        return "Error fetching: " + url
+        return "Error fetching: " + url;
     }
 };
 
