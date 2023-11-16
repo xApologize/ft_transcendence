@@ -19,7 +19,7 @@ function navigateTo(route) {
 }
 
 function handleRoute() {
-  var pageFunction = "";
+  var pageFunction = null;
 
   const path = window.location.pathname;
   const routes = {
@@ -36,18 +36,6 @@ function handleRoute() {
     pageFunction = show404
   }
   showPage(pageFunction);
-}
-
-function handlePopState() {
-  const gameModal = document.getElementById('gameModal');
-  if (gameModal && gameModal.classList.contains('show')) {
-    console.log('here');
-    // gameModal.classList.remove('show');
-    const backdrop = document.querySelector('.modal-backdrop');
-    if (backdrop)
-      backdrop.remove()
-  }
-  handleRoute();
 }
 
 // !! Do not change the order in which it's append !!
@@ -76,6 +64,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  window.addEventListener('popstate', handlePopState);
+  window.addEventListener('popstate', handleRoute);
 });
 
