@@ -1,41 +1,28 @@
 import { DynamicObject } from '../systems/DynamicObject.js';
-import { Layers } from '../systems/LayersMap.js';
+import { Layers } from '../systems/Layers.js';
 import { getSolids } from '../systems/Solid.js';
 import {
-	ArrowHelper,
 	MathUtils,
-	Mesh,
-	MeshStandardMaterial,
 	Raycaster,
-	SphereGeometry,
 	Vector3
 } from 'three';
 
 class Ball extends DynamicObject {	
 	start() {
-		this.radius = 0.2;
 		this.dir = new Vector3(MathUtils.randFloat( -1, 1 ), MathUtils.randFloat( -0.5, 0.5 ), 0);
 		this.dir.normalize();
 		this.speed = 5;
-
-		const g_sphere = new SphereGeometry( this.radius );
-		const m_white = new MeshStandardMaterial({ color: 'white' });
-		this.object = new Mesh( g_sphere, m_white );
+		this.radius = this.geometry.parameters.radius;
 		
-		this.object.position.set(MathUtils.randFloat( -4, 4 ), MathUtils.randFloat( -2, 2 ), 0);
+		this.position.set(MathUtils.randFloat( -4, 4 ), MathUtils.randFloat( -2, 2 ), 0);
 		
-		this.SetLayers( 0, 1, 2, 3 );
+		this.setLayers( Layers.Default, Layers.Ball );
 		
 		this.ray = new Raycaster();
-
-		// HELPERS
-		// this.arrows = [];
-		// for (let i = 0; i < 8; i++) {
-		// 	this.arrows.push( new ArrowHelper( 0, new Vector3( 0, 0, 0 ), 0, '#FF0000' ) );
-		// 	this.object.add( this.arrows[i] );	
-		// }
+		this.ray.layers.enable( Layers.Goal );
 	}
 
+	// Recursion error quand vitesse extreme
 	calcCollision( pos, dist ) {
 		// if (dist < 0)
 		// 	dist = 0;
@@ -59,10 +46,19 @@ class Ball extends DynamicObject {
 
 		// Process collision on closerHit
 		if ( closerHit != undefined ) {
-			this.dir.subVectors(this.dir, closerHit.normal.multiplyScalar(2 * (this.dir.dot(closerHit.normal))));
 			if (closerHit.object.layers.isEnabled( Layers.Player )) {
+				this.dir.set( -Math.sign(this.dir.x), closerHit.point.y - closerHit.object.position.y, 0 );
+				this.dir.normalize();
 				this.speed += 1;
 				console.log("PlayerHit!");
+			} else if (closerHit.object.layers.isEnabled( Layers.Goal )) {
+				this.dir = new Vector3(MathUtils.randFloat( -1, 1 ), MathUtils.randFloat( -0.5, 0.5 ), 0);
+				this.dir.normalize();
+				this.speed = 5;
+				closerHit.object.onCollision( this );
+				return new Vector3( MathUtils.randFloat( -2, 2 ), MathUtils.randFloat( -1, 1 ), -2 );
+			} else {
+				this.dir.subVectors(this.dir, closerHit.normal.multiplyScalar(2 * (this.dir.dot(closerHit.normal))));
 			}
 			return this.calcCollision( closerHit.point.clone().sub(offset), dist - closerHit.distance );
 		}
@@ -76,25 +72,22 @@ class Ball extends DynamicObject {
 	}
 
 	update( dt ) {
-		this.object.position.copy( this.calcCollision( this.object.position, this.speed * dt ) );
-		this.object.lookAt(this.dir.clone().add(this.object.position));
-		this.object.scale.x = 1 + this.speed / 200;
-		this.object.scale.y = 2 - this.object.scale.x;
-
-		// DebugRay
-		// for (let i = 0; i < 8; i++) {
-		// 	this.arrows[i].position.set( Math.cos( i * (Math.PI / 4) ) * this.radius, Math.sin( i * (Math.PI / 4) ) * this.radius, 0 );
-		// 	this.arrows[i].setDirection( this.dir );
-		// 	this.arrows[i].setLength( this.speed * dt );
-		// }
+		this.position.copy( this.calcCollision( this.position, this.speed * dt ) );
+		this.lookAt(this.dir.clone().add(this.position));
+		this.scale.x = 1 + this.speed / 200;
+		this.scale.y = 2 - this.scale.x;
 
 		// Reset if OOB
-		if ( Math.abs(this.object.position.x) > 8 || Math.abs(this.object.position.y) > 5 ) {
-			this.object.position.set(MathUtils.randFloat( -2, 2 ), MathUtils.randFloat( -1, 1 ), -2);
-			this.dir = new Vector3(MathUtils.randFloat( -1, 1 ), MathUtils.randFloat( -0.5, 0.5 ), 0);
-			this.dir.normalize();
-			this.speed = 5;
+		if ( Math.abs(this.position.x) > 8 || Math.abs(this.position.y) > 5 ) {
+			this.reset();
 		}
+	}
+
+	reset() {
+		this.position.set(MathUtils.randFloat( -2, 2 ), MathUtils.randFloat( -1, 1 ), -2);
+		this.dir = new Vector3(MathUtils.randFloat( -1, 1 ), MathUtils.randFloat( -0.5, 0.5 ), 0);
+		this.dir.normalize();
+		this.speed = 5;
 	}
 
 }

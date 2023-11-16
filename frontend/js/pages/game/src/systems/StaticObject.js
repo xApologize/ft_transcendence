@@ -1,15 +1,19 @@
-import { Object3D } from "three";
+import { Mesh } from "three";
 import { World } from "../World.js";
 
-class StaticObject extends Object3D {
-	constructor( ) {
-		super();
-		this.start.apply( this, arguments );
-		World.add( this.object );
+class StaticObject extends Mesh {
+	constructor( ...args ) {
+		super( args[0], args[1] );
+		this.start.apply( this, args.slice(2) );
+		World.add( this );
 	}
 
-	SetLayers( ...layers ) {
-		this.object.traverse(function(child) {
+	start() {
+		console.warn( "StaticObject: start() called while undefined!" );
+	}
+	
+	setLayers( ...layers ) {
+		this.traverse(function(child) {
 			child.layers.disableAll(0);
 			layers.forEach(layer => {
 				child.layers.enable(layer);
@@ -18,7 +22,11 @@ class StaticObject extends Object3D {
 	}
 	
 	delete() {
-		World.remove( this.object );
+		World.remove( this );
+	}
+	
+	onCollision() {
+		console.warn( "StaticObject: onCollision() called while undefined!" );
 	}
 }
 

@@ -8,7 +8,7 @@ class DynamicObject extends StaticObject {
 	}
 
 	update() {
-		console.warn("DynamicObject: empty update");
+		console.warn( "DynamicObject: update() called while undefined!" );
 	}
 	
 	delete() {
