@@ -22,6 +22,8 @@ class StaticObject extends Mesh {
 	}
 	
 	delete() {
+		this.material.dispose();
+		this.geometry.dispose();
 		World.remove( this );
 	}
 	

@@ -1,4 +1,4 @@
-import { addSolid, getSolids } from '../systems/Solid.js';
+import { addSolid, getSolids, removeSolid } from '../systems/Solid.js';
 import { DynamicObject } from '../systems/DynamicObject.js';
 import { Layers } from '../systems/Layers.js';
 import {
@@ -41,25 +41,39 @@ class Player extends DynamicObject {
 		}
 	}
 
+	onKeyDown( event, inputMap ) {
+		if ( event.code == inputMap.pos )
+			this.inputStrength.x = this.inputStrength.y + 1;
+		if ( event.code == inputMap.neg )
+			this.inputStrength.y = this.inputStrength.x + 1;
+		if ( event.code == inputMap.boost )
+			this.speed = 10;
+	}
+
+	onKeyUp( event, inputMap ) {
+		if ( event.code == inputMap.pos )
+			this.inputStrength.x = 0;
+		if ( event.code == inputMap.neg )
+			this.inputStrength.y = 0;
+		if ( event.code == inputMap.boost )
+			this.speed = 5;
+	}
+
 	setupInputs( inputMap ) {
 		this.inputStrength = new Vector2( 0, 0 );
 
-		document.addEventListener('keydown', (event) => {
-			if ( event.code == inputMap.pos )
-				this.inputStrength.x = this.inputStrength.y + 1;
-			if ( event.code == inputMap.neg )
-				this.inputStrength.y = this.inputStrength.x + 1;
-			if ( event.code == inputMap.boost )
-				this.speed = 10;
-		}, false);
-		document.addEventListener('keyup', (event) => {
-			if ( event.code == inputMap.pos )
-				this.inputStrength.x = 0;
-			if ( event.code == inputMap.neg )
-				this.inputStrength.y = 0;
-			if ( event.code == inputMap.boost )
-				this.speed = 5;
-		}, false);
+		this.onKeyDownRef = (event) => this.onKeyDown( event, inputMap );
+		this.onKeyUpRef = (event) => this.onKeyUp( event, inputMap );
+
+		document.addEventListener('keydown', this.onKeyDownRef, false);
+		document.addEventListener('keyup', this.onKeyUpRef, false);
+	}
+
+	delete() {
+		document.removeEventListener('keydown', this.onKeyDownRef, false);
+		document.removeEventListener('keyup', this.onKeyUpRef, false);
+		removeSolid( this );
+		super.delete();
 	}
 }
 
