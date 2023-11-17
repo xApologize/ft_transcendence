@@ -6,7 +6,7 @@ import { show404 } from './pages/404/404.js';
 import { showLogin } from './pages/login/login.js';
 import { headerComponent } from './components/header/header.js'
 import { templateComponent } from './components/template/template.js';
-import { securityUnload } from './pages/home/gameModal.js'
+import { GameModal } from './pages/home/gameModal.js'
 
 // Not currently use
 var currentRoute = "";
@@ -18,13 +18,7 @@ function showPage(pageFunction) {
 function navigateTo(route) {
   if (route === currentRoute)
     return ;
-
-  const eventData = { route: route };
-  history.pushState(eventData, null, route);
-
-  const popstateEvent = new CustomEvent('popstate', { detail: eventData });
-  window.dispatchEvent(popstateEvent);
-
+  history.pushState({ GoingTo: route}, null, route);
   handleRoute();
 }
 
@@ -58,12 +52,17 @@ async function loadPage() {
 
   body.append(header)
   body.append(template)
-  handleRoute();
+  const path = window.location.pathname;
+  navigateTo(path)
 }
 
+
+// This 'if' will be trigger when going directly to /game OR refresh when inside a game
+// Check if he currently is in a game?
+// Redirect to home if not ? Too complicated with socket ?
 function isPathGame() {
   if (window.location.pathname == '/game') {
-    history.replaceState({ route: '/' }, null, '/')
+    history.replaceState({ GoingTo: '/' }, null, '/')
   }
 }
 
@@ -85,21 +84,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function handlePopState(event) {
-  const poppedState = history.state;
-  if (event.detail) {
-    console.log('Popstate event triggered manually for the game, Detail:', event.detail);
-    return ;
-  }
-
-  if (poppedState && poppedState.route == '/') {
-    const backdrop = document.querySelector('.modal-backdrop')
-    if (backdrop) {
-      backdrop.remove()
+    const eventState = event.state
+    if (eventState && eventState.GoingTo === '/') {
+      const backdrop = document.querySelector('.modal-backdrop')
+      if (backdrop) {
+        window.removeEventListener('beforeunload', GameModal.securityUnload)
+        backdrop.remove()
+      }
+      history.replaceState({ GoingTo: '/' }, null, '/')
     }
-    window.removeEventListener('beforeunload', securityUnload)
-    history.replaceState({ route: '/' }, null, '/')
-  } else {
-    console.log('Popstate event triggered by browser arrow navigation');
-  }
   handleRoute();
 }

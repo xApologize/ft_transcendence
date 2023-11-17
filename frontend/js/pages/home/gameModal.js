@@ -1,15 +1,7 @@
 import { World } from '../game/src/World.js';
 
-export function securityUnload(event) {
-  event.preventDefault();
-  event.returnValue = '';
-  
-  const message = 'Are you sure you want to leave?';
-  event.returnValue = message;
-  return message; // For modern browsers
-}
 
-class GameModal {
+export class GameModal {
     constructor(modalId) {
       this.modal = new bootstrap.Modal(document.getElementById(modalId), {
         animate: false,     // Disable modal animation
@@ -30,16 +22,22 @@ class GameModal {
     }
 
     openModal() {
-      console.log('open modal')
-
       this.modalToggleFullscreen(true)
       this.modal.show();
       this.modal._element.addEventListener('hidden.bs.modal', this.closeModal)
-      window.addEventListener('beforeunload', securityUnload)
+      window.addEventListener('beforeunload', GameModal.securityUnload)
     }
   
+    static securityUnload(event) {
+      event.preventDefault();
+      event.returnValue = '';
+      
+      const message = 'Are you sure you want to leave?';
+      event.returnValue = message;
+      return message; // For modern browsers
+    }
+
     closeModal() {
-      console.log('close Modal')
       this.modalToggleFullscreen(false)
       this.updateModalContent('', '')
       this.modal.hide();
@@ -47,9 +45,24 @@ class GameModal {
         this.closeWorld()
       }
       this.modal._element.removeEventListener('hidden.bs.modal', this.closeModal);
-      window.removeEventListener('beforeunload', securityUnload)
-      history.replaceState({ route: '/' }, null, '/')
-      // Remove it when going <- and -> in browser ?
+      window.removeEventListener('beforeunload', GameModal.securityUnload)
+      history.replaceState({GoingTo: '/'}, null, '/')
+    }
+  
+    closeWorld() {
+      this.world.stop();
+      this.world = null
+
+    }
+
+    launchWorld() {
+      if (this.isModalShown()) {
+        history.pushState({GoingTo: '/'}, null, '/game');
+        this.world = new World(this.modalBody);
+        this.world.start();
+      } else {
+        console.log('World not launch because model not shown.')
+      }
     }
 
     setBackdrop(backdrop) {
@@ -111,23 +124,7 @@ class GameModal {
       }
     }
 
-    launchWorld() {
-      if (this.isModalShown()) {
-        console.log('launch world')
-        this.world = new World(this.modalBody);
-        this.world.start();
-        // this.modal._element.addEventListener('hidden.bs.modal', this.closeWorld);
-      } else {
-        console.log('World not launch because model not shown.')
-      }
-    }
 
-    closeWorld() {
-      console.log('stop world')
-      this.world.stop();
-      this.world = null
-
-    }
   }
 
   export default GameModal;

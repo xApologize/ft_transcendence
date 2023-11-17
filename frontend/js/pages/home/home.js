@@ -6,7 +6,7 @@ import GameModal from './gameModal.js';
 // [GAME]
 // - Page reload -> Mettre un message d'avertissement le prévenant qu'il va leave
 // - Backward -> Mettre un message avertissement aussi.
-// - Frontward -> Bloqué ? Delete tout ce qui est frontward dans le history ?
+// - Frontward -> Bloqué ?
 //
 //////////////
 // [GENERAL]
@@ -21,8 +21,6 @@ export async function showHome() {
     const gameModal = new GameModal('gameModal');
     
     document.getElementById('game').addEventListener('click', () => {
-      const modalState = { route: '/' };
-      history.pushState(modalState, null, '/game');
       testShowGame(gameModal)
     });
 
@@ -31,12 +29,10 @@ export async function showHome() {
   }
 }
 
-// Handle when page is refresh ? Local Storage ?
 async function testShowGame(gameModal) {
     gameModal.setTitle('Game')
     gameModal.openModal();
     gameModal.launchWorld()
-
 }
 
 
