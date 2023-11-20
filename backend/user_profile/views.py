@@ -4,6 +4,7 @@ from django.http import JsonResponse, HttpResponseForbidden, HttpResponse, Http4
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views import View
+from utils.decorators import token_validation
 import json
 import re
 
@@ -11,6 +12,7 @@ import re
 @method_decorator(csrf_exempt, name='dispatch') #- to apply to every function in the class.
 class Users(View):
     # Get All Users or specific users
+    @token_validation
     def get(self, request: HttpRequest):
         nicknames = request.GET.getlist('nickname')
         if not nicknames:
@@ -33,7 +35,7 @@ class Users(View):
 
     # Create a user
     # Check quoi a été passer en param?
-    def post(self, request: HttpResponse):
+    def post(self, request: HttpRequest):
         try:
             user_data = json.loads(request.body)
             required_fields = ['nickname', 'email', 'avatar', 'status', 'admin']
