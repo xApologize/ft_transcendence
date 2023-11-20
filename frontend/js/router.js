@@ -60,14 +60,14 @@ async function loadPage() {
 // This 'if' will be trigger when going directly to /game OR refresh when inside a game
 // Check if he currently is in a game?
 // Redirect to home if not ? Too complicated with socket ?
-function isPathGame() {
-  if (window.location.pathname == '/game') {
-    history.replaceState({ GoingTo: '/' }, null, '/')
-  }
-}
+// function isPathGame() {
+//   if (window.location.pathname == '/game') {
+//     history.replaceState({ GoingTo: '/' }, null, '/')
+//   }
+// }
 
 document.addEventListener('DOMContentLoaded', async () => {
-  isPathGame()
+  // isPathGame()
   await loadPage()
 
   const navContainer = document.getElementById('navbar');
@@ -84,14 +84,5 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function handlePopState(event) {
-    const eventState = event.state
-    if (eventState && eventState.GoingTo === '/') {
-      const backdrop = document.querySelector('.modal-backdrop')
-      if (backdrop) {
-        window.removeEventListener('beforeunload', GameModal.securityUnload)
-        backdrop.remove()
-      }
-      history.replaceState({ GoingTo: '/' }, null, '/')
-    }
   handleRoute();
 }
