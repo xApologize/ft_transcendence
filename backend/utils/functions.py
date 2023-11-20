@@ -1,6 +1,7 @@
 import jwt
 import time
 import secrets
+import os
 
 def generate_jwt(lifespan: int, id: int) -> str:
     print("HI")

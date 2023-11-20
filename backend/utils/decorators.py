@@ -1,14 +1,15 @@
 from utils.functions import generate_jwt, verify_token
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponse
 
 def token_validation(func):
-    def wrapper(self, request):
-        print(request)
+    def wrapper(self, request: HttpRequest):
         test = generate_jwt(1, 5)
         validation_result = verify_token(test)
         if validation_result == "Valid":
-            print("Token validated")
-            return func(self, request)
+            test: HttpResponse = func(self, request)
+            test.set_cookie("a", "Hello", secure=True, httponly=True)
+            print("Ret", test)
+            return test
         elif validation_result == "Expired":
             refresh_token = generate_jwt(30) # fetch from database later
             if verify_token(refresh_token) == "Valid":
