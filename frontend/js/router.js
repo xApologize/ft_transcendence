@@ -8,11 +8,12 @@ import { showSignUp } from './pages/signUp/signUp.js';
 import { headerComponent } from './components/header/header.js';
 import { templateComponent } from './components/template/template.js';
 
-function showPage(pageFunction) {
+export function showPage(pageFunction) {
     pageFunction();
 }
 
-function navigateTo(route) {
+export function navigateTo(route) {
+    console.log(route);
     history.pushState(null, null, route);
     handleRoute();
 }

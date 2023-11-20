@@ -15,3 +15,7 @@
 .loginButton {
     width: 100%;
 }
+
+.linkHover {
+    cursor: pointer;
+}
