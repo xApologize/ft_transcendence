@@ -27,21 +27,28 @@ export const loadHTMLComponent = async (filePath) => {
 }
 
 const performFetch = async (url, method, data = null) => {
-    const headers = {
-      'Content-Type': 'application/json',
-    };
-  
+    // const accessToken = "Here_is_my_token";
+    var accessTokenLive = sessionStorage.getItem('access');
     const options = {
-      method,
-      headers: data ? headers : {},
-      body: data ? JSON.stringify(data) : null,
+        method,
+        credentials: 'include',
+        headers: {
+          ...(accessTokenLive ? { 'access': `${accessTokenLive}` } : {}),
+          ...(data ? { 'Content-Type': 'application/json' } : {}),
+        },
+        body: data ? JSON.stringify(data) : null,
     };
-  
     try {
         const response = await fetch(url, options);
-        return response
+        var return_access_token = response.headers.get('access')
+        if (return_access_token)
+            sessionStorage.setItem('access', return_access_token);
+        console.log("return access Access:", return_access_token)
+        console.log(sessionStorage.getItem('access'))
+        // Refresh token will be check if reponse status is 401
+        return response;
     } catch (error) {
-        return "Error fetching: " + url
+        return "Error fetching: " + url;
     }
 };
 
