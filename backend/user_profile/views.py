@@ -4,12 +4,14 @@ from django.http import JsonResponse, HttpResponseForbidden, HttpResponse, Http4
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views import View
+from utils.decorators import token_validation
 import json
 import re
 
 
 @method_decorator(csrf_exempt, name='dispatch') #- to apply to every function in the class.
 class Users(View):
+    @token_validation
     # Get All Users or specific users
     def get(self, request: HttpRequest):
         nicknames = request.GET.getlist('nickname')
