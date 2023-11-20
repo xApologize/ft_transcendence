@@ -30,13 +30,13 @@ export const loadHTMLComponent = async (filePath) => {
 
 const performFetch = async (url, method, data = null) => {
     // const accessToken = localStorage.getItem('access_token');
-    const accessToken = null;
+    const accessToken = "Here_is_my_token";
 
     const options = {
         method,
         credentials: 'include',
         headers: {
-          ...(accessToken ? { 'Authorization': `Bearer ${accessToken}` } : {}),
+          ...(accessToken ? { 'jwt': `${accessToken}` } : {}),
           ...(data ? { 'Content-Type': 'application/json' } : {}),
         },
         body: data ? JSON.stringify(data) : null,
@@ -44,6 +44,7 @@ const performFetch = async (url, method, data = null) => {
 
     try {
         const response = await fetch(url, options);
+        // response.
         // Set the access token in localStorage.
         return response;
     } catch (error) {

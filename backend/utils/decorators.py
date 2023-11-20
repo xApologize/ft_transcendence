@@ -3,11 +3,19 @@ from django.http import HttpRequest, HttpResponse
 
 def token_validation(func):
     def wrapper(self, request: HttpRequest):
-        test = generate_jwt(1, 5)
+        print(request)
+        test = generate_jwt(1, 5) # request.token
+
+        refresh_token = request.COOKIES.get('a')
+        print("hey fuckers ", refresh_token)
+        access_token = request.headers.get('jwt')
+        print("hey bozo !", access_token)
+        
         validation_result = verify_token(test)
         if validation_result == "Valid":
+            # Ajouter le access Token dans la réponse??
             test: HttpResponse = func(self, request)
-            test.set_cookie("a", "Hello", secure=True, httponly=True)
+            test.set_cookie("a", "deflol", secure=True, httponly=True)
             print("Ret", test)
             return test
         elif validation_result == "Expired":
