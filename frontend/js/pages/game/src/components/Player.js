@@ -1,38 +1,79 @@
+import { addSolid, getSolids, removeSolid } from '../systems/Solid.js';
 import { DynamicObject } from '../systems/DynamicObject.js';
+import { Layers } from '../systems/Layers.js';
 import {
-	BoxGeometry,
-	Mesh,
-	MeshBasicMaterial,
-	MeshStandardMaterial,
+	Raycaster,
+	Vector2,
 	Vector3
 } from 'three';
 
-let g_movement = 0;
-let g_speed = 5;
-
 class Player extends DynamicObject {
-	start( position, size ) {
-		const g_box = new BoxGeometry( 0.3, 2.4, 2 );
-		const m_white = new MeshStandardMaterial({ color: 'white' });
-		this.object = new Mesh( g_box, m_white );
-		this.object.position.copy( position );
+	start( position, inputMap ) {
+		this.position.copy( position );
+		this.speed = 5;
 
-		document.onkeydown = function(e) {
-			if ( e.key == "w" )
-				g_movement = 1;
-			if ( e.key == "s" )
-				g_movement = -1;
-		}
-		document.onkeyup = function(e) {
-			if ( e.key == "w" && g_movement > 0 )
-				g_movement = 0;
-			if ( e.key == "s" && g_movement < 0 )
-				g_movement = 0;
-		}
+		this.setupInputs( inputMap );
+
+		this.ray = new Raycaster();
+		this.ray.layers.set( Layers.Solid );
+
+		this.setLayers( Layers.Default, Layers.Player );
+		addSolid( this );
 	}
 
 	update( dt ) {
-		this.object.position.y += g_movement * dt * g_speed;
+		let movement = undefined;
+
+		if ( this.inputStrength.x > this.inputStrength.y )
+			movement = new Vector3( 0, 1, 0 );
+		else if ( this.inputStrength.x < this.inputStrength.y )
+			movement = new Vector3( 0, -1, 0 );
+		if ( movement === undefined )
+			return;
+		
+		this.ray.set( this.position, movement );
+		this.ray.far = 1.4 + this.speed * dt;
+		const hits = this.ray.intersectObjects( getSolids() );
+		if ( hits.length > 0 ) {
+			this.position.add(movement.multiplyScalar( hits[0].distance - 1.4 ));
+		} else {
+			this.position.add(movement.multiplyScalar( this.speed * dt ));
+		}
+	}
+
+	onKeyDown( event, inputMap ) {
+		if ( event.code == inputMap.pos )
+			this.inputStrength.x = this.inputStrength.y + 1;
+		if ( event.code == inputMap.neg )
+			this.inputStrength.y = this.inputStrength.x + 1;
+		if ( event.code == inputMap.boost )
+			this.speed = 10;
+	}
+
+	onKeyUp( event, inputMap ) {
+		if ( event.code == inputMap.pos )
+			this.inputStrength.x = 0;
+		if ( event.code == inputMap.neg )
+			this.inputStrength.y = 0;
+		if ( event.code == inputMap.boost )
+			this.speed = 5;
+	}
+
+	setupInputs( inputMap ) {
+		this.inputStrength = new Vector2( 0, 0 );
+
+		this.onKeyDownRef = (event) => this.onKeyDown( event, inputMap );
+		this.onKeyUpRef = (event) => this.onKeyUp( event, inputMap );
+
+		document.addEventListener('keydown', this.onKeyDownRef, false);
+		document.addEventListener('keyup', this.onKeyUpRef, false);
+	}
+
+	delete() {
+		document.removeEventListener('keydown', this.onKeyDownRef, false);
+		document.removeEventListener('keyup', this.onKeyUpRef, false);
+		removeSolid( this );
+		super.delete();
 	}
 }
 
