@@ -5,7 +5,9 @@ export const loadHTMLPage = async (filePath) => {
     try {
         const response = await fetch(filePath);
         const html = await response.text();
-        document.getElementById('contentContainer').innerHTML = html;
+        let container = document.getElementById('contentContainer')
+        container.innerHTML = ''
+        container.innerHTML = html
     } catch (error) {
         console.error(`Error fetching page: ${filePath} -> `, error);
     }
@@ -27,26 +29,30 @@ export const loadHTMLComponent = async (filePath) => {
 }
 
 const performFetch = async (url, method, data = null) => {
-    const headers = {
-      'Content-Type': 'application/json',
-    };
-  
+    // const accessToken = localStorage.getItem('access_token');
+    const accessToken = "Here_is_my_token";
+    // Check si accessToken est expiré avant de fetch. Possible de le décoder ici.
     const options = {
-      method,
-      headers: data ? headers : {},
-      body: data ? JSON.stringify(data) : null,
+        method,
+        credentials: 'include',
+        headers: {
+          ...(accessToken ? { 'jwt': `${accessToken}` } : {}),
+          ...(data ? { 'Content-Type': 'application/json' } : {}),
+        },
+        body: data ? JSON.stringify(data) : null,
     };
-  
+
     try {
         const response = await fetch(url, options);
-        return response
+        // response.
+        // Set the access token in localStorage.
+        return response;
     } catch (error) {
-        return "Error fetching: " + url
+        return "Error fetching: " + url;
     }
 };
 
 const buildApiUrl = (path, parameter = null) => {
-    // Known issue: fetching port 52021 does not work when not at school.
     const baseUrl = "/api/";
     const queryString = parameter ? `?${parameter.toString()}` : '';
     return `${baseUrl}${path}${queryString}`;

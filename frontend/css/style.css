@@ -3,10 +3,14 @@ img.img-thumbnail {
     max-height: 200px;
 }
 
-#contentContainer {
-    display: flex;
-    justify-content: center;
-    align-content: center;
-    width: 100%;
-    height: 100%;
+#left-column {
+    transition: all 0.3s ease;
+}
+
+.hidden-left {
+    transform: translateX(-100%);
+}
+
+.show-left {
+    transform: translateX(100%);
 }

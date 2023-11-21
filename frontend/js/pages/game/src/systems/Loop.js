@@ -1,5 +1,4 @@
 import { Clock } from 'three';
-import { MonoBehaviour } from "./MonoBehaviour.js";
 import { DynamicObject } from "./DynamicObject.js";
 
 const clock = new Clock();
@@ -23,7 +22,7 @@ class Loop {
 	tick () {
 		const delta = clock.getDelta();
 		for(const object of updatables) {
-			if ( object instanceof MonoBehaviour || object instanceof DynamicObject )
+			if ( object instanceof DynamicObject )
 				object.update(delta);
 			else
 				console.warn("Weird element in Updatable tab !");

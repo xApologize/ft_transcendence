@@ -22,6 +22,10 @@ class Resizer {
 	}
 
 	onResize() {}
+
+	delete() {
+		
+	}
 }
 
 export { Resizer };

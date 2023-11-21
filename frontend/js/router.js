@@ -7,28 +7,39 @@ import { showLogin } from './pages/login/login.js';
 import { showSignUp } from './pages/signUp/signUp.js';
 import { headerComponent } from './components/header/header.js';
 import { templateComponent } from './components/template/template.js';
+import { GameModal } from './pages/home/gameModal.js';
+
+// Not currently use
+var currentRoute = '';
 
 export function showPage(pageFunction) {
     pageFunction();
 }
 
-export function navigateTo(route) {
-    console.log(route);
-    history.pushState(null, null, route);
+function navigateTo(route) {
+    if (route === currentRoute) return;
+    history.pushState({ GoingTo: route }, null, route);
     handleRoute();
 }
 
 function handleRoute() {
+    var pageFunction = null;
+
     const path = window.location.pathname;
     const routes = {
         '/': showHome,
         '/about': showAbout,
-        '/game': showGame,
+        '/game_page': showGame,
         '/user': showUser,
         '/login': showLogin,
-        '/signUp': showSignUp,
+        '/game': null, // redirect to home ? Regarder si il est dans une partie ?
     };
-    const pageFunction = routes[path] || show404;
+    if (routes[path]) {
+        pageFunction = routes[path];
+        currentRoute = path;
+    } else {
+        pageFunction = show404;
+    }
     showPage(pageFunction);
 }
 
@@ -41,13 +52,23 @@ async function loadPage() {
 
     body.append(header);
     body.append(template);
-    handleRoute();
+    const path = window.location.pathname;
+    navigateTo(path);
 }
 
-// Load the page at first launch.
-// will listen at everything that has the class "nav-link" in <nav> in index.html
+// This 'if' will be trigger when going directly to /game OR refresh when inside a game
+// Check if he currently is in a game?
+// Redirect to home if not ? Too complicated with socket ?
+// function isPathGame() {
+//   if (window.location.pathname == '/game') {
+//     history.replaceState({ GoingTo: '/' }, null, '/')
+//   }
+// }
+
 document.addEventListener('DOMContentLoaded', async () => {
+    // isPathGame()
     await loadPage();
+
     const navContainer = document.getElementById('navbar');
     navContainer.addEventListener('click', (event) => {
         const target = event.target;
@@ -58,5 +79,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    window.addEventListener('popstate', handleRoute);
+    window.addEventListener('popstate', handlePopState);
 });
+
+function handlePopState(event) {
+    handleRoute();
+}

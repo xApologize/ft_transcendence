@@ -1,42 +1,34 @@
-import { StaticObject } from '../systems/StaticObject.js';
+import { Wall } from './Wall.js';
+import { GoalZone } from './GoalZone.js';
 import {
 	BoxGeometry,
 	Mesh,
 	MeshBasicMaterial,
-	MeshStandardMaterial
+	MeshStandardMaterial,
+	Vector3
 } from 'three';
 
-class Terrain extends StaticObject {	
-	start( size, lineWidth, margin ) {
-		const g_terrain = new BoxGeometry(size.x, size.y, 1);
-		const g_lineh = new BoxGeometry(size.x - margin * 2, lineWidth, 5);
-		const g_linev = new BoxGeometry(lineWidth, size.y - margin * 2, 5);
-		const m_black = new MeshBasicMaterial({ color: 'black' });
+class Terrain {
+	constructor(size, lineWidth, margin) {
+		const g_lineh = new BoxGeometry(size.x - margin * 2, lineWidth, 2);
+		const g_linev = new BoxGeometry(lineWidth, size.y - margin * 2, 2);
 		const m_white = new MeshStandardMaterial({ color: 'white' });
-		this.object = new Mesh(g_terrain, m_black);
-		this.linetop = new Mesh(g_lineh, m_white);
-		this.linebot = new Mesh(g_lineh, m_white);
-		// this.lineright = new Mesh(g_linev, m_white);
-		// this.lineleft = new Mesh(g_linev, m_white);
-		
-		this.object.add( this.linetop, this.linebot/*, this.lineright, this.lineleft*/ );
-		
-		this.linetop.position.set(0, size.y / 2 - margin - lineWidth / 2, 0);
-		this.linebot.position.set(0, -(size.y / 2 - margin - lineWidth / 2), 0);
-		// this.lineright.position.set(size.x / 2 - margin - lineWidth / 2, 0, 0);
-		// this.lineleft.position.set(-(size.x / 2 - margin - lineWidth / 2), 0, 0);
-		
-		this.object.position.z = -2;
-
-		this.SetLayers( 0 );
+		this.wallTop = new Wall(g_lineh, m_white);
+		this.wallTop.position.set(0, (size.y / 2 - margin - lineWidth / 2), 0);
+		this.wallBot = new Wall(g_lineh, m_white);
+		this.wallBot.position.set(0, -(size.y / 2 - margin - lineWidth / 2), 0);
+		this.leftGoalZone = new GoalZone(g_linev, m_white, 1);
+		this.leftGoalZone.position.set(-(size.x / 2 - margin - lineWidth / 2), 0, 0);
+		this.rightGoalZone = new GoalZone(g_linev, m_white, 2);
+		this.rightGoalZone.position.set(size.x / 2 - margin - lineWidth / 2, 0, 0);
 	}
 
-	get colliders() { return this.object.children; }
-	// get lt() { return this.linetop; }
-	// get lb() { return this.linebot; }
-	// get lr() { return this.lineright; }
-	// get ll() { return this.lineleft; }
-
+	delete() {
+		this.wallTop.delete();
+		this.wallBot.delete();
+		this.leftGoalZone.delete();
+		this.rightGoalZone.delete();
+	}
 }
 
 export { Terrain };
