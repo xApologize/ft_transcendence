@@ -6,7 +6,7 @@ export async function showGame() {
     await loadHTMLPage('./js/pages/game/game.html')
 
 	// Get a reference to the container element
-	const container = document.querySelector('#scene-container');
+	const container = document.querySelector('#sceneContainer');
 
 	// 1. Create an instance of the World app
 	const world = new World(container);

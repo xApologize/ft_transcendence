@@ -1,5 +1,5 @@
 import { createRenderer } from './systems/renderer.js';
-import { createCamera } from './components/camera.js';
+import { MainCamera } from './components/camera.js';
 import { createLights } from './components/lights.js';
 import { createScene } from './components/scene.js';
 
@@ -11,7 +11,14 @@ import { Terrain } from './components/Terrain.js';
 import { Ball } from './components/Ball.js';
 import { Player } from './components/Player.js';
 import { Score } from './components/Score.js';
-import { CapsuleGeometry, MeshStandardMaterial, SphereGeometry, Vector2, Vector3 } from 'three';
+import {
+	CapsuleGeometry,
+	Color,
+	DodecahedronGeometry,
+	MeshStandardMaterial,
+	SphereGeometry,
+	Vector2,
+	Vector3 } from 'three';
 
 let scene;
 let camera;
@@ -47,7 +54,7 @@ class World {
 	createInstance() {
 		World._instance = this;
 
-		camera = createCamera();
+		camera = new MainCamera();
 		scene = createScene();
 		renderer = createRenderer();
 		loop = new Loop(camera, scene, renderer);
@@ -75,6 +82,15 @@ class World {
 		for (let i = 0; i < 2; i++) {
 			this.balls.push(new Ball( this.g_sphere, this.m_white ));
 		}
+
+		// this.particles = new InstancedMesh( new DodecahedronGeometry( 0.02, 0 ), this.m_white, 10000 );
+		// const matrix = new Matrix4();
+		// for (let i = 0; i < 10000; i++) {
+		// 	matrix.setPosition( MathUtils.randFloat( -16, 16 ), MathUtils.randFloat( -10, 10 ), -5 );
+		// 	this.particles.setMatrixAt( i, matrix );
+		// 	this.particles.setColorAt( i, new Color( MathUtils.randFloat( 0, 0xFFFFFF ) ) );
+		// }
+		// World.add( this.particles );
 		
 		const { ambientLight, mainLight } = createLights();
 
