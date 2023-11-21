@@ -19,3 +19,7 @@
 .linkHover {
     cursor: pointer;
 }
+
+.signUpButton:hover {
+    width: 1000%;
+}

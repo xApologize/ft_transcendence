@@ -18,20 +18,12 @@ export async function showSignUp() {
 async function signUp() {
     const nickname = document.getElementById('inputUsername').value;
     const email = document.getElementById('inputEmail').value;
-    const emailConfirm = document.getElementById('inputEmailConfirm').value;
     const password = document.getElementById('inputPassword').value;
     const passwordConfirm = document.getElementById(
         'inputPasswordConfirm'
     ).value;
     const avatar = document.getElementById('inputAvatar').value;
-    if (
-        !nickname ||
-        !email ||
-        !emailConfirm ||
-        !password ||
-        !passwordConfirm ||
-        !avatar
-    ) {
+    if (!nickname || !email || !password || !passwordConfirm || !avatar) {
         alert('Fill the form.');
         return;
     }
