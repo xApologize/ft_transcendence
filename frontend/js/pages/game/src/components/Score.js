@@ -1,13 +1,3 @@
-import { StaticObject } from '../systems/StaticObject.js';
-import { Layers } from '../systems/Layers.js';
-// import { CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js';
-import {
-	BoxGeometry,
-	Mesh,
-	MeshBasicMaterial,
-	MeshStandardMaterial
-} from 'three';
-
 let scoreTab = [0, 0];
 
 class Score {	
@@ -17,7 +7,7 @@ class Score {
 		this.div.innerHTML = "- Game Start -";
 
 		this.div.style.position = 'absolute';
-		this.div.style.fontSize = "8vw";
+		this.div.style.fontSize = "4vw";
 		this.div.style.color = "white";
 		this.div.style.width = '100%';
 		this.div.style.height = '100%';

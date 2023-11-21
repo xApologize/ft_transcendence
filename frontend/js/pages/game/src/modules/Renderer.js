@@ -1,4 +1,4 @@
-import { World } from "../World";
+import { World } from "../World.js";
 
 class Renderer {
 	constructor( obj ) {

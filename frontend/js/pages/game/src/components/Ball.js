@@ -1,14 +1,22 @@
-import { DynamicObject } from '../systems/DynamicObject.js';
+import { Collider } from '../modules/Collider.js';
+import { Renderer } from '../modules/Renderer.js';
+import { Updatable } from '../modules/Updatable.js';
 import { Layers } from '../systems/Layers.js';
-import { getSolids } from '../systems/Solid.js';
 import {
+	InstancedMesh,
 	MathUtils,
+	Mesh,
 	Raycaster,
 	Vector3
 } from 'three';
 
-class Ball extends DynamicObject {	
-	start() {
+class Ball extends InstancedMesh {
+	constructor( geometry, material ) {
+		super( geometry, material, 1 );
+
+		this.renderer = new Renderer( this );
+		this.updatable = new Updatable( this );
+
 		this.dir = new Vector3(MathUtils.randFloat( -1, 1 ), MathUtils.randFloat( -0.5, 0.5 ), 0);
 		this.dir.normalize();
 		this.speed = 5;
@@ -16,7 +24,7 @@ class Ball extends DynamicObject {
 		
 		this.position.set(MathUtils.randFloat( -4, 4 ), MathUtils.randFloat( -2, 2 ), 0);
 		
-		this.setLayers( Layers.Default, Layers.Ball );
+		this.renderer.setLayers( Layers.Default, Layers.Ball );
 		
 		this.ray = new Raycaster();
 		this.ray.layers.enable( Layers.Goal );
@@ -35,7 +43,7 @@ class Ball extends DynamicObject {
 			origin.add( pos );
 			this.ray.set( origin, this.dir );
 			this.ray.far = dist;
-			const hits = this.ray.intersectObjects( getSolids() );
+			const hits = this.ray.intersectObjects( Collider.getSolids() );
 			if ( hits.length > 0 ) {
 				if (closerHit == undefined || hits[0].distance < closerHit.distance ) {
 					closerHit = hits[0];
@@ -88,6 +96,11 @@ class Ball extends DynamicObject {
 		this.dir = new Vector3(MathUtils.randFloat( -1, 1 ), MathUtils.randFloat( -0.5, 0.5 ), 0);
 		this.dir.normalize();
 		this.speed = 5;
+	}
+
+	delete() {
+		this.renderer.delete();
+		this.updatable.delete();
 	}
 
 }

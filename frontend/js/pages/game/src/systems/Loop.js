@@ -1,5 +1,4 @@
 import { Clock } from 'three';
-import { DynamicObject } from "./DynamicObject.js";
 
 const clock = new Clock();
 const updatables = [];

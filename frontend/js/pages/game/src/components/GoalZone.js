@@ -1,13 +1,18 @@
-import { StaticObject } from '../systems/StaticObject.js';
-import { addSolid, removeSolid } from '../systems/Solid.js';
+import { Mesh } from 'three';
 import { Layers } from '../systems/Layers.js';
 import { Score } from './Score.js';
+import { Collider } from '../modules/Collider.js';
+import { Renderer } from '../modules/Renderer.js';
 
-class GoalZone extends StaticObject {	
-	start( playerId ) {
+class GoalZone extends Mesh {
+	constructor( geometry, material, playerId ) {
+		super( geometry, material );
+
+		this.collider = new Collider( this );
+		this.renderer = new Renderer( this );
+		this.renderer.setLayers( Layers.Goal );
+
 		this.playerId = playerId;
-		this.setLayers( Layers.Goal );
-		addSolid( this );
 	}
 
 	onCollision() {
@@ -16,8 +21,8 @@ class GoalZone extends StaticObject {
 	}
 
 	delete() {
-		super.delete();
-		removeSolid( this );
+		this.collider.delete();
+		this.renderer.delete();
 	}
 }
 

@@ -15,6 +15,9 @@ import {
 	CapsuleGeometry,
 	Color,
 	DodecahedronGeometry,
+	InstancedMesh,
+	MathUtils,
+	Matrix4,
 	MeshStandardMaterial,
 	SphereGeometry,
 	Vector2,
@@ -62,13 +65,13 @@ class World {
 	}
 
 	createContainer( container ) {
-		container.append(renderer.domElement);
-		container.parentElement.append( scoreUI.div );
+		container.append( scoreUI.div );
+		container.append( renderer.domElement );
 		const resizer = new Resizer(container, camera, renderer);
 	}
 
 	createGame() {
-		this.terrain = new Terrain( new Vector2(16, 10), 0.1, 0.4 );
+		this.terrain = new Terrain( new Vector2(18, 10), 0.5, 0.4 );
 
 		this.g_caps = new CapsuleGeometry( 0.2, 2.4 );
 		this.g_sphere = new SphereGeometry( 0.2 );
@@ -83,12 +86,11 @@ class World {
 			this.balls.push(new Ball( this.g_sphere, this.m_white ));
 		}
 
-		// this.particles = new InstancedMesh( new DodecahedronGeometry( 0.02, 0 ), this.m_white, 10000 );
+		// this.particles = new InstancedMesh( new DodecahedronGeometry( 0.2, 0 ), this.m_white, 10000 );
 		// const matrix = new Matrix4();
 		// for (let i = 0; i < 10000; i++) {
-		// 	matrix.setPosition( MathUtils.randFloat( -16, 16 ), MathUtils.randFloat( -10, 10 ), -5 );
+		// 	matrix.setPosition( MathUtils.randFloat( -16, 16 ), MathUtils.randFloat( -10, 10 ), MathUtils.randFloat( -10, 0 ) );
 		// 	this.particles.setMatrixAt( i, matrix );
-		// 	this.particles.setColorAt( i, new Color( MathUtils.randFloat( 0, 0xFFFFFF ) ) );
 		// }
 		// World.add( this.particles );
 		

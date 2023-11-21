@@ -1,5 +1,3 @@
-import { World } from "../World";
-
 const solids = []
 
 class Collider {
