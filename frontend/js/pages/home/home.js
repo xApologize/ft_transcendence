@@ -24,6 +24,8 @@ async function displayUser(userContainer) {
   iterateUser(templateUser, userContainer)
 }
 
+
+// Faire une fonction dans le backend pour get tout les online user, pour le everyone
 export async function showHome() {
   try {
     await loadHTMLPage('./js/pages/home/home.html')
