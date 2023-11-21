@@ -1,15 +1,25 @@
-<div class="form-div m-3">
+<div class="form-div">
     <div class="form">
         <div class="m-3 text-center">
             <h1>Login</h1>
         </div>
-        <div class="m-3">
-            <p class="form-label" id="emailLabel"> Email address </label>
-            <input type="email" class="form-control" id="inputEmail" />
+        <div class="form-floating m-3">
+            <input
+                type="text"
+                class="form-control"
+                id="usernameInput"
+                placeholder=""
+            />
+            <label for="usernameInput">Username</label>
         </div>
-        <div class="m-3">
-            <p class="form-label" id="passwordLabel"> Password</label>
-            <input type="password" class="form-control" id="inputPassword" />
+        <div class="form-floating m-3">
+            <input
+                type="password"
+                class="form-control"
+                id="passwordInput"
+                placeholder=""
+            />
+            <label for="passwordInput">Password</label>
         </div>
         <div class="m-3 text-center">
             <button class="btn btn-secondary loginButton" id="loginButton">
