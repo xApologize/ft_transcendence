@@ -31,7 +31,7 @@ export const loadHTMLComponent = async (filePath) => {
 const performFetch = async (url, method, data = null) => {
     // const accessToken = localStorage.getItem('access_token');
     const accessToken = "Here_is_my_token";
-
+    // Check si accessToken est expiré avant de fetch. Possible de le décoder ici.
     const options = {
         method,
         credentials: 'include',

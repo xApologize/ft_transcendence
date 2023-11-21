@@ -2,3 +2,15 @@ img.img-thumbnail {
     max-width: 200px;
     max-height: 200px;
 }
+
+#left-column {
+    transition: all 0.3s ease;
+}
+
+.hidden-left {
+    transform: translateX(-100%);
+}
+
+.show-left {
+    transform: translateX(100%);
+}
