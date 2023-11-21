@@ -81,10 +81,7 @@ class World {
 		this.players.push( new Player( this.g_caps, this.m_white, new Vector3( -7.2, 0, 0 ), Player1InputMap ) );
 		this.players.push( new Player( this.g_caps, this.m_white, new Vector3(  7.2, 0, 0 ), Player2InputMap ) );
 
-		this.balls = [];
-		for (let i = 0; i < 2; i++) {
-			this.balls.push(new Ball( this.g_sphere, this.m_white ));
-		}
+		this.balls = new Ball( this.g_sphere, this.m_white, 99 );
 
 		// this.particles = new InstancedMesh( new DodecahedronGeometry( 0.2, 0 ), this.m_white, 10000 );
 		// const matrix = new Matrix4();
@@ -100,8 +97,7 @@ class World {
 	}
 
 	deleteGame() {
-		for (let i = 0; i < this.balls.length; i++)
-			this.balls[i].delete();
+		this.balls.delete();
 		for (let i = 0; i < this.players.length; i++)
 			this.players[i].delete();
 		scoreUI.reset();
@@ -115,10 +111,6 @@ class World {
 
 	static remove( mesh ) {
 		scene.remove( mesh );
-	}
-
-	static addScore() {
-		
 	}
 }
 

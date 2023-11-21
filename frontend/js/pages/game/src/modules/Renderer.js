@@ -17,8 +17,8 @@ class Renderer {
 
 	delete() {
 		this.obj.traverse(function(child) {
-			this.material.dispose();
-			this.geometry.dispose();
+			child.material.dispose();
+			child.geometry.dispose();
 		});
 		World.remove( this.obj );
 	}
