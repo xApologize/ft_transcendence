@@ -17,24 +17,27 @@ def generate_jwt(lifespan: int, id: int) -> str:
 
 
 def add_double_jwt(response: HttpResponse, id: int) -> HttpResponse:
-    '''Create access and refresh token and add them to the response'''
+    '''Create access and refresh token and add them to the http response'''
     REFRESH_DURATION: int = 7200
     ACCESS_DURATION: int = 30
 
     access_token = generate_jwt(ACCESS_DURATION, id)
     refresh_token = generate_jwt(REFRESH_DURATION, id)
-    response.set_cookie("refresh_jwt", refresh_token, secure=True, httponly=True)
+    response.set_cookie(
+        key="refresh_jwt", value=refresh_token, secure=True, httponly=True, samesite="None")
     response["jwt"] = access_token
     return response
 
 
 def decrypt_user_id(jwt_token: str) -> int:
-    '''Decrypt the user id and send it back, if any error happen send negative int'''
+    '''Decrypt the user id and send it back, if any error happen send
+    a negative integer'''
     EXPIRED: int = -1
     INVALID: int = -2
 
     try:
-        decrypt_token: dict = jwt.decode(jwt_token, settings.SECRET_KEY, algorithms=["HS256"])
+        decrypt_token: dict = jwt.decode(
+            jwt_token, settings.SECRET_KEY, algorithms=["HS256"])
         return decrypt_token.get("sub")
     except jwt.ExpiredSignatureError:
         return EXPIRED
