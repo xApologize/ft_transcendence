@@ -29,48 +29,61 @@ async function displayUser(userContainer) {
 export async function showHome() {
   try {
     await loadHTMLPage('./js/pages/home/home.html')
-    let userContainer = document.getElementById('userDisplayEveryone')
-    displayUser(userContainer)
+    initPage()
 
     const friendsBtn = document.getElementById('friendsBtn')
     const everyoneBtn = document.getElementById('everyoneBtn')
 
     // Load online user in everyone at the start.
     document.getElementById('button-toggle').addEventListener('click', () => {
-      const rightColumn = document.getElementById('right-column')
-      const leftColumn = document.getElementById('left-column')
-      leftColumn.classList.toggle('d-none');
-      rightColumn.classList.toggle('col-md-10')
-      rightColumn.classList.toggle('col-md-12')
+      toggleLeftColumn()
     })
 
     friendsBtn.addEventListener('click', () => {
-      if (everyoneBtn.classList.contains('active')) {
-        everyoneBtn.classList.remove('active')
-      }
-
-      if (!friendsBtn.classList.contains('active')) {
-        friendsBtn.classList.add('active')
-      }
-      userContainer.innerHTML = ''
+      friendsBtnFunc(friendsBtn, everyoneBtn, userContainer)
     });
 
     everyoneBtn.addEventListener('click', async () => {
-      if (friendsBtn.classList.contains('active')) {
-        friendsBtn.classList.remove('active')
-      }
-      if (!everyoneBtn.classList.contains('active')) {
-        everyoneBtn.classList.add('active')
-      }
-      displayUser(userContainer)
+      everyoneBtnFunc(friendsBtn, everyoneBtn, userContainer)
     })
-    // document.getElementById('game').addEventListener('click', () => {
-    //   testShowGame(gameModal)
-    // });
 
   } catch (error) {
     console.error('Error fetching home.html:', error);
   }
+}
+
+function initPage() {
+  var userContainer = document.getElementById('userDisplayEveryone')
+  displayUser(userContainer)
+}
+
+function toggleLeftColumn() {
+  const rightColumn = document.getElementById('right-column')
+  const leftColumn = document.getElementById('left-column')
+  leftColumn.classList.toggle('d-none');
+  rightColumn.classList.toggle('col-md-10')
+  rightColumn.classList.toggle('col-md-12')
+}
+
+function everyoneBtnFunc(friendsBtn, everyoneBtn, userContainer) {
+  if (friendsBtn.classList.contains('active')) {
+    friendsBtn.classList.remove('active')
+  }
+  if (!everyoneBtn.classList.contains('active')) {
+    everyoneBtn.classList.add('active')
+  }
+  displayUser(userContainer)
+}
+
+function friendsBtnFunc(friendsBtn, everyoneBtn, userContainer) {
+  if (everyoneBtn.classList.contains('active')) {
+    everyoneBtn.classList.remove('active')
+  }
+
+  if (!friendsBtn.classList.contains('active')) {
+    friendsBtn.classList.add('active')
+  }
+  userContainer.innerHTML = ''
 }
 
 // async function testShowGame(gameModal) {
