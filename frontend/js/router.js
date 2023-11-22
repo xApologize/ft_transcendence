@@ -4,15 +4,16 @@ import { showGame } from './pages/game/game.js';
 import { showAbout } from './pages/about/about.js';
 import { show404 } from './pages/404/404.js';
 import { showLogin } from './pages/login/login.js';
-import { headerComponent } from './components/header/header.js'
+import { showSignUp } from './pages/signUp/signUp.js';
+import { headerComponent } from './components/header/header.js';
 import { templateComponent } from './components/template/template.js';
 import { GameModal } from './pages/home/gameModal.js'
 
 // Not currently use
 var currentRoute = "";
 
-function showPage(pageFunction) {
-  pageFunction();
+export function showPage(pageFunction) {
+    pageFunction();
 }
 
 function navigateTo(route) {
@@ -45,10 +46,10 @@ function handleRoute() {
 
 // !! Do not change the order in which it's append !!
 async function loadPage() {
-  const body = document.getElementById('content');
-  const header = await headerComponent();
-  const template = await templateComponent()
-  // const footer = await footerComponent()
+    const body = document.getElementById('content');
+    const header = await headerComponent();
+    const template = await templateComponent();
+    // const footer = await footerComponent()
 
   body.append(header)
   body.append(template)
