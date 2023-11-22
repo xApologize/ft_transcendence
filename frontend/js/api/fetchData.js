@@ -40,11 +40,11 @@ const performFetch = async (url, method, data = null) => {
     };
     try {
         const response = await fetch(url, options);
-        var return_access_token = response.headers.get('access')
+        var return_access_token = response.headers.get('jwt_access')
         if (return_access_token)
-            sessionStorage.setItem('access', return_access_token);
+            sessionStorage.setItem('jwt_access', return_access_token);
         console.log("return access Access:", return_access_token)
-        console.log(sessionStorage.getItem('access'))
+        console.log(sessionStorage.getItem('jwt_access'))
         // Refresh token will be check if reponse status is 401
         return response;
     } catch (error) {

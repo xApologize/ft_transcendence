@@ -5,9 +5,12 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views import View
 from utils.decorators import token_validation
+from utils.functions import generate_jwt
 import json
 import re
 
+REFRESH_DURATION: int = 7200
+ACCESS_DURATION: int = 30
 
 @method_decorator(csrf_exempt, name='dispatch') #- to apply to every function in the class.
 class Users(View):
@@ -64,8 +67,14 @@ class Users(View):
                 return HttpResponseBadRequest(f'User {user_data["nickname"]} already exists') # 400    
         except json.JSONDecodeError:
             return HttpResponseBadRequest('Invalid JSON data in the request body') # 400
-        return HttpResponse(f'User {user_data["nickname"]} created successfully', status=201)
-
+        # Added jwt when creating user. Refacto needed
+        response: HttpResponse =  HttpResponse(f'User {user_data["nickname"]} created successfully', status=201)
+        primary_key = User.objects.get(nickname=user.nickname).pk
+        access_token = generate_jwt(ACCESS_DURATION, primary_key)
+        refresh_token = generate_jwt(REFRESH_DURATION, primary_key)
+        response.set_cookie("refresh_jwt", refresh_token, secure=True, httponly=True)
+        response["jwt_access"] = access_token
+        return response
 
     # Delete a specific users
     def delete(self, request: HttpRequest):
