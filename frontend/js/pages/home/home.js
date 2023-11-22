@@ -60,6 +60,7 @@ async function displayUserLeftColumn() {
 
 function initPage() {
   displayUserLeftColumn()
+  // displayUserProfile() // Future component qui est actuellement dans home.html
 }
 
 ///////////////////////////////
