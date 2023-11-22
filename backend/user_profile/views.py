@@ -14,10 +14,15 @@ class Users(View):
     # Get All Users or specific users
     @token_validation
     def get(self, request: HttpRequest):
+        status = request.GET.getlist('status')
         nicknames = request.GET.getlist('nickname')
-        if not nicknames:
-            return HttpResponseBadRequest('No user given.')
-        users = User.objects.filter(nickname__in=nicknames)
+        if not nicknames and not status:
+            return HttpResponseBadRequest('No parameter.')
+
+        if nicknames:
+            users = User.objects.filter(nickname__in=nicknames)
+        elif status:
+            users = User.objects.filter(status__in=status)
         user_data = [
             {
                 'nickname': user.nickname,

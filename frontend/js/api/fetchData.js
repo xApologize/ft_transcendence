@@ -60,23 +60,25 @@ const buildApiUrl = (path, parameter = null) => {
 
 const buildParams = (parameters) => {
     const params = new URLSearchParams();
-    for (const [parameterName, parameterValue] of Object.entries(parameters)) {
-        if (parameterValue) {
-            params.append(parameterName, parameterValue);
+    if (parameters) {
+        for (const [parameterName, parameterValue] of Object.entries(parameters)) {
+            if (parameterValue) {
+                params.append(parameterName, parameterValue);
+            }
         }
     }
     return params.toString() ? params : null;
 };
 
-export const fetchUser = async (method, parameter = null, data = null) => {
+export const fetchUser = async (method, parameters = null, data = null) => {
     const path = 'user/';
-    const params = buildParams({"nickname": parameter});
+    const params = buildParams(parameters);
     const url = buildApiUrl(path, params);
+    console.log(url)
     try {
         var result = await performFetch(url, method, data);
     } catch (error) {
-        console.log("Error: " + error)
+        console.log("Error: " + error);
     }
-     return result
+    return result;
 };
-
