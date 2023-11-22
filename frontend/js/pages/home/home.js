@@ -4,6 +4,38 @@ import GameModal from './gameModal.js';
 import { userTemplateComponent } from '../../components/userTemplate/userTemplate.js'
 
 
+// Faire une fonction dans le backend pour get tout les online user, pour le everyone
+export async function showHome() {
+  try {
+    await loadHTMLPage('./js/pages/home/home.html')
+    // Load online user in everyone at the start.
+    initPage()
+
+    const friendsBtn = document.getElementById('friendsBtn')
+    const everyoneBtn = document.getElementById('everyoneBtn')
+
+    document.getElementById('button-toggle').addEventListener('click', () => {
+      toggleLeftColumn()
+    })
+
+    friendsBtn.addEventListener('click', () => {
+      friendsBtnFunc(friendsBtn, everyoneBtn)
+    });
+
+    everyoneBtn.addEventListener('click', async () => {
+      everyoneBtnFunc(friendsBtn, everyoneBtn)
+    })
+
+  } catch (error) {
+    console.error('Error fetching home.html:', error);
+  }
+}
+
+
+/////////////////////////
+// Init Page function  //
+/////////////////////////
+
 function iterateUser(templateUser, userContainer) {
   if (templateUser.length) {
     for (let i = 0; i < templateUser.length; i++) {
@@ -17,7 +49,8 @@ function iterateUser(templateUser, userContainer) {
   }
 }
 
-async function displayUser(userContainer) {
+async function displayUserLeftColumn() {
+  let userContainer = document.getElementById('userDisplayEveryone')
   const templateUser = await userTemplateComponent();
   userContainer.innerHTML = ''
   userContainer.appendChild(document.createElement('hr'));
@@ -25,37 +58,13 @@ async function displayUser(userContainer) {
 }
 
 
-// Faire une fonction dans le backend pour get tout les online user, pour le everyone
-export async function showHome() {
-  try {
-    await loadHTMLPage('./js/pages/home/home.html')
-    initPage()
-
-    const friendsBtn = document.getElementById('friendsBtn')
-    const everyoneBtn = document.getElementById('everyoneBtn')
-
-    // Load online user in everyone at the start.
-    document.getElementById('button-toggle').addEventListener('click', () => {
-      toggleLeftColumn()
-    })
-
-    friendsBtn.addEventListener('click', () => {
-      friendsBtnFunc(friendsBtn, everyoneBtn, userContainer)
-    });
-
-    everyoneBtn.addEventListener('click', async () => {
-      everyoneBtnFunc(friendsBtn, everyoneBtn, userContainer)
-    })
-
-  } catch (error) {
-    console.error('Error fetching home.html:', error);
-  }
-}
-
 function initPage() {
-  var userContainer = document.getElementById('userDisplayEveryone')
-  displayUser(userContainer)
+  displayUserLeftColumn()
 }
+
+///////////////////////////////
+//  Event Listener function  //
+///////////////////////////////
 
 function toggleLeftColumn() {
   const rightColumn = document.getElementById('right-column')
@@ -65,17 +74,17 @@ function toggleLeftColumn() {
   rightColumn.classList.toggle('col-md-12')
 }
 
-function everyoneBtnFunc(friendsBtn, everyoneBtn, userContainer) {
+function everyoneBtnFunc(friendsBtn, everyoneBtn) {
   if (friendsBtn.classList.contains('active')) {
     friendsBtn.classList.remove('active')
   }
   if (!everyoneBtn.classList.contains('active')) {
     everyoneBtn.classList.add('active')
   }
-  displayUser(userContainer)
+  displayUserLeftColumn()
 }
 
-function friendsBtnFunc(friendsBtn, everyoneBtn, userContainer) {
+function friendsBtnFunc(friendsBtn, everyoneBtn) {
   if (everyoneBtn.classList.contains('active')) {
     everyoneBtn.classList.remove('active')
   }
@@ -83,6 +92,7 @@ function friendsBtnFunc(friendsBtn, everyoneBtn, userContainer) {
   if (!friendsBtn.classList.contains('active')) {
     friendsBtn.classList.add('active')
   }
+  let userContainer = document.getElementById('userDisplayEveryone')
   userContainer.innerHTML = ''
 }
 
