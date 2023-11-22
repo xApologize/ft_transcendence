@@ -1,4 +1,5 @@
 import { loadHTMLPage } from '../../api/fetchData.js';
+import { navigateTo } from '../../router.js'
 
 export async function showLogin() {
     try {
@@ -8,11 +9,11 @@ export async function showLogin() {
             console.log('please work');
             login();
         });
-        // document
-        //     .getElementById('signUpButton')
-        //     .addEventListener('click', () => {
-        //         navigateTo('/signUp');
-        //     });
+        document
+            .getElementById('signUpButton')
+            .addEventListener('click', () => {
+                navigateTo('/signUp');
+            });
     } catch (error) {
         console.error('Error fetching home.html:', error);
     }

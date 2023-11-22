@@ -16,7 +16,7 @@ function showPage(pageFunction) {
     pageFunction();
 }
 
-function navigateTo(route) {
+export function navigateTo(route) {
   if (route === currentRoute)
     return ;
   history.pushState({ GoingTo: route}, null, route);
