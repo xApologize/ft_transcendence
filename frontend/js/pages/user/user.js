@@ -62,14 +62,13 @@ async function createUser() {
 ///////
 
 async function getUser() {
-<<<<<<< HEAD
     const nicknameInput = document.getElementById('nicknameInput').value;
     if (!nicknameInput) {
         alert('Fill in the nickname');
         return;
     }
 
-    let userResponse = await fetchUser('GET', nicknameInput);
+    let userResponse = await fetchUser('GET', { nickname: nicknameInput });
     if (userResponse.ok) {
         const user = await assembleUser(userResponse);
         displayUsers(user);
@@ -78,35 +77,17 @@ async function getUser() {
         const textResponse = await userResponse.text();
         displayErrorMessage(textResponse);
     }
-=======
-  const nicknameInput = document.getElementById('nicknameInput').value;
-  if (!nicknameInput) {
-    alert("Fill in the nickname");
-    return;
-  }
-
-  let userResponse = await fetchUser('GET', { 'nickname': nicknameInput})
-  if (userResponse.ok) {
-    const user = await assembleUser(userResponse);
-    displayUsers(user);
-    displaySuccessMessage('User Found !', 'successUser')
-  } else {
-    const textResponse = await userResponse.text()
-    displayErrorMessage(textResponse);
-  }
->>>>>>> Jacob
 }
 
 ///////
 
 async function deleteUser() {
-<<<<<<< HEAD
     const nicknameInput = document.getElementById('deleteInput').value;
     if (!nicknameInput) {
         alert('Fill in the nickname');
         return;
     }
-    let userResponse = await fetchUser('DELETE', nicknameInput);
+    let userResponse = await fetchUser('DELETE', { nickname: nicknameInput });
     if (userResponse.ok) {
         displaySuccessMessage(
             `User ${nicknameInput} deleted successfully!`,
@@ -116,20 +97,6 @@ async function deleteUser() {
         const textResponse = await userResponse.text();
         displayErrorMessage(textResponse);
     }
-=======
-  const nicknameInput = document.getElementById('deleteInput').value;
-  if (!nicknameInput) {
-    alert("Fill in the nickname");
-    return;
-  }
-  let userResponse = await fetchUser('DELETE', { 'nickname': nicknameInput})
-  if (userResponse.ok) {
-    displaySuccessMessage(`User ${nicknameInput} deleted successfully!`, 'deleteUserMsg')
-  } else {
-    const textResponse = await userResponse.text()
-    displayErrorMessage(textResponse)
-  }
->>>>>>> Jacob
 }
 
 ///////
