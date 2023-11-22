@@ -64,7 +64,7 @@ async function getUser() {
     return;
   }
 
-  let userResponse = await fetchUser('GET', nicknameInput)
+  let userResponse = await fetchUser('GET', { 'nickname': nicknameInput})
   if (userResponse.ok) {
     const user = await assembleUser(userResponse);
     displayUsers(user);
@@ -83,7 +83,7 @@ async function deleteUser() {
     alert("Fill in the nickname");
     return;
   }
-  let userResponse = await fetchUser('DELETE', nicknameInput)
+  let userResponse = await fetchUser('DELETE', { 'nickname': nicknameInput})
   if (userResponse.ok) {
     displaySuccessMessage(`User ${nicknameInput} deleted successfully!`, 'deleteUserMsg')
   } else {

@@ -1,7 +1,8 @@
-import { loadHTMLPage } from '../../api/fetchData.js';
+import { fetchUser, loadHTMLPage } from '../../api/fetchData.js';
 import { World } from '../game/src/World.js';
 import GameModal from './gameModal.js';
 import { userTemplateComponent } from '../../components/userTemplate/userTemplate.js'
+import { assembleUser } from '../../api/assembler.js';
 
 
 // Faire une fonction dans le backend pour get tout les online user, pour le everyone
@@ -49,12 +50,34 @@ function iterateUser(templateUser, userContainer) {
   }
 }
 
-async function displayUserLeftColumn() {
-  let userContainer = document.getElementById('userDisplayEveryone')
+async function displayOnlineUser(userContainer) {
+  const allUsers = await fetchUser("GET", {'status':'ONL'});
+  const objectAllUsers = await assembleUser(allUsers)
   const templateUser = await userTemplateComponent();
-  userContainer.innerHTML = ''
-  userContainer.appendChild(document.createElement('hr'));
-  iterateUser(templateUser, userContainer)
+
+  objectAllUsers.forEach(user => {
+    userContainer.appendChild(document.createElement('hr'));
+
+    const clonedUserTemplate = templateUser.cloneNode(true);
+
+    const avatarElement = clonedUserTemplate.querySelector('#user-avatar');
+    const nameElement = clonedUserTemplate.querySelector('#user-name');
+    const statusElement = clonedUserTemplate.querySelector('#user-status');
+
+    avatarElement.src = user.avatar;
+    nameElement.textContent = user.nickname;
+    statusElement.textContent = user.status;
+
+    userContainer.appendChild(clonedUserTemplate);
+  });
+}
+
+async function displayUserLeftColumn() {
+  let userContainer = document.getElementById('userDisplayEveryone');
+  userContainer.innerHTML = '';
+  // userContainer.appendChild(document.createElement('hr'));
+
+  await displayOnlineUser(userContainer)
 }
 
 
