@@ -4,6 +4,38 @@ import GameModal from './gameModal.js';
 import { userTemplateComponent } from '../../components/userTemplate/userTemplate.js'
 
 
+// Faire une fonction dans le backend pour get tout les online user, pour le everyone
+export async function showHome() {
+  try {
+    await loadHTMLPage('./js/pages/home/home.html')
+    // Load online user in everyone at the start.
+    initPage()
+
+    const friendsBtn = document.getElementById('friendsBtn')
+    const everyoneBtn = document.getElementById('everyoneBtn')
+
+    document.getElementById('button-toggle').addEventListener('click', () => {
+      toggleLeftColumn()
+    })
+
+    friendsBtn.addEventListener('click', () => {
+      friendsBtnFunc(friendsBtn, everyoneBtn)
+    });
+
+    everyoneBtn.addEventListener('click', async () => {
+      everyoneBtnFunc(friendsBtn, everyoneBtn)
+    })
+
+  } catch (error) {
+    console.error('Error fetching home.html:', error);
+  }
+}
+
+
+/////////////////////////
+// Init Page function  //
+/////////////////////////
+
 function iterateUser(templateUser, userContainer) {
   if (templateUser.length) {
     for (let i = 0; i < templateUser.length; i++) {
@@ -17,7 +49,8 @@ function iterateUser(templateUser, userContainer) {
   }
 }
 
-async function displayUser(userContainer) {
+async function displayUserLeftColumn() {
+  let userContainer = document.getElementById('userDisplayEveryone')
   const templateUser = await userTemplateComponent();
   userContainer.innerHTML = ''
   userContainer.appendChild(document.createElement('hr'));
@@ -25,52 +58,47 @@ async function displayUser(userContainer) {
 }
 
 
-// Faire une fonction dans le backend pour get tout les online user, pour le everyone
-export async function showHome() {
-  try {
-    await loadHTMLPage('./js/pages/home/home.html')
-    let userContainer = document.getElementById('userDisplayEveryone')
-    displayUser(userContainer)
+function initPage() {
+  displayUserLeftColumn()
+  // displayUserProfile() // Future component qui est actuellement dans home.html
+  // diplayLeaderBoard() // not done
+}
 
-    const friendsBtn = document.getElementById('friendsBtn')
-    const everyoneBtn = document.getElementById('everyoneBtn')
+///////////////////////////////
+//  Event Listener function  //
+///////////////////////////////
 
-    // Load online user in everyone at the start.
-    document.getElementById('button-toggle').addEventListener('click', () => {
-      const rightColumn = document.getElementById('right-column')
-      const leftColumn = document.getElementById('left-column')
-      leftColumn.classList.toggle('d-none');
-      rightColumn.classList.toggle('col-md-10')
-      rightColumn.classList.toggle('col-md-12')
-    })
+function toggleLeftColumn() {
+  const rightColumn = document.getElementById('right-column')
+  const leftColumn = document.getElementById('left-column')
+  const ownUserCard = document.getElementById('own-user-card')
 
-    friendsBtn.addEventListener('click', () => {
-      if (everyoneBtn.classList.contains('active')) {
-        everyoneBtn.classList.remove('active')
-      }
+  ownUserCard.classList.toggle('d-none')
+  leftColumn.classList.toggle('d-none');
+  rightColumn.classList.toggle('col-md-10')
+  rightColumn.classList.toggle('col-md-12')
+}
 
-      if (!friendsBtn.classList.contains('active')) {
-        friendsBtn.classList.add('active')
-      }
-      userContainer.innerHTML = ''
-    });
-
-    everyoneBtn.addEventListener('click', async () => {
-      if (friendsBtn.classList.contains('active')) {
-        friendsBtn.classList.remove('active')
-      }
-      if (!everyoneBtn.classList.contains('active')) {
-        everyoneBtn.classList.add('active')
-      }
-      displayUser(userContainer)
-    })
-    // document.getElementById('game').addEventListener('click', () => {
-    //   testShowGame(gameModal)
-    // });
-
-  } catch (error) {
-    console.error('Error fetching home.html:', error);
+function everyoneBtnFunc(friendsBtn, everyoneBtn) {
+  if (friendsBtn.classList.contains('active')) {
+    friendsBtn.classList.remove('active')
   }
+  if (!everyoneBtn.classList.contains('active')) {
+    everyoneBtn.classList.add('active')
+  }
+  displayUserLeftColumn()
+}
+
+function friendsBtnFunc(friendsBtn, everyoneBtn) {
+  if (everyoneBtn.classList.contains('active')) {
+    everyoneBtn.classList.remove('active')
+  }
+
+  if (!friendsBtn.classList.contains('active')) {
+    friendsBtn.classList.add('active')
+  }
+  let userContainer = document.getElementById('userDisplayEveryone')
+  userContainer.innerHTML = ''
 }
 
 // async function testShowGame(gameModal) {
