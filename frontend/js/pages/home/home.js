@@ -37,25 +37,13 @@ export async function showHome() {
 // Init Page function  //
 /////////////////////////
 
-function iterateUser(templateUser, userContainer) {
-  if (templateUser.length) {
-    for (let i = 0; i < templateUser.length; i++) {
-      userContainer.appendChild(templateUser[i].cloneNode(true));
-      if (i < templateUser.length - 1) {
-        userContainer.appendChild(document.createElement('hr'));
-      }
-    }
-  } else {
-    userContainer.appendChild(templateUser.cloneNode(true));
-  }
-}
-
 async function displayOnlineUser(userContainer) {
   const allUsers = await fetchUser("GET", {'status':'ONL'});
   const objectAllUsers = await assembleUser(allUsers)
   const templateUser = await userTemplateComponent();
 
   objectAllUsers.forEach(user => {
+    console.log(user)
     userContainer.appendChild(document.createElement('hr'));
 
     const clonedUserTemplate = templateUser.cloneNode(true);
@@ -75,7 +63,6 @@ async function displayOnlineUser(userContainer) {
 async function displayUserLeftColumn() {
   let userContainer = document.getElementById('userDisplayEveryone');
   userContainer.innerHTML = '';
-  // userContainer.appendChild(document.createElement('hr'));
 
   await displayOnlineUser(userContainer)
 }
