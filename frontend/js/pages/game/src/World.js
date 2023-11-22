@@ -10,7 +10,7 @@ import { Player1InputMap, Player2InputMap } from './systems/InputMaps.js';
 import { Terrain } from './components/Terrain.js';
 import { Ball } from './components/Ball.js';
 import { Player } from './components/Player.js';
-import { Score } from './components/Score.js';
+import { Score3D } from './components/3DScore.js';
 import {
 	CapsuleGeometry,
 	Color,
@@ -21,7 +21,8 @@ import {
 	MeshStandardMaterial,
 	SphereGeometry,
 	Vector2,
-	Vector3 } from 'three';
+	Vector3
+} from 'three';
 
 let scene;
 let camera;
@@ -61,15 +62,15 @@ class World {
 		scene = createScene();
 		renderer = createRenderer();
 		loop = new Loop(camera, scene, renderer);
-		scoreUI = new Score();
+		scoreUI = new Score3D();
 	}
-
+	
 	createContainer( container ) {
-		container.append( scoreUI.div );
+		// container.append( scoreUI.div );
 		container.append( renderer.domElement );
 		const resizer = new Resizer(container, camera, renderer);
 	}
-
+	
 	createGame() {
 		this.terrain = new Terrain( new Vector2(18, 10), 0.5, 0.4 );
 
@@ -111,6 +112,10 @@ class World {
 
 	static remove( mesh ) {
 		scene.remove( mesh );
+	}
+
+	static scoreAdd( playerId ) {
+		scoreUI.add( playerId );
 	}
 }
 

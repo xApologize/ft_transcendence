@@ -1,8 +1,8 @@
 import { Mesh } from 'three';
 import { Layers } from '../systems/Layers.js';
-import { Score } from './Score.js';
 import { Collider } from '../modules/Collider.js';
 import { Renderer } from '../modules/Renderer.js';
+import { World } from '../World.js';
 
 class GoalZone extends Mesh {
 	constructor( geometry, material, playerId ) {
@@ -17,7 +17,8 @@ class GoalZone extends Mesh {
 
 	onCollision() {
 		// console.log("GOAL! Player " + this.playerId + " missed the ball.");
-		Score.scoreAdd( this.playerId );
+		// Score.scoreAdd( this.playerId );
+		World.scoreAdd( this.playerId );
 	}
 
 	delete() {
