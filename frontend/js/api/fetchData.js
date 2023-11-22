@@ -27,24 +27,24 @@ export const loadHTMLComponent = async (filePath) => {
 }
 
 const performFetch = async (url, method, data = null) => {
-    // const accessToken = "Here_is_my_token";
-    var accessTokenLive = sessionStorage.getItem('access');
+    var accessTokenLive = sessionStorage.getItem('jwt');
     const options = {
         method,
         credentials: 'include',
         headers: {
-          ...(accessTokenLive ? { 'access': `${accessTokenLive}` } : {}),
+          ...(accessTokenLive ? { 'jwt': `${accessTokenLive}` } : {}),
           ...(data ? { 'Content-Type': 'application/json' } : {}),
         },
         body: data ? JSON.stringify(data) : null,
     };
     try {
         const response = await fetch(url, options);
-        var return_access_token = response.headers.get('jwt_access')
+        var return_access_token = response.headers.get('jwt')
+        console.log("Token", return_access_token)
         if (return_access_token)
-            sessionStorage.setItem('jwt_access', return_access_token);
+            sessionStorage.setItem('jwt', return_access_token);
         console.log("return access Access:", return_access_token)
-        console.log(sessionStorage.getItem('jwt_access'))
+        console.log(sessionStorage.getItem('jwt'))
         // Refresh token will be check if reponse status is 401
         return response;
     } catch (error) {
