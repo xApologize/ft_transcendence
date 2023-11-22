@@ -3,7 +3,8 @@ import { loadHTMLPage } from '../../api/fetchData.js';
 
 export async function showSignUp() {
     try {
-        await loadHTMLPage('./js/pages/SignUp/signUp.html');
+        await loadHTMLPage('./js/pages/signUp/signUp.html');
+        console.log('here!')
         document
             .getElementById('signUpButton')
             .addEventListener('click', () => {

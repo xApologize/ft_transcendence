@@ -19,11 +19,11 @@ export async function showLogin() {
 }
 
 async function login() {
-    const email = document.getElementById('inputEmail').value;
-    const password = document.getElementById('inputPassword').value;
-    if (!email || !password) {
+    const username = document.getElementById('usernameInput').value;
+    const password = document.getElementById('passwordInput').value;
+    if (!username || !password) {
         alert('Fill the form.');
         return;
     }
-    console.log('login with: ', email, password);
+    console.log('login with: ', username, password);
 }
