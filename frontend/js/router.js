@@ -4,15 +4,14 @@ import { showGame } from './pages/game/game.js';
 import { showAbout } from './pages/about/about.js';
 import { show404 } from './pages/404/404.js';
 import { showLogin } from './pages/login/login.js';
-import { showSignUp } from './pages/signUp/signUp.js';
 import { headerComponent } from './components/header/header.js';
 import { templateComponent } from './components/template/template.js';
-import { GameModal } from './pages/home/gameModal.js'
+import { GameModal } from './pages/home/gameModal.js';
 
 // Not currently use
-var currentRoute = "";
+var currentRoute = '';
 
-export function showPage(pageFunction) {
+function showPage(pageFunction) {
     pageFunction();
 }
 
@@ -57,7 +56,6 @@ async function loadPage() {
   navigateTo(path)
 }
 
-
 // This 'if' will be trigger when going directly to /game OR refresh when inside a game
 // Check if he currently is in a game?
 // Redirect to home if not ? Too complicated with socket ?
@@ -85,5 +83,5 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function handlePopState(event) {
-  handleRoute();
+    handleRoute();
 }

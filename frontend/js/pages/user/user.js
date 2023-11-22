@@ -49,14 +49,14 @@ async function createUser() {
         admin: false, // Set the default admin value here
     };
 
-  // console.log(`'${userData['nickname']}'`)
-  const users = await fetchUser('POST', null, userData);
-  const responseText = await users.text();
-  if (users.ok) {
-    displaySuccessMessage(responseText, 'successCreate')
-  } else {
-    displayErrorMessage(responseText)
-  }
+    // console.log(`'${userData['nickname']}'`)
+    const users = await fetchUser('POST', null, userData);
+    const responseText = await users.text();
+    if (users.ok) {
+        displaySuccessMessage(responseText, 'successCreate');
+    } else {
+        displayErrorMessage(responseText);
+    }
 }
 
 ///////
