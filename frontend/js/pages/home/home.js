@@ -69,6 +69,9 @@ function initPage() {
 function toggleLeftColumn() {
   const rightColumn = document.getElementById('right-column')
   const leftColumn = document.getElementById('left-column')
+  const ownUserCard = document.getElementById('own-user-card')
+
+  ownUserCard.classList.toggle('d-none')
   leftColumn.classList.toggle('d-none');
   rightColumn.classList.toggle('col-md-10')
   rightColumn.classList.toggle('col-md-12')
