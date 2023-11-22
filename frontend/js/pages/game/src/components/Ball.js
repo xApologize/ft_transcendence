@@ -66,20 +66,21 @@ class Ball extends InstancedMesh {
 
 		// Process collision on closerHit
 		if ( closerHit != undefined ) {
-			if (closerHit.object.layers.isEnabled( Layers.Player )) {
+			if ( typeof closerHit.object.onCollision === "function" )
+				closerHit.object.onCollision( this );
+			if ( closerHit.object.layers.isEnabled( Layers.Player ) ) {
 				vars.dir.set( -Math.sign(vars.dir.x), closerHit.point.y - closerHit.object.position.y, 0 );
 				vars.dir.normalize();
 				vars.speed += 1;
-				// console.log("PlayerHit!");
-			} else if (closerHit.object.layers.isEnabled( Layers.Goal )) {
+				console.log("ball hit");
+			} else if ( closerHit.object.layers.isEnabled( Layers.Goal ) ) {
 				vars.dir = new Vector3(MathUtils.randFloat( -1, 1 ), MathUtils.randFloat( -0.5, 0.5 ), 0);
 				vars.dir.normalize();
 				vars.speed = 5;
-				closerHit.object.onCollision( this );
 				vars.pos.set( MathUtils.randFloat( -2, 2 ), MathUtils.randFloat( -1, 1 ), 0 );
 				return;
 			} else {
-				vars.dir.subVectors(vars.dir, closerHit.normal.multiplyScalar(2 * (vars.dir.dot(closerHit.normal))));
+				vars.dir.reflect( closerHit.normal );
 			}
 			vars.pos.copy( closerHit.point.clone().sub(offset) );
 			return this.calcCollision( vars, dist - closerHit.distance, maxRecursion - 1 );
@@ -90,7 +91,6 @@ class Ball extends InstancedMesh {
 
 	update( dt ) {
 		for (let i = 0; i < this.count; i++) {
-
 			this.calcCollision( this.vars[i], this.vars[i].speed * dt, 5 );
 			this.matrix.compose(
 				this.vars[i].pos,

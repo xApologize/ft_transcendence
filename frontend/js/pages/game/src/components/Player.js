@@ -18,6 +18,7 @@ class Player extends Mesh {
 		this.collider = new Collider( this );
 
 		this.position.copy( position );
+		// this.lookAt( new Vector3() );
 		this.speed = 5;
 
 		this.setupInputs( inputMap );
@@ -46,6 +47,10 @@ class Player extends Mesh {
 		} else {
 			this.position.add(movement.multiplyScalar( this.speed * dt ));
 		}
+	}
+
+	onCollision() {
+		console.log("hit");
 	}
 
 	onKeyDown( event, inputMap ) {

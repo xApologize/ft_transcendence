@@ -1,12 +1,12 @@
 import { Loop } from "../systems/Loop.js";
+import { Component } from "./Component.js";
 
-class Updatable {
-	constructor( obj ) {
-		this.obj = obj;
+class Updatable extends Component {
+	_onEnabled() {
 		Loop.addUpdatable( this.obj );
 	}
 
-	delete() {
+	_onDisabled() {
 		Loop.removeUpdatable( this.obj );
 	}
 }

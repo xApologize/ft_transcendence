@@ -22,9 +22,9 @@ class Loop {
 		const delta = clock.getDelta();
 		for( const object of updatables ) {
 			if ( typeof object.update === "function" )
-				object.update(delta);
+				object.update( delta );
 			else
-				console.warn("Weird element in Updatable tab !");
+				console.warn("update() called but undefined!");
 		}
 	}
 

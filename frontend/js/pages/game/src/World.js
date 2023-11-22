@@ -81,7 +81,7 @@ class World {
 		this.players.push( new Player( this.g_caps, this.m_white, new Vector3( -7.2, 0, 0 ), Player1InputMap ) );
 		this.players.push( new Player( this.g_caps, this.m_white, new Vector3(  7.2, 0, 0 ), Player2InputMap ) );
 
-		this.balls = new Ball( this.g_sphere, this.m_white, 99 );
+		this.balls = new Ball( this.g_sphere, this.m_white, 1 );
 
 		// this.particles = new InstancedMesh( new DodecahedronGeometry( 0.2, 0 ), this.m_white, 10000 );
 		// const matrix = new Matrix4();

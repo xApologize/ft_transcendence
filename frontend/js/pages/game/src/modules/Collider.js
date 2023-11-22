@@ -1,16 +1,17 @@
+import { Component } from "./Component.js";
+
 const solids = []
 
-class Collider {
-	constructor( obj ) {
-		this.obj = obj;
-		solids.push( this.obj );
-	}
-
+class Collider extends Component {
 	onCollision() {
 		this.obj.onCollision();
 	}
 
-	delete() {
+	_onEnabled() {
+		solids.push( this.obj );
+	}
+
+	_onDisabled() {
 		solids.pop( this.obj );
 	}
 
