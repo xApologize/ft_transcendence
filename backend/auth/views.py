@@ -23,7 +23,7 @@ class Login(View):
             return JsonResponse({'error': 'User not found in the database.'}, status=404)
 
         if user.password != password:
-            return JsonResponse({'error': 'Invalid credentials.'}, status=401)
+            return JsonResponse({'error': 'Invalid credentials.'}, status=400)
         else:
             user.status = "ONL"
             user.save()
