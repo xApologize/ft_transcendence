@@ -104,9 +104,10 @@ class Users(View):
             return HttpResponseBadRequest(f'Nickname {user_data["nickname"]} is already in use.') # 400
         return HttpResponse(f'User with nickname {nickname} updated successfully.', status=200)
 
-                # if all(
-                #     field in user_data and
-                #     user_data[field] and
-                #     not any(c.isspace() for c in user_data[field])
-                #     for field in required_fields
-                # ):
+
+@method_decorator(csrf_exempt, name='dispatch') #- to apply to every function in the class.
+class Login(View):
+    def post(self, request:HttpRequest):
+        login_data = json.loads(request.body)
+        print(login_data)
+        return HttpResponse("wouah")
