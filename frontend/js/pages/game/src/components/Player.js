@@ -18,7 +18,12 @@ class Player extends Mesh {
 		this.collider = new Collider( this );
 
 		this.position.copy( position );
-		// this.lookAt( new Vector3() );
+
+		const from = new Vector2( this.position.x, this.position.y );
+		this.rotation.set( 0, 0, from.angle() );
+		this.dir = new Vector3( 1, 0, 0 );
+		this.dir.applyQuaternion( this.quaternion );
+
 		this.speed = 5;
 
 		this.setupInputs( inputMap );
@@ -49,8 +54,10 @@ class Player extends Mesh {
 		}
 	}
 
-	onCollision() {
-		console.log("hit");
+	onCollision( hit ) {
+		// console.log("hit");
+		// hit.vars.dir.reflect( closerHit.normal );
+
 	}
 
 	onKeyDown( event, inputMap ) {

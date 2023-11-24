@@ -26,7 +26,8 @@ class Ball extends InstancedMesh {
 			var x = {
 				pos: new Vector3( MathUtils.randFloat( -4, 4 ), MathUtils.randFloat( -2, 2 ), 0 ),
 				dir: new Vector3( MathUtils.randFloat( -1, 1 ), MathUtils.randFloat( -0.5, 0.5 ), 0 ).normalize(),
-				speed: 5
+				speed: 5,
+				colliding: undefined
 			}
 			this.vars[i] = x;
 		}
@@ -44,8 +45,10 @@ class Ball extends InstancedMesh {
 		// if (dist < 0)
 		// 	dist = 0;
 
-		if ( maxRecursion <= 0 )
+		if ( maxRecursion <= 0 ) {
+			console.warn( "Collision Recursion forced stop" );
 			return;
+		}
 
 		// Generate Rays
 		let closerHit = undefined;
@@ -65,27 +68,37 @@ class Ball extends InstancedMesh {
 			}
 		}
 
+		if ( closerHit != undefined && vars.colliding != undefined )
+			console.warn( "Avoided Too many collisions " );
+
 		// Process collision on closerHit
-		if ( closerHit != undefined ) {
+		if ( closerHit != undefined && vars.colliding != closerHit.object ) {
 			if ( typeof closerHit.object.onCollision === "function" )
 				closerHit.object.onCollision( this );
-			if ( closerHit.object.layers.isEnabled( Layers.Player ) ) {
-				vars.dir.set( -Math.sign(vars.dir.x), closerHit.point.y - closerHit.object.position.y, 0 );
-				vars.dir.normalize();
-				vars.speed += 1;
-				console.log("ball hit");
-			} else if ( closerHit.object.layers.isEnabled( Layers.Goal ) ) {
+			vars.colliding = closerHit.object;
+			// if ( closerHit.object.layers.isEnabled( Layers.Player ) ) {
+			// 	if ( vars.dir.dot( closerHit.object.dir ) > 0 ) {
+			// 		vars.dir.set( -Math.sign(vars.dir.x), closerHit.point.y - closerHit.object.position.y, 0 );
+			// 		vars.dir.normalize();
+					vars.speed += 1;
+			// 	}
+			// 	vars.pos.add( vars.dir.clone().multiplyScalar( dist ) );
+			// 	return;
+			/*} else*/ if ( closerHit.object.layers.isEnabled( Layers.Goal ) ) {
 				vars.dir = new Vector3(MathUtils.randFloat( -1, 1 ), MathUtils.randFloat( -0.5, 0.5 ), 0);
 				vars.dir.normalize();
 				vars.speed = 5;
 				vars.pos.set( MathUtils.randFloat( -2, 2 ), MathUtils.randFloat( -1, 1 ), 0 );
 				return;
 			} else {
+				closerHit.normal.setZ( 0 );
 				vars.dir.reflect( closerHit.normal );
+				vars.dir.normalize();
 			}
 			vars.pos.copy( closerHit.point.clone().sub(offset) );
 			return this.calcCollision( vars, dist - closerHit.distance, maxRecursion - 1 );
 		}
+		vars.colliding = undefined;
 
 		vars.pos.add( vars.dir.clone().multiplyScalar( dist ) );
 	}
@@ -104,17 +117,19 @@ class Ball extends InstancedMesh {
 			this.instanceMatrix.needsUpdate = true;
 	
 			// Reset if OOB
-			if ( Math.abs(this.position.x) > 8 || Math.abs(this.position.y) > 5 ) {
-				this.reset();
+			if ( Math.abs( this.vars[i].pos.x ) > 8 || Math.abs( this.vars[i].pos.y ) > 5 ) {
+				console.error( "OOB" );
+				this.reset( i );
 			}
 		}
 	}
 
-	reset() {
-		this.position.set(MathUtils.randFloat( -2, 2 ), MathUtils.randFloat( -1, 1 ), -2);
-		this.dir = new Vector3(MathUtils.randFloat( -1, 1 ), MathUtils.randFloat( -0.5, 0.5 ), 0);
-		this.dir.normalize();
-		this.speed = 5;
+	reset( i ) {
+		console.log( this.vars[i] );
+		this.vars[i].pos.set(MathUtils.randFloat( -2, 2 ), MathUtils.randFloat( -1, 1 ), -2);
+		this.vars[i].dir = new Vector3(MathUtils.randFloat( -1, 1 ), MathUtils.randFloat( -0.5, 0.5 ), 0);
+		this.vars[i].dir.normalize();
+		this.vars[i].speed = 5;
 	}
 
 	delete() {
