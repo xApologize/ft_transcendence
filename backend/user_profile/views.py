@@ -54,8 +54,6 @@ class Users(View):
                 # does not contain space
                 if any(' ' in user_data.get(field, '') for field in ['nickname', 'email', 'avatar', 'password']):
                     return HttpResponseBadRequest('Field contain space') 
-                print(f"'{user_data['nickname']}'")
-                print(f"'{user_data['email']}'")
                 user = User.objects.create(
                     nickname=user_data['nickname'],
                     email=user_data['email'],
