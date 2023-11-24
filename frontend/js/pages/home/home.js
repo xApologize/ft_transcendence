@@ -1,7 +1,7 @@
 import { fetchUser, loadHTMLPage } from '../../api/fetchData.js';
 import { World } from '../game/src/World.js';
 import GameModal from './gameModal.js';
-import { userTemplateComponent } from '../../components/userTemplate/userTemplate.js'
+import { userTemplateComponent } from '../../components/userTemplate/userTemplate.js';
 import { assembleUser } from '../../api/assembler.js';
 
 // Gérer BACK quand model open.
@@ -13,26 +13,24 @@ export async function showHome() {
     var playModalClass = initModal()
     initPage()
 
-    const friendsBtn = document.getElementById('friendsBtn')
-    const everyoneBtn = document.getElementById('everyoneBtn')
+        const friendsBtn = document.getElementById('friendsBtn');
+        const everyoneBtn = document.getElementById('everyoneBtn');
 
     document.getElementById('middleBtnRight').addEventListener('click', () => {
       gameChoice(playModalClass)
     })
 
-    friendsBtn.addEventListener('click', () => {
-      friendsBtnFunc(friendsBtn, everyoneBtn)
-    });
+        friendsBtn.addEventListener('click', () => {
+            friendsBtnFunc(friendsBtn, everyoneBtn);
+        });
 
-    everyoneBtn.addEventListener('click', async () => {
-      everyoneBtnFunc(friendsBtn, everyoneBtn)
-    })
-
-  } catch (error) {
-    console.error('Error fetching home.html:', error);
-  }
+        everyoneBtn.addEventListener('click', async () => {
+            everyoneBtnFunc(friendsBtn, everyoneBtn);
+        });
+    } catch (error) {
+        console.error('Error fetching home.html:', error);
+    }
 }
-
 
 /////////////////////////
 // Init Page function  //
@@ -66,10 +64,10 @@ async function displayOnlineUser(userContainer) {
 }
 
 async function displayUserLeftColumn() {
-  let userContainer = document.getElementById('userDisplayEveryone');
-  userContainer.innerHTML = '';
+    let userContainer = document.getElementById('userDisplayEveryone');
+    userContainer.innerHTML = '';
 
-  await displayOnlineUser(userContainer)
+    await displayOnlineUser(userContainer);
 }
 
 function initModal() {
@@ -84,9 +82,9 @@ function initModal() {
 
 
 function initPage() {
-  displayUserLeftColumn()
-  // displayUserProfile() // Future component qui est actuellement dans home.html
-  // diplayLeaderBoard() // not done
+    displayUserLeftColumn();
+    // displayUserProfile() // Future component qui est actuellement dans home.html
+    // diplayLeaderBoard() // not done
 }
 
 ///////////////////////////////
@@ -104,25 +102,25 @@ function gameChoice(playModalClass) {
 }
 
 function everyoneBtnFunc(friendsBtn, everyoneBtn) {
-  if (friendsBtn.classList.contains('active')) {
-    friendsBtn.classList.remove('active')
-  }
-  if (!everyoneBtn.classList.contains('active')) {
-    everyoneBtn.classList.add('active')
-  }
-  displayUserLeftColumn()
+    if (friendsBtn.classList.contains('active')) {
+        friendsBtn.classList.remove('active');
+    }
+    if (!everyoneBtn.classList.contains('active')) {
+        everyoneBtn.classList.add('active');
+    }
+    displayUserLeftColumn();
 }
 
 function friendsBtnFunc(friendsBtn, everyoneBtn) {
-  if (everyoneBtn.classList.contains('active')) {
-    everyoneBtn.classList.remove('active')
-  }
+    if (everyoneBtn.classList.contains('active')) {
+        everyoneBtn.classList.remove('active');
+    }
 
-  if (!friendsBtn.classList.contains('active')) {
-    friendsBtn.classList.add('active')
-  }
-  let userContainer = document.getElementById('userDisplayEveryone')
-  userContainer.innerHTML = ''
+    if (!friendsBtn.classList.contains('active')) {
+        friendsBtn.classList.add('active');
+    }
+    let userContainer = document.getElementById('userDisplayEveryone');
+    userContainer.innerHTML = '';
 }
 
 

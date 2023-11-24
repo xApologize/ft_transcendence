@@ -2,6 +2,7 @@ import { showHome } from './pages/home/home.js';
 import { showUser } from './pages/user/user.js';
 import { showGame } from './pages/game/game.js';
 import { showAbout } from './pages/about/about.js';
+import { showSignUp } from './pages/signUp/signUp.js';
 import { show404 } from './pages/404/404.js';
 import { showLogin } from './pages/login/login.js';
 import { showSignUp } from './pages/signUp/signUp.js'
