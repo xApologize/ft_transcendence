@@ -4,17 +4,13 @@ import GameModal from './gameModal.js';
 import { userTemplateComponent } from '../../components/userTemplate/userTemplate.js'
 import { assembleUser } from '../../api/assembler.js';
 
+// Gérer BACK quand model open.
+// CHAQUE fois que la page s'ouvre, se login pour qu'il y ai au moins un push history ?
 
-// Faire une fonction dans le backend pour get tout les online user, pour le everyone
 export async function showHome() {
   try {
     await loadHTMLPage('./js/pages/home/home.html')
-    var playModalId = document.getElementById("playModal");
-    var playModalClass = new bootstrap.Modal(playModalId, {
-      backdrop: 'static',  // Set to 'static' for a static backdrop
-      keyboard: false       // Set to false to disable keyboard events
-  });
-    // Load online user in everyone at the start.
+    var playModalClass = initModal()
     initPage()
 
     const friendsBtn = document.getElementById('friendsBtn')
@@ -72,6 +68,16 @@ async function displayUserLeftColumn() {
   await displayOnlineUser(userContainer)
 }
 
+function initModal() {
+  var playModalId = document.getElementById("playModal");
+  var playModalClass = new bootstrap.Modal(playModalId, {
+    backdrop: 'static',  // Set to 'static' for a static backdrop
+    keyboard: false       // Set to false to disable keyboard events
+  });
+
+  return playModalClass
+}
+
 
 function initPage() {
   displayUserLeftColumn()
@@ -115,11 +121,6 @@ function friendsBtnFunc(friendsBtn, everyoneBtn) {
   userContainer.innerHTML = ''
 }
 
-// async function testShowGame(gameModal) {
-//     gameModal.setTitle('Game')
-//     gameModal.openModal();
-//     gameModal.launchWorld()
-// }
 
 
 

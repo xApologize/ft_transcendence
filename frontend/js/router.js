@@ -85,5 +85,20 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function handlePopState(event) {
-    handleRoute();
+  closeModal()
+  handleRoute();
+}
+
+function closeModal() {
+  const modal = document.getElementById("playModal");
+  if (modal) {
+    if (modal.classList.contains("show")) {
+      modal.classList.remove("show");
+      document.body.classList.remove("modal-open");
+      const backdrop = document.querySelector(".modal-backdrop");
+      if (backdrop) {
+        backdrop.remove();
+      }
+    }
+  }
 }
