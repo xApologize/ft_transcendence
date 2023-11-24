@@ -31,8 +31,7 @@ async function signUp() {
         nickname,
         email,
         avatar,
-        admin: false, // Set the default admin value here
-        password: password,
+        password,
     };
 
     console.log(`'${userData['nickname']}'`);
@@ -40,6 +39,8 @@ async function signUp() {
     const responseText = await users.text();
     if (!users.ok) {
         displayErrorMessage(responseText);
+    } else {
+        console.log("Create Success: ", responseText)
     }
 }
 

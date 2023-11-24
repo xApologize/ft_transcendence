@@ -42,7 +42,7 @@ class Users(View):
     def post(self, request: HttpRequest):
         try:
             user_data = json.loads(request.body)
-            required_fields = ['nickname', 'email', 'avatar', 'admin', 'password']
+            required_fields = ['nickname', 'email', 'avatar', 'password']
             extra_fields = user_data.keys() - required_fields
             if extra_fields:
                 error_message = f'Unexpected fields: {", ".join(extra_fields)}'
@@ -61,7 +61,7 @@ class Users(View):
                     email=user_data['email'],
                     avatar=user_data['avatar'],
                     status='OFF',
-                    admin=user_data['admin'],
+                    admin=False,
                     password=user_data['password']
                 )
                 user.save()
