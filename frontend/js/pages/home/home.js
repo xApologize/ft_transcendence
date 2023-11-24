@@ -9,14 +9,19 @@ import { assembleUser } from '../../api/assembler.js';
 export async function showHome() {
   try {
     await loadHTMLPage('./js/pages/home/home.html')
+    var playModalId = document.getElementById("playModal");
+    var playModalClass = new bootstrap.Modal(playModalId, {
+      backdrop: 'static',  // Set to 'static' for a static backdrop
+      keyboard: false       // Set to false to disable keyboard events
+  });
     // Load online user in everyone at the start.
     initPage()
 
     const friendsBtn = document.getElementById('friendsBtn')
     const everyoneBtn = document.getElementById('everyoneBtn')
 
-    document.getElementById('button-toggle').addEventListener('click', () => {
-      toggleLeftColumn()
+    document.getElementById('middleBtnRight').addEventListener('click', () => {
+      gameChoice(playModalClass)
     })
 
     friendsBtn.addEventListener('click', () => {
@@ -78,15 +83,14 @@ function initPage() {
 //  Event Listener function  //
 ///////////////////////////////
 
-function toggleLeftColumn() {
-  const rightColumn = document.getElementById('right-column')
-  const leftColumn = document.getElementById('left-column')
-  const ownUserCard = document.getElementById('own-user-card')
+function gameChoice(playModalClass) {
+    // Get the modal by its ID
 
-  ownUserCard.classList.toggle('d-none')
-  leftColumn.classList.toggle('d-none');
-  rightColumn.classList.toggle('col-md-10')
-  rightColumn.classList.toggle('col-md-12')
+    playModalClass.show()
+    // Open the modal programmatically
+    // playModal.classList.add("show");
+    // playModal.style.display = "block";
+    // document.body.classList.add("modal-open");
 }
 
 function everyoneBtnFunc(friendsBtn, everyoneBtn) {
