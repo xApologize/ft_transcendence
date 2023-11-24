@@ -2,6 +2,7 @@ import { showHome } from './pages/home/home.js';
 import { showUser } from './pages/user/user.js';
 import { showGame } from './pages/game/game.js';
 import { showAbout } from './pages/about/about.js';
+import { showSignUp } from './pages/signUp/signUp.js';
 import { show404 } from './pages/404/404.js';
 import { showLogin } from './pages/login/login.js';
 import { headerComponent } from './components/header/header.js';
@@ -15,7 +16,7 @@ function showPage(pageFunction) {
     pageFunction();
 }
 
-function navigateTo(route) {
+export function navigateTo(route) {
     if (route === currentRoute) return;
     history.pushState({ GoingTo: route }, null, route);
     handleRoute();
@@ -31,6 +32,7 @@ function handleRoute() {
         '/game_page': showGame,
         '/user': showUser,
         '/login': showLogin,
+        '/signUp': showSignUp,
         '/game': null, // redirect to home ? Regarder si il est dans une partie ?
     };
     if (routes[path]) {
