@@ -34,7 +34,6 @@ function handleRoute() {
     '/user': showUser,
     '/login': showLogin,
     '/signUp': showSignUp,
-    '/game': null, // redirect to home ? Regarder si il est dans une partie ?
   };
   if (routes[path]) {
     pageFunction = routes[path]
@@ -58,14 +57,6 @@ async function loadPage() {
   navigateTo(path)
 }
 
-// This 'if' will be trigger when going directly to /game OR refresh when inside a game
-// Check if he currently is in a game?
-// Redirect to home if not ? Too complicated with socket ?
-// function isPathGame() {
-//   if (window.location.pathname == '/game') {
-//     history.replaceState({ GoingTo: '/' }, null, '/')
-//   }
-// }
 
 document.addEventListener('DOMContentLoaded', async () => {
   // isPathGame()
