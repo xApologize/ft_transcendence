@@ -34,6 +34,7 @@ class Ball extends InstancedMesh {
 		
 		this.ray = new Raycaster();
 		this.ray.layers.enable( Layers.Goal );
+		this.ray.layers.enable( Layers.Solid );
 
 		this.matrix = new Matrix4();
 	}

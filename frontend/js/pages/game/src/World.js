@@ -23,6 +23,7 @@ import {
 	Vector2,
 	Vector3
 } from 'three';
+import { airHockeyTable } from './systems/Loader.js';
 
 let scene;
 let camera;
@@ -72,7 +73,12 @@ class World {
 	}
 	
 	createGame() {
-		this.terrain = new Terrain( new Vector2(18, 10), 0.5, 0.4 );
+		scene.add( airHockeyTable.scene );
+		airHockeyTable.scene.scale.set( 0.07, 0.07, 0.07 );
+		airHockeyTable.scene.rotation.set( Math.PI / 2, 0, 0 );
+		airHockeyTable.scene.position.set( 3, 26, -5.5 );
+
+		this.terrain = new Terrain( new Vector2(18, 11), 0.5, 0.4 );
 
 		this.g_caps = new CapsuleGeometry( 0.2, 2.4 );
 		this.g_sphere = new SphereGeometry( 0.2 );

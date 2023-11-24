@@ -1,5 +1,9 @@
 const setSize = (container, camera, renderer) => {
-	camera.aspect = container.clientWidth / container.clientHeight; // PERSPECTIVE CAMERA
+	// PERSPECTIVE CAMERA
+	// aspect based on terrain sizes
+	camera.aspect = container.clientWidth / container.clientHeight;
+	camera.zoom = camera.aspect < 16/9 ? camera.aspect / (16/9) : 1;
+
 	camera.top = 8 * container.clientHeight / container.clientWidth;
 	camera.bottom = -8 * container.clientHeight / container.clientWidth;
 	camera.updateProjectionMatrix();

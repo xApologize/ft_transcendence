@@ -7,7 +7,7 @@ let scoreTab = [0, 0];
 
 class Score3D extends Mesh {
 	constructor( font ) {
-		const mat = new MeshStandardMaterial( { color: 'Lavender' } );
+		const mat = new MeshStandardMaterial( { color: 'Purple' } );
 		let geo = new ShapeGeometry();
 		super( geo, mat );
 

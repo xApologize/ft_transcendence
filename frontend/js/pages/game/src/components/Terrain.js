@@ -7,6 +7,7 @@ import {
 	MeshStandardMaterial,
 	Vector3
 } from 'three';
+import { Layers } from '../systems/Layers.js';
 
 class Terrain {
 	constructor(size, lineWidth, margin) {
@@ -26,11 +27,12 @@ class Terrain {
 		const g_floor = new BoxGeometry(100, 100, 2);
 		this.Floor = new Wall(g_floor, m_grey);
 		this.Floor.position.set(0, 0, -10);
+		this.Floor.renderer.setLayers( Layers.Default );
 
-		const m_black = new MeshStandardMaterial({ color: 'black' });
-		const g_table = new BoxGeometry( size.x, size.y, 8 );
-		this.Table = new Wall(g_table, m_black);
-		this.Table.position.set( 0, 0, -4 );
+		// const m_black = new MeshStandardMaterial({ color: 'black' });
+		// const g_table = new BoxGeometry( size.x, size.y, 8 );
+		// this.Table = new Wall(g_table, m_black);
+		// this.Table.position.set( 0, 0, -4 );
 	}
 
 	delete() {

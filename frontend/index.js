@@ -12,7 +12,7 @@ const server = http.createServer((req, res) => {
     // }
 
     // If the requested URL doesn't have a known file extension, redirect to index.html
-    if (!/\.(html|js|css|jpg|png|map|json)$/.test(req.url)) {
+    if (!/\.(html|js|css|jpg|png|map|json|glb)$/.test(req.url)) {
         req.url = '/index.html';
     }
 

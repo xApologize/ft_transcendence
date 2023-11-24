@@ -1,6 +1,8 @@
 import { Updatable } from "../modules/Updatable.js";
 import { PerspectiveCamera, MathUtils } from "three";
 
+var delay = 1;
+
 class MainCamera extends PerspectiveCamera {
 	constructor() {
 		super( 30, 1, 0.1, 1000 );
@@ -18,6 +20,11 @@ class MainCamera extends PerspectiveCamera {
 	}
 
 	update( dt ) {
+		if (delay > 0) {
+			delay -= dt;
+			return;
+		}
+
 		if (this.rotation.x > 0)
 			this.rotation.x -= dt * MathUtils.degToRad(70);
 		if (this.position.y < 0)

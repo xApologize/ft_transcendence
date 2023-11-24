@@ -8,7 +8,7 @@ class Wall extends Mesh {
 		super( geometry, material );
 		this.collider = new Collider( this );
 		this.renderer = new Renderer( this );
-		this.renderer.setLayers(Layers.Default, Layers.Solid);
+		this.renderer.setLayers( Layers.Solid );
 	}
 
 	delete() {
