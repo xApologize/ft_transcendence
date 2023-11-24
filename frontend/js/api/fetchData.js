@@ -74,7 +74,7 @@ export const fetchUser = async (method, parameters = null, data = null) => {
     const path = 'user/';
     const params = buildParams(parameters);
     const url = buildApiUrl(path, params);
-    console.log(url)
+    // console.log(url)
     try {
         var result = await performFetch(url, method, data);
     } catch (error) {

@@ -23,7 +23,7 @@ while true; do
         python manage.py makemigrations # temp fix
         python manage.py migrate # temp fix
         echo -e "${Purple}Seeding data now..."
-        # python manage.py loaddata seed.json # temp fix
+        python manage.py loaddata seed.json # temp fix
         break
     else
         echo -e "${Red}Server isn't up...waiting..."

@@ -7,7 +7,6 @@ export async function showLogin() {
         await loadHTMLPage('./js/pages/login/login.html');
         console.log(document.getElementById('signUpLink'));
         document.getElementById('loginButton').addEventListener('click', () => {
-            console.log('please work');
             login();
         });
         document
@@ -21,9 +20,10 @@ export async function showLogin() {
 }
 
 async function login() {
+    
     const username = document.getElementById('usernameInput').value;
     const password = document.getElementById('passwordInput').value;
-
+    
     if (!username || !password) {
         alert('Fill the form.');
         return;
@@ -33,21 +33,20 @@ async function login() {
         username: username,
         password: password,
     };
-
+    
     try {
         const response = await fetchLogin('POST', loginData);
         if (response.ok) {
             const result = await response.json();
-            console.log('Response:', JSON.stringify(result, null, 2));
             if (result.success) {
-                console.log('Login successful');
+                console.log('Login successful: ', result.success);
             } else {
-                console.log('Login failed:', result.error);
+                console.log('Login failed: ', result.error);
             }
-            console.log('User status:', result.status);
         } else {
-            console.log('Server responded with error. Status:', response.status);
+            console.log('Login failed.');
         }
+        console.log('Response Status:', result.status);
     } catch (error) {
         console.error('Error during login:', error);
     }
