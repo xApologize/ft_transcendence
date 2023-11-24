@@ -34,7 +34,7 @@ async function login() {
     
     // Response status:
     // 404: User not found
-    // 401: User found but bad password -> will definitely change
+    // 400: User found but bad password -> will definitely change
     // 200: Login successfull
 
     try {
