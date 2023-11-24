@@ -6,8 +6,9 @@
             "nickname": "Dave",
             "email": "bozo@gmail.com",
             "avatar": "https://i.imgur.com/bZ6nXdv.png",
-            "status": "ONL",
-            "admin": false
+            "status": "OFF",
+            "admin": false,
+            "password": "abc"
         }
     },
     {
@@ -17,8 +18,9 @@
             "nickname": "80%",
             "email": "abc@gmail.com",
             "avatar": "https://i.imgur.com/bZ6nXdv.png",
-            "status": "ONL",
-            "admin": false
+            "status": "OFF",
+            "admin": false,
+            "password": "abc"
         }
     },
     {
@@ -28,8 +30,9 @@
             "nickname": "81%",
             "email": "def@gmail.com",
             "avatar": "https://i.imgur.com/bZ6nXdv.png",
-            "status": "ONL",
-            "admin": true
+            "status": "OFF",
+            "admin": true,
+            "password": "abc"
         }
     },
     {

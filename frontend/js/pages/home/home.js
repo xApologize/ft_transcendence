@@ -40,25 +40,29 @@ export async function showHome() {
 
 async function displayOnlineUser(userContainer) {
   const allUsers = await fetchUser("GET", {'status':'ONL'});
+  if (!allUsers.ok)
+    return ; // Display a msg that no one is online?
   const objectAllUsers = await assembleUser(allUsers)
   const templateUser = await userTemplateComponent();
 
-  objectAllUsers.forEach(user => {
-    console.log(user)
-    userContainer.appendChild(document.createElement('hr'));
+  if (objectAllUsers) {
+    objectAllUsers.forEach(user => {
+      console.log(user)
+      userContainer.appendChild(document.createElement('hr'));
 
-    const clonedUserTemplate = templateUser.cloneNode(true);
+      const clonedUserTemplate = templateUser.cloneNode(true);
 
-    const avatarElement = clonedUserTemplate.querySelector('#user-avatar');
-    const nameElement = clonedUserTemplate.querySelector('#user-name');
-    const statusElement = clonedUserTemplate.querySelector('#user-status');
+      const avatarElement = clonedUserTemplate.querySelector('#user-avatar');
+      const nameElement = clonedUserTemplate.querySelector('#user-name');
+      const statusElement = clonedUserTemplate.querySelector('#user-status');
 
-    avatarElement.src = user.avatar;
-    nameElement.textContent = user.nickname;
-    statusElement.textContent = user.status;
+      avatarElement.src = user.avatar;
+      nameElement.textContent = user.nickname;
+      statusElement.textContent = user.status;
 
-    userContainer.appendChild(clonedUserTemplate);
-  });
+      userContainer.appendChild(clonedUserTemplate);
+    });
+  }
 }
 
 async function displayUserLeftColumn() {

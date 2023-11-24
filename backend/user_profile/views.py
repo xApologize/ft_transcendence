@@ -6,7 +6,6 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views import View
 from utils.decorators import token_validation
 import json
-import re
 
 
 @method_decorator(csrf_exempt, name='dispatch') #- to apply to every function in the class.
@@ -43,17 +42,17 @@ class Users(View):
     def post(self, request: HttpRequest):
         try:
             user_data = json.loads(request.body)
-            required_fields = ['nickname', 'email', 'avatar', 'status', 'admin']
+            required_fields = ['nickname', 'email', 'avatar', 'admin', 'password']
             extra_fields = user_data.keys() - required_fields
             if extra_fields:
                 error_message = f'Unexpected fields: {", ".join(extra_fields)}'
                 return HttpResponseBadRequest(error_message) # 400
             try:
                 # not empty
-                if any(user_data.get(field, '') == '' for field in ['nickname', 'email', 'avatar']):
+                if any(user_data.get(field, '') == '' for field in ['nickname', 'email', 'avatar', 'password']):
                     return HttpResponseBadRequest('Missing one or more required fields') # 400
                 # does not contain space
-                if any(' ' in user_data.get(field, '') for field in ['nickname', 'email', 'avatar']):
+                if any(' ' in user_data.get(field, '') for field in ['nickname', 'email', 'avatar', 'password']):
                     return HttpResponseBadRequest('Field contain space') 
                 print(f"'{user_data['nickname']}'")
                 print(f"'{user_data['email']}'")
@@ -61,8 +60,9 @@ class Users(View):
                     nickname=user_data['nickname'],
                     email=user_data['email'],
                     avatar=user_data['avatar'],
-                    status=user_data['status'],
-                    admin=user_data['admin']
+                    status='OFF',
+                    admin=user_data['admin'],
+                    password=user_data['password']
                 )
                 user.save()
             except IntegrityError:
@@ -104,10 +104,3 @@ class Users(View):
             return HttpResponseBadRequest(f'Nickname {user_data["nickname"]} is already in use.') # 400
         return HttpResponse(f'User with nickname {nickname} updated successfully.', status=200)
 
-
-@method_decorator(csrf_exempt, name='dispatch') #- to apply to every function in the class.
-class Login(View):
-    def post(self, request:HttpRequest):
-        login_data = json.loads(request.body)
-        print(login_data)
-        return HttpResponse("wouah")

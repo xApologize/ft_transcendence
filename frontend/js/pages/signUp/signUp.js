@@ -31,8 +31,8 @@ async function signUp() {
         nickname,
         email,
         avatar,
-        status: 'ONL', // Set the default status here
         admin: false, // Set the default admin value here
+        password: password,
     };
 
     console.log(`'${userData['nickname']}'`);

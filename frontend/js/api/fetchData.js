@@ -82,3 +82,15 @@ export const fetchUser = async (method, parameters = null, data = null) => {
     }
     return result;
 };
+
+export const fetchLogin = async (method, data = null) => {
+    const path = 'login/';
+    const url = buildApiUrl(path)
+    console.log(url)
+    try {
+        var result = await performFetch(url, method, data);
+    } catch (error) {
+        console.log("Error: " + error);
+    }
+    return result;
+};
