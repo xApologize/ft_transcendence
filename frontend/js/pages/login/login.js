@@ -5,7 +5,6 @@ import { fetchLogin } from '../../api/fetchData.js';
 export async function showLogin() {
     try {
         await loadHTMLPage('./js/pages/login/login.html');
-        console.log(document.getElementById('signUpLink'));
         document.getElementById('loginButton').addEventListener('click', () => {
             login();
         });
@@ -28,25 +27,29 @@ async function login() {
         alert('Fill the form.');
         return;
     }
-    console.log('login with: ', username, password);
     const loginData = {
         username: username,
         password: password,
     };
     
+    // Response status:
+    // 404: User not found
+    // 401: User found but bad password -> will definitely change
+    // 200: Login successfull
+
     try {
         const response = await fetchLogin('POST', loginData);
+        const result = await response.json();
         if (response.ok) {
-            const result = await response.json();
             if (result.success) {
-                console.log('Login successful: ', result.success);
+                console.log('Login successful: ', await result.success);
             } else {
-                console.log('Login failed: ', result.error);
+                console.log('Login failed: ', await result.error);
             }
         } else {
             console.log('Login failed.');
         }
-        console.log('Response Status:', result.status);
+        console.log('Response Status:', await response.status);
     } catch (error) {
         console.error('Error during login:', error);
     }

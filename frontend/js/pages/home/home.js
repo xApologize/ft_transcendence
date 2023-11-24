@@ -47,7 +47,7 @@ async function displayOnlineUser(userContainer) {
 
   if (objectAllUsers) {
     objectAllUsers.forEach(user => {
-      console.log(user)
+      // console.log(user)
       userContainer.appendChild(document.createElement('hr'));
 
       const clonedUserTemplate = templateUser.cloneNode(true);
