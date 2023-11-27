@@ -4,18 +4,24 @@ from django.http import JsonResponse, HttpResponseForbidden, HttpResponse, Http4
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views import View
+from utils.decorators import token_validation
 import json
-import re
 
 
 @method_decorator(csrf_exempt, name='dispatch') #- to apply to every function in the class.
 class Users(View):
     # Get All Users or specific users
+    @token_validation
     def get(self, request: HttpRequest):
+        status = request.GET.getlist('status')
         nicknames = request.GET.getlist('nickname')
-        if not nicknames:
-            return HttpResponseBadRequest('No user given.')
-        users = User.objects.filter(nickname__in=nicknames)
+        if not nicknames and not status:
+            return HttpResponseBadRequest('No parameter.')
+
+        if nicknames:
+            users = User.objects.filter(nickname__in=nicknames)
+        elif status:
+            users = User.objects.filter(status__in=status)
         user_data = [
             {
                 'nickname': user.nickname,
@@ -33,29 +39,28 @@ class Users(View):
 
     # Create a user
     # Check quoi a été passer en param?
-    def post(self, request: HttpResponse):
+    def post(self, request: HttpRequest):
         try:
             user_data = json.loads(request.body)
-            required_fields = ['nickname', 'email', 'avatar', 'status', 'admin']
+            required_fields = ['nickname', 'email', 'avatar', 'password']
             extra_fields = user_data.keys() - required_fields
             if extra_fields:
                 error_message = f'Unexpected fields: {", ".join(extra_fields)}'
                 return HttpResponseBadRequest(error_message) # 400
             try:
                 # not empty
-                if any(user_data.get(field, '') == '' for field in ['nickname', 'email', 'avatar']):
+                if any(user_data.get(field, '') == '' for field in ['nickname', 'email', 'avatar', 'password']):
                     return HttpResponseBadRequest('Missing one or more required fields') # 400
                 # does not contain space
-                if any(' ' in user_data.get(field, '') for field in ['nickname', 'email', 'avatar']):
+                if any(' ' in user_data.get(field, '') for field in ['nickname', 'email', 'avatar', 'password']):
                     return HttpResponseBadRequest('Field contain space') 
-                print(f"'{user_data['nickname']}'")
-                print(f"'{user_data['email']}'")
                 user = User.objects.create(
                     nickname=user_data['nickname'],
                     email=user_data['email'],
                     avatar=user_data['avatar'],
-                    status=user_data['status'],
-                    admin=user_data['admin']
+                    status='OFF',
+                    admin=False,
+                    password=user_data['password']
                 )
                 user.save()
             except IntegrityError:
@@ -97,9 +102,3 @@ class Users(View):
             return HttpResponseBadRequest(f'Nickname {user_data["nickname"]} is already in use.') # 400
         return HttpResponse(f'User with nickname {nickname} updated successfully.', status=200)
 
-                # if all(
-                #     field in user_data and
-                #     user_data[field] and
-                #     not any(c.isspace() for c in user_data[field])
-                #     for field in required_fields
-                # ):

@@ -30,7 +30,7 @@ class UserTestCase(TestCase):
         '''Check if the default is really set to status O(offline)'''
         user_two = User.objects.get(nickname="Clown")
         self.assertEqual(user_two.nickname, "Clown")
-        self.assertEqual(user_two.status, "ONL")
+        self.assertEqual(user_two.status, "OFF")
         self.assertEqual(user_two.admin, True)
 
 
@@ -60,8 +60,7 @@ class UserTestCase(TestCase):
             "nickname": "NewUser",
             "email": "newuser@example.com",
             "avatar": "new-avatar",
-            "status": "ONL",
-            "admin": False
+            "password": "abc",
         }
         initial_user_count = User.objects.count()
         response = self.client.post(reverse('users'), data, content_type='application/json')
@@ -71,7 +70,7 @@ class UserTestCase(TestCase):
         new_user = User.objects.get(nickname="NewUser")
         self.assertEqual(new_user.email, "newuser@example.com")
         self.assertEqual(new_user.avatar, "new-avatar")
-        self.assertEqual(new_user.status, "ONL")
+        self.assertEqual(new_user.status, "OFF")
         self.assertEqual(new_user.admin, False)
 
 

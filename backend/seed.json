@@ -7,7 +7,8 @@
             "email": "bozo@gmail.com",
             "avatar": "https://i.imgur.com/bZ6nXdv.png",
             "status": "OFF",
-            "admin": false
+            "admin": false,
+            "password": "abc"
         }
     },
     {
@@ -17,8 +18,9 @@
             "nickname": "80%",
             "email": "abc@gmail.com",
             "avatar": "https://i.imgur.com/bZ6nXdv.png",
-            "status": "ONL",
-            "admin": false
+            "status": "OFF",
+            "admin": false,
+            "password": "abc"
         }
     },
     {
@@ -29,7 +31,8 @@
             "email": "def@gmail.com",
             "avatar": "https://i.imgur.com/bZ6nXdv.png",
             "status": "OFF",
-            "admin": true
+            "admin": true,
+            "password": "abc"
         }
     },
     {
