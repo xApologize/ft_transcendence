@@ -29,23 +29,25 @@ export const loadHTMLComponent = async (filePath) => {
 }
 
 const performFetch = async (url, method, data = null) => {
-    // const accessToken = localStorage.getItem('access_token');
-    const accessToken = "Here_is_my_token";
-    // Check si accessToken est expiré avant de fetch. Possible de le décoder ici.
+    var accessTokenLive = sessionStorage.getItem('jwt');
     const options = {
         method,
         credentials: 'include',
         headers: {
-          ...(accessToken ? { 'jwt': `${accessToken}` } : {}),
+          ...(accessTokenLive ? { 'jwt': `${accessTokenLive}` } : {}),
           ...(data ? { 'Content-Type': 'application/json' } : {}),
         },
         body: data ? JSON.stringify(data) : null,
     };
-
     try {
         const response = await fetch(url, options);
-        // response.
-        // Set the access token in localStorage.
+        var return_access_token = response.headers.get('jwt')
+        // console.log("Token", return_access_token)
+        if (return_access_token)
+            sessionStorage.setItem('jwt', return_access_token);
+        // console.log("return access Access:", return_access_token)
+        // console.log(sessionStorage.getItem('jwt'))
+        // Refresh token will be check if reponse status is 401
         return response;
     } catch (error) {
         return "Error fetching: " + url;
