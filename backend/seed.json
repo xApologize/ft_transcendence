@@ -31,8 +31,20 @@
             "email": "def@gmail.com",
             "avatar": "https://i.imgur.com/bZ6nXdv.png",
             "status": "OFF",
-            "admin": true,
+            "admin": false,
             "password": "abc"
+        }
+    },
+    {
+        "model": "user_profile.User",
+        "pk": 4,
+        "fields": {
+            "nickname": "demo-user",
+            "email": "denmo@gmail.com",
+            "avatar": "https://i.imgur.com/bZ6nXdv.png",
+            "status": "OFF",
+            "admin": true,
+            "password": "demo-user"
         }
     },
     {

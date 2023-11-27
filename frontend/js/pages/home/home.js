@@ -9,24 +9,24 @@ import { assembleUser } from '../../api/assembler.js';
 
 export async function showHome() {
   try {
-    await loadHTMLPage('./js/pages/home/home.html')
-    var playModalClass = initModal()
-    initPage()
+      await loadHTMLPage('./js/pages/home/home.html')
+      var playModalClass = initModal()
+      initPage()
 
-        const friendsBtn = document.getElementById('friendsBtn');
-        const everyoneBtn = document.getElementById('everyoneBtn');
+      const friendsBtn = document.getElementById('friendsBtn');
+      const everyoneBtn = document.getElementById('everyoneBtn');
 
-    document.getElementById('middleBtnRight').addEventListener('click', () => {
-      gameChoice(playModalClass)
-    })
+      document.getElementById('middleBtnRight').addEventListener('click', () => {
+        gameChoice(playModalClass)
+      })
 
-        friendsBtn.addEventListener('click', () => {
-            friendsBtnFunc(friendsBtn, everyoneBtn);
-        });
+      friendsBtn.addEventListener('click', () => {
+          friendsBtnFunc(friendsBtn, everyoneBtn);
+      });
 
-        everyoneBtn.addEventListener('click', async () => {
-            everyoneBtnFunc(friendsBtn, everyoneBtn);
-        });
+      everyoneBtn.addEventListener('click', async () => {
+          everyoneBtnFunc(friendsBtn, everyoneBtn);
+      });
     } catch (error) {
         console.error('Error fetching home.html:', error);
     }

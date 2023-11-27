@@ -1,6 +1,6 @@
 import { loadHTMLPage } from '../../api/fetchData.js';
 import { navigateTo } from '../../router.js'
-import { fetchLogin } from '../../api/fetchData.js';
+import { fetchAuth } from '../../api/fetchData.js';
 
 export async function showLogin() {
     try {
@@ -13,23 +13,59 @@ export async function showLogin() {
             .addEventListener('click', () => {
                 navigateTo('/signUp');
             });
+        document.getElementById('demo-user-btn').addEventListener('click', () => {
+            login("demo-user", "demo-user");
+        });
+        document.getElementById('logoutButton').addEventListener('click', () => {
+            logout()
+        });
     } catch (error) {
         console.error('Error fetching home.html:', error);
     }
 }
 
-async function login() {
-    
-    const username = document.getElementById('usernameInput').value;
-    const password = document.getElementById('passwordInput').value;
-    
-    if (!username || !password) {
+async function logout() {
+    const logoutUser = document.getElementById('logoutUser').value;
+
+    if (!logoutUser) {
+        alert('Fill the logout field.');
+        return;
+    }
+    const logoutData = {
+        username: logoutUser,
+    };
+
+    try {
+        const response = await fetchAuth('POST','logout/', logoutData);
+        const result = await response.json();
+        if (response.ok) {
+            if (result.success) {
+                console.log('logout successful: ', await result.success);
+            } else {
+                console.log('logout failed: ', await result.error);
+            }
+        } else {
+            console.log('logout failed.');
+        }
+        console.log('Response Status:', await response.status);
+    } catch (error) {
+        console.error('Error during logout:', error);
+    }
+}
+
+
+async function login(username = null, password = null) {
+    const usernameInput = username !== null ? username : document.getElementById('usernameInput').value;
+    const passwordInput = password !== null ? password : document.getElementById('passwordInput').value;
+
+    if (!usernameInput || !passwordInput) {
         alert('Fill the form.');
         return;
     }
+
     const loginData = {
-        username: username,
-        password: password,
+        username: usernameInput,
+        password: passwordInput,
     };
     
     // Response status:
@@ -38,7 +74,7 @@ async function login() {
     // 200: Login successfull
 
     try {
-        const response = await fetchLogin('POST', loginData);
+        const response = await fetchAuth('POST','login/', loginData);
         const result = await response.json();
         if (response.ok) {
             if (result.success) {

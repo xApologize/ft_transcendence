@@ -82,8 +82,8 @@ export const fetchUser = async (method, parameters = null, data = null) => {
     return result;
 };
 
-export const fetchLogin = async (method, data = null) => {
-    const path = 'login/';
+export const fetchAuth = async (method, apiPath, data = null) => {
+    const path = 'auth/' + apiPath
     const url = buildApiUrl(path)
     try {
         var result = await performFetch(url, method, data);
