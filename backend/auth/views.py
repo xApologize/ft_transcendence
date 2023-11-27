@@ -6,6 +6,7 @@ from django.views import View
 from utils.decorators import token_validation
 import json
 from user_profile.models import User
+from utils.functions import add_double_jwt
 
 @method_decorator(csrf_exempt, name='dispatch')
 class Login(View):
@@ -27,8 +28,9 @@ class Login(View):
         else:
             user.status = "ONL"
             user.save()
-
-            return JsonResponse({'success': 'Login successful.'})
+            response: HttpResponse = JsonResponse({'success': 'Login successful.'})
+            primary_key = User.objects.get(nickname=nickname).pk
+            return add_double_jwt(response, primary_key)
 
 @method_decorator(csrf_exempt, name='dispatch')
 class Logout(View):

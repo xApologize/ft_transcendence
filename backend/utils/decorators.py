@@ -23,7 +23,8 @@ def token_validation(func):
                 return HttpResponse("Couldn't locate cookie jwt", status=401)
             decrypt_cookie_id: int = decrypt_user_id(refresh_jwt_cookie)
             if decrypt_cookie_id > 0:
-                return add_double_jwt(func(self, request), decrypt_cookie_id)
+                response: HttpResponse = HttpResponse("Access Token Refresh", status=200)
+                return add_double_jwt(response, decrypt_cookie_id)
         return HttpResponse(
             "https://i.ytimg.com/vi/KEkrWRHCDQU/maxresdefault.jpg", status=401)
     return wrapper

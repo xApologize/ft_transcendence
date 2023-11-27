@@ -30,7 +30,7 @@ export const loadHTMLComponent = async (filePath) => {
 
 const performFetch = async (url, method, data = null) => {
     var accessTokenLive = sessionStorage.getItem('jwt');
-    const options = {
+    var options = {
         method,
         credentials: 'include',
         headers: {
@@ -40,14 +40,16 @@ const performFetch = async (url, method, data = null) => {
         body: data ? JSON.stringify(data) : null,
     };
     try {
-        const response = await fetch(url, options);
+        var response = await fetch(url, options);
+        // check if 401
         var return_access_token = response.headers.get('jwt')
-        // console.log("Token", return_access_token)
-        if (return_access_token)
+        if (return_access_token) {
+            console.log("new token!")
             sessionStorage.setItem('jwt', return_access_token);
-        // console.log("return access Access:", return_access_token)
-        // console.log(sessionStorage.getItem('jwt'))
-        // Refresh token will be check if reponse status is 401
+            options.headers.jwt = return_access_token;
+            response = await fetch(url, options)
+        }
+
         return response;
     } catch (error) {
         return "Error fetching: " + url;
@@ -94,3 +96,14 @@ export const fetchAuth = async (method, apiPath, data = null) => {
     }
     return result;
 };
+
+export const fetchMe = async(method, data = null) => {
+    const path = 'user/me/'
+    const url = buildApiUrl(path);
+    try {
+        var result = await performFetch(url, method, data);
+    } catch (error) {
+        console.log("Error: " + error);
+    }
+    return result;
+}

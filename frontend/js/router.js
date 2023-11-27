@@ -9,11 +9,18 @@ import { headerComponent } from './components/header/header.js';
 import { templateComponent } from './components/template/template.js';
 import { GameModal } from './pages/home/gameModal.js';
 
-// Not currently use
 var currentRoute = '';
+const routes = {
+  '/': showHome,
+  '/about': showAbout,
+  '/game_page': showGame,
+  '/user': showUser,
+  '/login': showLogin,
+  '/signUp': showSignUp,
+};
 
 function showPage(pageFunction) {
-    pageFunction();
+  pageFunction();
 }
 
 export function navigateTo(route) {
@@ -27,14 +34,13 @@ function handleRoute() {
   var pageFunction = null;
 
   const path = window.location.pathname;
-  const routes = {
-    '/': showHome,
-    '/about': showAbout,
-    '/game_page': showGame,
-    '/user': showUser,
-    '/login': showLogin,
-    '/signUp': showSignUp,
-  };
+  if (path == '/') {
+    if (!sessionStorage.getItem('jwt'))
+      window.location.replace('/login')
+      // handleRoute('/login')
+    // check si token valide. Sinon -> navigateTo('/login')
+  }
+
   if (routes[path]) {
     pageFunction = routes[path]
     currentRoute = path
