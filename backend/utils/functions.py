@@ -16,6 +16,13 @@ def generate_jwt(lifespan: int, id: int) -> str:
     return jwt.encode(payload, settings.SECRET_KEY, algorithm="HS256")
 
 
+def first_token(response: HttpResponse, id: int) -> HttpResponse:
+    '''Adds an element to the header to signal to the frontend that it is the first token,
+       preventing the frontend to fetch twice.
+    '''
+    response["new"] = "True"
+    return add_double_jwt(response, id)
+
 def add_double_jwt(response: HttpResponse, id: int) -> HttpResponse:
     '''Create access and refresh token and add them to the http response'''
     REFRESH_DURATION: int = 7200

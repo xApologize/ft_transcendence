@@ -5,6 +5,7 @@ import { fetchAuth } from '../../api/fetchData.js';
 export async function showLogin() {
     try {
         await loadHTMLPage('./js/pages/login/login.html');
+        sessionStorage.clear()
         document.getElementById('loginButton').addEventListener('click', () => {
             login();
         });
@@ -79,13 +80,11 @@ async function login(username = null, password = null) {
         if (response.ok) {
             if (result.success) {
                 console.log('Login successful: ', await result.success);
-            } else {
-                console.log('Login failed: ', await result.error);
+                navigateTo('/');
+                return ;
             }
-        } else {
-            console.log('Login failed.');
+            console.log('Login failed: ', await result.error);
         }
-        console.log('Response Status:', await response.status);
     } catch (error) {
         console.error('Error during login:', error);
     }

@@ -1,3 +1,4 @@
+import { navigateTo } from "../router.js";
 import { assembleUser } from "./assembler.js";
 
 // Load frontend page.
@@ -26,9 +27,14 @@ export const loadHTMLComponent = async (filePath) => {
     } catch (error) {
         console.error(`Error fetching component: ${filePath} -> `, error);
     }
-}
+};
 
-const performFetch = async (url, method, data = null) => {
+const redirectToHome = () => {
+    sessionStorage.clear();
+    navigateTo('/login');
+};
+
+const createOptions = (method, data) => {
     var accessTokenLive = sessionStorage.getItem('jwt');
     var options = {
         method,
@@ -39,17 +45,38 @@ const performFetch = async (url, method, data = null) => {
         },
         body: data ? JSON.stringify(data) : null,
     };
+    return options
+};
+
+export const setNewToken = (response) => {
+    const access_token = response.headers.get('jwt')
+    if (access_token) {
+        sessionStorage.setItem('jwt', access_token);
+        return access_token
+    }
+    return null
+}
+
+const performFetch = async (url, method, data = null) => {
+    var options = createOptions(method, data)
     try {
         var response = await fetch(url, options);
-        // check if 401
-        var return_access_token = response.headers.get('jwt')
-        if (return_access_token) {
-            console.log("new token!")
-            sessionStorage.setItem('jwt', return_access_token);
-            options.headers.jwt = return_access_token;
-            response = await fetch(url, options)
+        if (response.status == 401) {
+            console.log('401')
+            redirectToHome()
+            return null
         }
-
+        const jwt_token = setNewToken(response)
+        if (jwt_token) {
+            console.log("New access Token!")
+            const isFirstToken = response.headers.get('new')
+            if (!isFirstToken) {
+                console.log("second fetch!")
+                const access_token = response.headers.get('jwt')
+                options.headers.jwt = access_token;
+                response = await fetch(url, options)
+            }
+        }
         return response;
     } catch (error) {
         return "Error fetching: " + url;

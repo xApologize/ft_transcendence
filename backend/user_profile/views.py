@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from match_history.models import MatchHistory
 from django.views import View
 from utils.decorators import token_validation
-from utils.functions import add_double_jwt, decrypt_user_id
+from utils.functions import add_double_jwt, decrypt_user_id, first_token
 import json
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
@@ -57,7 +57,7 @@ class Users(View):
                     return HttpResponseBadRequest('Missing one or more required fields') # 400
                 # does not contain space
                 if any(' ' in user_data.get(field, '') for field in ['nickname', 'email', 'avatar', 'password']):
-                    return HttpResponseBadRequest('Field contain space') 
+                    return HttpResponseBadRequest('Field contain space') # 400
                 user = User.objects.create(
                     nickname=user_data['nickname'],
                     email=user_data['email'],
@@ -73,8 +73,9 @@ class Users(View):
             return HttpResponseBadRequest('Invalid JSON data in the request body') # 400
         # Added jwt when creating user. Refacto needed
         response: HttpResponse =  HttpResponse(f'User {user_data["nickname"]} created successfully', status=201)
-        primary_key = User.objects.get(nickname=user.nickname).pk
-        return add_double_jwt(response, primary_key)
+        return response
+        # primary_key = User.objects.get(nickname=user.nickname).pk
+        # return first_token(response, primary_key)
 
     # Delete a specific users
     def delete(self, request: HttpRequest):
@@ -110,6 +111,7 @@ class Users(View):
 
 @method_decorator(csrf_exempt, name='dispatch') #- to apply to every function in the class.
 class Me(View):
+    @token_validation
     def get(self, request: HttpRequest):
         refresh_jwt_cookie = request.COOKIES.get("refresh_jwt")
         if refresh_jwt_cookie is None:

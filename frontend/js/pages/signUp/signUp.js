@@ -1,5 +1,6 @@
 import { fetchUser } from '../../api/fetchData.js';
 import { loadHTMLPage } from '../../api/fetchData.js';
+import { navigateTo } from '../../router.js';
 
 export async function showSignUp() {
     try {
@@ -13,6 +14,28 @@ export async function showSignUp() {
         if (error) console.error('Error fetching signUp.html:', error);
         else console.log('error null');
     }
+}
+
+async function loginAfterSignup(nickname, password) {
+    const loginData = {
+        nickname,
+        password,
+    };
+    try {
+        const response = await fetchAuth('POST','login/', loginData);
+        const result = await response.json();
+        if (response.ok) {
+            if (result.success) {
+                console.log('Login successful: ', await result.success);
+                navigateTo('/');
+                return ;
+            }
+            console.log('Login failed: ', await result.error);
+        }
+    } catch (error) {
+        console.error('Error during login:', error);
+    }
+    navigateTo('/')
 }
 
 async function signUp() {
@@ -37,10 +60,12 @@ async function signUp() {
     console.log(`'${userData['nickname']}'`);
     const users = await fetchUser('POST', null, userData);
     const responseText = await users.text();
+    console.log(users.status)
     if (!users.ok) {
         displayErrorMessage(responseText);
     } else {
-        console.log("Create Success: ", responseText)
+        console.log("SignUp Success: ", responseText)
+        loginAfterSignup(nickname, password);
     }
 }
 

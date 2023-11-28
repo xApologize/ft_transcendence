@@ -10,9 +10,10 @@ import { userCardComponent } from '../../components/userCard/userCard.js';
 // [TO DO]
 // - Rediriger vers login quand 401
 // - Ne pas pouvoir se connecter a 2 comptes en meme temps (sessionStorage.clear() ?)
-// - Bouton logout
+// - Bouton logout [Delete cookie quand logout ?]
+// - Rediriger vers home quand login
+// - Rediriger vers home quand signup
 // - Trouver facon update en temps reel
-// - 
 //
 ////////
 
