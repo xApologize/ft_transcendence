@@ -17,7 +17,6 @@ class FriendList(models.Model):
     class Meta:
         verbose_name = "friend_list"
         verbose_name_plural = "friend_list"
-        db_table_comment = "Implementation of a friendlist between users on the website"
         constraints = [
             models.UniqueConstraint(fields=["friend1", "friend2"], name="Unique rows friend_list"),
             models.CheckConstraint(check=~Q(friend1=F("friend2")), name="Cannot friend yourself")
