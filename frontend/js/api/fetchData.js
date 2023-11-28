@@ -5,7 +5,9 @@ export const loadHTMLPage = async (filePath) => {
     try {
         const response = await fetch(filePath);
         const html = await response.text();
-        document.getElementById('contentContainer').innerHTML = html;
+        let container = document.getElementById('contentContainer')
+        container.innerHTML = ''
+        container.innerHTML = html
     } catch (error) {
         console.error(`Error fetching page: ${filePath} -> `, error);
     }
@@ -53,7 +55,6 @@ const performFetch = async (url, method, data = null) => {
 };
 
 const buildApiUrl = (path, parameter = null) => {
-    // Known issue: fetching port 52021 does not work when not at school.
     const baseUrl = "/api/";
     const queryString = parameter ? `?${parameter.toString()}` : '';
     return `${baseUrl}${path}${queryString}`;
@@ -61,23 +62,35 @@ const buildApiUrl = (path, parameter = null) => {
 
 const buildParams = (parameters) => {
     const params = new URLSearchParams();
-    for (const [parameterName, parameterValue] of Object.entries(parameters)) {
-        if (parameterValue) {
-            params.append(parameterName, parameterValue);
+    if (parameters) {
+        for (const [parameterName, parameterValue] of Object.entries(parameters)) {
+            if (parameterValue) {
+                params.append(parameterName, parameterValue);
+            }
         }
     }
     return params.toString() ? params : null;
 };
 
-export const fetchUser = async (method, parameter = null, data = null) => {
+export const fetchUser = async (method, parameters = null, data = null) => {
     const path = 'user/';
-    const params = buildParams({"nickname": parameter});
+    const params = buildParams(parameters);
     const url = buildApiUrl(path, params);
     try {
         var result = await performFetch(url, method, data);
     } catch (error) {
-        console.log("Error: " + error)
+        console.log("Error: " + error);
     }
-     return result
+    return result;
 };
 
+export const fetchLogin = async (method, data = null) => {
+    const path = 'login/';
+    const url = buildApiUrl(path)
+    try {
+        var result = await performFetch(url, method, data);
+    } catch (error) {
+        console.log("Error: " + error);
+    }
+    return result;
+};
