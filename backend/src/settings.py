@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "block_list",
     "match_history",
     "tournament_history",
+    'chat',
 ]
 
 MIDDLEWARE = [
