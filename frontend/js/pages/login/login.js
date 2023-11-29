@@ -51,7 +51,7 @@ async function login(username = null, password = null) {
         if (response.ok) {
             if (result.success) {
                 console.log('Login successful: ', await result.success);
-                navigateTo('/');
+                navigateTo('/home');
                 return ;
             }
             console.log('Login failed: ', await result.error);

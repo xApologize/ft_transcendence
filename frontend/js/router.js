@@ -12,7 +12,8 @@ import { fetchAuth } from './api/fetchData.js';
 
 var currentRoute = '';
 const routes = {
-  '/': showHome,
+  '/': showLogin,
+  '/home': showHome,
   '/about': showAbout,
   '/game_page': showGame,
   '/user': showUser,
@@ -48,11 +49,11 @@ async function checkIfCookie() {
 export async function handleRoute() {  
   var pageFunction = null;
   var goPath = window.location.pathname
-  if (goPath == '/') {
+  if (goPath == '/home') {
     var cookieResponse = await checkIfCookie()
     if (cookieResponse.status == 401) {
-      history.pushState(null, null, '/login');
-      goPath = '/login'
+      history.pushState(null, null, '/');
+      goPath = '/'
     }
   }
 

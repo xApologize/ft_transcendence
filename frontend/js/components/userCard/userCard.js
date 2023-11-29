@@ -21,7 +21,7 @@ async function logoutUser() {
     const logoutResponse = await fetchAuth('post', 'logout/')
     if (logoutResponse.status == 200) {
         sessionStorage.clear()
-        navigateTo('/login')
+        navigateTo('/')
     }
     // window.location.replace('/login')
     

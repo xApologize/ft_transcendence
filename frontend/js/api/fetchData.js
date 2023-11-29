@@ -32,7 +32,7 @@ export const loadHTMLComponent = async (filePath) => {
 
 const redirectToHome = () => {
     sessionStorage.clear();
-    navigateTo('/login');
+    navigateTo('/');
 };
 
 const createOptions = (method, data) => {
@@ -80,7 +80,8 @@ const performFetch = async (url, method, data = null) => {
         }
         return response;
     } catch (error) {
-        return "Error fetching: " + url;
+        console.log("Error fetching: " + url);
+        return null
     }
 };
 

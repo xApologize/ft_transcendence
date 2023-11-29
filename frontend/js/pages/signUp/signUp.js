@@ -29,7 +29,7 @@ async function loginAfterSignup(nickname, password) {
         if (response.ok) {
             if (result.success) {
                 console.log('Login successful: ', await result.success);
-                navigateTo('/');
+                navigateTo('/home');
                 return ;
             }
             console.log('Login failed: ', await result.error);
@@ -37,7 +37,7 @@ async function loginAfterSignup(nickname, password) {
     } catch (error) {
         console.error('Error during login:', error);
     }
-    navigateTo('/')
+    // navigateTo('/home')
 }
 
 async function signUp() {
