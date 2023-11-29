@@ -4,6 +4,11 @@ import GameModal from './gameModal.js';
 import { userTemplateComponent } from '../../components/userTemplate/userTemplate.js';
 import { assembleUser } from '../../api/assembler.js';
 
+//////////
+//TO DO
+//set page to hidden when the screen size is smaller than 320 px
+//////////
+
 // Faire une fonction dans le backend pour get tout les online user, pour le everyone
 export async function showHome() {
     try {
@@ -13,12 +18,6 @@ export async function showHome() {
 
         const friendsBtn = document.getElementById('friendsBtn');
         const everyoneBtn = document.getElementById('everyoneBtn');
-
-        document
-            .getElementById('button-toggle')
-            .addEventListener('click', () => {
-                toggleLeftColumn();
-            });
 
         friendsBtn.addEventListener('click', () => {
             friendsBtnFunc(friendsBtn, everyoneBtn);
@@ -42,7 +41,7 @@ async function displayOnlineUser(userContainer) {
     const templateUser = await userTemplateComponent();
 
     objectAllUsers.forEach((user) => {
-        console.log(user);
+        // console.log(user);
         userContainer.appendChild(document.createElement('hr'));
 
         const clonedUserTemplate = templateUser.cloneNode(true);
@@ -50,13 +49,27 @@ async function displayOnlineUser(userContainer) {
         const avatarElement = clonedUserTemplate.querySelector('#user-avatar');
         const nameElement = clonedUserTemplate.querySelector('#user-name');
         const statusElement = clonedUserTemplate.querySelector('#user-status');
-
+        const statusBadge = clonedUserTemplate.querySelector('#badge');
+        statusBadge.style.backgroundColor = setStatus(user.status);
         avatarElement.src = user.avatar;
         nameElement.textContent = user.nickname;
         statusElement.textContent = user.status;
 
         userContainer.appendChild(clonedUserTemplate);
     });
+
+    function setStatus(user) {
+        switch (user) {
+            case 'ONL':
+                return 'green';
+            case 'BUS':
+                return 'red';
+            case 'ING':
+                return 'yellow';
+            case 'OFF':
+                return 'gray';
+        }
+    }
 }
 
 async function displayUserLeftColumn() {

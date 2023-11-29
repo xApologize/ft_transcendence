@@ -17,7 +17,7 @@
             "nickname": "80%",
             "email": "abc@gmail.com",
             "avatar": "https://i.imgur.com/bZ6nXdv.png",
-            "status": "ONL",
+            "status": "BUS",
             "admin": false
         }
     },
@@ -28,7 +28,7 @@
             "nickname": "81%",
             "email": "def@gmail.com",
             "avatar": "https://i.imgur.com/bZ6nXdv.png",
-            "status": "ONL",
+            "status": "ING",
             "admin": true
         }
     },
@@ -43,7 +43,7 @@
     {
         "model": "friend_list.FriendList",
         "pk": 1,
-        "fields":{
+        "fields": {
             "friend1": 1,
             "friend2": 2,
             "status": "ACCEPTED"
@@ -52,7 +52,7 @@
     {
         "model": "friend_list.FriendList",
         "pk": 2,
-        "fields":{
+        "fields": {
             "friend1": 3,
             "friend2": 1,
             "status": "PENDING"
@@ -61,7 +61,7 @@
     {
         "model": "match_history.MatchHistory",
         "pk": 1,
-        "fields":{
+        "fields": {
             "winner_score": 50,
             "loser_score": 69,
             "date_of_match": "12:00:00.000000",
@@ -72,7 +72,7 @@
     {
         "model": "tournament_history.TournamentHistory",
         "pk": 1,
-        "fields":{
+        "fields": {
             "winner": 1,
             "loser": 2,
             "winner_score": 69,
