@@ -50,8 +50,8 @@ export async function showHome() {
 
 async function displayOnlineUser(userContainer) {
   const allUsers = await fetchUser("GET", {'status':'ONL'});
-  if (!allUsers.ok)
-    return ; // Display a msg that no one is online?
+  if (!allUsers || !allUsers.ok) // if !allUsers, c'est que le status == 401 et si !AllUsers.ok == Aucun user Online
+    return ;
 
   // console.log(await allUsers.text)
 
@@ -89,7 +89,8 @@ async function displayUserCard() {
   let userContainer = document.getElementById('own-user-card');
   let userCard = await userCardComponent();
   let meUser = await fetchMe('GET');
-
+  if (!meUser) //  if !meUser, c'est que le status == 401
+    return;
   const meUserObject = await assembleUser(meUser);
 
   userContainer.appendChild(userCard);

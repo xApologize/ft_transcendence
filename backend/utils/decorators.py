@@ -12,6 +12,8 @@ def check_cookie(request):
     if decrypt_cookie_id > 0:
         response: HttpResponse = HttpResponse("Access Token Refresh", status=200)
         return add_double_jwt(response, decrypt_cookie_id)
+    else:
+        return HttpResponse("Cookie Expired jwt", status=401)
 
 def token_validation(func):
     '''Decorator for jwt token verification, will execute the function if the

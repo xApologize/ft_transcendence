@@ -25,8 +25,8 @@ def first_token(response: HttpResponse, id: int) -> HttpResponse:
 
 def add_double_jwt(response: HttpResponse, id: int) -> HttpResponse:
     '''Create access and refresh token and add them to the http response'''
-    REFRESH_DURATION: int = 7200
-    ACCESS_DURATION: int = 30
+    REFRESH_DURATION: int = 10
+    ACCESS_DURATION: int = 5
 
     access_token = generate_jwt(ACCESS_DURATION, id)
     refresh_token = generate_jwt(REFRESH_DURATION, id)

@@ -62,7 +62,7 @@ const performFetch = async (url, method, data = null) => {
     try {
         var response = await fetch(url, options);
         if (response.status == 401) {
-            console.log('401')
+            // console.log('401')
             redirectToHome()
             return null
         }
