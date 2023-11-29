@@ -1,3 +1,5 @@
+import { ConstantColorFactor } from "three";
+import { navigateTo } from "../router.js";
 import { assembleUser } from "./assembler.js";
 
 // Load frontend page.
@@ -26,11 +28,16 @@ export const loadHTMLComponent = async (filePath) => {
     } catch (error) {
         console.error(`Error fetching component: ${filePath} -> `, error);
     }
-}
+};
 
-const performFetch = async (url, method, data = null) => {
+const redirectToHome = () => {
+    sessionStorage.clear();
+    navigateTo('/');
+};
+
+const createOptions = (method, data) => {
     var accessTokenLive = sessionStorage.getItem('jwt');
-    const options = {
+    var options = {
         method,
         credentials: 'include',
         headers: {
@@ -39,18 +46,42 @@ const performFetch = async (url, method, data = null) => {
         },
         body: data ? JSON.stringify(data) : null,
     };
+    return options
+};
+
+export const setNewToken = (response) => {
+    const access_token = response.headers.get('jwt')
+    if (access_token) {
+        sessionStorage.setItem('jwt', access_token);
+        return access_token
+    }
+    return null
+}
+
+const performFetch = async (url, method, data = null) => {
+    var options = createOptions(method, data)
     try {
-        const response = await fetch(url, options);
-        var return_access_token = response.headers.get('jwt')
-        // console.log("Token", return_access_token)
-        if (return_access_token)
-            sessionStorage.setItem('jwt', return_access_token);
-        // console.log("return access Access:", return_access_token)
-        // console.log(sessionStorage.getItem('jwt'))
-        // Refresh token will be check if reponse status is 401
+        var response = await fetch(url, options);
+        if (response.status == 401) {
+            // console.log('401')
+            redirectToHome()
+            return null
+        }
+        const jwt_token = setNewToken(response)
+        if (jwt_token) {
+            console.log("New access Token!")
+            const isFirstToken = response.headers.get('new')
+            if (!isFirstToken) {
+                console.log("second fetch!")
+                const access_token = response.headers.get('jwt')
+                options.headers.jwt = access_token;
+                response = await fetch(url, options)
+            }
+        }
         return response;
     } catch (error) {
-        return "Error fetching: " + url;
+        console.log("Error fetching: " + url);
+        return null
     }
 };
 
@@ -64,7 +95,12 @@ const buildParams = (parameters) => {
     const params = new URLSearchParams();
     if (parameters) {
         for (const [parameterName, parameterValue] of Object.entries(parameters)) {
-            if (parameterValue) {
+            if (typeof parameterValue === 'object') {
+                for (const value of Object.values(parameterValue)) {
+                    params.append(parameterName, value);
+                }
+            }
+            else if (parameterValue) {
                 params.append(parameterName, parameterValue);
             }
         }
@@ -76,6 +112,7 @@ export const fetchUser = async (method, parameters = null, data = null) => {
     const path = 'user/';
     const params = buildParams(parameters);
     const url = buildApiUrl(path, params);
+    console.log(url)
     try {
         var result = await performFetch(url, method, data);
     } catch (error) {
@@ -84,8 +121,8 @@ export const fetchUser = async (method, parameters = null, data = null) => {
     return result;
 };
 
-export const fetchLogin = async (method, data = null) => {
-    const path = 'login/';
+export const fetchAuth = async (method, apiPath, data = null) => {
+    const path = 'auth/' + apiPath
     const url = buildApiUrl(path)
     try {
         var result = await performFetch(url, method, data);
@@ -94,3 +131,14 @@ export const fetchLogin = async (method, data = null) => {
     }
     return result;
 };
+
+export const fetchMe = async(method, data = null) => {
+    const path = 'user/me/'
+    const url = buildApiUrl(path);
+    try {
+        var result = await performFetch(url, method, data);
+    } catch (error) {
+        console.log("Error: " + error);
+    }
+    return result;
+}

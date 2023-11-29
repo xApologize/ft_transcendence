@@ -30,9 +30,33 @@
             "nickname": "81%",
             "email": "def@gmail.com",
             "avatar": "https://i.imgur.com/bZ6nXdv.png",
-            "status": "ONL",
-            "admin": true,
+            "status": "ING",
+            "admin": false,
             "password": "abc"
+        }
+    },
+    {
+        "model": "user_profile.User",
+        "pk": 4,
+        "fields": {
+            "nickname": "demo-user",
+            "email": "demo@gmail.com",
+            "avatar": "https://i.imgur.com/bZ6nXdv.png",
+            "status": "OFF",
+            "admin": true,
+            "password": "demo-user"
+        }
+    },
+    {
+        "model": "user_profile.User",
+        "pk": 5,
+        "fields": {
+            "nickname": "demo-user2",
+            "email": "demo2@gmail.com",
+            "avatar": "https://i.imgur.com/bZ6nXdv.png",
+            "status": "OFF",
+            "admin": true,
+            "password": "demo-user2"
         }
     },
     {
@@ -46,7 +70,7 @@
     {
         "model": "friend_list.FriendList",
         "pk": 1,
-        "fields":{
+        "fields": {
             "friend1": 1,
             "friend2": 2,
             "status": "ACCEPTED"
@@ -55,16 +79,34 @@
     {
         "model": "friend_list.FriendList",
         "pk": 2,
-        "fields":{
+        "fields": {
             "friend1": 3,
             "friend2": 1,
             "status": "PENDING"
         }
     },
     {
+        "model": "friend_list.FriendList",
+        "pk": 3,
+        "fields":{
+            "friend1": 1,
+            "friend2": 4,
+            "status": "ACCEPTED"
+        }
+    },
+    {
+        "model": "friend_list.FriendList",
+        "pk": 4,
+        "fields":{
+            "friend1": 4,
+            "friend2": 2,
+            "status": "ACCEPTED"
+        }
+    },
+    {
         "model": "match_history.MatchHistory",
         "pk": 1,
-        "fields":{
+        "fields": {
             "winner_score": 50,
             "loser_score": 69,
             "date_of_match": "12:00:00.000000",
@@ -73,9 +115,42 @@
         }
     },
     {
+        "model": "match_history.MatchHistory",
+        "pk": 2,
+        "fields":{
+            "winner_score": 50,
+            "loser_score": 69,
+            "date_of_match": "12:00:00.000000",
+            "winner": 4,
+            "loser": 2
+        }
+    },
+    {
+        "model": "match_history.MatchHistory",
+        "pk": 3,
+        "fields":{
+            "winner_score": 50,
+            "loser_score": 69,
+            "date_of_match": "12:00:00.000000",
+            "winner": 4,
+            "loser": 2
+        }
+    },
+    {
+        "model": "match_history.MatchHistory",
+        "pk": 4,
+        "fields":{
+            "winner_score": 50,
+            "loser_score": 69,
+            "date_of_match": "12:00:00.000000",
+            "winner": 1,
+            "loser": 4
+        }
+    },
+    {
         "model": "tournament_history.TournamentHistory",
         "pk": 1,
-        "fields":{
+        "fields": {
             "winner": 1,
             "loser": 2,
             "winner_score": 69,

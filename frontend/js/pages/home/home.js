@@ -1,32 +1,44 @@
-import { fetchUser, loadHTMLPage } from '../../api/fetchData.js';
+import { fetchUser, fetchMe, loadHTMLPage } from '../../api/fetchData.js';
 import { World } from '../game/src/World.js';
 import GameModal from './gameModal.js';
 import { userTemplateComponent } from '../../components/userTemplate/userTemplate.js';
 import { assembleUser } from '../../api/assembler.js';
+import { userCardComponent, userCardListener } from '../../components/userCard/userCard.js';
 
-// Gérer BACK quand model open.
-// CHAQUE fois que la page s'ouvre, se login pour qu'il y ai au moins un push history ?
+
+////////
+// [TO DO]
+// - Rediriger vers login quand 401
+// - Ne pas pouvoir se connecter a 2 comptes en meme temps (sessionStorage.clear() ?)
+// - Bouton logout [Delete cookie quand logout ?]
+// - Rediriger vers home quand login
+// - Rediriger vers home quand signup
+// - Trouver facon update en temps reel
+//
+////////
+
 
 export async function showHome() {
   try {
-    await loadHTMLPage('./js/pages/home/home.html')
-    var playModalClass = initModal()
-    initPage()
 
-        const friendsBtn = document.getElementById('friendsBtn');
-        const everyoneBtn = document.getElementById('everyoneBtn');
+      await loadHTMLPage('./js/pages/home/home.html')
+      // var playModalClass = initModal()
+      initPage()
 
-    document.getElementById('middleBtnRight').addEventListener('click', () => {
-      gameChoice(playModalClass)
-    })
+      const friendsBtn = document.getElementById('friendsBtn');
+      const everyoneBtn = document.getElementById('everyoneBtn');
 
-        friendsBtn.addEventListener('click', () => {
-            friendsBtnFunc(friendsBtn, everyoneBtn);
-        });
+      // document.getElementById('middleBtnRight').addEventListener('click', () => {
+      //   gameChoice(playModalClass)
+      // })
 
-        everyoneBtn.addEventListener('click', async () => {
-            everyoneBtnFunc(friendsBtn, everyoneBtn);
-        });
+      friendsBtn.addEventListener('click', () => {
+          friendsBtnFunc(friendsBtn, everyoneBtn);
+      });
+
+      everyoneBtn.addEventListener('click', async () => {
+          everyoneBtnFunc(friendsBtn, everyoneBtn);
+      });
     } catch (error) {
         console.error('Error fetching home.html:', error);
     }
@@ -37,9 +49,12 @@ export async function showHome() {
 /////////////////////////
 
 async function displayOnlineUser(userContainer) {
-  const allUsers = await fetchUser("GET", {'status':'ONL'});
-  if (!allUsers.ok)
-    return ; // Display a msg that no one is online?
+  const allUsers = await fetchUser("GET",  {'status': ['ONL', 'ING']});
+  if (!allUsers || !allUsers.ok) // if !allUsers, c'est que le status == 401 et si !AllUsers.ok == Aucun user Online
+    return ;
+
+  // console.log(await allUsers.text)
+
   const objectAllUsers = await assembleUser(allUsers)
   const templateUser = await userTemplateComponent();
 
@@ -53,14 +68,28 @@ async function displayOnlineUser(userContainer) {
       const avatarElement = clonedUserTemplate.querySelector('#user-avatar');
       const nameElement = clonedUserTemplate.querySelector('#user-name');
       const statusElement = clonedUserTemplate.querySelector('#user-status');
-
+      const statusBadge = clonedUserTemplate.querySelector('#badge');
+      statusBadge.style.backgroundColor = setStatus(user.status);
       avatarElement.src = user.avatar;
       nameElement.textContent = user.nickname;
       statusElement.textContent = user.status;
 
       userContainer.appendChild(clonedUserTemplate);
     });
-  }
+
+    function setStatus(user) {
+        switch (user) {
+            case 'ONL':
+                return 'green';
+            case 'BUS':
+                return 'red';
+            case 'ING':
+                return 'yellow';
+            case 'OFF':
+                return 'gray';
+        }
+      }
+    }
 }
 
 async function displayUserLeftColumn() {
@@ -68,6 +97,46 @@ async function displayUserLeftColumn() {
     userContainer.innerHTML = '';
 
     await displayOnlineUser(userContainer);
+}
+
+async function displayUserCard() {
+  let userContainer = document.getElementById('own-user-card');
+  let meUser = await fetchMe('GET');
+  if (!meUser) //  if !meUser, c'est que le status == 401
+    return;
+  const meUserObject = await assembleUser(meUser);
+  
+  let userCard = await userCardComponent();
+  userContainer.appendChild(userCard);
+  userCardListener(); // enable js on the userCard
+  // Update the user card with actual data from the server
+  updateUserCard(meUserObject);
+
+}
+
+function updateUserCard(userObject) {
+  const profilePicture = document.getElementById('avatar-img');
+  profilePicture.src = userObject.avatar;
+
+  const nicknameElement = document.getElementById('nickname');
+  nicknameElement.querySelector('h5').innerText = userObject.nickname;
+
+  const winsElement = document.getElementById('wins');
+  const lossesElement = document.getElementById('losses');
+  const gamesPlayedElement = document.getElementById('game-played');
+
+  winsElement.innerText = userObject.won_matches.length;
+  lossesElement.innerText = userObject.lost_matches.length;
+  gamesPlayedElement.innerText = userObject.played_matches.length;
+
+  // const wonMatchesList = document.getElementById('won-matches-list');
+  // wonMatchesList.innerHTML = ''; 
+
+  // userObject.won_matches.forEach((match) => {
+  //   const matchItem = document.createElement('li');
+  //   matchItem.innerText = `Winner Score: ${match.winner_score}, Loser Score: ${match.loser_score}, Date: ${match.date_of_match}`;
+  //   wonMatchesList.appendChild(matchItem);
+  // });
 }
 
 function initModal() {
@@ -82,7 +151,8 @@ function initModal() {
 
 
 function initPage() {
-    displayUserLeftColumn();
+  displayUserCard();
+  displayUserLeftColumn();
     // displayUserProfile() // Future component qui est actuellement dans home.html
     // diplayLeaderBoard() // not done
 }
