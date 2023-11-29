@@ -22,15 +22,15 @@ export async function showHome() {
   try {
 
       await loadHTMLPage('./js/pages/home/home.html')
-      var playModalClass = initModal()
+      // var playModalClass = initModal()
       initPage()
 
       const friendsBtn = document.getElementById('friendsBtn');
       const everyoneBtn = document.getElementById('everyoneBtn');
 
-      document.getElementById('middleBtnRight').addEventListener('click', () => {
-        gameChoice(playModalClass)
-      })
+      // document.getElementById('middleBtnRight').addEventListener('click', () => {
+      //   gameChoice(playModalClass)
+      // })
 
       friendsBtn.addEventListener('click', () => {
           friendsBtnFunc(friendsBtn, everyoneBtn);
@@ -68,14 +68,28 @@ async function displayOnlineUser(userContainer) {
       const avatarElement = clonedUserTemplate.querySelector('#user-avatar');
       const nameElement = clonedUserTemplate.querySelector('#user-name');
       const statusElement = clonedUserTemplate.querySelector('#user-status');
-
+      const statusBadge = clonedUserTemplate.querySelector('#badge');
+      statusBadge.style.backgroundColor = setStatus(user.status);
       avatarElement.src = user.avatar;
       nameElement.textContent = user.nickname;
       statusElement.textContent = user.status;
 
       userContainer.appendChild(clonedUserTemplate);
     });
-  }
+
+    function setStatus(user) {
+        switch (user) {
+            case 'ONL':
+                return 'green';
+            case 'BUS':
+                return 'red';
+            case 'ING':
+                return 'yellow';
+            case 'OFF':
+                return 'gray';
+        }
+      }
+    }
 }
 
 async function displayUserLeftColumn() {

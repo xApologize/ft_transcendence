@@ -7,21 +7,26 @@
             >
                 <!-- Left side: Image in a circle -->
                 <div class="col-auto">
-                    <img
-                        id="user-avatar"
-                        src=""
-                        alt="User Image"
-                        class="rounded-circle"
-                        width="50"
-                        height="50"
-                    />
+                    <div id="badge-img " class="position-relative">
+                        <img
+                            id="user-avatar"
+                            src=""
+                            alt="User Image"
+                            class="rounded-circle"
+                            width="50"
+                            height="50"
+                        />
+                        <span
+                            id="badge"
+                            class="position-absolute border border-light"
+                        >
+                        </span>
+                    </div>
                 </div>
                 <!-- Right side: User name and buttons -->
                 <div class="col text-center">
-                    <h5 id="user-name" class="m-0 card-title"></h5>
-                </div>
-                <div class="col">
-                    <p class="m-0" id="user-status"></p>
+                    <h5 id="user-name" class="card-title"></h5>
+                    <p id="user-status"></p>
                 </div>
                 <div class="d-flex flex-column align-items-end">
                     <div class="d-flex">
