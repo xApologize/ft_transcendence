@@ -40,11 +40,23 @@
         "pk": 4,
         "fields": {
             "nickname": "demo-user",
-            "email": "denmo@gmail.com",
+            "email": "demo@gmail.com",
             "avatar": "https://i.imgur.com/bZ6nXdv.png",
             "status": "OFF",
             "admin": true,
             "password": "demo-user"
+        }
+    },
+    {
+        "model": "user_profile.User",
+        "pk": 5,
+        "fields": {
+            "nickname": "demo-user2",
+            "email": "demo2@gmail.com",
+            "avatar": "https://i.imgur.com/bZ6nXdv.png",
+            "status": "OFF",
+            "admin": true,
+            "password": "demo-user2"
         }
     },
     {
