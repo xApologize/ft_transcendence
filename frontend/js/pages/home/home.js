@@ -87,16 +87,16 @@ async function displayUserLeftColumn() {
 
 async function displayUserCard() {
   let userContainer = document.getElementById('own-user-card');
-  let userCard = await userCardComponent();
   let meUser = await fetchMe('GET');
   if (!meUser) //  if !meUser, c'est que le status == 401
     return;
   const meUserObject = await assembleUser(meUser);
-
+  
+  let userCard = await userCardComponent();
   userContainer.appendChild(userCard);
+  userCardListener(); // enable js on the userCard
   // Update the user card with actual data from the server
   updateUserCard(meUserObject);
-  userCardListener(); // enable js on the userCard
 
 }
 
