@@ -5,7 +5,6 @@ import { showAbout } from './pages/about/about.js';
 import { showSignUp } from './pages/signUp/signUp.js';
 import { show404 } from './pages/404/404.js';
 import { showLogin } from './pages/login/login.js';
-import { showSignUpMockup } from './pages/mockup/mockupSignup.js';
 import { headerComponent } from './components/header/header.js';
 import { templateComponent } from './components/template/template.js';
 import { GameModal } from './pages/home/gameModal.js';
@@ -34,7 +33,6 @@ function handleRoute() {
         '/user': showUser,
         '/login': showLogin,
         '/signUp': showSignUp,
-        '/mockup': showSignUpMockup,
         '/game': null, // redirect to home ? Regarder si il est dans une partie ?
     };
     if (routes[path]) {
