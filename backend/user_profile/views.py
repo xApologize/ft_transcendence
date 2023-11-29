@@ -18,6 +18,7 @@ class Users(View):
     @token_validation
     def get(self, request: HttpRequest):
         status = request.GET.getlist('status')
+        print(status)
         nicknames = request.GET.getlist('nickname')
         if not nicknames and not status:
             return HttpResponseBadRequest('No parameter.')

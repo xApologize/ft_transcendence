@@ -1,3 +1,4 @@
+import { ConstantColorFactor } from "three";
 import { navigateTo } from "../router.js";
 import { assembleUser } from "./assembler.js";
 
@@ -93,7 +94,12 @@ const buildParams = (parameters) => {
     const params = new URLSearchParams();
     if (parameters) {
         for (const [parameterName, parameterValue] of Object.entries(parameters)) {
-            if (parameterValue) {
+            if (typeof parameterValue === 'object') {
+                for (const value of Object.values(parameterValue)) {
+                    params.append(parameterName, value);
+                }
+            }
+            else if (parameterValue) {
                 params.append(parameterName, parameterValue);
             }
         }
@@ -105,6 +111,7 @@ export const fetchUser = async (method, parameters = null, data = null) => {
     const path = 'user/';
     const params = buildParams(parameters);
     const url = buildApiUrl(path, params);
+    console.log(url)
     try {
         var result = await performFetch(url, method, data);
     } catch (error) {

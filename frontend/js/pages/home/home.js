@@ -49,7 +49,7 @@ export async function showHome() {
 /////////////////////////
 
 async function displayOnlineUser(userContainer) {
-  const allUsers = await fetchUser("GET", {'status':'ONL'});
+  const allUsers = await fetchUser("GET",  {'status': ['ONL', 'ING']});
   if (!allUsers || !allUsers.ok) // if !allUsers, c'est que le status == 401 et si !AllUsers.ok == Aucun user Online
     return ;
 
