@@ -1,6 +1,7 @@
 import { fetchUser } from '../../api/fetchData.js';
 import { loadHTMLPage } from '../../api/fetchData.js';
 import { navigateTo } from '../../router.js';
+import { fetchAuth } from '../../api/fetchData.js';
 
 export async function showSignUp() {
     try {
@@ -24,6 +25,7 @@ async function loginAfterSignup(nickname, password) {
     try {
         const response = await fetchAuth('POST','login/', loginData);
         const result = await response.json();
+        console.log(result)
         if (response.ok) {
             if (result.success) {
                 console.log('Login successful: ', await result.success);

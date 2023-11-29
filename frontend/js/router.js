@@ -45,7 +45,7 @@ async function checkIfCookie() {
   return tokenResponse
 }
 
-async function handleRoute() {
+export async function handleRoute() {  
   var pageFunction = null;
   var goPath = window.location.pathname
   if (goPath == '/') {

@@ -6,8 +6,8 @@ export async function showLogin() {
     try {
         await loadHTMLPage('./js/pages/login/login.html');
         sessionStorage.clear()
-        document.getElementById('loginButton').addEventListener('click', () => {
-            login();
+        document.getElementById('loginButton').addEventListener('click', async () => {
+            await login();
         });
         document
             .getElementById('signUpButton')
@@ -17,40 +17,11 @@ export async function showLogin() {
         document.getElementById('demo-user-btn').addEventListener('click', () => {
             login("demo-user", "demo-user");
         });
-        document.getElementById('logoutButton').addEventListener('click', () => {
-            logout()
+        document.getElementById('demo-user-btn2').addEventListener('click', () => {
+            login("demo-user2", "demo-user2");
         });
     } catch (error) {
         console.error('Error fetching home.html:', error);
-    }
-}
-
-async function logout() {
-    const logoutUser = document.getElementById('logoutUser').value;
-
-    if (!logoutUser) {
-        alert('Fill the logout field.');
-        return;
-    }
-    const logoutData = {
-        username: logoutUser,
-    };
-
-    try {
-        const response = await fetchAuth('POST','logout/', logoutData);
-        const result = await response.json();
-        if (response.ok) {
-            if (result.success) {
-                console.log('logout successful: ', await result.success);
-            } else {
-                console.log('logout failed: ', await result.error);
-            }
-        } else {
-            console.log('logout failed.');
-        }
-        console.log('Response Status:', await response.status);
-    } catch (error) {
-        console.error('Error during logout:', error);
     }
 }
 
@@ -65,7 +36,7 @@ async function login(username = null, password = null) {
     }
 
     const loginData = {
-        username: usernameInput,
+        nickname: usernameInput,
         password: passwordInput,
     };
     

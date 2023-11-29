@@ -22,6 +22,12 @@
 
 .demoUser {
     position: absolute;
-    bottom: 0;
+    bottom: 1%;
+    left: 0;
+}
+
+.demoUser2 {
+    position: absolute;
+    bottom: 5%;
     left: 0;
 }

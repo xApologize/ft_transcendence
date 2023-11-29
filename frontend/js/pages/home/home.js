@@ -3,7 +3,7 @@ import { World } from '../game/src/World.js';
 import GameModal from './gameModal.js';
 import { userTemplateComponent } from '../../components/userTemplate/userTemplate.js';
 import { assembleUser } from '../../api/assembler.js';
-import { userCardComponent } from '../../components/userCard/userCard.js';
+import { userCardComponent, userCardListener } from '../../components/userCard/userCard.js';
 
 
 ////////
@@ -96,6 +96,7 @@ async function displayUserCard() {
   userContainer.appendChild(userCard);
   // Update the user card with actual data from the server
   updateUserCard(meUserObject);
+  userCardListener(); // enable js on the userCard
 
 }
 

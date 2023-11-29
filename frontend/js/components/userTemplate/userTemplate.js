@@ -8,3 +8,7 @@ export async function userTemplateComponent() {
         console.error('Error fetching userTemplateComponent:', error);
     }
 }
+
+export async function userTemplateListener() {
+
+}
