@@ -1,16 +1,19 @@
-import { StaticObject } from '../systems/StaticObject.js';
-import { addSolid, removeSolid } from '../systems/Solid.js';
 import { Layers } from '../systems/Layers.js';
+import { Renderer } from '../modules/Renderer.js';
+import { Collider } from '../modules/Collider.js';
+import { Mesh } from 'three';
 
-class Wall extends StaticObject {	
-	start( ) {
-		this.setLayers( Layers.Default, Layers.Solid );
-		addSolid( this );
+class Wall extends Mesh {
+	constructor( geometry, material ) {
+		super( geometry, material );
+		this.collider = new Collider( this );
+		this.renderer = new Renderer( this );
+		this.renderer.setLayers( Layers.Solid );
 	}
 
 	delete() {
-		super.delete();
-		removeSolid( this );
+		this.collider.delete();
+		this.renderer.delete();
 	}
 }
 

@@ -1,5 +1,5 @@
 import { createRenderer } from './systems/renderer.js';
-import { createCamera } from './components/camera.js';
+import { MainCamera } from './components/camera.js';
 import { createLights } from './components/lights.js';
 import { createScene } from './components/scene.js';
 
@@ -10,8 +10,20 @@ import { Player1InputMap, Player2InputMap } from './systems/InputMaps.js';
 import { Terrain } from './components/Terrain.js';
 import { Ball } from './components/Ball.js';
 import { Player } from './components/Player.js';
-import { Score } from './components/Score.js';
-import { CapsuleGeometry, MeshStandardMaterial, SphereGeometry, Vector2, Vector3 } from 'three';
+import { Score3D } from './components/3DScore.js';
+import {
+	CapsuleGeometry,
+	Color,
+	DodecahedronGeometry,
+	InstancedMesh,
+	MathUtils,
+	Matrix4,
+	MeshStandardMaterial,
+	SphereGeometry,
+	Vector2,
+	Vector3
+} from 'three';
+import { airHockeyTable } from './systems/Loader.js';
 
 let scene;
 let camera;
@@ -36,6 +48,7 @@ class World {
 		this.start = function() { loop.start();	}
 		this.stop = function() { loop.stop(); }
 
+		/// DEBUG TEMP
 		document.addEventListener('keydown', (event) => {
 			if ( event.code == "KeyR" ) {
 				console.warn("-- DELETION! --");
@@ -47,21 +60,26 @@ class World {
 	createInstance() {
 		World._instance = this;
 
-		camera = createCamera();
+		camera = new MainCamera();
 		scene = createScene();
 		renderer = createRenderer();
 		loop = new Loop(camera, scene, renderer);
-		scoreUI = new Score();
+		scoreUI = new Score3D();
 	}
-
+	
 	createContainer( container ) {
-		container.append(renderer.domElement);
-		container.parentElement.append( scoreUI.div );
+		// container.append( scoreUI.div );
+		container.append( renderer.domElement );
 		const resizer = new Resizer(container, camera, renderer);
 	}
-
+	
 	createGame() {
-		this.terrain = new Terrain( new Vector2(16, 10), 0.1, 0.4 );
+		scene.add( airHockeyTable.scene );
+		airHockeyTable.scene.scale.set( 0.07, 0.07, 0.07 );
+		airHockeyTable.scene.rotation.set( Math.PI / 2, 0, 0 );
+		airHockeyTable.scene.position.set( 3, 26, -5.5 );
+
+		this.terrain = new Terrain( new Vector2(18, 11), 0.5, 0.4 );
 
 		this.g_caps = new CapsuleGeometry( 0.2, 2.4 );
 		this.g_sphere = new SphereGeometry( 0.2 );
@@ -71,10 +89,15 @@ class World {
 		this.players.push( new Player( this.g_caps, this.m_white, new Vector3( -7.2, 0, 0 ), Player1InputMap ) );
 		this.players.push( new Player( this.g_caps, this.m_white, new Vector3(  7.2, 0, 0 ), Player2InputMap ) );
 
-		this.balls = [];
-		for (let i = 0; i < 2; i++) {
-			this.balls.push(new Ball( this.g_sphere, this.m_white ));
-		}
+		this.balls = new Ball( this.g_sphere, this.m_white, 1 );
+
+		// this.particles = new InstancedMesh( new DodecahedronGeometry( 0.2, 0 ), this.m_white, 10000 );
+		// const matrix = new Matrix4();
+		// for (let i = 0; i < 10000; i++) {
+		// 	matrix.setPosition( MathUtils.randFloat( -16, 16 ), MathUtils.randFloat( -10, 10 ), MathUtils.randFloat( -10, 0 ) );
+		// 	this.particles.setMatrixAt( i, matrix );
+		// }
+		// World.add( this.particles );
 		
 		const { ambientLight, mainLight } = createLights();
 
@@ -82,8 +105,7 @@ class World {
 	}
 
 	deleteGame() {
-		for (let i = 0; i < this.balls.length; i++)
-			this.balls[i].delete();
+		this.balls.delete();
 		for (let i = 0; i < this.players.length; i++)
 			this.players[i].delete();
 		scoreUI.reset();
@@ -99,8 +121,8 @@ class World {
 		scene.remove( mesh );
 	}
 
-	static addScore() {
-		
+	static scoreAdd( playerId ) {
+		scoreUI.add( playerId );
 	}
 }
 
