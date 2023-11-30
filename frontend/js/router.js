@@ -1,4 +1,4 @@
-import { showHome } from './pages/home/home.js';
+ import { showHome } from './pages/home/home.js';
 import { showUser } from './pages/user/user.js';
 import { showGame } from './pages/game/game.js';
 import { showAbout } from './pages/about/about.js';
@@ -8,39 +8,61 @@ import { showLogin } from './pages/login/login.js';
 import { headerComponent } from './components/header/header.js';
 import { templateComponent } from './components/template/template.js';
 import { GameModal } from './pages/home/gameModal.js';
+import { fetchAuth } from './api/fetchData.js';
 
-// Not currently use
 var currentRoute = '';
+const routes = {
+  '/': showLogin,
+  '/home': showHome,
+  '/about': showAbout,
+  '/game_page': showGame,
+  '/user': showUser,
+  '/login': showLogin,
+  '/signUp': showSignUp,
+};
 
 function showPage(pageFunction) {
-    pageFunction();
+  pageFunction();
 }
 
 export function navigateTo(route) {
+  // console.log("navigateTo!")
   if (route === currentRoute)
     return ;
-  history.pushState({ GoingTo: route}, null, route);
+  history.pushState(null, null, route);
   handleRoute();
 }
 
-function handleRoute() {
-  var pageFunction = null;
-
-  const path = window.location.pathname;
-  const routes = {
-    '/': showHome,
-    '/about': showAbout,
-    '/game_page': showGame,
-    '/user': showUser,
-    '/login': showLogin,
-    '/signUp': showSignUp,
+async function checkIfCookie() {
+  var accessTokenLive = sessionStorage.getItem('jwt');
+  var options = {
+    method: 'GET',
+    credentials: 'include',
+    headers: {
+      ...(accessTokenLive ? { 'jwt': `${accessTokenLive}` } : {}),
+    },
   };
-  if (routes[path]) {
-    pageFunction = routes[path]
-    currentRoute = path
+  const tokenResponse = await fetch('/api/auth/token/', options)
+  return tokenResponse
+}
+
+export async function handleRoute() {  
+  var pageFunction = null;
+  var goPath = window.location.pathname
+  if (goPath == '/home') {
+    var cookieResponse = await checkIfCookie()
+    if (cookieResponse.status == 401) {
+      history.pushState(null, null, '/');
+      goPath = '/'
+    }
+  }
+
+  if (routes[goPath]) {
+    pageFunction = routes[goPath]
   } else {
     pageFunction = show404
   }
+  currentRoute = goPath
   showPage(pageFunction);
 }
 
@@ -57,7 +79,7 @@ async function loadPage() {
   navigateTo(path)
 }
 
-
+// Rediriger vers /home if refresh token.
 document.addEventListener('DOMContentLoaded', async () => {
   // isPathGame()
   await loadPage()
@@ -77,7 +99,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 function handlePopState(event) {
   closeModal()
-  handleRoute();
+  handleRoute(window.location.pathname)
 }
 
 function closeModal() {
