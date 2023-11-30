@@ -50,19 +50,17 @@ export async function showHome() {
 /////////////////////////
 
 async function displayOnlineUser(userContainer) {
+    // Filtrer le user lui même dans le backend pour ne pas qu'il puisse se voir ?
     const allUsers = await fetchUser('GET', { status: ['ONL', 'ING'] });
     if (!allUsers || !allUsers.ok)
         // if !allUsers, c'est que le status == 401 et si !AllUsers.ok == Aucun user Online
         return;
-
-    // console.log(await allUsers.text)
 
     const objectAllUsers = await assembleUser(allUsers);
     const templateUser = await userTemplateComponent();
 
     if (objectAllUsers) {
         objectAllUsers.forEach((user) => {
-            // console.log(user)
             userContainer.appendChild(document.createElement('hr'));
 
             const clonedUserTemplate = templateUser.cloneNode(true);
@@ -114,7 +112,6 @@ async function displayUserCard() {
     let userCard = await userCardComponent();
     userContainer.appendChild(userCard);
     userCardListener(); // enable js on the userCard
-    // Update the user card with actual data from the server
     updateUserCard(meUserObject);
 }
 
@@ -128,7 +125,6 @@ async function displayMatchHistory() {
     }
     const userStatJson = await assembleUser(userStat);
     console.log(userStatJson);
-
 
     matchHistoryContainer.appendChild(matchHistory);
 }

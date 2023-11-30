@@ -1,5 +1,9 @@
 const setSize = (container, camera, renderer) => {
-	camera.aspect = container.clientWidth / container.clientHeight; // PERSPECTIVE CAMERA
+	// PERSPECTIVE CAMERA
+	// aspect based on terrain sizes
+	camera.aspect = container.clientWidth / container.clientHeight;
+	camera.zoom = camera.aspect < 16/9 ? camera.aspect / (16/9) : 1;
+
 	camera.top = 8 * container.clientHeight / container.clientWidth;
 	camera.bottom = -8 * container.clientHeight / container.clientWidth;
 	camera.updateProjectionMatrix();
@@ -13,7 +17,7 @@ class Resizer {
 	// set initial size on load
 	setSize(container, camera, renderer);
 
-	window.addEventListener('resize', () => {
+	this.resizeEvent = window.addEventListener('resize', () => {
 		// set the size again if a resize occurs
 		setSize(container, camera, renderer);
 		// perform any custom actions
@@ -24,7 +28,7 @@ class Resizer {
 	onResize() {}
 
 	delete() {
-		
+		window.removeEventListener('resize', this.resizeEvent);
 	}
 }
 

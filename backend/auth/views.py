@@ -35,7 +35,7 @@ class Login(View):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class Logout(View):
-    # @token_validation
+    @token_validation
     def post(self, request):
         access_jwt_token = request.headers.get("jwt-access")
         if access_jwt_token is None:
@@ -43,6 +43,7 @@ class Logout(View):
         decrypt_result: int = decrypt_user_id(access_jwt_token)
         if decrypt_result > 0:
             user = get_object_or_404(User, id=decrypt_result)
+            # Check if status is not OFF ?
             user.status = "OFF"
             user.save()
             response : HttpResponse = HttpResponse('Logout Sucessful', status=200)

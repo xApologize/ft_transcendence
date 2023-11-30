@@ -1,5 +1,4 @@
 import { Clock } from 'three';
-import { DynamicObject } from "./DynamicObject.js";
 
 const clock = new Clock();
 const updatables = [];
@@ -21,16 +20,16 @@ class Loop {
 	
 	tick () {
 		const delta = clock.getDelta();
-		for(const object of updatables) {
-			if ( object instanceof DynamicObject )
-				object.update(delta);
+		for( const object of updatables ) {
+			if ( typeof object.update === "function" )
+				object.update( delta );
 			else
-				console.warn("Weird element in Updatable tab !");
+				console.warn("update() called but undefined!");
 		}
 	}
 
 	static addUpdatable( object ) { updatables.push(object); }
-	static removeUpdatable( object ) { updatables.pop(object); }
+	static removeUpdatable( object ) { updatables.splice( updatables.indexOf(object), 1 ); }
 }
 
 export { Loop };

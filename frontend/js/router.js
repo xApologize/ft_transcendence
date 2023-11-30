@@ -79,7 +79,7 @@ async function loadPage() {
   navigateTo(path)
 }
 
-
+// Rediriger vers /home if refresh token.
 document.addEventListener('DOMContentLoaded', async () => {
   // isPathGame()
   await loadPage()
