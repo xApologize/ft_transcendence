@@ -2,29 +2,31 @@ import json
 
 from channels.generic.websocket import WebsocketConsumer
 
+users = {
+    "A": None,
+    "B": None,
+}
+
 class PongUserA(WebsocketConsumer):
     def connect(self):
+        users["A"] = self
         self.accept()
 
     def disconnect(self, close_code):
         pass
 
     def receive(self, text_data):
-        text_data_json = json.loads(text_data)
-        message = text_data_json["message"]
-
-        self.send(text_data=json.dumps({"message": message}))
+        self.send(text_data)
 
 
 class PongUserB(WebsocketConsumer):
     def connect(self):
+        users["B"] = self
         self.accept()
 
     def disconnect(self, close_code):
         pass
 
     def receive(self, text_data):
-        text_data_json = json.loads(text_data)
-        message = text_data_json["message"]
-
-        self.send(text_data=json.dumps({"message": message}))
+        if users["A"]:
+            users["A"].send(text_data)
