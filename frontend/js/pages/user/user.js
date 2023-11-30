@@ -128,6 +128,7 @@ function displaySuccessMessage(responseText, SuccessElement) {
 function displayUsers(users) {
     const usersContainer = document.getElementById('userData');
     const userTemplate = document.querySelector('.user-template');
+    const userStatus = document.getElementById('badge');
 
     usersContainer.innerHTML = '';
 

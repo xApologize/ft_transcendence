@@ -1,35 +1,43 @@
 import { loadHTMLPage } from '../../api/fetchData.js';
 import { navigateTo } from '../../router.js'
-import { fetchLogin } from '../../api/fetchData.js';
+import { fetchAuth } from '../../api/fetchData.js';
 
 export async function showLogin() {
     try {
         await loadHTMLPage('./js/pages/login/login.html');
-        document.getElementById('loginButton').addEventListener('click', () => {
-            login();
+        sessionStorage.clear()
+        document.getElementById('loginButton').addEventListener('click', async () => {
+            await login();
         });
         document
             .getElementById('signUpButton')
             .addEventListener('click', () => {
                 navigateTo('/signUp');
             });
+        document.getElementById('demo-user-btn').addEventListener('click', () => {
+            login("demo-user", "demo-user");
+        });
+        document.getElementById('demo-user-btn2').addEventListener('click', () => {
+            login("demo-user2", "demo-user2");
+        });
     } catch (error) {
         console.error('Error fetching home.html:', error);
     }
 }
 
-async function login() {
-    
-    const username = document.getElementById('usernameInput').value;
-    const password = document.getElementById('passwordInput').value;
-    
-    if (!username || !password) {
+
+async function login(username = null, password = null) {
+    const usernameInput = username !== null ? username : document.getElementById('usernameInput').value;
+    const passwordInput = password !== null ? password : document.getElementById('passwordInput').value;
+
+    if (!usernameInput || !passwordInput) {
         alert('Fill the form.');
         return;
     }
+
     const loginData = {
-        username: username,
-        password: password,
+        nickname: usernameInput,
+        password: passwordInput,
     };
     
     // Response status:
@@ -38,18 +46,16 @@ async function login() {
     // 200: Login successfull
 
     try {
-        const response = await fetchLogin('POST', loginData);
+        const response = await fetchAuth('POST','login/', loginData);
         const result = await response.json();
         if (response.ok) {
             if (result.success) {
                 console.log('Login successful: ', await result.success);
-            } else {
-                console.log('Login failed: ', await result.error);
+                navigateTo('/home');
+                return ;
             }
-        } else {
-            console.log('Login failed.');
+            console.log('Login failed: ', await result.error);
         }
-        console.log('Response Status:', await response.status);
     } catch (error) {
         console.error('Error during login:', error);
     }
