@@ -1,16 +1,46 @@
-import { PerspectiveCamera, OrthographicCamera } from 'three';
+import { Updatable } from "../modules/Updatable.js";
+import { PerspectiveCamera, MathUtils, Vector3 } from "three";
+import { Tween } from "../systems/Tween.js";
 
-function createCamera() {
-	const aspect = window.innerHeight / window.innerWidth;
-	const r = 8;
+let delay = 1;
 
-	// const camera = new PerspectiveCamera( 40, 1, 0.1, 1000 );
-	// camera.position.set(0, 0, 20);
+class MainCamera extends PerspectiveCamera {
+	constructor() {
+		super( 30, 1, 0.1, 1000 );
+		this.updatable = new Updatable( this );
 
-	const camera = new OrthographicCamera( -r, r, -r * aspect, r * aspect, 0.01, 100 );
-	camera.position.set(0, 0, 10);
+		this.position.set( 0, -35, 10 );
+		this.rotation.set( MathUtils.degToRad( 70 ), 0, 0 );
+		
+		this.viewTable();
+		
+		// const camera = new OrthographicCamera( -r, r, -r * aspect, r * aspect, 0.01, 100 );
+		// camera.position.set(0, 0, 10);
 
-	return camera;
+
+		document.addEventListener('keydown', (event) => {
+			if ( event.code == "KeyT" ) {
+				this.viewTable();
+			}
+			if ( event.code == "KeyY" ) {
+				this.viewLarge();
+			}
+		}, false);
+	}
+
+	viewLarge() {
+		new Tween( this.position, new Vector3( 0, -35, 10 ), 0.8 );
+		new Tween( this.rotation, new Vector3( MathUtils.degToRad( 70 ), 0, 0 ), 0.8 );
+	}
+
+	viewTable() {
+		new Tween( this.position, new Vector3( 0, 0, 20 ), 0.8 );
+		new Tween( this.rotation, new Vector3( 0, 0, 0 ), 0.8 );
+	}
+
+	update( dt ) {
+
+	}
 }
 
-export { createCamera };
+export { MainCamera };
