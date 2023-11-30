@@ -16,7 +16,8 @@ class PongUserA(WebsocketConsumer):
         pass
 
     def receive(self, text_data):
-        self.send(text_data)
+        if users["B"]:
+            users["B"].send(text_data)
 
 
 class PongUserB(WebsocketConsumer):
