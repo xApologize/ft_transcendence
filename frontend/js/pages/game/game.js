@@ -26,6 +26,6 @@ export async function showGame() {
 	});
 
   } catch (error) {
-    console.error('Error fetching game.html:', error);
+	  console.error('Error fetching game.html:', error);
   }
 }
