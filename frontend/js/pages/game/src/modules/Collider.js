@@ -12,7 +12,7 @@ class Collider extends Component {
 	}
 
 	_onDisabled() {
-		solids.pop( this.obj );
+		solids.splice( solids.indexOf(this.obj), 1 );
 	}
 
 	static getSolids() {

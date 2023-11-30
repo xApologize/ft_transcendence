@@ -29,7 +29,7 @@ class Loop {
 	}
 
 	static addUpdatable( object ) { updatables.push(object); }
-	static removeUpdatable( object ) { updatables.pop(object); }
+	static removeUpdatable( object ) { updatables.splice( updatables.indexOf(object), 1 ); }
 }
 
 export { Loop };

@@ -23,13 +23,15 @@ class Ball extends InstancedMesh {
 
 		this.vars = [];
 		for (let i = 0; i < this.count; i++) {
-			var x = {
-				pos: new Vector3( MathUtils.randFloat( -4, 4 ), MathUtils.randFloat( -2, 2 ), 0 ),
-				dir: new Vector3( MathUtils.randFloat( -1, 1 ), MathUtils.randFloat( -0.5, 0.5 ), 0 ).normalize(),
-				speed: 5,
-				colliding: undefined
-			}
-			this.vars[i] = x;
+			// this.vars[i] = {
+			// 	pos: new Vector3( MathUtils.randFloat( -4, 4 ), MathUtils.randFloat( -2, 2 ), 0 ),
+			// 	// dir: new Vector3( MathUtils.randFloat( -1, 1 ), MathUtils.randFloat( -0.5, 0.5 ), 0 ).normalize(),
+			// 	dir: new Vector3( MathUtils.randFloat( -0.01, .01 ), 1, 0 ).normalize(),
+			// 	speed: 5,
+			// 	colliding: undefined
+			// }
+			this.vars[i] = { pos: new Vector3(), dir: new Vector3(), speed: 0, colliding: undefined };
+			this.reset( this.vars[i] );
 		}
 		
 		
@@ -40,13 +42,12 @@ class Ball extends InstancedMesh {
 		this.matrix = new Matrix4();
 	}
 
-	// Recursion error quand vitesse extreme
 	calcCollision( vars, dist, maxRecursion ) {
 		// if (dist < 0)
 		// 	dist = 0;
 
 		if ( maxRecursion <= 0 ) {
-			console.warn( "Collision Recursion forced stop" );
+			console.warn( "Collision Recursion max reached: forced stop" );
 			return;
 		}
 
@@ -76,30 +77,25 @@ class Ball extends InstancedMesh {
 			if ( typeof closerHit.object.onCollision === "function" )
 				closerHit.object.onCollision( this );
 			vars.colliding = closerHit.object;
-			// if ( closerHit.object.layers.isEnabled( Layers.Player ) ) {
-			// 	if ( vars.dir.dot( closerHit.object.dir ) > 0 ) {
-			// 		vars.dir.set( -Math.sign(vars.dir.x), closerHit.point.y - closerHit.object.position.y, 0 );
-			// 		vars.dir.normalize();
-					vars.speed += 1;
-			// 	}
-			// 	vars.pos.add( vars.dir.clone().multiplyScalar( dist ) );
-			// 	return;
-			/*} else*/ if ( closerHit.object.layers.isEnabled( Layers.Goal ) ) {
-				vars.dir = new Vector3(MathUtils.randFloat( -1, 1 ), MathUtils.randFloat( -0.5, 0.5 ), 0);
-				vars.dir.normalize();
-				vars.speed = 5;
-				vars.pos.set( MathUtils.randFloat( -2, 2 ), MathUtils.randFloat( -1, 1 ), 0 );
+			if ( closerHit.object.layers.isEnabled( Layers.Goal ) ) {
+				this.reset( vars );
 				return;
-			} else {
-				closerHit.normal.setZ( 0 );
-				vars.dir.reflect( closerHit.normal );
-				vars.dir.normalize();
 			}
+			closerHit.normal.setZ( 0 );
+			vars.dir.reflect( closerHit.normal );
+			if ( closerHit.object.layers.isEnabled( Layers.Player ) ) {
+				if ( vars.dir.dot( closerHit.object.dir ) > 0 ) {
+					vars.speed += 1;
+					vars.dir.y += closerHit.point.y - closerHit.object.position.y;
+				}
+			}
+			vars.dir.normalize();
 			vars.pos.copy( closerHit.point.clone().sub(offset) );
 			return this.calcCollision( vars, dist - closerHit.distance, maxRecursion - 1 );
 		}
-		vars.colliding = undefined;
 
+		//No Collision
+		vars.colliding = undefined;
 		vars.pos.add( vars.dir.clone().multiplyScalar( dist ) );
 	}
 
@@ -110,7 +106,8 @@ class Ball extends InstancedMesh {
 				this.vars[i].pos,
 				new Quaternion(),
 				// this.lookAt(this.dir.clone().add(this.position));
-				new Vector3( 1 + this.vars[i].speed / 200, 2 - (1 + this.vars[i].speed / 200), 1 )
+				// new Vector3( 1 + this.vars[i].speed / 200, 2 - (1 + this.vars[i].speed / 200), 1 )
+				new Vector3( 1 + this.vars[i].speed * dt, 1, 1 )
 			);
 			this.matrix.set
 			this.setMatrixAt( i, this.matrix );
@@ -124,12 +121,12 @@ class Ball extends InstancedMesh {
 		}
 	}
 
-	reset( i ) {
-		console.log( this.vars[i] );
-		this.vars[i].pos.set(MathUtils.randFloat( -2, 2 ), MathUtils.randFloat( -1, 1 ), -2);
-		this.vars[i].dir = new Vector3(MathUtils.randFloat( -1, 1 ), MathUtils.randFloat( -0.5, 0.5 ), 0);
-		this.vars[i].dir.normalize();
-		this.vars[i].speed = 5;
+	reset( vars ) {
+		vars.pos.set(MathUtils.randFloat( -2, 2 ), MathUtils.randFloat( -1, 1 ), 0);
+		vars.dir.set(MathUtils.randFloat( -1, 1 ), MathUtils.randFloat( -0.5, 0.5 ), 0);
+		vars.dir.normalize();
+		vars.speed = 5;
+		vars.colliding = undefined;
 	}
 
 	delete() {

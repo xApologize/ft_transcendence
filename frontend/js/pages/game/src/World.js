@@ -48,6 +48,7 @@ class World {
 		this.start = function() { loop.start();	}
 		this.stop = function() { loop.stop(); }
 
+		/// DEBUG TEMP
 		document.addEventListener('keydown', (event) => {
 			if ( event.code == "KeyR" ) {
 				console.warn("-- DELETION! --");
