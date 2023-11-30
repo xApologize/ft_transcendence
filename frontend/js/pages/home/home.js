@@ -121,6 +121,15 @@ async function displayUserCard() {
 async function displayMatchHistory() {
     let matchHistoryContainer = document.getElementById('matchHistory');
     let matchHistory = await matchHistoryComponent();
+
+    const userStat = await fetchMe('GET');
+    if (!userStat) {
+        console.log('Error fetching users');
+    }
+    const userStatJson = await assembleUser(userStat);
+    console.log(userStatJson);
+
+
     matchHistoryContainer.appendChild(matchHistory);
 }
 
