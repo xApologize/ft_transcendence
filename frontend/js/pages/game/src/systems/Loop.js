@@ -19,6 +19,7 @@ class Loop {
 	}
 	
 	tick () {
+		// console.log("tick");
 		const delta = clock.getDelta();
 		for( const object of updatables ) {
 			if ( typeof object.update === "function" )

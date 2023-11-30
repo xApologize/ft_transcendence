@@ -30,6 +30,7 @@ let camera;
 let renderer;
 let loop;
 let scoreUI;
+let resizer;
 
 class World {
 	constructor( container ) {
@@ -54,6 +55,11 @@ class World {
 				console.warn("-- DELETION! --");
 				World._instance.deleteGame();
 			}
+			if ( event.code == "KeyE" ) {
+				console.warn("-- RESUME! --");
+				World._instance.deleteGame();
+				World._instance.createGame();
+			}
 		}, false);
 	}
 
@@ -65,12 +71,17 @@ class World {
 		renderer = createRenderer();
 		loop = new Loop(camera, scene, renderer);
 		scoreUI = new Score3D();
+
+
+		const { ambientLight, mainLight } = createLights();
+
+		scene.add( ambientLight, mainLight );
 	}
 	
 	createContainer( container ) {
 		// container.append( scoreUI.div );
 		container.append( renderer.domElement );
-		const resizer = new Resizer(container, camera, renderer);
+		resizer = new Resizer(container, camera, renderer);
 	}
 	
 	createGame() {
@@ -99,18 +110,25 @@ class World {
 		// }
 		// World.add( this.particles );
 		
-		const { ambientLight, mainLight } = createLights();
+		// const { ambientLight, mainLight } = createLights();
 
-		scene.add( ambientLight, mainLight );
+		// scene.add( ambientLight, mainLight );
+		camera.viewLarge( 0 );
+		camera.viewTable( 1 );
+		loop.start();
 	}
 
 	deleteGame() {
+		scene.remove( airHockeyTable.scene );
 		this.balls.delete();
 		for (let i = 0; i < this.players.length; i++)
 			this.players[i].delete();
 		scoreUI.reset();
 		this.terrain.delete();
 		renderer.renderLists.dispose();
+		resizer.delete();
+		camera.viewLarge( 0 );
+		loop.stop();
 	}
 
 	static add( mesh ) {

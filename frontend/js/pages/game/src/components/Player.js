@@ -8,6 +8,7 @@ import {
 	Vector2,
 	Vector3
 } from 'three';
+import { InputMap, Player1InputMap } from '../systems/InputMaps.js';
 
 class Player extends Mesh {
 	constructor( geometry, material, position, inputMap ) {
@@ -32,6 +33,22 @@ class Player extends Mesh {
 		this.ray.layers.set( Layers.Solid );
 
 		this.renderer.setLayers( Layers.Default, Layers.Player );
+
+		if ( inputMap == Player1InputMap ) {
+			this.playerSocket = new WebSocket('wss://' + window.location.host + '/ws/pong/UserA');
+		}
+		else {
+			const socket = new WebSocket('wss://' + window.location.host + '/ws/pong/UserB');
+
+			socket.addEventListener("open", (event) => {
+				socket.send("Hello Server!");
+			});			  
+			socket.addEventListener("message", (event) => {
+				console.log("Message from server ", event.data);
+				console.log("Message from server ", event.data);
+				this.position.setY(parseFloat( event.data ));
+			});
+		}
 	}
 
 	update( dt ) {
@@ -51,6 +68,10 @@ class Player extends Mesh {
 			this.position.add(movement.multiplyScalar( hits[0].distance - 1.4 ));
 		} else {
 			this.position.add(movement.multiplyScalar( this.speed * dt ));
+		}
+
+		if ( this.playerSocket != undefined && this.playerSocket.readyState === WebSocket.OPEN) {
+			this.playerSocket.send( this.position.y );
 		}
 	}
 

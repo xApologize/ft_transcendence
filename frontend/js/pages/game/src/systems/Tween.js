@@ -22,10 +22,11 @@ class Tween {
 			this.time = this.duration;
 		}
 
-		console.log( this.time );
-		this.from.x = this.origin.x + ( this.to.x - this.origin.x ) * ( this.time / this.duration );
-		this.from.y = this.origin.y + ( this.to.y - this.origin.y ) * ( this.time / this.duration );
-		this.from.z = this.origin.z + ( this.to.z - this.origin.z ) * ( this.time / this.duration );
+		const ratio = this.duration > 0 ? this.time / this.duration : 1;
+
+		this.from.x = this.origin.x + ( this.to.x - this.origin.x ) * ratio;
+		this.from.y = this.origin.y + ( this.to.y - this.origin.y ) * ratio;
+		this.from.z = this.origin.z + ( this.to.z - this.origin.z ) * ratio;
 
 		if ( this.time >= this.duration ) {
 			this.updatable.delete();
