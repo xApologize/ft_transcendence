@@ -10,3 +10,8 @@ export async function matchHistoryComponent() {
         console.error('Error fetching matchHistory:', error);
     }
 }
+
+export async function updateMatchHistory(elementId, listElement) {
+    console.log(elementId);
+    console.log(listElement);
+}

@@ -7,7 +7,10 @@ import {
     userCardComponent,
     userCardListener,
 } from '../../components/userCard/userCard.js';
-import { matchHistoryComponent } from '../../components/matchHistory/matchHistory.js';
+import {
+    matchHistoryComponent,
+    updateMatchHistory,
+} from '../../components/matchHistory/matchHistory.js';
 
 ////////
 // [TO DO]
@@ -118,15 +121,26 @@ async function displayUserCard() {
 async function displayMatchHistory() {
     let matchHistoryContainer = document.getElementById('matchHistory');
     let matchHistory = await matchHistoryComponent();
+    matchHistoryContainer.appendChild(matchHistory);
 
+    let matchHistoryWinner = document.getElementById('winnerUsername');
+    let matchHistoryLoser = document.getElementById('loserUsername');
+    let matchHistoryWinScore = document.getElementById('winnerScore');
+    let matchHistoryLoseScore = document.getElementById('loserScore');
     const userStat = await fetchMe('GET');
     if (!userStat) {
         console.log('Error fetching users');
     }
     const userStatJson = await assembleUser(userStat);
-    console.log(userStatJson);
-
-    matchHistoryContainer.appendChild(matchHistory);
+    // updateMatchHistory('winnerUserName', userStatJson.played_matches);
+    userStatJson.played_matches.forEach((game) => {
+        console.log(game.winner_username);
+        const listElement = document.createElement('li');
+        listElement.classList.add('list-group-item');
+        listElement.classList.add('border-0');
+        listElement.innerHTML = game.winner_username;
+        matchHistoryWinner.appendChild(listElement);
+    });
 }
 
 function updateUserCard(userObject) {
