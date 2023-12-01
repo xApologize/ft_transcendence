@@ -7,10 +7,7 @@ import {
     userCardComponent,
     userCardListener,
 } from '../../components/userCard/userCard.js';
-import {
-    matchHistoryComponent,
-    updateMatchHistory,
-} from '../../components/matchHistory/matchHistory.js';
+import { matchHistoryComponent } from '../../components/matchHistory/matchHistory.js';
 
 ////////
 // [TO DO]
@@ -127,19 +124,39 @@ async function displayMatchHistory() {
     let matchHistoryLoser = document.getElementById('loserUsername');
     let matchHistoryWinScore = document.getElementById('winnerScore');
     let matchHistoryLoseScore = document.getElementById('loserScore');
+
     const userStat = await fetchMe('GET');
     if (!userStat) {
         console.log('Error fetching users');
     }
     const userStatJson = await assembleUser(userStat);
-    // updateMatchHistory('winnerUserName', userStatJson.played_matches);
     userStatJson.played_matches.forEach((game) => {
-        console.log(game.winner_username);
         const listElement = document.createElement('li');
         listElement.classList.add('list-group-item');
         listElement.classList.add('border-0');
         listElement.innerHTML = game.winner_username;
         matchHistoryWinner.appendChild(listElement);
+    });
+    userStatJson.played_matches.forEach((game) => {
+        const listElement = document.createElement('li');
+        listElement.classList.add('list-group-item');
+        listElement.classList.add('border-0');
+        listElement.innerHTML = game.winner_score;
+        matchHistoryWinScore.appendChild(listElement);
+    });
+    userStatJson.played_matches.forEach((game) => {
+        const listElement = document.createElement('li');
+        listElement.classList.add('list-group-item');
+        listElement.classList.add('border-0');
+        listElement.innerHTML = game.loser_username;
+        matchHistoryLoser.appendChild(listElement);
+    });
+    userStatJson.played_matches.forEach((game) => {
+        const listElement = document.createElement('li');
+        listElement.classList.add('list-group-item');
+        listElement.classList.add('border-0');
+        listElement.innerHTML = game.loser_score;
+        matchHistoryLoseScore.appendChild(listElement);
     });
 }
 
