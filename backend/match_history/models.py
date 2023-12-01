@@ -14,7 +14,6 @@ class MatchHistory(models.Model):
     class Meta:
         verbose_name = "match_history"
         verbose_name_plural = "match_history's"
-        db_table_comment = "Implementation of a match_history table for pong"
         constraints = [
             models.CheckConstraint(
                 check=~Q(winner=F("loser")), name="Winner and loser are the same user")

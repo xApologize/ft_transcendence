@@ -11,7 +11,6 @@ class BlockList(models.Model):
     class Meta:
         verbose_name = "block_list"
         verbose_name_plural = "block_list"
-        db_table_comment = "Implementation of a blocklist between users on the website"
         constraints = [
             models.UniqueConstraint(
                 fields=["blocker", "blocked_user"], name="Unique rows block list"
