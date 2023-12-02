@@ -5,7 +5,6 @@ import { createScene } from './components/scene.js';
 
 import { Resizer } from './systems/Resizer.js';
 import { Loop } from './systems/Loop.js';
-import { Player1InputMap, Player2InputMap } from './systems/InputMaps.js';
 
 import { Terrain } from './components/Terrain.js';
 import { Ball } from './components/Ball.js';
@@ -24,6 +23,8 @@ import {
 	Vector3
 } from 'three';
 import { airHockeyTable } from './systems/Loader.js';
+import { InputManager } from './systems/InputManager.js';
+import { Opponent } from './components/Opponent.js';
 
 let scene;
 let camera;
@@ -31,6 +32,9 @@ let renderer;
 let loop;
 let scoreUI;
 let resizer;
+let input;
+
+let joined = false;
 
 class World {
 	constructor( container ) {
@@ -60,6 +64,49 @@ class World {
 				World._instance.deleteGame();
 				World._instance.createGame();
 			}
+			if ( event.code == "KeyA" ) {
+				if (!joined) {
+					this.socketPA = new WebSocket('wss://' + window.location.host + '/ws/pong/UserA');
+
+					this.players.push( new Player( this.g_caps, new MeshStandardMaterial(), new Vector3( -7.2, 0, 0 ), this.socketPA ) );
+					joined = true;
+					
+					this.socketPA.addEventListener("message", (event) => {
+						if ( event.data === "Joined" && this.players.length < 2 ) {
+							this.balls.updatable.setEnabled(true);
+							this.players.push( new Opponent( this.g_caps, new MeshStandardMaterial(), new Vector3(  7.2, 0, 0 ), this.socketPA ) );
+							this.socketPA.send("Joined");
+						}
+					});
+				}
+				// else
+				// {
+				// 	this.players.push( new Opponent( this.g_caps, new MeshStandardMaterial(), new Vector3(  -7.2, 0, 0 ), '/ws/pong/UserA' ) );
+				// }
+				console.log("-- I am Player A! --");
+			}
+			if ( event.code == "KeyB" ) {
+				if (!joined) {
+					this.socketPB = new WebSocket('wss://' + window.location.host + '/ws/pong/UserB');
+
+					this.players.push( new Player( this.g_caps, new MeshStandardMaterial(), new Vector3(  7.2, 0, 0 ), this.socketPB ) );
+					joined = true;
+
+
+					this.socketPB.addEventListener("message", (event) => {
+						if ( event.data === "Joined" && this.players.length < 2 ) {
+							this.balls.updatable.setEnabled(true);
+							this.players.push( new Opponent( this.g_caps, new MeshStandardMaterial(), new Vector3( -7.2, 0, 0 ), this.socketPB ) );
+							this.socketPB.send("Joined");
+						}
+					});
+				}
+				// else
+				// {
+				// 	this.players.push( new Opponent( this.g_caps, new MeshStandardMaterial(), new Vector3(  7.2, 0, 0 ), '/ws/pong/UserB' ) );
+				// }
+				console.log("-- I am Player B! --");
+			}
 		}, false);
 	}
 
@@ -71,6 +118,7 @@ class World {
 		renderer = createRenderer();
 		loop = new Loop(camera, scene, renderer);
 		scoreUI = new Score3D();
+		input = new InputManager();
 
 
 		const { ambientLight, mainLight } = createLights();
@@ -97,10 +145,11 @@ class World {
 		this.m_white = new MeshStandardMaterial({ color: 'white' });
 
 		this.players = [];
-		this.players.push( new Player( this.g_caps, this.m_white, new Vector3( -7.2, 0, 0 ), Player1InputMap ) );
-		this.players.push( new Player( this.g_caps, this.m_white, new Vector3(  7.2, 0, 0 ), Player2InputMap ) );
+		// this.players.push( new Player( this.g_caps, this.m_white, new Vector3( -7.2, 0, 0 ) ) );
+		// this.players.push( new Opponent( this.g_caps, this.m_white, new Vector3(  7.2, 0, 0 ) ) );
 
 		this.balls = new Ball( this.g_sphere, this.m_white, 1 );
+		this.balls.updatable.setEnabled(false);
 
 		// this.particles = new InstancedMesh( new DodecahedronGeometry( 0.2, 0 ), this.m_white, 10000 );
 		// const matrix = new Matrix4();
@@ -129,6 +178,7 @@ class World {
 		resizer.delete();
 		camera.viewLarge( 0 );
 		loop.stop();
+		joined = false;
 	}
 
 	static add( mesh ) {

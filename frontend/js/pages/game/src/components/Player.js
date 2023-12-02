@@ -3,63 +3,53 @@ import { Renderer } from '../modules/Renderer.js';
 import { Collider } from '../modules/Collider.js';
 import { Layers } from '../systems/Layers.js';
 import {
+	Color,
 	Mesh,
 	Raycaster,
 	Vector2,
 	Vector3
 } from 'three';
-import { InputMap, Player1InputMap } from '../systems/InputMaps.js';
+import { InputMap } from '../systems/InputManager.js';
+import { Paddle } from './Paddle.js';
+// import { ControlLocal } from '../modules/ControlLocal.js';
 
-class Player extends Mesh {
-	constructor( geometry, material, position, inputMap ) {
-		super( geometry, material );
-
-		this.updatable = new Updatable( this );
-		this.renderer = new Renderer( this );
-		this.collider = new Collider( this );
-
-		this.position.copy( position );
-
-		const from = new Vector2( this.position.x, this.position.y );
-		this.rotation.set( 0, 0, from.angle() );
-		this.dir = new Vector3( 1, 0, 0 );
-		this.dir.applyQuaternion( this.quaternion );
+class Player extends Paddle {
+	constructor( geometry, material, position, socket ) {
+		super( geometry, material, position );
 
 		this.speed = 5;
-
-		this.setupInputs( inputMap );
 
 		this.ray = new Raycaster();
 		this.ray.layers.set( Layers.Solid );
 
-		this.renderer.setLayers( Layers.Default, Layers.Player );
+		// this.playerSocket = new WebSocket('wss://' + window.location.host + socketName);
+		this.socket = socket;
+		this.socket.addEventListener("open", (event) => {
+			this.material.color = new Color( 0x00aaff );
+			this.socket.send("Joined");
+		});
 
-		if ( inputMap == Player1InputMap ) {
-			this.playerSocket = new WebSocket('wss://' + window.location.host + '/ws/pong/UserA');
-		}
-		else {
-			const socket = new WebSocket('wss://' + window.location.host + '/ws/pong/UserB');
+		// if ( inputMap == undefined ) {
+		// 	this.playerSocket = new WebSocket('wss://' + window.location.host + '/ws/pong/UserA');
+		// }
+		// else {
+		// 	const socket = new WebSocket('wss://' + window.location.host + '/ws/pong/UserB');
 
-			socket.addEventListener("open", (event) => {
-				socket.send("Hello Server!");
-			});			  
-			socket.addEventListener("message", (event) => {
-				console.log("Message from server ", event.data);
-				console.log("Message from server ", event.data);
-				this.position.setY(parseFloat( event.data ));
-			});
-		}
+		// 	socket.addEventListener("open", (event) => {
+		// 		socket.send("Hello Server!");
+		// 	});			  
+		// 	socket.addEventListener("message", (event) => {
+		// 		// console.log("Message from server ", event.data);
+		// 		this.position.setY(parseFloat( event.data ));
+		// 	});
+		// }
 	}
 
 	update( dt ) {
-		let movement = undefined;
-
-		if ( this.inputStrength.x > this.inputStrength.y )
-			movement = new Vector3( 0, 1, 0 );
-		else if ( this.inputStrength.x < this.inputStrength.y )
-			movement = new Vector3( 0, -1, 0 );
-		if ( movement === undefined )
+		if ( InputMap.movementAxis.value === 0 )
 			return;
+
+		let movement = new Vector3( 0, InputMap.movementAxis.value, 0 );
 		
 		this.ray.set( this.position, movement );
 		this.ray.far = 1.4 + this.speed * dt;
@@ -70,51 +60,9 @@ class Player extends Mesh {
 			this.position.add(movement.multiplyScalar( this.speed * dt ));
 		}
 
-		if ( this.playerSocket != undefined && this.playerSocket.readyState === WebSocket.OPEN) {
-			this.playerSocket.send( this.position.y );
+		if ( this.socket != undefined && this.socket.readyState === WebSocket.OPEN) {
+			this.socket.send( this.position.y );
 		}
-	}
-
-	onCollision( hit ) {
-		// console.log("hit");
-		// hit.vars.dir.reflect( closerHit.normal );
-
-	}
-
-	onKeyDown( event, inputMap ) {
-		if ( event.code == inputMap.pos )
-			this.inputStrength.x = this.inputStrength.y + 1;
-		if ( event.code == inputMap.neg )
-			this.inputStrength.y = this.inputStrength.x + 1;
-		if ( event.code == inputMap.boost )
-			this.speed = 10;
-	}
-
-	onKeyUp( event, inputMap ) {
-		if ( event.code == inputMap.pos )
-			this.inputStrength.x = 0;
-		if ( event.code == inputMap.neg )
-			this.inputStrength.y = 0;
-		if ( event.code == inputMap.boost )
-			this.speed = 5;
-	}
-
-	setupInputs( inputMap ) {
-		this.inputStrength = new Vector2( 0, 0 );
-
-		this.onKeyDownEvent = (event) => this.onKeyDown( event, inputMap );
-		this.onKeyUpEvent = (event) => this.onKeyUp( event, inputMap );
-
-		document.addEventListener('keydown', this.onKeyDownEvent, false);
-		document.addEventListener('keyup', this.onKeyUpEvent, false);
-	}
-
-	delete() {
-		document.removeEventListener('keydown', this.onKeyDownEvent, false);
-		document.removeEventListener('keyup', this.onKeyUpEvent, false);
-		this.updatable.delete();
-		this.renderer.delete();
-		this.collider.delete();
 	}
 }
 

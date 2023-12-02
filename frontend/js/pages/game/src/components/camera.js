@@ -16,10 +16,10 @@ class MainCamera extends PerspectiveCamera {
 
 		document.addEventListener('keydown', (event) => {
 			if ( event.code == "KeyT" ) {
-				this.viewTable();
+				this.viewTable( 1 );
 			}
 			if ( event.code == "KeyY" ) {
-				this.viewLarge();
+				this.viewLarge( 1 );
 			}
 		}, false);
 	}

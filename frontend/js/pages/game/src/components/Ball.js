@@ -109,7 +109,6 @@ class Ball extends InstancedMesh {
 				// new Vector3( 1 + this.vars[i].speed / 200, 2 - (1 + this.vars[i].speed / 200), 1 )
 				new Vector3( 1 + this.vars[i].speed * dt, 1, 1 )
 			);
-			this.matrix.set
 			this.setMatrixAt( i, this.matrix );
 			this.instanceMatrix.needsUpdate = true;
 	
@@ -122,7 +121,8 @@ class Ball extends InstancedMesh {
 	}
 
 	reset( vars ) {
-		vars.pos.set(MathUtils.randFloat( -2, 2 ), MathUtils.randFloat( -1, 1 ), 0);
+		// vars.pos.set(MathUtils.randFloat( -2, 2 ), MathUtils.randFloat( -1, 1 ), 0);
+		vars.pos.set(0, 0, 0);
 		vars.dir.set(MathUtils.randFloat( -1, 1 ), MathUtils.randFloat( -0.5, 0.5 ), 0);
 		vars.dir.normalize();
 		vars.speed = 5;
