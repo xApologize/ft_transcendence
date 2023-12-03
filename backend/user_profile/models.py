@@ -13,4 +13,4 @@ class User(models.Model):
     avatar = models.TextField()
     status = models.CharField(max_length=10, choices=status_enum, default="OFF")
     admin = models.BooleanField(default=False)
-    password = models.CharField(max_length=50, default="abc")
+    password = models.CharField(max_length=128, default="abc")

@@ -10,6 +10,7 @@ from utils.functions import add_double_jwt, decrypt_user_id, first_token
 import json
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
+from django.contrib.auth.hashers import make_password
 
 
 @method_decorator(csrf_exempt, name='dispatch') #- to apply to every function in the class.
@@ -65,7 +66,7 @@ class Users(View):
                     avatar=user_data['avatar'],
                     status='OFF',
                     admin=False,
-                    password=user_data['password']
+                    password=make_password(user_data['password'])
                 )
                 user.save()
             except IntegrityError:

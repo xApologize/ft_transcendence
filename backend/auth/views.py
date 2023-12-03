@@ -8,6 +8,7 @@ import json
 from user_profile.models import User
 from utils.functions import add_double_jwt, first_token, decrypt_user_id
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.hashers import check_password
 
 @method_decorator(csrf_exempt, name='dispatch')
 class Login(View):
@@ -24,7 +25,7 @@ class Login(View):
         except User.DoesNotExist:
             return JsonResponse({'error': 'User not found in the database.'}, status=404)
 
-        if user.password != password:
+        if check_password(password, user.password) is False:
             return JsonResponse({'error': 'Invalid credentials.'}, status=400)
         else:
             user.status = "ONL"
