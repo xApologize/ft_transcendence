@@ -3,8 +3,11 @@ import { World } from '../game/src/World.js';
 import GameModal from './gameModal.js';
 import { userTemplateComponent } from '../../components/userTemplate/userTemplate.js';
 import { assembleUser } from '../../api/assembler.js';
-import { userCardComponent, userCardListener } from '../../components/userCard/userCard.js';
-
+import {
+    userCardComponent,
+    userCardListener,
+} from '../../components/userCard/userCard.js';
+import { matchHistoryComponent } from '../../components/matchHistory/matchHistory.js';
 
 ////////
 // [TO DO]
@@ -17,28 +20,26 @@ import { userCardComponent, userCardListener } from '../../components/userCard/u
 //
 ////////
 
-
 export async function showHome() {
-  try {
+    try {
+        await loadHTMLPage('./js/pages/home/home.html');
+        // var playModalClass = initModal()
+        initPage();
 
-      await loadHTMLPage('./js/pages/home/home.html')
-      // var playModalClass = initModal()
-      initPage()
+        const friendsBtn = document.getElementById('friendsBtn');
+        const everyoneBtn = document.getElementById('everyoneBtn');
 
-      const friendsBtn = document.getElementById('friendsBtn');
-      const everyoneBtn = document.getElementById('everyoneBtn');
+        // document.getElementById('middleBtnRight').addEventListener('click', () => {
+        //   gameChoice(playModalClass)
+        // })
 
-      // document.getElementById('middleBtnRight').addEventListener('click', () => {
-      //   gameChoice(playModalClass)
-      // })
+        friendsBtn.addEventListener('click', () => {
+            friendsBtnFunc(friendsBtn, everyoneBtn);
+        });
 
-      friendsBtn.addEventListener('click', () => {
-          friendsBtnFunc(friendsBtn, everyoneBtn);
-      });
-
-      everyoneBtn.addEventListener('click', async () => {
-          everyoneBtnFunc(friendsBtn, everyoneBtn);
-      });
+        everyoneBtn.addEventListener('click', async () => {
+            everyoneBtnFunc(friendsBtn, everyoneBtn);
+        });
     } catch (error) {
         console.error('Error fetching home.html:', error);
     }
@@ -49,44 +50,47 @@ export async function showHome() {
 /////////////////////////
 
 async function displayOnlineUser(userContainer) {
-  // Filtrer le user lui même dans le backend pour ne pas qu'il puisse se voir ?
-  const allUsers = await fetchUser("GET",  {'status': ['ONL', 'ING']});
-  if (!allUsers || !allUsers.ok) // if !allUsers, c'est que le status == 401 et si !AllUsers.ok == Aucun user Online
-    return ;
+    // Filtrer le user lui même dans le backend pour ne pas qu'il puisse se voir ?
+    const allUsers = await fetchUser('GET', { status: ['ONL', 'ING'] });
+    if (!allUsers || !allUsers.ok)
+        // if !allUsers, c'est que le status == 401 et si !AllUsers.ok == Aucun user Online
+        return;
 
-  const objectAllUsers = await assembleUser(allUsers)
-  const templateUser = await userTemplateComponent();
+    const objectAllUsers = await assembleUser(allUsers);
+    const templateUser = await userTemplateComponent();
 
-  if (objectAllUsers) {
-    objectAllUsers.forEach(user => {
-      userContainer.appendChild(document.createElement('hr'));
+    if (objectAllUsers) {
+        objectAllUsers.forEach((user) => {
+            userContainer.appendChild(document.createElement('hr'));
 
-      const clonedUserTemplate = templateUser.cloneNode(true);
+            const clonedUserTemplate = templateUser.cloneNode(true);
 
-      const avatarElement = clonedUserTemplate.querySelector('#user-avatar');
-      const nameElement = clonedUserTemplate.querySelector('#user-name');
-      const statusElement = clonedUserTemplate.querySelector('#user-status');
-      const statusBadge = clonedUserTemplate.querySelector('#badge');
-      statusBadge.style.backgroundColor = setStatus(user.status);
-      avatarElement.src = user.avatar;
-      nameElement.textContent = user.nickname;
-      statusElement.textContent = user.status;
+            const avatarElement =
+                clonedUserTemplate.querySelector('#user-avatar');
+            const nameElement = clonedUserTemplate.querySelector('#user-name');
+            const statusElement =
+                clonedUserTemplate.querySelector('#user-status');
+            const statusBadge = clonedUserTemplate.querySelector('#badge');
+            statusBadge.style.backgroundColor = setStatus(user.status);
+            avatarElement.src = user.avatar;
+            nameElement.textContent = user.nickname;
+            statusElement.textContent = user.status;
 
-      userContainer.appendChild(clonedUserTemplate);
-    });
+            userContainer.appendChild(clonedUserTemplate);
+        });
 
-    function setStatus(user) {
-        switch (user) {
-            case 'ONL':
-                return 'green';
-            case 'BUS':
-                return 'red';
-            case 'ING':
-                return 'yellow';
-            case 'OFF':
-                return 'gray';
+        function setStatus(user) {
+            switch (user) {
+                case 'ONL':
+                    return 'green';
+                case 'BUS':
+                    return 'red';
+                case 'ING':
+                    return 'yellow';
+                case 'OFF':
+                    return 'gray';
+            }
         }
-      }
     }
 }
 
@@ -98,58 +102,103 @@ async function displayUserLeftColumn() {
 }
 
 async function displayUserCard() {
-  let userContainer = document.getElementById('own-user-card');
-  let meUser = await fetchMe('GET');
-  if (!meUser) //  if !meUser, c'est que le status == 401
-    return;
-  const meUserObject = await assembleUser(meUser);
-  
-  let userCard = await userCardComponent();
-  userContainer.appendChild(userCard);
-  userCardListener(); // enable js on the userCard
-  updateUserCard(meUserObject);
+    let userContainer = document.getElementById('own-user-card');
+    let meUser = await fetchMe('GET');
+    if (!meUser)
+        //  if !meUser, c'est que le status == 401
+        return;
+    const meUserObject = await assembleUser(meUser);
 
+    let userCard = await userCardComponent();
+    userContainer.appendChild(userCard);
+    userCardListener(); // enable js on the userCard
+    updateUserCard(meUserObject);
+}
+
+async function displayMatchHistory() {
+    let matchHistoryContainer = document.getElementById('matchHistory');
+    let matchHistory = await matchHistoryComponent();
+    matchHistoryContainer.appendChild(matchHistory);
+
+    let matchHistoryWinner = document.getElementById('winnerUsername');
+    let matchHistoryLoser = document.getElementById('loserUsername');
+    let matchHistoryWinScore = document.getElementById('winnerScore');
+    let matchHistoryLoseScore = document.getElementById('loserScore');
+
+    const userStat = await fetchMe('GET');
+    if (!userStat) {
+        console.log('Error fetching users');
+    }
+    const userStatJson = await assembleUser(userStat);
+    userStatJson.played_matches.forEach((game) => {
+        const listElement = document.createElement('li');
+        listElement.classList.add('list-group-item');
+        listElement.classList.add('border-0');
+        listElement.innerHTML = game.winner_username;
+        matchHistoryWinner.appendChild(listElement);
+    });
+    userStatJson.played_matches.forEach((game) => {
+        const listElement = document.createElement('li');
+        listElement.classList.add('list-group-item');
+        listElement.classList.add('border-0');
+        listElement.innerHTML = game.winner_score;
+        matchHistoryWinScore.appendChild(listElement);
+    });
+    userStatJson.played_matches.forEach((game) => {
+        const listElement = document.createElement('li');
+        listElement.classList.add('list-group-item');
+        listElement.classList.add('border-0');
+        listElement.innerHTML = game.loser_username;
+        matchHistoryLoser.appendChild(listElement);
+    });
+    userStatJson.played_matches.forEach((game) => {
+        const listElement = document.createElement('li');
+        listElement.classList.add('list-group-item');
+        listElement.classList.add('border-0');
+        listElement.innerHTML = game.loser_score;
+        matchHistoryLoseScore.appendChild(listElement);
+    });
 }
 
 function updateUserCard(userObject) {
-  const profilePicture = document.getElementById('avatar-img');
-  profilePicture.src = userObject.avatar;
+    const profilePicture = document.getElementById('avatar-img');
+    profilePicture.src = userObject.avatar;
 
-  const nicknameElement = document.getElementById('nickname');
-  nicknameElement.querySelector('h5').innerText = userObject.nickname;
+    const nicknameElement = document.getElementById('nickname');
+    nicknameElement.querySelector('h5').innerText = userObject.nickname;
 
-  const winsElement = document.getElementById('wins');
-  const lossesElement = document.getElementById('losses');
-  const gamesPlayedElement = document.getElementById('game-played');
+    const winsElement = document.getElementById('wins');
+    const lossesElement = document.getElementById('losses');
+    const gamesPlayedElement = document.getElementById('game-played');
 
-  winsElement.innerText = userObject.won_matches.length;
-  lossesElement.innerText = userObject.lost_matches.length;
-  gamesPlayedElement.innerText = userObject.played_matches.length;
+    winsElement.innerText = userObject.won_matches.length;
+    lossesElement.innerText = userObject.lost_matches.length;
+    gamesPlayedElement.innerText = userObject.played_matches.length;
 
-  // const wonMatchesList = document.getElementById('won-matches-list');
-  // wonMatchesList.innerHTML = ''; 
+    // const wonMatchesList = document.getElementById('won-matches-list');
+    // wonMatchesList.innerHTML = '';
 
-  // userObject.won_matches.forEach((match) => {
-  //   const matchItem = document.createElement('li');
-  //   matchItem.innerText = `Winner Score: ${match.winner_score}, Loser Score: ${match.loser_score}, Date: ${match.date_of_match}`;
-  //   wonMatchesList.appendChild(matchItem);
-  // });
+    // userObject.won_matches.forEach((match) => {
+    //   const matchItem = document.createElement('li');
+    //   matchItem.innerText = `Winner Score: ${match.winner_score}, Loser Score: ${match.loser_score}, Date: ${match.date_of_match}`;
+    //   wonMatchesList.appendChild(matchItem);
+    // });
 }
 
 function initModal() {
-  var playModalId = document.getElementById("playModal");
-  var playModalClass = new bootstrap.Modal(playModalId, {
-    backdrop: 'static',  // Set to 'static' for a static backdrop
-    keyboard: false       // Set to false to disable keyboard events
-  });
+    var playModalId = document.getElementById('playModal');
+    var playModalClass = new bootstrap.Modal(playModalId, {
+        backdrop: 'static', // Set to 'static' for a static backdrop
+        keyboard: false, // Set to false to disable keyboard events
+    });
 
-  return playModalClass
+    return playModalClass;
 }
 
-
 function initPage() {
-  displayUserCard();
-  displayUserLeftColumn();
+    displayUserCard();
+    displayUserLeftColumn();
+    displayMatchHistory();
     // displayUserProfile() // Future component qui est actuellement dans home.html
     // diplayLeaderBoard() // not done
 }
@@ -161,7 +210,7 @@ function initPage() {
 function gameChoice(playModalClass) {
     // Get the modal by its ID
 
-    playModalClass.show()
+    playModalClass.show();
     // Open the modal programmatically
     // playModal.classList.add("show");
     // playModal.style.display = "block";
@@ -189,8 +238,3 @@ function friendsBtnFunc(friendsBtn, everyoneBtn) {
     let userContainer = document.getElementById('userDisplayEveryone');
     userContainer.innerHTML = '';
 }
-
-
-
-
-
