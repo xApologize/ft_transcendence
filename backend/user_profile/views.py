@@ -132,7 +132,7 @@ class Me(View):
                 'admin': user.admin,
                 'won_matches': [{'winner_score': match.winner_score, 'loser_score': match.loser_score, 'date_of_match': match.date_of_match} for match in won_matches],
                 'lost_matches': [{'winner_score': match.winner_score, 'loser_score': match.loser_score, 'date_of_match': match.date_of_match} for match in lost_matches],
-                'played_matches': [{'winner_score': match.winner_score, 'loser_score': match.loser_score, 'date_of_match': match.date_of_match} for match in played_matches],
+                'played_matches': [{'winner_score': match.winner_score, 'winner_username': match.winner.nickname, 'loser_score': match.loser_score, 'loser_username': match.loser.nickname , 'date_of_match': match.date_of_match} for match in played_matches],
             }
             return JsonResponse({'users': user_data}, status=200)
         return HttpResponseBadRequest("Error access token", status=401)
