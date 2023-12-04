@@ -2,7 +2,6 @@ from .models import User
 from django.db.utils import IntegrityError
 from django.http import JsonResponse, HttpResponseForbidden, HttpResponse, Http404, HttpResponseNotFound, HttpResponseBadRequest, HttpRequest
 from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
 from match_history.models import MatchHistory
 from django.views import View
 from utils.decorators import token_validation
@@ -13,7 +12,6 @@ from django.db.models import Q
 from django.contrib.auth.hashers import make_password
 
 
-@method_decorator(csrf_exempt, name='dispatch') #- to apply to every function in the class.
 class Users(View):
     # Get All Users or specific users
     @token_validation
@@ -111,7 +109,6 @@ class Users(View):
             return HttpResponseBadRequest(f'Nickname {user_data["nickname"]} is already in use.') # 400
         return HttpResponse(f'User with nickname {nickname} updated successfully.', status=200)
 
-@method_decorator(csrf_exempt, name='dispatch') #- to apply to every function in the class.
 class Me(View):
     @token_validation
     def get(self, request: HttpRequest):

@@ -1,7 +1,6 @@
 from django.db.utils import IntegrityError
 from django.http import JsonResponse, HttpResponseForbidden, HttpResponse, Http404, HttpResponseNotFound, HttpResponseBadRequest, HttpRequest
 from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
 from django.views import View
 from utils.decorators import token_validation
 import json
@@ -10,7 +9,7 @@ from utils.functions import add_double_jwt, first_token, decrypt_user_id
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.hashers import check_password
 
-@method_decorator(csrf_exempt, name='dispatch')
+
 class Login(View):
     def post(self, request):
         login_data = json.loads(request.body)
@@ -34,7 +33,7 @@ class Login(View):
             primary_key = User.objects.get(nickname=nickname).pk
             return first_token(response, primary_key)
 
-@method_decorator(csrf_exempt, name='dispatch')
+
 class Logout(View):
     @token_validation
     def post(self, request):
@@ -64,7 +63,6 @@ class Logout(View):
         # user.save()
         # return JsonResponse({'success': 'Logout successful.'})
 
-@method_decorator(csrf_exempt, name='dispatch')
 class Token(View):
     @token_validation
     def get(self, request):
