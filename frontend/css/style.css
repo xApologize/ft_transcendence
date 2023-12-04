@@ -26,7 +26,7 @@ img.img-thumbnail {
 
 /* User card styles */
 .user-card {
-    position: absolute;
+    /* position: absolute; */
     padding: 20px; /* Adjust the padding as needed */
     background-color: rgba(
         255,

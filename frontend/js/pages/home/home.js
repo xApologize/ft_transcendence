@@ -40,6 +40,18 @@ export async function showHome() {
         everyoneBtn.addEventListener('click', async () => {
             everyoneBtnFunc(friendsBtn, everyoneBtn);
         });
+        // window.addEventListener('resize', () => {
+        //     const rightPartCol = document.getElementById('rightPart');
+        //     const matchHistoryContainer = document.getElementById('userCol');
+        //     console.log(rightPartCol);
+        //     if (window.innerWidth < 400) {
+        //         rightPartCol.classList.remove('row');
+        //         matchHistoryContainer.classList.add('hide');
+        //     } else {
+        //         rightPartCol.classList.add('row');
+        //         matchHistoryContainer.classList.remove('hide');
+        //     }
+        // });
     } catch (error) {
         console.error('Error fetching home.html:', error);
     }

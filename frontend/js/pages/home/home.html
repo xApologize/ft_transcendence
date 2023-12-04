@@ -1,7 +1,7 @@
 <div class="container-fluid">
     <div class="row vh-100">
         <div
-            class="text-center userList col-sm-5 col-md-4 col-lg-4 col-xl-3 col-xxl-3"
+            class="text-center userList d-none d-md-block col-md-4 col-lg-4 col-xl-3 col-xxl-3"
             id="left-column"
         >
             <div class="row">
@@ -27,20 +27,19 @@
             <div class="row row-center" id="userDisplayEveryone"></div>
         </div>
         <div
-            class="col-sm-7 col-md-8 col-lg-8 col-xl-9 col-xxl-9"
+            class="col-sm-12 col-md-8 col-lg-8 col-xl-9 col-xxl-9"
             id="right-column"
         >
-            <div class="row m-3 rightPartCol">
-                <div class="col border-end text-center">
+            <div id="rightPart" class="row m-3 rightPartCol">
+                <div class="col-12 col-md-3 col-xl-3 text-center">
                     <h1 class="m-3 text-center">Find game</h1>
                     <button id="findGame" class="btn btn-secondary">
                         Find game
                     </button>
                 </div>
-                <div class="col border-start">
+                <div id="userCol" class="col-12 col-md-9 col-xl-9">
                     <div class="rightCol text-center">
                         <div class="upperRow">
-                            <h1>what ever goes here</h1>
                             <div
                                 id="own-user-card"
                                 class="user-card bg-dark text-light p-3"
