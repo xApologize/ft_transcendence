@@ -1,17 +1,13 @@
-import { Updatable } from '../modules/Updatable.js';
-import { Renderer } from '../modules/Renderer.js';
 import { Collider } from '../modules/Collider.js';
+import { Updatable } from '../modules/Updatable.js';
 import { Layers } from '../systems/Layers.js';
-import {
-	Color,
-	Mesh,
-	Raycaster,
-	Vector2,
-	Vector3
-} from 'three';
 import { InputMap } from '../systems/InputManager.js';
 import { Paddle } from './Paddle.js';
-// import { ControlLocal } from '../modules/ControlLocal.js';
+import {
+	Color,
+	Raycaster,
+	Vector3
+} from 'three';
 
 class Player extends Paddle {
 	constructor( geometry, material, position, socket ) {
@@ -22,32 +18,36 @@ class Player extends Paddle {
 		this.ray = new Raycaster();
 		this.ray.layers.set( Layers.Solid );
 
-		// this.playerSocket = new WebSocket('wss://' + window.location.host + socketName);
+		this.msg = {
+			pos: this.position,
+			ballInst: undefined
+		};
+
 		this.socket = socket;
 		this.socket.addEventListener("open", (event) => {
 			this.material.color = new Color( 0x00aaff );
 			this.socket.send("Joined");
 		});
 
-		// if ( inputMap == undefined ) {
-		// 	this.playerSocket = new WebSocket('wss://' + window.location.host + '/ws/pong/UserA');
-		// }
-		// else {
-		// 	const socket = new WebSocket('wss://' + window.location.host + '/ws/pong/UserB');
+		this.collider = new Collider( this );
+		this.updatable = new Updatable( this );
 
-		// 	socket.addEventListener("open", (event) => {
-		// 		socket.send("Hello Server!");
-		// 	});			  
-		// 	socket.addEventListener("message", (event) => {
-		// 		// console.log("Message from server ", event.data);
-		// 		this.position.setY(parseFloat( event.data ));
-		// 	});
-		// }
+		//TEMP WARNING NOT DESTROYED
+		document.addEventListener("boostButtonPressed", (e) => {
+			this.speed = 10;
+		});
+		document.addEventListener("boostButtonReleased", (e) => {
+			this.speed = 5;
+		});
 	}
 
 	update( dt ) {
 		if ( InputMap.movementAxis.value === 0 )
 			return;
+		// if ( InputMap.boostButton.value === true )
+		// 	this.speed = 10;
+		// else
+		// 	this.speed = 5;
 
 		let movement = new Vector3( 0, InputMap.movementAxis.value, 0 );
 		
@@ -61,8 +61,22 @@ class Player extends Paddle {
 		}
 
 		if ( this.socket != undefined && this.socket.readyState === WebSocket.OPEN) {
-			this.socket.send( this.position.y );
+			this.socket.send( JSON.stringify( this.msg ) );
 		}
+	}
+
+	onCollision( hit ) {
+		if ( this.socket != undefined && this.socket.readyState === WebSocket.OPEN) {
+			this.msg.ballInst = hit;
+			this.socket.send( JSON.stringify( this.msg ) );
+		}
+		this.msg.ballInst = undefined;
+	}
+
+	delete() {
+		super.delete();
+		this.updatable.delete();
+		this.collider.delete();
 	}
 }
 

@@ -1,3 +1,4 @@
+import { Updatable } from '../modules/Updatable.js';
 import {
 	Vector2
 } from 'three';
@@ -10,34 +11,42 @@ const InputMap = {
 	},
 	boostButton : {
 		value : false,
-		key : ["ShiftLeft", "ShiftRight"]
+		key : ["ShiftLeft", "ShiftRight"],
+		eventPressed: new Event("boostButtonPressed"),
+		eventHold: new Event("boostButtonHold"),
+		eventReleased: new Event("boostButtonReleased"),
 	}
 }
 
 class InputManager {
 	constructor() {
 		this.setupInputs();
+		this.updatable = new Updatable( this );
 	}
 
 	onKeyDown( event ) {
-		if ( event.code == InputMap.movementAxis.keyPositive[0] )
+		if ( InputMap.movementAxis.keyPositive.includes(event.code) )
 			this.inputStrength.x = this.inputStrength.y + 1;
-		if ( event.code == InputMap.movementAxis.keyNegative[0] )
+		if ( InputMap.movementAxis.keyNegative.includes(event.code) )
 			this.inputStrength.y = this.inputStrength.x + 1;
-		if ( event.code == InputMap.boostButton.key[0] )
-			this.boostButton = true;
+		if ( InputMap.boostButton.key.includes(event.code) ) {
+			InputMap.boostButton.value = true;
+			document.dispatchEvent( InputMap.boostButton.eventPressed );
+		}
 
 		InputMap.movementAxis.value = this.inputStrength.x > this.inputStrength.y ? 1 :
 							this.inputStrength.x < this.inputStrength.y ? -1 : 0;
 	}
 
 	onKeyUp( event ) {
-		if ( event.code == InputMap.movementAxis.keyPositive[0] )
+		if ( InputMap.movementAxis.keyPositive.includes(event.code) )
 			this.inputStrength.x = 0;
-		if ( event.code == InputMap.movementAxis.keyNegative[0] )
+		if ( InputMap.movementAxis.keyNegative.includes(event.code) )
 			this.inputStrength.y = 0;
-		if ( event.code == InputMap.boostButton.key[0] )
-			this.boostButton = false;
+		if ( InputMap.boostButton.key.includes(event.code) ) {
+			InputMap.boostButton.value = false;
+			document.dispatchEvent( InputMap.boostButton.eventReleased );
+		}
 
 
 		InputMap.movementAxis.value = this.inputStrength.x > this.inputStrength.y ? 1 :
@@ -54,9 +63,15 @@ class InputManager {
 		document.addEventListener('keyup', this.onKeyUpEvent, false);
 	}
 
+	update( dt ) {
+		if ( InputMap.boostButton.value === true )
+			document.dispatchEvent( InputMap.boostButton.eventHold );
+	}
+
 	delete() {
 		document.removeEventListener('keydown', this.onKeyDownEvent, false);
 		document.removeEventListener('keyup', this.onKeyUpEvent, false);
+		this.updatable.delete();
 	}
 }
 

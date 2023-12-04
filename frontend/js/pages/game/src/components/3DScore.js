@@ -1,7 +1,7 @@
 import { Helvetiker } from '../systems/Fonts.js';
 import { Renderer } from '../modules/Renderer.js';
 import { Mesh, MeshStandardMaterial, ShapeGeometry } from 'three';
-import { Updatable } from '../modules/Updatable.js';
+import { World } from '../World.js';
 
 let scoreTab = [0, 0];
 
@@ -43,10 +43,14 @@ class Score3D extends Mesh {
 		scoreTab[playerId - 1] += 1;
 
 		this.setText( scoreTab[0] + " : " + scoreTab[1] );
-		if (scoreTab[0] >= 6)
+		if (scoreTab[0] >= 6) {
+			World._instance.deleteGame();
 			this.setText( "Player 1 WIN!" );
-		if (scoreTab[1] >= 6)
+		}
+		if (scoreTab[1] >= 6) {
+			World._instance.deleteGame();
 			this.setText( "Player 2 WIN!" );
+		}
 	}
 }
 

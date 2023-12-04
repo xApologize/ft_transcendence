@@ -16,9 +16,7 @@ class GoalZone extends Mesh {
 	}
 
 	onCollision() {
-		// console.log("GOAL! Player " + this.playerId + " missed the ball.");
-		// Score.scoreAdd( this.playerId );
-		World.scoreAdd( this.playerId );
+		World.scoreAdd( this.playerId == 1 ? 2 : 1 );
 	}
 
 	delete() {

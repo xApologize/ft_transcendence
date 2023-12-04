@@ -1,6 +1,4 @@
-import { Updatable } from '../modules/Updatable.js';
 import { Renderer } from '../modules/Renderer.js';
-import { Collider } from '../modules/Collider.js';
 import { Layers } from '../systems/Layers.js';
 import {
 	Mesh,
@@ -12,9 +10,7 @@ class Paddle extends Mesh {
 	constructor( geometry, material, position ) {
 		super( geometry, material );
 
-		this.updatable = new Updatable( this );
 		this.renderer = new Renderer( this );
-		this.collider = new Collider( this );
 
 		this.position.copy( position );
 
@@ -28,9 +24,7 @@ class Paddle extends Mesh {
 
 
 	delete() {
-		this.updatable.delete();
 		this.renderer.delete();
-		this.collider.delete();
 	}
 }
 

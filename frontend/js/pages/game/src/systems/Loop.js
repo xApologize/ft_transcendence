@@ -19,7 +19,6 @@ class Loop {
 	}
 	
 	tick () {
-		// console.log("tick");
 		const delta = clock.getDelta();
 		for( const object of updatables ) {
 			if ( typeof object.update === "function" )
@@ -31,6 +30,7 @@ class Loop {
 
 	static addUpdatable( object ) { updatables.push(object); }
 	static removeUpdatable( object ) { updatables.splice( updatables.indexOf(object), 1 ); }
+	static getUpdatable() { return updatables; }
 }
 
 export { Loop };
