@@ -40,6 +40,18 @@ export async function showHome() {
         everyoneBtn.addEventListener('click', async () => {
             everyoneBtnFunc(friendsBtn, everyoneBtn);
         });
+        // window.addEventListener('resize', () => {
+        //     const rightPartCol = document.getElementById('rightPart');
+        //     const matchHistoryContainer = document.getElementById('userCol');
+        //     console.log(rightPartCol);
+        //     if (window.innerWidth < 400) {
+        //         rightPartCol.classList.remove('row');
+        //         matchHistoryContainer.classList.add('hide');
+        //     } else {
+        //         rightPartCol.classList.add('row');
+        //         matchHistoryContainer.classList.remove('hide');
+        //     }
+        // });
     } catch (error) {
         console.error('Error fetching home.html:', error);
     }
@@ -101,21 +113,16 @@ async function displayUserLeftColumn() {
     await displayOnlineUser(userContainer);
 }
 
-async function displayUserCard() {
+async function displayUserCard(meUser) {
     let userContainer = document.getElementById('own-user-card');
-    let meUser = await fetchMe('GET');
-    if (!meUser)
-        //  if !meUser, c'est que le status == 401
-        return;
-    const meUserObject = await assembleUser(meUser);
 
     let userCard = await userCardComponent();
     userContainer.appendChild(userCard);
     userCardListener(); // enable js on the userCard
-    updateUserCard(meUserObject);
+    updateUserCard(meUser);
 }
 
-async function displayMatchHistory() {
+async function displayMatchHistory(userStatJson) {
     let matchHistoryContainer = document.getElementById('matchHistory');
     let matchHistory = await matchHistoryComponent();
     matchHistoryContainer.appendChild(matchHistory);
@@ -125,11 +132,6 @@ async function displayMatchHistory() {
     let matchHistoryWinScore = document.getElementById('winnerScore');
     let matchHistoryLoseScore = document.getElementById('loserScore');
 
-    const userStat = await fetchMe('GET');
-    if (!userStat) {
-        console.log('Error fetching users');
-    }
-    const userStatJson = await assembleUser(userStat);
     userStatJson.played_matches.forEach((game) => {
         const listElement = document.createElement('li');
         listElement.classList.add('list-group-item');
@@ -195,10 +197,16 @@ function initModal() {
     return playModalClass;
 }
 
-function initPage() {
-    displayUserCard();
+async function initPage() {
+    const user = await fetchMe('GET');
+    if (!user) {
+        console.log('Error fetching users');
+        return;
+    }
+    const userAssembled = await assembleUser(user);
+    displayUserCard(userAssembled);
     displayUserLeftColumn();
-    displayMatchHistory();
+    displayMatchHistory(userAssembled);
     // displayUserProfile() // Future component qui est actuellement dans home.html
     // diplayLeaderBoard() // not done
 }
