@@ -40,18 +40,15 @@ export async function showHome() {
         everyoneBtn.addEventListener('click', async () => {
             everyoneBtnFunc(friendsBtn, everyoneBtn);
         });
-        // window.addEventListener('resize', () => {
-        //     const rightPartCol = document.getElementById('rightPart');
-        //     const matchHistoryContainer = document.getElementById('userCol');
-        //     console.log(rightPartCol);
-        //     if (window.innerWidth < 400) {
-        //         rightPartCol.classList.remove('row');
-        //         matchHistoryContainer.classList.add('hide');
-        //     } else {
-        //         rightPartCol.classList.add('row');
-        //         matchHistoryContainer.classList.remove('hide');
-        //     }
-        // });
+
+        window.addEventListener('resize', () => {
+            const leftCol = document.getElementById('left-column');
+            if (window.innerWidth < 768) {
+                leftCol.classList.add('hide');
+            } else {
+                leftCol.classList.remove('hide');
+            }
+        });
     } catch (error) {
         console.error('Error fetching home.html:', error);
     }
@@ -206,6 +203,9 @@ async function initPage() {
     const userAssembled = await assembleUser(user);
     displayUserCard(userAssembled);
     displayUserLeftColumn();
+    if (window.innerWidth < 768) {
+        document.getElementById('left-column').classList.add('hide');
+    }
     displayMatchHistory(userAssembled);
     // displayUserProfile() // Future component qui est actuellement dans home.html
     // diplayLeaderBoard() // not done

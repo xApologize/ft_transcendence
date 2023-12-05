@@ -7,6 +7,12 @@
     height: 100vh;
 }
 
+.displayUserButton {
+    position: absolute;
+    height: 40px;
+    width: 40px;
+}
+
 .hide {
     display: none;
 }
