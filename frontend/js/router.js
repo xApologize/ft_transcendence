@@ -100,17 +100,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function handlePopState(event) {
-  // closeModal()
+  closeModal()
   handleRoute()
 }
 
 function closeModal() {
-  settingsDiv = document.getElementById('settingsModal')
-  if (settingsDiv) {
-    var settingsModal = bootstrap.Modal.getOrCreateInstance()
-    if (settingsModal) {
-      settingsModal.hide();
-      settingsModal.dispose();
-    }
+  var settingsModal = document.getElementById('settingsModal');
+  if (settingsModal) {
+      var modalInstance = bootstrap.Modal.getInstance(settingsModal);
+      if (modalInstance) {
+          modalInstance.hide();
+          modalInstance.dispose();
+      }
   }
 }
