@@ -6,8 +6,8 @@ export async function showSocket() {
     let chatSocketA, chatSocketB;
 
     document.getElementById('CreateSocketA').addEventListener('click', () => {
-      chatSocketA = new WebSocket('wss://' + window.location.host + '/ws/pong/UserA');
-      console.log("SocketA= ", chatSocketA);
+      chatSocketA = new WebSocket('wss://' + window.location.host + '/ws/pong/UserA' + "?" + sessionStorage.getItem('jwt'));
+      console.log("Test ", chatSocketA);
     });
 
     document.getElementById('CreateSocketB').addEventListener('click', () => {
