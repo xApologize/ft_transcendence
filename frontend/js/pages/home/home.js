@@ -22,6 +22,7 @@ import { matchHistoryComponent } from '../../components/matchHistory/matchHistor
 
 export async function showHome() {
     try {
+        console.log("SHOW HOME !")
         await loadHTMLPage('./js/pages/home/home.html');
         // var playModalClass = initModal()
         initPage();

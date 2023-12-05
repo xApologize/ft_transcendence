@@ -51,13 +51,13 @@ async function checkIfCookie() {
 export async function handleRoute() {  
   var pageFunction = null;
   var goPath = window.location.pathname
-  // if (goPath == '/home') {
-  //   var cookieResponse = await checkIfCookie()
-  //   if (cookieResponse.status == 401) {
-  //     history.pushState(null, null, '/');
-  //     goPath = '/'
-  //   }
-  // }
+  if (goPath == '/home') {
+    var cookieResponse = await checkIfCookie()
+    if (cookieResponse.status == 401) {
+      history.pushState(null, null, '/');
+      goPath = '/'
+    }
+  }
 
   if (routes[goPath]) {
     pageFunction = routes[goPath]
@@ -100,20 +100,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function handlePopState(event) {
-  closeModal()
-  handleRoute(window.location.pathname)
+  // closeModal()
+  handleRoute()
 }
 
 function closeModal() {
-  const modal = document.getElementById("playModal");
-  if (modal) {
-    if (modal.classList.contains("show")) {
-      modal.classList.remove("show");
-      document.body.classList.remove("modal-open");
-      const backdrop = document.querySelector(".modal-backdrop");
-      if (backdrop) {
-        backdrop.remove();
-      }
+  settingsDiv = document.getElementById('settingsModal')
+  if (settingsDiv) {
+    var settingsModal = bootstrap.Modal.getOrCreateInstance()
+    if (settingsModal) {
+      settingsModal.hide();
+      settingsModal.dispose();
     }
   }
 }

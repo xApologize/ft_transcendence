@@ -14,16 +14,37 @@ export async function userCardListener() {
     document.getElementById('logout').addEventListener('click', async () => {
         await logoutUser()
     })
+
+    document.getElementById('settingsModal').addEventListener('show.bs.modal', function (event) {
+        console.log('Settings Modal is about to be shown');
+    });
+
+    document.getElementById('settingsModal').addEventListener('hide.bs.modal', function (event) {
+        console.log('Settings Modal is about to be hide')
+    });
+    // document.getElementById('settingsButton').addEventListener('click', await settings())
+    // document.getElementById('settingsButton').addEventListener('click', showSettings)
+}
+
+
+async function showSettings() {
+    var modal = new bootstrap.Modal(document.getElementById('settingsModal'));
+    modal.show();
+    // console.log("SHOW !")
+    // var myModal = await new bootstrap.Modal(document.getElementById('settingsModal'), {
+    //     keyboard: false,
+    //     backdrop: 'static',
+    //     focus: true
+    // });
+    // myModal.show()
 }
 
 async function logoutUser() {
     console.log('logout!')
-    const logoutResponse = await fetchAuth('post', 'logout/')
+    const logoutResponse = await fetchAuth('POST', 'logout/')
     if (logoutResponse.status == 200) {
         sessionStorage.clear()
         navigateTo('/')
     }
-    // window.location.replace('/login')
-    
     return ;
 }

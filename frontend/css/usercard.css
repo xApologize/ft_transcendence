@@ -1,0 +1,11 @@
+#id-modal-content {
+    color: black;
+}
+
+#id-modal-title {
+    color:black;
+}
+
+.hover-pointer:hover {
+    cursor: pointer;
+}
