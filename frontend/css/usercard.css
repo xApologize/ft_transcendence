@@ -9,3 +9,9 @@
 .hover-pointer:hover {
     cursor: pointer;
 }
+
+.current-info {
+    background-color: #e0e0e0;
+    padding: 8px;
+    border-radius: 4px;
+}

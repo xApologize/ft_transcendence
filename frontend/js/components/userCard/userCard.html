@@ -61,7 +61,7 @@
                     <h5 id="id-modal-title" class="modal-title w-100">Settings</h5>
                 </div>
                 <div id="id-modal-content" class="modal-body">
-                    <!-- Display Current Nickname -->
+                    <!-- Nickname -->
                     <div class="mb-3 row">
                         <label for="currentNickname" class="col-form-label col-2">Nickname:</label>
                         <div class="col-8 d-flex align-items-center">
@@ -69,12 +69,23 @@
                             <a class="ms-auto hover-pointer">Change Nickname</a>
                         </div>
                     </div>
-                    <!-- Display Current Password -->
+                    <!-- Password -->
                     <div class="mb-3 row">
                         <label for="currentPassword" class="col-form-label col-2">Password:</label>
                         <div class="col-8 d-flex align-items-center">
                             <p id="currentPassword" class="mb-0 mr-2">********</p>
                             <a class="ms-auto hover-pointer">Change Password</a>
+                        </div>
+                    </div>
+                    <!-- Email -->
+                    <div class="mb-3 row">
+                        <label for="currentEmail" class="col-form-label col-2">Email:</label>
+                        <div class="col-8 d-flex align-items-center">
+                            <div class="d-flex flex-grow-1">
+                                <p id="currentEmail" class="current-info">Dave@gmail.com</p>
+                                <input type="text" id="newEmailInput" class="form-control d-none" placeholder="Enter new email">
+                            </div>
+                            <a id="changeEmailLink" class="ms-auto hover-pointer m-0">Change Email</a>
                         </div>
                     </div>
 

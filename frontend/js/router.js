@@ -105,6 +105,12 @@ function handlePopState(event) {
 }
 
 function closeModal() {
+  closeSettingsModal()
+  // closePlayerModal()
+  // closeInviteModal()
+}
+
+function closeSettingsModal() {
   var settingsModal = document.getElementById('settingsModal');
   if (settingsModal) {
       var modalInstance = bootstrap.Modal.getInstance(settingsModal);

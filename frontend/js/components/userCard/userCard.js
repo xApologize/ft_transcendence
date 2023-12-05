@@ -22,6 +22,17 @@ export async function userCardListener() {
     document.getElementById('settingsModal').addEventListener('hide.bs.modal', function (event) {
         console.log('Settings Modal is about to be hide')
     });
+
+    document.getElementById('changeEmailLink').addEventListener('click', function() {
+        // Hide the current email paragraph
+        document.getElementById('currentEmail').classList.add('d-none');
+        
+        // Show the new email input
+        document.getElementById('newEmailInput').classList.remove('d-none');
+        
+        // Set focus on the new email input
+        document.getElementById('newEmailInput').focus();
+    });
     // document.getElementById('settingsButton').addEventListener('click', await settings())
     // document.getElementById('settingsButton').addEventListener('click', showSettings)
 }
