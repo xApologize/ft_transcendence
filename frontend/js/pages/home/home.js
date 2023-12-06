@@ -70,6 +70,7 @@ async function displayEveryone() {
     if (!onlineUsers || !onlineUsers.ok)
         // if !onlineUsers, c'est que le status == 401 et si !onlineUsers.ok == Aucun user Online
         return;
+    
     await displayUser(onlineUsers);
 }
 

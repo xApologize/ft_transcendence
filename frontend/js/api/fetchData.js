@@ -62,6 +62,7 @@ export const setNewToken = (response) => {
 const performFetch = async (url, method, data = null) => {
     var options = createOptions(method, data)
     try {
+        console.log(url)
         var response = await fetch(url, options);
         if (response.status == 401) {
             return redirectToHome()
@@ -112,7 +113,6 @@ export const fetchUser = async (method, parameters = null, data = null) => {
     const path = 'user/';
     const params = buildParams(parameters);
     const url = buildApiUrl(path, params);
-    console.log(url)
     var result = await performFetch(url, method, data);
     return result;
 };

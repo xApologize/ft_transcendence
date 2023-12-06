@@ -19,7 +19,6 @@ class Users(View):
     @token_validation
     def get(self, request: HttpRequest):
         status = request.GET.getlist('status')
-        print(status)
         nicknames = request.GET.getlist('nickname')
         if not nicknames and not status:
             return HttpResponseBadRequest('No parameter.')
@@ -72,9 +71,9 @@ class Users(View):
                 return HttpResponseBadRequest(f'User {user_data["nickname"]} already exists') # 400    
         except json.JSONDecodeError:
             return HttpResponseBadRequest('Invalid JSON data in the request body') # 400
-        # Added jwt when creating user. Refacto needed
         response: HttpResponse =  HttpResponse(f'User {user_data["nickname"]} created successfully', status=201)
         return response
+        # Added jwt when creating user. Refacto needed
         # primary_key = User.objects.get(nickname=user.nickname).pk
         # return first_token(response, primary_key)
 
@@ -166,4 +165,4 @@ class Friends(View):
         ]
         if user_data:
             return JsonResponse({'users': user_data}, status=200)
-        return HttpResponse('No friend found') # 404
+        return HttpResponse('No friends found') # 404

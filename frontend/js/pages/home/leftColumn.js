@@ -20,13 +20,16 @@ export async function displayUser(allUsers) {
         }
     });
     const templateUser = await userTemplateComponent();
+    const currentUser = document.getElementById('nickname').innerText
 
-    if (objectAllUsers) {
-        objectAllUsers.forEach((user) => {
+    if (!objectAllUsers) { return }
+
+    objectAllUsers.forEach((user) => {
+        if (currentUser !== user.nickname) {
             userContainer.appendChild(document.createElement('hr'));
-
+    
             const clonedUserTemplate = templateUser.cloneNode(true);
-
+    
             const avatarElement =
                 clonedUserTemplate.querySelector('#user-avatar');
             const nameElement = clonedUserTemplate.querySelector('#user-name');
@@ -34,21 +37,21 @@ export async function displayUser(allUsers) {
             statusBadge.style.backgroundColor = setStatus(user.status);
             avatarElement.src = user.avatar;
             nameElement.textContent = user.nickname;
-
+    
             userContainer.appendChild(clonedUserTemplate);
-        });
+        }
+    });
 
-        function setStatus(user) {
-            switch (user) {
-                case 'ONL':
-                    return 'green';
-                case 'BUS':
-                    return 'red';
-                case 'ING':
-                    return 'yellow';
-                case 'OFF':
-                    return 'gray';
-            }
+    function setStatus(user) {
+        switch (user) {
+            case 'ONL':
+                return 'green';
+            case 'BUS':
+                return 'red';
+            case 'ING':
+                return 'yellow';
+            case 'OFF':
+                return 'gray';
         }
     }
 }
