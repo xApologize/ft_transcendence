@@ -34,7 +34,6 @@ class Users(View):
                 'email': user.email,
                 'avatar': user.avatar,
                 'status': user.status,
-                'admin': user.admin,
             }
             for user in users
         ]
@@ -144,24 +143,27 @@ class Me(View):
 class Friends(View):
     @token_validation
     def get(self, request):
-        # Assuming you have a User model with a OneToOneField to the built-in User model.
-        user = request.user
-
-        # Retrieve friends for the user where the status is "ACCEPTED".
+        userCookie =  request.COOKIES.get("refresh_jwt")
+        decrypt_user = decrypt_user_id(userCookie)
+        user = get_object_or_404(User, id=decrypt_user)
         friend_list = FriendList.objects.filter(
             Q(friend1=user, status="ACCEPTED") | Q(friend2=user, status="ACCEPTED")
         )
-
-        # Get the actual friends from the FriendList instances.
         friends = []
         for entry in friend_list:
-            if entry.friend1 == user:
+            if entry.friend1.nickname == user.nickname:
                 friends.append(entry.friend2)
             else:
                 friends.append(entry.friend1)
-
-        # You can now use the 'friends' list in your response.
-        # For example, you might want to serialize the friends to JSON.
-        serialized_friends = [{'nickname': friend.nickname, 'email': friend.email} for friend in friends]
-
-        return JsonResponse({'friends': serialized_friends})
+        user_data = [
+            {
+                'nickname': user.nickname,
+                'email': user.email,
+                'avatar': user.avatar,
+                'status': user.status,
+            }
+            for user in friends
+        ]
+        if user_data:
+            return JsonResponse({'users': user_data}, status=200)
+        return HttpResponse('No friend found') # 404

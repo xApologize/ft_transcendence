@@ -1,4 +1,4 @@
-import { fetchUser, fetchMe, loadHTMLPage } from '../../api/fetchData.js';
+import { fetchUser, fetchFriend,fetchMe, loadHTMLPage } from '../../api/fetchData.js';
 import { assembleUser } from '../../api/assembler.js';
 import { displayUserCard } from '../../components/userCard/userCard.js';
 import { displayMatchHistory } from '../../components/matchHistory/matchHistory.js';
@@ -56,7 +56,7 @@ export async function showHome() {
 
 
 async function displayFriend() {
-    const allFriends = await fetchUser('GET', { status: ['OFF'] });
+    const allFriends = await fetchFriend('GET');
     if (!allFriends || !allFriends.ok)
         // if !allFriends, c'est que le status == 401 et si !allFriends.ok == Aucun Ami
         return;

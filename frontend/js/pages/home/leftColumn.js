@@ -3,11 +3,24 @@ import { assembleUser } from '../../api/assembler.js';
 
 
 export async function displayUser(allUsers) {
-    const objectAllUsers = await assembleUser(allUsers);
-    const templateUser = await userTemplateComponent();
-    
     let userContainer = document.getElementById('userDisplay');
     userContainer.innerHTML = '';
+    const objectAllUsers = await assembleUser(allUsers);
+    if (typeof objectAllUsers !== 'object' && objectAllUsers !== null) {
+        return;
+    }
+    objectAllUsers.sort((a, b) => {
+        // Custom sorting logic: Online users come before Offline users.
+        if ((a.status === 'ONL' && b.status !== 'ONL') || (a.status === 'ING' && b.status !== 'ING')) {
+            return -1;
+        } else if ((a.status !== 'ONL' && b.status === 'ONL') || (a.status !== 'ING' && b.status === 'ING')) {
+            return 1;
+        } else {
+            return 0;
+        }
+    });
+    const templateUser = await userTemplateComponent();
+
     if (objectAllUsers) {
         objectAllUsers.forEach((user) => {
             userContainer.appendChild(document.createElement('hr'));

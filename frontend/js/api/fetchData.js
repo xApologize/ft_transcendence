@@ -136,6 +136,7 @@ export const fetchMe = async(method, data = null) => {
 // Get friend, remove and add friend,
 export const fetchFriend = async (method, apiPath = '', data = null) => {
     const path = 'user/friends/' + apiPath
-    await performFetch(url, method, data)
+    const url = buildApiUrl(path)
+    var result = await performFetch(url, method, data)
     return result;
 }
