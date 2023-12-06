@@ -1,7 +1,7 @@
 import { fetchUser, fetchMe, loadHTMLPage } from '../../api/fetchData.js';
 import { assembleUser } from '../../api/assembler.js';
 import { displayUserCard } from '../../components/userCard/userCard.js';
-import { matchHistoryComponent } from '../../components/matchHistory/matchHistory.js';
+import { displayMatchHistory } from '../../components/matchHistory/matchHistory.js';
 import { displayUser } from './leftColumn.js';
 ////////
 // [TO DO]
@@ -72,45 +72,7 @@ async function displayEveryone() {
     await displayUser(onlineUsers);
 }
 
-async function displayMatchHistory(userStatJson) {
-    let matchHistoryContainer = document.getElementById('matchHistory');
-    let matchHistory = await matchHistoryComponent();
-    matchHistoryContainer.appendChild(matchHistory);
 
-    let matchHistoryWinner = document.getElementById('winnerUsername');
-    let matchHistoryLoser = document.getElementById('loserUsername');
-    let matchHistoryWinScore = document.getElementById('winnerScore');
-    let matchHistoryLoseScore = document.getElementById('loserScore');
-
-    userStatJson.played_matches.forEach((game) => {
-        const listElement = document.createElement('li');
-        listElement.classList.add('list-group-item');
-        listElement.classList.add('border-0');
-        listElement.innerHTML = game.winner_username;
-        matchHistoryWinner.appendChild(listElement);
-    });
-    userStatJson.played_matches.forEach((game) => {
-        const listElement = document.createElement('li');
-        listElement.classList.add('list-group-item');
-        listElement.classList.add('border-0');
-        listElement.innerHTML = game.winner_score;
-        matchHistoryWinScore.appendChild(listElement);
-    });
-    userStatJson.played_matches.forEach((game) => {
-        const listElement = document.createElement('li');
-        listElement.classList.add('list-group-item');
-        listElement.classList.add('border-0');
-        listElement.innerHTML = game.loser_username;
-        matchHistoryLoser.appendChild(listElement);
-    });
-    userStatJson.played_matches.forEach((game) => {
-        const listElement = document.createElement('li');
-        listElement.classList.add('list-group-item');
-        listElement.classList.add('border-0');
-        listElement.innerHTML = game.loser_score;
-        matchHistoryLoseScore.appendChild(listElement);
-    });
-}
 
 async function initPage() {
     const user = await fetchMe('GET');
@@ -122,8 +84,6 @@ async function initPage() {
     displayUserCard(userAssembled);
     displayEveryone();
     displayMatchHistory(userAssembled);
-    // displayUserProfile() // Future component qui est actuellement dans home.html
-    // diplayLeaderBoard() // not done
 }
 
 ///////////////////////////////
