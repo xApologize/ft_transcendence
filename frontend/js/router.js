@@ -7,8 +7,6 @@ import { show404 } from './pages/404/404.js';
 import { showLogin } from './pages/login/login.js';
 import { headerComponent } from './components/header/header.js';
 import { templateComponent } from './components/template/template.js';
-import { GameModal } from './pages/home/gameModal.js';
-import { fetchAuth } from './api/fetchData.js';
 import { showSocket } from './pages/socket/socket.js';
 
 var currentRoute = '';
