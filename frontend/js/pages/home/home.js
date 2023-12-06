@@ -41,14 +41,14 @@ export async function showHome() {
             everyoneBtnFunc(friendsBtn, everyoneBtn);
         });
 
-        window.addEventListener('resize', () => {
-            const leftCol = document.getElementById('left-column');
-            if (window.innerWidth < 768) {
-                leftCol.classList.add('hide');
-            } else {
-                leftCol.classList.remove('hide');
-            }
-        });
+        // window.addEventListener('resize', () => {
+        //     const leftCol = document.getElementById('left-column');
+        //     if (window.innerWidth < 768) {
+        //         leftCol.classList.add('hide');
+        //     } else {
+        //         leftCol.classList.remove('hide');
+        //     }
+        // });
     } catch (error) {
         console.error('Error fetching home.html:', error);
     }
