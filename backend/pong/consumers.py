@@ -9,10 +9,16 @@ users = {
 
 class PongUserA(WebsocketConsumer):
     def connect(self):
-        users["A"] = self
-        self.accept()
+        user_id: int = self.scope.get('user_id')
+        if user_id < 0:
+            self.accept()
+            self.close(3001)
+        else:
+            self.accept()
 
     def disconnect(self, close_code):
+        close_code = 3001
+        print(close_code)
         pass
 
     def receive(self, text_data):
