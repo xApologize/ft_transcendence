@@ -81,13 +81,10 @@ async function displayOnlineUser(userContainer) {
             const avatarElement =
                 clonedUserTemplate.querySelector('#user-avatar');
             const nameElement = clonedUserTemplate.querySelector('#user-name');
-            const statusElement =
-                clonedUserTemplate.querySelector('#user-status');
             const statusBadge = clonedUserTemplate.querySelector('#badge');
             statusBadge.style.backgroundColor = setStatus(user.status);
             avatarElement.src = user.avatar;
             nameElement.textContent = user.nickname;
-            statusElement.textContent = user.status;
 
             userContainer.appendChild(clonedUserTemplate);
         });
