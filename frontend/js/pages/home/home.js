@@ -24,14 +24,12 @@ export async function showHome() {
     try {
         console.log("SHOW HOME !")
         await loadHTMLPage('./js/pages/home/home.html');
-        // var playModalClass = initModal()
         initPage();
 
         const friendsBtn = document.getElementById('friendsBtn');
         const everyoneBtn = document.getElementById('everyoneBtn');
 
         // document.getElementById('middleBtnRight').addEventListener('click', () => {
-        //   gameChoice(playModalClass)
         // })
 
         friendsBtn.addEventListener('click', () => {
@@ -174,25 +172,6 @@ function updateUserCard(userObject) {
     winsElement.innerText = userObject.won_matches.length;
     lossesElement.innerText = userObject.lost_matches.length;
     gamesPlayedElement.innerText = userObject.played_matches.length;
-
-    // const wonMatchesList = document.getElementById('won-matches-list');
-    // wonMatchesList.innerHTML = '';
-
-    // userObject.won_matches.forEach((match) => {
-    //   const matchItem = document.createElement('li');
-    //   matchItem.innerText = `Winner Score: ${match.winner_score}, Loser Score: ${match.loser_score}, Date: ${match.date_of_match}`;
-    //   wonMatchesList.appendChild(matchItem);
-    // });
-}
-
-function initModal() {
-    var playModalId = document.getElementById('playModal');
-    var playModalClass = new bootstrap.Modal(playModalId, {
-        backdrop: 'static', // Set to 'static' for a static backdrop
-        keyboard: false, // Set to false to disable keyboard events
-    });
-
-    return playModalClass;
 }
 
 async function initPage() {
@@ -212,16 +191,6 @@ async function initPage() {
 ///////////////////////////////
 //  Event Listener function  //
 ///////////////////////////////
-
-function gameChoice(playModalClass) {
-    // Get the modal by its ID
-
-    playModalClass.show();
-    // Open the modal programmatically
-    // playModal.classList.add("show");
-    // playModal.style.display = "block";
-    // document.body.classList.add("modal-open");
-}
 
 function everyoneBtnFunc(friendsBtn, everyoneBtn) {
     if (friendsBtn.classList.contains('active')) {
