@@ -17,9 +17,10 @@ export async function showHome() {
         console.log("SHOW HOME !")
         await loadHTMLPage('./js/pages/home/home.html');
         initPage();
-
         const friendsBtn = document.getElementById('friendsBtn');
         const everyoneBtn = document.getElementById('everyoneBtn');
+        // everyoneBtn.classList.add('active');
+
 
         // document.getElementById('middleBtnRight').addEventListener('click', () => {
         // })
@@ -91,22 +92,17 @@ async function initPage() {
 ///////////////////////////////
 
 function everyoneBtnFunc(friendsBtn, everyoneBtn) {
-    if (friendsBtn.classList.contains('active')) {
-        friendsBtn.classList.remove('active');
+    if (friendsBtn.classList.contains('active-dark')) {
+        friendsBtn.classList.remove('active-dark');
+        everyoneBtn.classList.add('active-dark');
+        displayEveryone();
     }
-    if (!everyoneBtn.classList.contains('active')) {
-        everyoneBtn.classList.add('active');
-    }
-    displayEveryone();
 }
 
 function friendsBtnFunc(friendsBtn, everyoneBtn) {
-    if (everyoneBtn.classList.contains('active')) {
-        everyoneBtn.classList.remove('active');
+    if (everyoneBtn.classList.contains('active-dark')) {
+        everyoneBtn.classList.remove('active-dark');
+        friendsBtn.classList.add('active-dark');
+        displayFriend()
     }
-
-    if (!friendsBtn.classList.contains('active')) {
-        friendsBtn.classList.add('active');
-    }
-    displayFriend()
 }

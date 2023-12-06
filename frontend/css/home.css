@@ -10,3 +10,8 @@
 .hide {
     display: none;
 }
+
+.active-dark {
+    background-color: black !important;
+    color: #ffffff  !important;
+}
