@@ -3,6 +3,7 @@
         display: none;
     }
     .buttonResponsive {
+        max-height: 40px;
         display: block;
     }
 }
@@ -11,7 +12,10 @@
     #left-column {
         display: block;
     }
-    #testButton {
+    #right-column {
+        display: block !important;
+    }
+    .buttonResponsive {
         display: none;
     }
 }
@@ -19,6 +23,7 @@
 .userList {
     background-color: black;
     opacity: 85%;
+    height: 100%;
 }
 
 .rightPartCol {

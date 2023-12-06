@@ -18,32 +18,24 @@ export async function showHome() {
         await loadHTMLPage('./js/pages/home/home.html');
         initPage();
 
-        const friendsBtn = document.getElementById('friendsBtn');
-        const everyoneBtn = document.getElementById('everyoneBtn');
-
-        // document.getElementById('middleBtnRight').addEventListener('click', () => {
-        // })
-
-        friendsBtn.addEventListener('click', () => {
+        document.getElementById('friendsBtn').addEventListener('click', () => {
             friendsBtnFunc(friendsBtn, everyoneBtn);
         });
+        document
+            .getElementById('everyoneBtn')
+            .addEventListener('click', async () => {
+                everyoneBtnFunc(friendsBtn, everyoneBtn);
+            });
 
-        everyoneBtn.addEventListener('click', async () => {
-            everyoneBtnFunc(friendsBtn, everyoneBtn);
+        const userCol = document.getElementById('left-column');
+        const gameCol = document.getElementById('right-column');
+        const buttonToggle = document.getElementById('userBtn');
+        buttonToggle.addEventListener('click', () => {
+            let toggleText = buttonToggle.innerText;
+            buttonToggle.innerText = toggleText == 'Users' ? 'Game' : 'Users';
+            userCol.classList.toggle('show');
+            gameCol.classList.toggle('hide');
         });
-        // document.getElementById('testButton').addEventListener('click', () => {
-        //     const friendList = document.getElementById('left-column');
-        //     friendList.classList.toggle('show');
-        // });
-
-        // window.addEventListener('resize', () => {
-        //     const leftCol = document.getElementById('left-column');
-        //     if (window.innerWidth < 768) {
-        //         leftCol.classList.add('hide');
-        //     } else {
-        //         leftCol.classList.remove('hide');
-        //     }
-        // });
     } catch (error) {
         console.error('Error fetching home.html:', error);
     }
