@@ -28,10 +28,11 @@ function showPage(pageFunction) {
 }
 
 export function navigateTo(route) {
-    // console.log("navigateTo!")
-    if (route === currentRoute) return;
-    history.pushState(null, null, route);
-    handleRoute();
+  // console.log("navigateTo!")
+  if (route === currentRoute)
+    return ;
+  history.pushState({'route': route}, null, route);
+  handleRoute();
 }
 
 async function checkIfCookie() {
@@ -99,20 +100,23 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function handlePopState(event) {
-    closeModal();
-    handleRoute(window.location.pathname);
+  closeModal()
+  handleRoute()
 }
 
 function closeModal() {
-    const modal = document.getElementById('playModal');
-    if (modal) {
-        if (modal.classList.contains('show')) {
-            modal.classList.remove('show');
-            document.body.classList.remove('modal-open');
-            const backdrop = document.querySelector('.modal-backdrop');
-            if (backdrop) {
-                backdrop.remove();
-            }
-        }
-    }
+  closeSettingsModal()
+  // closePlayerModal()
+  // closeInviteModal()
+}
+
+function closeSettingsModal() {
+  var settingsModal = document.getElementById('settingsModal');
+  if (settingsModal) {
+      var modalInstance = bootstrap.Modal.getInstance(settingsModal);
+      if (modalInstance) {
+          modalInstance.hide();
+          modalInstance.dispose();
+      }
+  }
 }
