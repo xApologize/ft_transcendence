@@ -33,6 +33,7 @@ export const loadHTMLComponent = async (filePath) => {
 const redirectToHome = () => {
     sessionStorage.clear();
     navigateTo('/');
+    return null
 };
 
 const createOptions = (method, data) => {
@@ -63,9 +64,7 @@ const performFetch = async (url, method, data = null) => {
     try {
         var response = await fetch(url, options);
         if (response.status == 401) {
-            // console.log('401')
-            redirectToHome()
-            return null
+            return redirectToHome()
         }
         const jwt_token = setNewToken(response)
         if (jwt_token) {
@@ -81,8 +80,8 @@ const performFetch = async (url, method, data = null) => {
         return response;
     } catch (error) {
         console.log("Error fetching: " + url);
-        return null
     }
+    return null
 };
 
 const buildApiUrl = (path, parameter = null) => {
@@ -114,11 +113,7 @@ export const fetchUser = async (method, parameters = null, data = null) => {
     const params = buildParams(parameters);
     const url = buildApiUrl(path, params);
     console.log(url)
-    try {
-        var result = await performFetch(url, method, data);
-    } catch (error) {
-        console.log("Error: " + error);
-    }
+    var result = await performFetch(url, method, data);
     return result;
 };
 
@@ -126,11 +121,7 @@ export const fetchUser = async (method, parameters = null, data = null) => {
 export const fetchAuth = async (method, apiPath, data = null) => {
     const path = 'auth/' + apiPath
     const url = buildApiUrl(path)
-    try {
-        var result = await performFetch(url, method, data);
-    } catch (error) {
-        console.log("Error: " + error);
-    }
+    var result = await performFetch(url, method, data);
     return result;
 };
 
@@ -138,15 +129,13 @@ export const fetchAuth = async (method, apiPath, data = null) => {
 export const fetchMe = async(method, data = null) => {
     const path = 'user/me/'
     const url = buildApiUrl(path);
-    try {
-        var result = await performFetch(url, method, data);
-    } catch (error) {
-        console.log("Error: " + error);
-    }
+    var result = await performFetch(url, method, data);
     return result;
 }
 
 // Get friend, remove and add friend,
-export const fetchFriend = async (method, apitPath, data = null) => {
-
+export const fetchFriend = async (method, apiPath = '', data = null) => {
+    const path = 'user/friends/' + apiPath
+    await performFetch(url, method, data)
+    return result;
 }

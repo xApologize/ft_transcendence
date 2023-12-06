@@ -1,12 +1,13 @@
 from .models import User
 from django.db.utils import IntegrityError
-from django.http import JsonResponse, HttpResponseForbidden, HttpResponse, Http404, HttpResponseNotFound, HttpResponseBadRequest, HttpRequest
+from django.http import JsonResponse, HttpResponse, HttpResponseNotFound, HttpResponseBadRequest, HttpRequest
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from match_history.models import MatchHistory
 from django.views import View
 from utils.decorators import token_validation
-from utils.functions import add_double_jwt, decrypt_user_id, first_token
+from utils.functions import  decrypt_user_id
+from friend_list.models import FriendList
 import json
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
@@ -138,4 +139,29 @@ class Me(View):
             }
             return JsonResponse({'users': user_data}, status=200)
         return HttpResponseBadRequest("Error access token", status=401)
-        
+
+@method_decorator(csrf_exempt, name='dispatch') #- to apply to every function in the class.
+class Friends(View):
+    @token_validation
+    def get(self, request):
+        # Assuming you have a User model with a OneToOneField to the built-in User model.
+        user = request.user
+
+        # Retrieve friends for the user where the status is "ACCEPTED".
+        friend_list = FriendList.objects.filter(
+            Q(friend1=user, status="ACCEPTED") | Q(friend2=user, status="ACCEPTED")
+        )
+
+        # Get the actual friends from the FriendList instances.
+        friends = []
+        for entry in friend_list:
+            if entry.friend1 == user:
+                friends.append(entry.friend2)
+            else:
+                friends.append(entry.friend1)
+
+        # You can now use the 'friends' list in your response.
+        # For example, you might want to serialize the friends to JSON.
+        serialized_friends = [{'nickname': friend.nickname, 'email': friend.email} for friend in friends]
+
+        return JsonResponse({'friends': serialized_friends})
