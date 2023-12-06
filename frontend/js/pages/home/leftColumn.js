@@ -20,9 +20,12 @@ export async function displayUser(allUsers) {
         }
     });
     const templateUser = await userTemplateComponent();
-    const currentUser = document.getElementById('nickname').innerText
-
-    if (!objectAllUsers) { return }
+    try {
+        var currentUser = document.getElementById('nickname').innerText
+        if (!objectAllUsers) { return }
+    } catch {
+        return
+    }
 
     objectAllUsers.forEach((user) => {
         if (currentUser !== user.nickname) {
