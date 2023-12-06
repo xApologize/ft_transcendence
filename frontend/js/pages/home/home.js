@@ -11,13 +11,11 @@ import { matchHistoryComponent } from '../../components/matchHistory/matchHistor
 
 ////////
 // [TO DO]
-// - Rediriger vers login quand 401
-// - Ne pas pouvoir se connecter a 2 comptes en meme temps (sessionStorage.clear() ?)
-// - Bouton logout [Delete cookie quand logout ?]
-// - Rediriger vers home quand login
-// - Rediriger vers home quand signup
-// - Trouver facon update en temps reel
-//
+// - Ne pas pouvoir avoir 2 connections en même temps sur le même compte
+// - Colonne Friend
+// - Settings Modal [+ système pour changer password, email, nickname, avatar, 2FA]
+// - 2FA
+// - Trouver facon update en temps reel (socket ?)
 ////////
 
 export async function showHome() {
@@ -102,8 +100,16 @@ async function displayOnlineUser(userContainer) {
     }
 }
 
+async function displayUserRightColumn() {
+    let userContainer = document.getElementById('userDisplay');
+    userContainer.innerHTML = '';
+
+    // await displayFriendUser(userContainer)
+}
+
+
 async function displayUserLeftColumn() {
-    let userContainer = document.getElementById('userDisplayEveryone');
+    let userContainer = document.getElementById('userDisplay');
     userContainer.innerHTML = '';
 
     await displayOnlineUser(userContainer);
@@ -210,6 +216,7 @@ function friendsBtnFunc(friendsBtn, everyoneBtn) {
     if (!friendsBtn.classList.contains('active')) {
         friendsBtn.classList.add('active');
     }
-    let userContainer = document.getElementById('userDisplayEveryone');
+    displayUserRightColumn()
+    let userContainer = document.getElementById('userDisplay');
     userContainer.innerHTML = '';
 }
