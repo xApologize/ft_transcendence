@@ -5,7 +5,7 @@ import { fetchAuth } from '../../api/fetchData.js';
 export async function showLogin() {
     try {
         await loadHTMLPage('./js/pages/login/login.html');
-        sessionStorage.clear()
+        // sessionStorage.clear()
         document.getElementById('loginButton').addEventListener('click', async () => {
             await login();
         });

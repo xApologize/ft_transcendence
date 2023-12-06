@@ -108,6 +108,7 @@ const buildParams = (parameters) => {
     return params.toString() ? params : null;
 };
 
+// Fetch other user by nickname or by status/Create user/update user by nickanme/.
 export const fetchUser = async (method, parameters = null, data = null) => {
     const path = 'user/';
     const params = buildParams(parameters);
@@ -121,6 +122,7 @@ export const fetchUser = async (method, parameters = null, data = null) => {
     return result;
 };
 
+// fetch login/logout/check if token
 export const fetchAuth = async (method, apiPath, data = null) => {
     const path = 'auth/' + apiPath
     const url = buildApiUrl(path)
@@ -132,6 +134,7 @@ export const fetchAuth = async (method, apiPath, data = null) => {
     return result;
 };
 
+// Fetch own information (username, email, avatar, status, match history)
 export const fetchMe = async(method, data = null) => {
     const path = 'user/me/'
     const url = buildApiUrl(path);
@@ -141,4 +144,9 @@ export const fetchMe = async(method, data = null) => {
         console.log("Error: " + error);
     }
     return result;
+}
+
+// Get friend, remove and add friend,
+export const fetchFriend = async (method, apitPath, data = null) => {
+
 }
