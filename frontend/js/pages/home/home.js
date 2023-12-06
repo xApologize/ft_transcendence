@@ -1,11 +1,12 @@
 import { fetchUser, fetchMe, loadHTMLPage } from '../../api/fetchData.js';
 import { World } from '../game/src/World.js';
 import GameModal from './gameModal.js';
-import { userTemplateComponent } from '../../components/userTemplate/userTemplate.js';
+import {
+    userTemplateComponent,
+} from '../../components/userTemplate/userTemplate.js';
 import { assembleUser } from '../../api/assembler.js';
 import {
-    userCardComponent,
-    userCardListener,
+    displayUserCard
 } from '../../components/userCard/userCard.js';
 import { matchHistoryComponent } from '../../components/matchHistory/matchHistory.js';
 
@@ -115,15 +116,6 @@ async function displayUserLeftColumn() {
     await displayOnlineUser(userContainer);
 }
 
-async function displayUserCard(meUser) {
-    let userContainer = document.getElementById('own-user-card');
-
-    let userCard = await userCardComponent();
-    userContainer.appendChild(userCard);
-    userCardListener(); // enable js on the userCard
-    updateUserCard(meUser);
-}
-
 async function displayMatchHistory(userStatJson) {
     let matchHistoryContainer = document.getElementById('matchHistory');
     let matchHistory = await matchHistoryComponent();
@@ -164,22 +156,6 @@ async function displayMatchHistory(userStatJson) {
     });
 }
 
-function updateUserCard(userObject) {
-    const profilePicture = document.getElementById('avatar-img');
-    profilePicture.src = userObject.avatar;
-
-    const nicknameElement = document.getElementById('nickname');
-    nicknameElement.querySelector('h5').innerText = userObject.nickname;
-
-    const winsElement = document.getElementById('wins');
-    const lossesElement = document.getElementById('losses');
-    const gamesPlayedElement = document.getElementById('game-played');
-
-    winsElement.innerText = userObject.won_matches.length;
-    lossesElement.innerText = userObject.lost_matches.length;
-    gamesPlayedElement.innerText = userObject.played_matches.length;
-}
-
 async function initPage() {
     const user = await fetchMe('GET');
     if (!user) {
@@ -217,6 +193,4 @@ function friendsBtnFunc(friendsBtn, everyoneBtn) {
         friendsBtn.classList.add('active');
     }
     displayUserRightColumn()
-    let userContainer = document.getElementById('userDisplay');
-    userContainer.innerHTML = '';
 }

@@ -24,30 +24,10 @@ export async function userCardListener() {
     });
 
     document.getElementById('changeEmailLink').addEventListener('click', function() {
-        // Hide the current email paragraph
         document.getElementById('currentEmail').classList.add('d-none');
-        
-        // Show the new email input
         document.getElementById('newEmailInput').classList.remove('d-none');
-        
-        // Set focus on the new email input
         document.getElementById('newEmailInput').focus();
     });
-    // document.getElementById('settingsButton').addEventListener('click', await settings())
-    // document.getElementById('settingsButton').addEventListener('click', showSettings)
-}
-
-
-async function showSettings() {
-    var modal = new bootstrap.Modal(document.getElementById('settingsModal'));
-    modal.show();
-    // console.log("SHOW !")
-    // var myModal = await new bootstrap.Modal(document.getElementById('settingsModal'), {
-    //     keyboard: false,
-    //     backdrop: 'static',
-    //     focus: true
-    // });
-    // myModal.show()
 }
 
 async function logoutUser() {
@@ -58,4 +38,30 @@ async function logoutUser() {
         navigateTo('/')
     }
     return ;
+}
+
+// Call in home.js
+export async function displayUserCard(meUser) {
+    let userContainer = document.getElementById('own-user-card');
+
+    let userCard = await userCardComponent();
+    userContainer.appendChild(userCard);
+    userCardListener(); // enable js on the userCard
+    updateUserCard(meUser);
+}
+
+function updateUserCard(userObject) {
+    const profilePicture = document.getElementById('avatar-img');
+    profilePicture.src = userObject.avatar;
+
+    const nicknameElement = document.getElementById('nickname');
+    nicknameElement.querySelector('h5').innerText = userObject.nickname;
+
+    const winsElement = document.getElementById('wins');
+    const lossesElement = document.getElementById('losses');
+    const gamesPlayedElement = document.getElementById('game-played');
+
+    winsElement.innerText = userObject.won_matches.length;
+    lossesElement.innerText = userObject.lost_matches.length;
+    gamesPlayedElement.innerText = userObject.played_matches.length;
 }
