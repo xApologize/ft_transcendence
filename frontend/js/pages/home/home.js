@@ -1,19 +1,12 @@
 import { fetchUser, fetchMe, loadHTMLPage } from '../../api/fetchData.js';
-import { World } from '../game/src/World.js';
-import GameModal from './gameModal.js';
-import {
-    userTemplateComponent,
-} from '../../components/userTemplate/userTemplate.js';
 import { assembleUser } from '../../api/assembler.js';
-import {
-    displayUserCard
-} from '../../components/userCard/userCard.js';
+import { displayUserCard } from '../../components/userCard/userCard.js';
 import { matchHistoryComponent } from '../../components/matchHistory/matchHistory.js';
-
+import { displayUser } from './leftColumn.js';
 ////////
 // [TO DO]
 // - Ne pas pouvoir avoir 2 connections en même temps sur le même compte
-// - Colonne Friend
+// - Friend Column 
 // - Settings Modal [+ système pour changer password, email, nickname, avatar, 2FA]
 // - 2FA
 // - Trouver facon update en temps reel (socket ?)
@@ -59,61 +52,24 @@ export async function showHome() {
 // Init Page function  //
 /////////////////////////
 
-async function displayOnlineUser(userContainer) {
-    // Filtrer le user lui même dans le backend pour ne pas qu'il puisse se voir ?
-    const allUsers = await fetchUser('GET', { status: ['ONL', 'ING'] });
-    if (!allUsers || !allUsers.ok)
-        // if !allUsers, c'est que le status == 401 et si !AllUsers.ok == Aucun user Online
+
+
+async function displayFriend() {
+    const allFriends = await fetchUser('GET', { status: ['OFF'] });
+    if (!allFriends || !allFriends.ok)
+        // if !allFriends, c'est que le status == 401 et si !allFriends.ok == Aucun Ami
         return;
-
-    const objectAllUsers = await assembleUser(allUsers);
-    const templateUser = await userTemplateComponent();
-
-    if (objectAllUsers) {
-        objectAllUsers.forEach((user) => {
-            userContainer.appendChild(document.createElement('hr'));
-
-            const clonedUserTemplate = templateUser.cloneNode(true);
-
-            const avatarElement =
-                clonedUserTemplate.querySelector('#user-avatar');
-            const nameElement = clonedUserTemplate.querySelector('#user-name');
-            const statusBadge = clonedUserTemplate.querySelector('#badge');
-            statusBadge.style.backgroundColor = setStatus(user.status);
-            avatarElement.src = user.avatar;
-            nameElement.textContent = user.nickname;
-
-            userContainer.appendChild(clonedUserTemplate);
-        });
-
-        function setStatus(user) {
-            switch (user) {
-                case 'ONL':
-                    return 'green';
-                case 'BUS':
-                    return 'red';
-                case 'ING':
-                    return 'yellow';
-                case 'OFF':
-                    return 'gray';
-            }
-        }
-    }
-}
-
-async function displayUserRightColumn() {
-    let userContainer = document.getElementById('userDisplay');
-    userContainer.innerHTML = '';
-
-    // await displayFriendUser(userContainer)
+    await displayUser(allFriends);
 }
 
 
-async function displayUserLeftColumn() {
-    let userContainer = document.getElementById('userDisplay');
-    userContainer.innerHTML = '';
-
-    await displayOnlineUser(userContainer);
+async function displayEveryone() {
+    // Filtrer le user lui même dans le backend pour ne pas qu'il puisse se voir ?
+    const onlineUsers = await fetchUser('GET', { status: ['ONL', 'ING'] });
+    if (!onlineUsers || !onlineUsers.ok)
+        // if !onlineUsers, c'est que le status == 401 et si !onlineUsers.ok == Aucun user Online
+        return;
+    await displayUser(onlineUsers);
 }
 
 async function displayMatchHistory(userStatJson) {
@@ -164,7 +120,7 @@ async function initPage() {
     }
     const userAssembled = await assembleUser(user);
     displayUserCard(userAssembled);
-    displayUserLeftColumn();
+    displayEveryone();
     displayMatchHistory(userAssembled);
     // displayUserProfile() // Future component qui est actuellement dans home.html
     // diplayLeaderBoard() // not done
@@ -181,7 +137,7 @@ function everyoneBtnFunc(friendsBtn, everyoneBtn) {
     if (!everyoneBtn.classList.contains('active')) {
         everyoneBtn.classList.add('active');
     }
-    displayUserLeftColumn();
+    displayEveryone();
 }
 
 function friendsBtnFunc(friendsBtn, everyoneBtn) {
@@ -192,5 +148,5 @@ function friendsBtnFunc(friendsBtn, everyoneBtn) {
     if (!friendsBtn.classList.contains('active')) {
         friendsBtn.classList.add('active');
     }
-    displayUserRightColumn()
+    displayFriend()
 }
