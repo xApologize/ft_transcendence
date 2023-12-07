@@ -33,11 +33,12 @@ export const loadHTMLComponent = async (filePath) => {
 const redirectToHome = () => {
     sessionStorage.clear();
     navigateTo('/');
+    return null
 };
 
 const createOptions = (method, data) => {
-    var accessTokenLive = sessionStorage.getItem('jwt');
-    var options = {
+    const accessTokenLive = sessionStorage.getItem('jwt');
+    const options = {
         method,
         credentials: 'include',
         headers: {
@@ -59,13 +60,13 @@ export const setNewToken = (response) => {
 }
 
 const performFetch = async (url, method, data = null) => {
-    var options = createOptions(method, data)
+    const options = createOptions(method, data)
     try {
+        console.log(url)
+        // var bc breaking without it
         var response = await fetch(url, options);
         if (response.status == 401) {
-            // console.log('401')
-            redirectToHome()
-            return null
+            return redirectToHome()
         }
         const jwt_token = setNewToken(response)
         if (jwt_token) {
@@ -81,8 +82,8 @@ const performFetch = async (url, method, data = null) => {
         return response;
     } catch (error) {
         console.log("Error fetching: " + url);
-        return null
     }
+    return null
 };
 
 const buildApiUrl = (path, parameter = null) => {
@@ -108,37 +109,35 @@ const buildParams = (parameters) => {
     return params.toString() ? params : null;
 };
 
+// Fetch other user by nickname or by status/Create user/update user by nickanme/.
 export const fetchUser = async (method, parameters = null, data = null) => {
     const path = 'user/';
     const params = buildParams(parameters);
     const url = buildApiUrl(path, params);
-    console.log(url)
-    try {
-        var result = await performFetch(url, method, data);
-    } catch (error) {
-        console.log("Error: " + error);
-    }
+    let result = await performFetch(url, method, data);
     return result;
 };
 
+// fetch login/logout/check if token
 export const fetchAuth = async (method, apiPath, data = null) => {
     const path = 'auth/' + apiPath
     const url = buildApiUrl(path)
-    try {
-        var result = await performFetch(url, method, data);
-    } catch (error) {
-        console.log("Error: " + error);
-    }
+    let result = await performFetch(url, method, data);
     return result;
 };
 
+// Fetch own information (username, email, avatar, status, match history)
 export const fetchMe = async(method, data = null) => {
     const path = 'user/me/'
     const url = buildApiUrl(path);
-    try {
-        var result = await performFetch(url, method, data);
-    } catch (error) {
-        console.log("Error: " + error);
-    }
+    let result = await performFetch(url, method, data);
+    return result;
+}
+
+// Get friend, remove and add friend,
+export const fetchFriend = async (method, apiPath = '', data = null) => {
+    const path = 'user/friends/' + apiPath
+    const url = buildApiUrl(path)
+    let result = await performFetch(url, method, data)
     return result;
 }

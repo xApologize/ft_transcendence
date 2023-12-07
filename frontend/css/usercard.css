@@ -1,0 +1,43 @@
+#userSettingsModal-content {
+    color: black;
+}
+
+#useSettingsModal-title {
+    color:black;
+}
+
+.hover-pointer:hover {
+    cursor: pointer;
+}
+
+.current-info {
+    background-color: #e0e0e0;
+    padding: 8px;
+    border-radius: 4px;
+}
+
+.left-column-settings i {
+    margin-bottom: 10px; /* Adjust the margin to your preference */
+    padding: 10px;
+    border: 1px solid #ddd; /* Add a border to each icon */
+    border-radius: 5px; /* Optional: Add some border-radius for rounded corners */
+    color: #777; /* Set a default color for the icons */
+    cursor: pointer;
+  }
+
+
+.left-column-settings i.active {
+    color: #007bff; /* Set the color for the active icon */
+    border-color: #007bff; /* Set the border color for the active icon */
+}
+
+/* Style for the icons in the left column */
+.left-column-settings i {
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+/* Style for the right column content */
+.right-column-settings {
+    padding: 20px;
+}

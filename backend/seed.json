@@ -71,8 +71,8 @@
         "model": "friend_list.FriendList",
         "pk": 1,
         "fields": {
-            "friend1": 1,
-            "friend2": 2,
+            "friend1": 4,
+            "friend2": 5,
             "status": "ACCEPTED"
         }
     },
@@ -80,17 +80,17 @@
         "model": "friend_list.FriendList",
         "pk": 2,
         "fields": {
-            "friend1": 3,
+            "friend1": 5,
             "friend2": 1,
-            "status": "PENDING"
+            "status": "ACCEPTED"
         }
     },
     {
         "model": "friend_list.FriendList",
         "pk": 3,
         "fields":{
-            "friend1": 1,
-            "friend2": 4,
+            "friend1": 4,
+            "friend2": 3,
             "status": "ACCEPTED"
         }
     },
@@ -98,7 +98,7 @@
         "model": "friend_list.FriendList",
         "pk": 4,
         "fields":{
-            "friend1": 4,
+            "friend1": 5,
             "friend2": 2,
             "status": "ACCEPTED"
         }
