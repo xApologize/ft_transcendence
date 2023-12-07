@@ -6,7 +6,7 @@ import { displayUser } from './leftColumn.js';
 ////////
 // [TO DO]
 // - Ne pas pouvoir avoir 2 connections en même temps sur le même compte
-// - Friend Column 
+// - Friend Column
 // - Settings Modal [+ système pour changer password, email, nickname, avatar, 2FA]
 // - 2FA
 // - Trouver facon update en temps reel (socket ?)
@@ -14,7 +14,7 @@ import { displayUser } from './leftColumn.js';
 
 export async function showHome() {
     try {
-        console.log("SHOW HOME !")
+        console.log('SHOW HOME !');
         await loadHTMLPage('./js/pages/home/home.html');
         initPage();
         const friendsBtn = document.getElementById('friendsBtn');
@@ -28,22 +28,21 @@ export async function showHome() {
         friendsBtn.addEventListener('click', () => {
             friendsBtnFunc(friendsBtn, everyoneBtn);
         });
+        document
+            .getElementById('everyoneBtn')
+            .addEventListener('click', async () => {
+                everyoneBtnFunc(friendsBtn, everyoneBtn);
+            });
 
-        everyoneBtn.addEventListener('click', async () => {
-            everyoneBtnFunc(friendsBtn, everyoneBtn);
+        const userCol = document.getElementById('left-column');
+        const gameCol = document.getElementById('right-column');
+        const buttonToggle = document.getElementById('userBtn');
+        buttonToggle.addEventListener('click', () => {
+            let toggleText = buttonToggle.innerText;
+            buttonToggle.innerText = toggleText == 'Users' ? 'Game' : 'Users';
+            userCol.classList.toggle('show');
+            gameCol.classList.toggle('hide');
         });
-        // window.addEventListener('resize', () => {
-        //     const rightPartCol = document.getElementById('rightPart');
-        //     const matchHistoryContainer = document.getElementById('userCol');
-        //     console.log(rightPartCol);
-        //     if (window.innerWidth < 400) {
-        //         rightPartCol.classList.remove('row');
-        //         matchHistoryContainer.classList.add('hide');
-        //     } else {
-        //         rightPartCol.classList.add('row');
-        //         matchHistoryContainer.classList.remove('hide');
-        //     }
-        // });
     } catch (error) {
         console.error('Error fetching home.html:', error);
     }
@@ -53,8 +52,6 @@ export async function showHome() {
 // Init Page function  //
 /////////////////////////
 
-
-
 async function displayFriend() {
     const allFriends = await fetchFriend('GET');
     if (!allFriends || !allFriends.ok)
@@ -62,7 +59,6 @@ async function displayFriend() {
         return;
     await displayUser(allFriends);
 }
-
 
 async function displayEveryone() {
     // Filtrer le user lui même dans le backend pour ne pas qu'il puisse se voir ?
@@ -73,8 +69,6 @@ async function displayEveryone() {
     
     await displayUser(onlineUsers);
 }
-
-
 
 async function initPage() {
     const user = await fetchMe('GET');

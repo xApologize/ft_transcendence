@@ -1,10 +1,39 @@
+@media only screen and (max-width: 767px) {
+    #left-column {
+        display: none;
+    }
+    .buttonResponsive {
+        max-height: 40px;
+        display: block;
+    }
+}
+
+@media only screen and (min-width: 768px) {
+    #left-column {
+        display: block;
+    }
+    #right-column {
+        display: block !important;
+    }
+    .buttonResponsive {
+        display: none;
+    }
+}
+
 .userList {
     background-color: black;
     opacity: 85%;
+    height: 100%;
 }
 
 .rightPartCol {
     height: 100vh;
+}
+
+.displayUserButton {
+    position: absolute;
+    height: 40px;
+    width: 40px;
 }
 
 .hide {
@@ -14,4 +43,7 @@
 .active-dark {
     background-color: black !important;
     color: #ffffff  !important;
+}
+.show {
+    display: block !important;
 }
