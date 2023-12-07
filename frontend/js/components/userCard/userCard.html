@@ -43,7 +43,7 @@
 
     <!-- Settings button -->
     <div class="mt-3">
-        <button id="settingsButton" type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#settingsModal">
+        <button id="settingsButton" type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#userSettingsModal">
             <i class="fa fa-gear me-1"></i>
             Settings
         </button>
@@ -53,58 +53,112 @@
         </button>
     </div>
 
-    <!-- Settings Modal -->
-    <div class="modal fade" id="settingsModal" tabindex="-1" data-bs-keyboard="false" data-bs-backdrop="static">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header text-center">
-                    <h5 id="id-modal-title" class="modal-title w-100">Settings</h5>
-                </div>
-                <div id="id-modal-content" class="modal-body">
-                    <!-- Nickname -->
-                    <div class="mb-3 row">
-                        <label for="currentNickname" class="col-form-label col-2">Nickname:</label>
-                        <div class="col-8 d-flex align-items-center">
-                            <p id="currentNickname" class="mb-0 mr-2">Dave</p>
-                            <a class="ms-auto hover-pointer">Change Nickname</a>
-                        </div>
-                    </div>
-                    <!-- Password -->
-                    <div class="mb-3 row">
-                        <label for="currentPassword" class="col-form-label col-2">Password:</label>
-                        <div class="col-8 d-flex align-items-center">
-                            <p id="currentPassword" class="mb-0 mr-2">********</p>
-                            <a class="ms-auto hover-pointer">Change Password</a>
-                        </div>
-                    </div>
-                    <!-- Email -->
-                    <div class="mb-3 row">
-                        <label for="currentEmail" class="col-form-label col-2">Email:</label>
-                        <div class="col-8 d-flex align-items-center">
-                            <div class="d-flex flex-grow-1">
-                                <p id="currentEmail" class="current-info">Dave@gmail.com</p>
-                                <input type="text" id="newEmailInput" class="form-control d-none" placeholder="Enter new email">
+    <!-- User Settings Modal -->
+    <div class="modal fade" id="userSettingsModal" tabindex="-1" data-bs-keyboard="false" data-bs-backdrop="static" aria-labelledby="useSettingsModal-title" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+        <div class="modal-content" id="userSettingsModal-content">
+    
+            <!-- Modal Header -->
+            <div class="modal-header text-center">
+                <h5 class="modal-title w-100" id="useSettingsModal-title">Settings</h5>
+            </div>
+    
+            <!-- Modal Body -->
+            <div class="modal-body d-flex">
+                <!-- Left Column with Icon -->
+                <div class="left-column-settings d-flex flex-column align-items-center">
+                    <i class="fa fa-cog fa-lg mb-2 active" data-bs-target="#userMenu1" aria-expanded="false" aria-controls="userMenu1"></i>
+                    <i class="fa fa-wrench fa-lg" data-bs-target="#userMenu2" aria-expanded="false" aria-controls="userMenu2"></i>
+                    <!-- Add more icons as needed -->
+                </div>                
+        
+                <div class="right-column-settings">
+                    <!-- Menu Content 1 -->
+                    <div class="collapse show" id="userMenu1" data-bs-parent=".right-column-settings">
+                        <div class="menu-content">
+                            <div class="d-flex align-items-center">
+                                <p>Your Nickname: <span id="nicknameDisplay" class="text-muted">JohnDoe</span></p>
+                                <button id="editNicknameBtn" class="btn btn-link ms-2">Edit Nickname</button>
                             </div>
-                            <a id="changeEmailLink" class="ms-auto hover-pointer m-0">Change Email</a>
+                            <div id="editableNickname" class="d-none">
+                                <input type="text" class="form-control" id="nicknameInput" placeholder="Enter new nickname">
+                                <button id="saveNicknameBtn" class="btn btn-primary mt-2">Save</button>
+                            </div>
                         </div>
                     </div>
+            
+                    <!-- Menu Content 2 -->
+                    <div class="collapse" id="userMenu2" data-bs-parent=".right-column-settings">
+                        <div class="menu-content">
+                            <p>Menu 2 Content Item 1</p>
+                        </div>
+                    </div>
+                    <!-- Add more menu content as needed -->
+                </div>
+            </div>
+    
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+            <!-- <button type="button" class="btn btn-primary">Save Changes</button> -->
+            </div>
+    
+        </div>
+        </div>
+    </div>
+</div>
+<!--
+<div class="modal fade" id="settingsModal" tabindex="-1" data-bs-keyboard="false" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h5 id="id-modal-title" class="modal-title w-100">Settings</h5>
+            </div>
+            <div id="id-modal-content" class="modal-body">
+                Nickname
+                <div class="mb-3 row">
+                    <label for="currentNickname" class="col-form-label col-2">Nickname:</label>
+                    <div class="col-8 d-flex align-items-center">
+                        <p id="currentNickname" class="mb-0 mr-2">Dave</p>
+                        <a class="ms-auto hover-pointer">Change Nickname</a>
+                    </div>
+                </div>
+                Password
+                <div class="mb-3 row">
+                    <label for="currentPassword" class="col-form-label col-2">Password:</label>
+                    <div class="col-8 d-flex align-items-center">
+                        <p id="currentPassword" class="mb-0 mr-2">********</p>
+                        <a class="ms-auto hover-pointer">Change Password</a>
+                    </div>
+                </div>
+                Email
+                <div class="mb-3 row">
+                    <label for="currentEmail" class="col-form-label col-2">Email:</label>
+                    <div class="col-8 d-flex align-items-center">
+                        <div class="d-flex flex-grow-1">
+                            <p id="currentEmail" class="current-info">Dave@gmail.com</p>
+                            <input type="text" id="newEmailInput" class="form-control d-none" placeholder="Enter new email">
+                        </div>
+                        <a id="changeEmailLink" class="ms-auto hover-pointer m-0">Change Email</a>
+                    </div>
+                </div>
 
-                    <!-- Enable 2FA as a green button -->
-                    <div class="mb-3 row">
-                        <label for="current2FA" class="col-form-label col-2">2FA:</label>
-                        <div class="col-8 d-flex align-items-center">
-                            <button type="button" class="btn btn-danger ms-auto">
-                                Disable
-                            </button>
-                        </div>
+                Enable 2FA as a green button
+                <div class="mb-3 row">
+                    <label for="current2FA" class="col-form-label col-2">2FA:</label>
+                    <div class="col-8 d-flex align-items-center">
+                        <button type="button" class="btn btn-danger ms-auto">
+                            Disable
+                        </button>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save</button>
-                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save</button>
             </div>
         </div>
     </div>
 </div>
 
+-->

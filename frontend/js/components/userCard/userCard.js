@@ -15,18 +15,46 @@ export async function userCardListener() {
         await logoutUser()
     })
 
-    document.getElementById('settingsModal').addEventListener('show.bs.modal', function (event) {
+    document.getElementById('userSettingsModal').addEventListener('show.bs.modal', function (event) {
         console.log('Settings Modal is about to be shown');
     });
 
-    document.getElementById('settingsModal').addEventListener('hide.bs.modal', function (event) {
+    document.getElementById('userSettingsModal').addEventListener('hide.bs.modal', function (event) {
         console.log('Settings Modal is about to be hide')
     });
 
-    document.getElementById('changeEmailLink').addEventListener('click', function() {
-        document.getElementById('currentEmail').classList.add('d-none');
-        document.getElementById('newEmailInput').classList.remove('d-none');
-        document.getElementById('newEmailInput').focus();
+    settingsListener()
+}
+
+function settingsListener() {
+    // Left column listener
+    document.querySelectorAll('.left-column-settings i').forEach(function(icon) {
+            icon.addEventListener('click', function() {
+            document.querySelectorAll('.left-column-settings i').forEach(function(icon) {
+                icon.classList.remove('active');
+            });
+            icon.classList.add('active');
+            document.querySelectorAll('.right-column-settings .collapse').forEach(function(menu) {
+                menu.classList.remove('show');
+            });
+            var targetMenuId = icon.getAttribute('data-bs-target').substring(1);
+            var targetMenu = document.getElementById(targetMenuId);
+            targetMenu.classList.add('show');
+        });
+    });
+
+    // nickname listener
+    document.getElementById('editNicknameBtn').addEventListener('click', function() {
+        document.getElementById('nicknameDisplay').classList.add('d-none');
+        document.getElementById('editableNickname').classList.remove('d-none');
+        document.getElementById('nicknameInput').value = document.getElementById('nicknameDisplay').innerText;
+    });
+
+    document.getElementById('saveNicknameBtn').addEventListener('click', function() {
+        var newNickname = document.getElementById('nicknameInput').value;
+        document.getElementById('nicknameDisplay').innerText = newNickname;
+        document.getElementById('editableNickname').classList.add('d-none');
+        document.getElementById('nicknameDisplay').classList.remove('d-none');
     });
 }
 
