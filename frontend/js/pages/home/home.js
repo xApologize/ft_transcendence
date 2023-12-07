@@ -1,4 +1,4 @@
-import { fetchUser, fetchMe, loadHTMLPage } from '../../api/fetchData.js';
+import { fetchUser, fetchFriend,fetchMe, loadHTMLPage } from '../../api/fetchData.js';
 import { assembleUser } from '../../api/assembler.js';
 import { displayUserCard } from '../../components/userCard/userCard.js';
 import { displayMatchHistory } from '../../components/matchHistory/matchHistory.js';
@@ -17,8 +17,15 @@ export async function showHome() {
         console.log('SHOW HOME !');
         await loadHTMLPage('./js/pages/home/home.html');
         initPage();
+        const friendsBtn = document.getElementById('friendsBtn');
+        const everyoneBtn = document.getElementById('everyoneBtn');
+        // everyoneBtn.classList.add('active');
 
-        document.getElementById('friendsBtn').addEventListener('click', () => {
+
+        // document.getElementById('middleBtnRight').addEventListener('click', () => {
+        // })
+
+        friendsBtn.addEventListener('click', () => {
             friendsBtnFunc(friendsBtn, everyoneBtn);
         });
         document
@@ -46,7 +53,7 @@ export async function showHome() {
 /////////////////////////
 
 async function displayFriend() {
-    const allFriends = await fetchUser('GET', { status: ['OFF'] });
+    const allFriends = await fetchFriend('GET');
     if (!allFriends || !allFriends.ok)
         // if !allFriends, c'est que le status == 401 et si !allFriends.ok == Aucun Ami
         return;
@@ -59,6 +66,7 @@ async function displayEveryone() {
     if (!onlineUsers || !onlineUsers.ok)
         // if !onlineUsers, c'est que le status == 401 et si !onlineUsers.ok == Aucun user Online
         return;
+    
     await displayUser(onlineUsers);
 }
 
@@ -68,6 +76,7 @@ async function initPage() {
         console.log('Error fetching users');
         return;
     }
+    // initSocket()  - Si fetch socket et stateSocket is close, get new access Token et re fetch le socket   
     const userAssembled = await assembleUser(user);
     displayUserCard(userAssembled);
     displayEveryone();
@@ -79,22 +88,17 @@ async function initPage() {
 ///////////////////////////////
 
 function everyoneBtnFunc(friendsBtn, everyoneBtn) {
-    if (friendsBtn.classList.contains('active')) {
-        friendsBtn.classList.remove('active');
+    if (friendsBtn.classList.contains('active-dark')) {
+        friendsBtn.classList.remove('active-dark');
+        everyoneBtn.classList.add('active-dark');
+        displayEveryone();
     }
-    if (!everyoneBtn.classList.contains('active')) {
-        everyoneBtn.classList.add('active');
-    }
-    displayEveryone();
 }
 
 function friendsBtnFunc(friendsBtn, everyoneBtn) {
-    if (everyoneBtn.classList.contains('active')) {
-        everyoneBtn.classList.remove('active');
+    if (everyoneBtn.classList.contains('active-dark')) {
+        everyoneBtn.classList.remove('active-dark');
+        friendsBtn.classList.add('active-dark');
+        displayFriend()
     }
-
-    if (!friendsBtn.classList.contains('active')) {
-        friendsBtn.classList.add('active');
-    }
-    displayFriend();
 }

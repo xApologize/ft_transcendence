@@ -1,12 +1,13 @@
 from .models import User
 from django.db.utils import IntegrityError
-from django.http import JsonResponse, HttpResponseForbidden, HttpResponse, Http404, HttpResponseNotFound, HttpResponseBadRequest, HttpRequest
+from django.http import JsonResponse, HttpResponse, HttpResponseNotFound, HttpResponseBadRequest, HttpRequest
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from match_history.models import MatchHistory
 from django.views import View
 from utils.decorators import token_validation
-from utils.functions import add_double_jwt, decrypt_user_id, first_token
+from utils.functions import  decrypt_user_id
+from friend_list.models import FriendList
 import json
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
@@ -18,7 +19,6 @@ class Users(View):
     @token_validation
     def get(self, request: HttpRequest):
         status = request.GET.getlist('status')
-        print(status)
         nicknames = request.GET.getlist('nickname')
         if not nicknames and not status:
             return HttpResponseBadRequest('No parameter.')
@@ -33,7 +33,6 @@ class Users(View):
                 'email': user.email,
                 'avatar': user.avatar,
                 'status': user.status,
-                'admin': user.admin,
             }
             for user in users
         ]
@@ -72,9 +71,9 @@ class Users(View):
                 return HttpResponseBadRequest(f'User {user_data["nickname"]} already exists') # 400    
         except json.JSONDecodeError:
             return HttpResponseBadRequest('Invalid JSON data in the request body') # 400
-        # Added jwt when creating user. Refacto needed
         response: HttpResponse =  HttpResponse(f'User {user_data["nickname"]} created successfully', status=201)
         return response
+        # Added jwt when creating user. Refacto needed
         # primary_key = User.objects.get(nickname=user.nickname).pk
         # return first_token(response, primary_key)
 
@@ -138,4 +137,32 @@ class Me(View):
             }
             return JsonResponse({'users': user_data}, status=200)
         return HttpResponseBadRequest("Error access token", status=401)
-        
+
+@method_decorator(csrf_exempt, name='dispatch') #- to apply to every function in the class.
+class Friends(View):
+    @token_validation
+    def get(self, request):
+        userCookie =  request.COOKIES.get("refresh_jwt")
+        decrypt_user = decrypt_user_id(userCookie)
+        user = get_object_or_404(User, id=decrypt_user)
+        friend_list = FriendList.objects.filter(
+            Q(friend1=user, status="ACCEPTED") | Q(friend2=user, status="ACCEPTED")
+        )
+        friends = []
+        for entry in friend_list:
+            if entry.friend1.nickname == user.nickname:
+                friends.append(entry.friend2)
+            else:
+                friends.append(entry.friend1)
+        user_data = [
+            {
+                'nickname': user.nickname,
+                'email': user.email,
+                'avatar': user.avatar,
+                'status': user.status,
+            }
+            for user in friends
+        ]
+        if user_data:
+            return JsonResponse({'users': user_data}, status=200)
+        return HttpResponse('No friends found') # 404
