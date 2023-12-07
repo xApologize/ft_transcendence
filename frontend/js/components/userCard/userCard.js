@@ -89,8 +89,8 @@ function settingsListener() {
             document.querySelectorAll('.right-column-settings .collapse').forEach(function(menu) {
                 menu.classList.remove('show');
             });
-            var targetMenuId = icon.getAttribute('data-bs-target').substring(1);
-            var targetMenu = document.getElementById(targetMenuId);
+            const targetMenuId = icon.getAttribute('data-bs-target').substring(1);
+            const targetMenu = document.getElementById(targetMenuId);
             targetMenu.classList.add('show');
         });
     });

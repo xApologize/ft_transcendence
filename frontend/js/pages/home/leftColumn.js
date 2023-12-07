@@ -20,9 +20,9 @@ export async function displayUser(allUsers) {
         }
     });
     try {
-        var currentUser = document.getElementById('nickname').innerText
+        const currentUser = document.getElementById('nickname').innerText
     } catch {
-        var currentUser = null
+        const currentUser = null
     }
     
     if (!objectAllUsers) { return }

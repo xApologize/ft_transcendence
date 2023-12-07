@@ -34,8 +34,8 @@ export function navigateTo(route) {
 }
 
 async function checkIfCookie() {
-  var accessTokenLive = sessionStorage.getItem('jwt');
-  var options = {
+  const accessTokenLive = sessionStorage.getItem('jwt');
+  const options = {
     method: 'GET',
     credentials: 'include',
     headers: {
@@ -47,10 +47,10 @@ async function checkIfCookie() {
 }
 
 export async function handleRoute() {  
-  var pageFunction = null;
-  var goPath = window.location.pathname
+  let pageFunction = null;
+  let goPath = window.location.pathname
   if (goPath == '/home') {
-    var cookieResponse = await checkIfCookie()
+    const cookieResponse = await checkIfCookie()
     if (cookieResponse.status == 401) {
       history.pushState(null, null, '/');
       goPath = '/'
@@ -109,9 +109,9 @@ function closeModal() {
 }
 
 function closeSettingsModal() {
-  var settingsModal = document.getElementById('settingsModal');
+  const settingsModal = document.getElementById('settingsModal');
   if (settingsModal) {
-      var modalInstance = bootstrap.Modal.getInstance(settingsModal);
+      const modalInstance = bootstrap.Modal.getInstance(settingsModal);
       if (modalInstance) {
           modalInstance.hide();
           modalInstance.dispose();

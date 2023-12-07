@@ -37,8 +37,8 @@ const redirectToHome = () => {
 };
 
 const createOptions = (method, data) => {
-    var accessTokenLive = sessionStorage.getItem('jwt');
-    var options = {
+    const accessTokenLive = sessionStorage.getItem('jwt');
+    const options = {
         method,
         credentials: 'include',
         headers: {
@@ -60,10 +60,10 @@ export const setNewToken = (response) => {
 }
 
 const performFetch = async (url, method, data = null) => {
-    var options = createOptions(method, data)
+    const options = createOptions(method, data)
     try {
         console.log(url)
-        var response = await fetch(url, options);
+        const response = await fetch(url, options);
         if (response.status == 401) {
             return redirectToHome()
         }
@@ -113,7 +113,7 @@ export const fetchUser = async (method, parameters = null, data = null) => {
     const path = 'user/';
     const params = buildParams(parameters);
     const url = buildApiUrl(path, params);
-    var result = await performFetch(url, method, data);
+    let result = await performFetch(url, method, data);
     return result;
 };
 
@@ -121,7 +121,7 @@ export const fetchUser = async (method, parameters = null, data = null) => {
 export const fetchAuth = async (method, apiPath, data = null) => {
     const path = 'auth/' + apiPath
     const url = buildApiUrl(path)
-    var result = await performFetch(url, method, data);
+    let result = await performFetch(url, method, data);
     return result;
 };
 
@@ -129,7 +129,7 @@ export const fetchAuth = async (method, apiPath, data = null) => {
 export const fetchMe = async(method, data = null) => {
     const path = 'user/me/'
     const url = buildApiUrl(path);
-    var result = await performFetch(url, method, data);
+    let result = await performFetch(url, method, data);
     return result;
 }
 
@@ -137,6 +137,6 @@ export const fetchMe = async(method, data = null) => {
 export const fetchFriend = async (method, apiPath = '', data = null) => {
     const path = 'user/friends/' + apiPath
     const url = buildApiUrl(path)
-    var result = await performFetch(url, method, data)
+    let result = await performFetch(url, method, data)
     return result;
 }
