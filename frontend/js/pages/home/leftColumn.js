@@ -19,30 +19,37 @@ export async function displayUser(allUsers) {
             return 0;
         }
     });
-    const templateUser = await userTemplateComponent();
     try {
         var currentUser = document.getElementById('nickname').innerText
-        if (!objectAllUsers) { return }
     } catch {
-        return
+        var currentUser = null
     }
+    
+    if (!objectAllUsers) { return }
+    await loopDisplayUser(objectAllUsers, currentUser, userContainer)
+}
 
+async function loopDisplayUser(objectAllUsers, currentUser, userContainer) {
+    const templateUser = await userTemplateComponent();
+    const currentUserIndex = objectAllUsers.findIndex(user => user.nickname === currentUser);
+    if (currentUserIndex !== -1) {
+        const currentUserObject = objectAllUsers.splice(currentUserIndex, 1)[0];
+        objectAllUsers.unshift(currentUserObject);
+    }
     objectAllUsers.forEach((user) => {
-        if (currentUser !== user.nickname) {
-            userContainer.appendChild(document.createElement('hr'));
-    
-            const clonedUserTemplate = templateUser.cloneNode(true);
-    
-            const avatarElement =
-                clonedUserTemplate.querySelector('#user-avatar');
-            const nameElement = clonedUserTemplate.querySelector('#user-name');
-            const statusBadge = clonedUserTemplate.querySelector('#badge');
-            statusBadge.style.backgroundColor = setStatus(user.status);
-            avatarElement.src = user.avatar;
-            nameElement.textContent = user.nickname;
-    
-            userContainer.appendChild(clonedUserTemplate);
-        }
+        userContainer.appendChild(document.createElement('hr'));
+
+        const clonedUserTemplate = templateUser.cloneNode(true);
+
+        const avatarElement =
+            clonedUserTemplate.querySelector('#user-avatar');
+        const nameElement = clonedUserTemplate.querySelector('#user-name');
+        const statusBadge = clonedUserTemplate.querySelector('#badge');
+        statusBadge.style.backgroundColor = setStatus(user.status);
+        avatarElement.src = user.avatar;
+        nameElement.textContent = user.nickname;
+
+        userContainer.appendChild(clonedUserTemplate);
     });
 
     function setStatus(user) {
