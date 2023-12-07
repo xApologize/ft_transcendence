@@ -1,6 +1,6 @@
 import json
 
-from channels.generic.websocket import WebsocketConsumer
+from channels.generic.websocket import WebsocketConsumer, AsyncWebsocketConsumer
 
 users = {
     "A": None,
@@ -37,3 +37,31 @@ class PongUserB(WebsocketConsumer):
     def receive(self, text_data):
         if users["A"]:
             users["A"].send(text_data)
+
+class PongCustomRoon(AsyncWebsocketConsumer):
+    async def connect(self):
+        await self.accept()
+        self.match_id = self.scope['url_route']['kwargs']['match_id']
+        await self.channel_layer.group_add(
+            self.match_id,
+            self.channel_name
+        )
+        await self.send(text_data='Connected to the game. Waiting for opponent...')
+    async def disconnect(self, close_code):
+        await self.channel_layer.group_discard(
+            self.match_id,
+            self.channel_name
+        )
+        print("Disconnect code:", close_code)
+    async def receive(self, text_data):
+        await self.channel_layer.group_send(
+            self.match_id,
+            {
+                'type': 'send_input',
+                'message': text_data,
+                'sender': self.channel_name
+            }
+        )
+    async def send_input(self, event):
+        if self.channel_name != event["sender"]:
+            await self.send(text_data=event["message"])
