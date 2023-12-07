@@ -82,6 +82,7 @@ async function initPage() {
         console.log('Error fetching users');
         return;
     }
+    // initSocket()  - Si fetch socket et stateSocket is close, get new access Token et re fetch le socket   
     const userAssembled = await assembleUser(user);
     displayUserCard(userAssembled);
     displayEveryone();

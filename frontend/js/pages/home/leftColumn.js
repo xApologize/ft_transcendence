@@ -3,6 +3,7 @@ import { assembleUser } from '../../api/assembler.js';
 
 
 export async function displayUser(allUsers) {
+    let currentUser;
     let userContainer = document.getElementById('userDisplay');
     userContainer.innerHTML = '';
     const objectAllUsers = await assembleUser(allUsers);
@@ -19,10 +20,11 @@ export async function displayUser(allUsers) {
             return 0;
         }
     });
+
     try {
-        const currentUser = document.getElementById('nickname').innerText
+        currentUser = document.getElementById('nickname').innerText
     } catch {
-        const currentUser = null
+        currentUser = null
     }
     
     if (!objectAllUsers) { return }

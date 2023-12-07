@@ -63,7 +63,8 @@ const performFetch = async (url, method, data = null) => {
     const options = createOptions(method, data)
     try {
         console.log(url)
-        const response = await fetch(url, options);
+        // var bc breaking without it
+        var response = await fetch(url, options);
         if (response.status == 401) {
             return redirectToHome()
         }
