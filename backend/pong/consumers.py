@@ -38,10 +38,12 @@ class PongUserB(WebsocketConsumer):
         if users["A"]:
             users["A"].send(text_data)
 
+
 class PongCustomRoon(AsyncWebsocketConsumer):
     async def connect(self):
         await self.accept()
         self.match_id = self.scope['url_route']['kwargs']['match_id']
+        print("Channel name:", self.channel_name)
         await self.channel_layer.group_add(
             self.match_id,
             self.channel_name
@@ -54,6 +56,7 @@ class PongCustomRoon(AsyncWebsocketConsumer):
         )
         print("Disconnect code:", close_code)
     async def receive(self, text_data):
+        print("MESSAGEEEE", text_data)
         await self.channel_layer.group_send(
             self.match_id,
             {

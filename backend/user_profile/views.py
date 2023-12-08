@@ -136,7 +136,7 @@ class Me(View):
             return JsonResponse({'users': user_data}, status=200)
         return HttpResponseBadRequest("Error access token", status=401)
 
-@method_decorator(csrf_exempt, name='dispatch') #- to apply to every function in the class.
+
 class Friends(View):
     @token_validation
     def get(self, request):

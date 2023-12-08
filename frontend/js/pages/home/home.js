@@ -3,6 +3,7 @@ import { assembleUser } from '../../api/assembler.js';
 import { displayUserCard } from '../../components/userCard/userCard.js';
 import { displayMatchHistory } from '../../components/matchHistory/matchHistory.js';
 import { displayUser } from './leftColumn.js';
+import { initSocket } from './socket.js';
 ////////
 // [TO DO]
 // - Ne pas pouvoir avoir 2 connections en même temps sur le même compte
@@ -76,7 +77,7 @@ async function initPage() {
         console.log('Error fetching users');
         return;
     }
-    // initSocket()  - Si fetch socket et stateSocket is close, get new access Token et re fetch le socket   
+    initSocket()
     const userAssembled = await assembleUser(user);
     displayUserCard(userAssembled);
     displayEveryone();
