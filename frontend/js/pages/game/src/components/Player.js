@@ -8,10 +8,13 @@ import {
 	Raycaster,
 	Vector3
 } from 'three';
+import { World } from '../World.js';
 
 class Player extends Paddle {
 	constructor( geometry, material, position, socket ) {
 		super( geometry, material, position );
+
+		this.isPlayer = true;
 
 		this.speed = 5;
 
@@ -20,7 +23,9 @@ class Player extends Paddle {
 
 		this.msg = {
 			pos: this.position,
-			ballInst: undefined
+			ballInst: undefined,
+			scored: false,
+			goalScoredId: undefined
 		};
 
 		this.socket = socket;
@@ -71,6 +76,22 @@ class Player extends Paddle {
 			this.socket.send( JSON.stringify( this.msg ) );
 		}
 		this.msg.ballInst = undefined;
+	}
+
+	ballMissed( hit ) {
+		if ( this.socket != undefined && this.socket.readyState === WebSocket.OPEN) {
+			this.msg.ballInst = hit;
+			this.msg.scored = true;
+			if (this.position.x < 0)
+				this.msg.goalScoredId = 2;
+			else
+				this.msg.goalScoredId = 1;
+			this.socket.send( JSON.stringify( this.msg ) );
+			World.scoreAdd( this.msg.goalScoredId );
+		}
+		this.msg.ballInst = undefined;
+		this.msg.scored = false;
+		this.msg.goalScoredId = undefined;
 	}
 
 	delete() {

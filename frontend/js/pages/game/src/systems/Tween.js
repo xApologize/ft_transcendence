@@ -16,6 +16,10 @@ class Tween {
 		this.updatable = new Updatable( this );
 	}
 
+	then ( callback ) {
+		this.callback = callback;
+	}
+
 	update( dt ) {
 		this.time += dt;
 		if ( this.time > this.duration ) {
@@ -34,9 +38,9 @@ class Tween {
 		}
 	}
 
-	onCompleted( callback ) {
-		if ( typeof callback == "function" )
-			callback();
+	onCompleted() {
+		if ( typeof this.callback == "function" )
+			this.callback();
 	}
 }
 

@@ -32,6 +32,8 @@ class Ball extends InstancedMesh {
 		this.ray.layers.enable( Layers.Solid );
 
 		this.matrix = new Matrix4();
+
+		this.lastFixedUpdate = new Date().getTime();
 	}
 
 	calcCollision( ballInst, dist, maxRecursion ) {
@@ -57,9 +59,13 @@ class Ball extends InstancedMesh {
 		if ( closerHit != undefined && ballInst.colliding != closerHit.object ) {
 			ballInst.colliding = closerHit.object;
 			if ( closerHit.object.layers.isEnabled( Layers.Goal ) ) {
+				if ( closerHit.object.paddle.isOpponent == true ) {
+					ballInst.speed = 0;
+					return;
+				}
+				this.initInst( ballInst );
 				if ( typeof closerHit.object.onCollision === "function" )
-				closerHit.object.onCollision( ballInst );
-				this.reset( ballInst );
+					closerHit.object.onCollision( ballInst );
 				return;
 			}
 			closerHit.normal.setZ( 0 );
@@ -87,33 +93,112 @@ class Ball extends InstancedMesh {
 
 	update( dt ) {
 		for (let i = 0; i < this.count; i++) {
-			this.calcCollision( this.ballInst[i], this.ballInst[i].speed * dt, 5 );
+			const lag = (new Date().getTime() - this.lastFixedUpdate) / 1000;
+			const newPos = this.ballInst[i].pos.clone().add( this.ballInst[i].dir.clone().multiplyScalar( lag * this.ballInst[i].speed ) );
+
 			// Rotate toward movement
 			let rot = new Quaternion().setFromUnitVectors( new Vector3( 1, 0, 0 ), this.ballInst[i].dir );
 			this.matrix.compose(
-				this.ballInst[i].pos,
+				newPos,
 				rot,
-				new Vector3( 1 + this.ballInst[i].speed * dt, 1, 1 )
+				new Vector3( -Math.pow( 2, -this.ballInst[i].speed / 60 ) + 2, 1, 1 )
 			);
 			this.setMatrixAt( i, this.matrix );
 			this.instanceMatrix.needsUpdate = true;
+		}
+	}
+
+	fixedUpdate( dt ) {
+		for (let i = 0; i < this.count; i++) {
+			this.calcCollision( this.ballInst[i], this.ballInst[i].speed * dt, 5 );
 	
 			// Reset if OOB
 			if ( Math.abs( this.ballInst[i].pos.x ) > 8 || Math.abs( this.ballInst[i].pos.y ) > 5 ) {
 				console.error( "OOB" );
-				this.reset( i );
+				this.initInst( this.ballInst[i] );
 			}
+		}
+		this.lastFixedUpdate = new Date().getTime();
+	}
+
+	resetAll() {
+		for (let i = 0; i < this.count; i++) {
+			this.reset(this.ballInst[i]);
 		}
 	}
 
 	reset( ballInst ) {
 		// ballInst.pos.set(MathUtils.randFloat( -2, 2 ), MathUtils.randFloat( -1, 1 ), 0);
-		ballInst.pos.set( 0, 0, 0 );
+		ballInst.pos.set( 0, 0, -1 );
 		// ballInst.dir.set(MathUtils.randFloat( -1, 1 ), MathUtils.randFloat( -0.5, 0.5 ), 0);
 		ballInst.dir.set( 1, 1, 0 );
 		ballInst.dir.normalize();
-		ballInst.speed = 5;
+		ballInst.speed = 0;
 		ballInst.colliding = undefined;
+
+
+		// this.matrix.compose(
+		// 	ballInst.pos,
+		// 	new Quaternion(),
+		// 	new Vector3( 1, 1, 1 )
+		// );
+		// this.setMatrixAt( ballInst.id, this.matrix );
+		// this.instanceMatrix.needsUpdate = true;
+
+		// // let promise = new Promise( function (resolve, reject) {
+		// // 	setTimeout(() => resolve(ballInst), 1000);
+		// // });
+		// let promise = new Promise( resolve => {
+		// 	setTimeout(() => resolve(this), 2000);
+		// })
+		// // promise.then(this.test);
+		// promise.then(
+		// 	function(result) {
+		// 		console.log(result);
+		// 		ballInst.pos.set( 0, 0, 0 );
+		// 		ballInst.speed = 5;
+
+		// 		// result.matrix.compose(
+		// 		// 	ballInst.pos,
+		// 		// 	new Quaternion(),
+		// 		// 	new Vector3( 1, 1, 1 )
+		// 		// );
+		// 		// result.setMatrixAt( ballInst.id, result.matrix );
+		// 		// result.instanceMatrix.needsUpdate = true;
+		// 	}
+		// )
+	}
+
+	init() {
+		for (let i = 0; i < this.count; i++) {
+			this.initInst(this.ballInst[i]);
+		}
+	}
+
+	initInst( inst ) {
+		inst.pos.set( 0, 0, 0 );
+		inst.dir.set( 1, inst.id, 0 );
+		inst.dir.normalize();
+		inst.speed = 0;
+		inst.colliding = undefined;
+
+
+		this.matrix.compose(
+			inst.pos,
+			new Quaternion(),
+			new Vector3( 1, 1, 1 )
+		);
+		this.setMatrixAt( inst.id, this.matrix );
+		this.instanceMatrix.needsUpdate = true;
+
+		let promise = new Promise( resolve => {
+			setTimeout(() => resolve(this), 1000);
+		})
+		promise.then(
+			function(result) {
+				inst.speed = 5;
+			}
+		)
 	}
 
 	overwriteInst( inst ) {

@@ -25,11 +25,11 @@ class InputManager {
 	}
 
 	onKeyDown( event ) {
-		if ( InputMap.movementAxis.keyPositive.includes(event.code) )
+		if ( InputMap.movementAxis.keyPositive.includes( event.code ) )
 			this.inputStrength.x = this.inputStrength.y + 1;
-		if ( InputMap.movementAxis.keyNegative.includes(event.code) )
+		if ( InputMap.movementAxis.keyNegative.includes( event.code ) )
 			this.inputStrength.y = this.inputStrength.x + 1;
-		if ( InputMap.boostButton.key.includes(event.code) ) {
+		if ( InputMap.boostButton.key.includes( event.code ) ) {
 			InputMap.boostButton.value = true;
 			document.dispatchEvent( InputMap.boostButton.eventPressed );
 		}
@@ -39,15 +39,14 @@ class InputManager {
 	}
 
 	onKeyUp( event ) {
-		if ( InputMap.movementAxis.keyPositive.includes(event.code) )
+		if ( InputMap.movementAxis.keyPositive.includes( event.code ) )
 			this.inputStrength.x = 0;
-		if ( InputMap.movementAxis.keyNegative.includes(event.code) )
+		if ( InputMap.movementAxis.keyNegative.includes( event.code ) )
 			this.inputStrength.y = 0;
-		if ( InputMap.boostButton.key.includes(event.code) ) {
+		if ( InputMap.boostButton.key.includes( event.code ) ) {
 			InputMap.boostButton.value = false;
 			document.dispatchEvent( InputMap.boostButton.eventReleased );
 		}
-
 
 		InputMap.movementAxis.value = this.inputStrength.x > this.inputStrength.y ? 1 :
 							this.inputStrength.x < this.inputStrength.y ? -1 : 0;

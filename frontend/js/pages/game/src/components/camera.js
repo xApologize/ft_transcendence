@@ -24,14 +24,14 @@ class MainCamera extends PerspectiveCamera {
 		}, false);
 	}
 
-	viewLarge( duration ) {
+	viewLarge( duration, callback ) {
 		new Tween( this.position, new Vector3( 0, -35, 10 ), duration );
-		new Tween( this.rotation, new Vector3( MathUtils.degToRad( 70 ), 0, 0 ), duration );
+		new Tween( this.rotation, new Vector3( MathUtils.degToRad( 70 ), 0, 0 ), duration ).then( callback );
 	}
 
-	viewTable( duration ) {
+	viewTable( duration, callback ) {
 		new Tween( this.position, new Vector3( 0, 0, 20 ), duration );
-		new Tween( this.rotation, new Vector3( 0, 0, 0 ), duration );
+		new Tween( this.rotation, new Vector3( 0, 0, 0 ), duration ).then( callback );
 	}
 
 	update( dt ) {

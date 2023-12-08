@@ -13,10 +13,12 @@ class GoalZone extends Mesh {
 		this.renderer.setLayers( Layers.Goal );
 
 		this.playerId = playerId;
+		this.paddle = undefined;
 	}
 
-	onCollision() {
-		World.scoreAdd( this.playerId == 1 ? 2 : 1 );
+	onCollision( hit ) {
+		this.paddle.ballMissed( hit );
+		// World.scoreAdd( this.playerId == 1 ? 2 : 1 );
 	}
 
 	delete() {
