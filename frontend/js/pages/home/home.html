@@ -1,7 +1,10 @@
 <div class="container-fluid">
     <div class="row vh-100">
+        <div class="buttonResponsive">
+            <button class="btn" id="userBtn">Users</button>
+        </div>
         <div
-            class="text-center userList col-sm-5 col-md-4 col-lg-4 col-xl-3 col-xxl-3"
+            class="text-center userList col-md-4 col-lg-4 col-xl-3 col-xxl-3"
             id="left-column"
         >
             <div class="row">
@@ -18,40 +21,46 @@
                     <button
                         type="button"
                         id="friendsBtn"
-                        class="btn btn-light btn-block w-100 rounded-0 border"
+                        class="active btn btn-light btn-block w-100 rounded-0 border"
                     >
                         Friends
                     </button>
                 </div>
             </div>
-            <div class="row row-center" id="userDisplayEveryone"></div>
+            <div class="row row-center" id="userDisplay"></div>
         </div>
         <div
-            class="col-sm-7 col-md-8 col-lg-8 col-xl-9 col-xxl-9"
+            class="col-sm-12 col-md-8 col-lg-8 col-xl-9 col-xxl-9"
             id="right-column"
         >
-            <div
-            id="own-user-card"
-            class="user-card position-absolute bg-dark text-light top-0 end-0 p-3"
-        >
-        </div>
-            <!-- <h1 class="text-center">Transcendence</h1>
-            <div class="row m-3 rightPartCol">
-                <div class="col border-end">
+            <div id="rightPart" class="row m-3 rightPartCol">
+                <div class="col-12 col-md-3 col-xl-3 text-center">
                     <h1 class="m-3 text-center">Find game</h1>
-
+                    <button id="findGame" class="btn btn-secondary">
+                        Find game
+                    </button>
                 </div>
-                <div class="col border-start">
-                    <h1 class="m-3 text-center">setting</h1>
+                <div id="userCol" class="col-12 col-md-9 col-xl-9">
+                    <div class="rightCol text-center">
+                        <div class="upperRow">
+                            <div
+                                id="own-user-card"
+                                class="user-card bg-dark text-light p-3"
+                            ></div>
+                        </div>
+                        <div class="lowerRow">
+                            <h1 class="m-3 text-center">Match history</h1>
+                            <div id="matchHistory"></div>
+                        </div>
+                    </div>
                 </div>
-            </div> -->
+            </div>
         </div>
     </div>
 </div>
 
-
-    <!-- Bootstrap Modal -->
-    <!-- <div
+<!-- Bootstrap Modal -->
+<!-- <div
         class="modal"
         id="playModal"
         tabindex="-1"
@@ -75,8 +84,8 @@
                     </button>
                 </div>
                 <div class="modal-body"> -->
-                    <!-- Bootstrap grid for centering and spacing buttons -->
-                    <!-- <div class="row justify-content-center">
+<!-- Bootstrap grid for centering and spacing buttons -->
+<!-- <div class="row justify-content-center">
                         <div class="col-6 col-md-4">
                             <button
                                 type="button"
