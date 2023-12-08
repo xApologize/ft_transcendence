@@ -23,36 +23,40 @@ export async function displayMatchHistory(userStatJson) {
 
     userStatJson.played_matches.forEach((game) => {
         const listElement = document.createElement('li');
+        listElement.classList.add('bg-main-second');
         listElement.classList.add('list-group-item');
+        listElement.classList.add('bg-transparent');
         listElement.classList.add('border-0');
-        listElement.classList.add('bg-purple');
         listElement.classList.add('textWhite');
         listElement.innerHTML = game.winner_username;
         matchHistoryWinner.appendChild(listElement);
     });
     userStatJson.played_matches.forEach((game) => {
         const listElement = document.createElement('li');
+        listElement.classList.add('bg-main-second');
         listElement.classList.add('list-group-item');
+        listElement.classList.add('bg-transparent');
         listElement.classList.add('border-0');
-        listElement.classList.add('bg-purple');
         listElement.classList.add('textWhite');
         listElement.innerHTML = game.winner_score;
         matchHistoryWinScore.appendChild(listElement);
     });
     userStatJson.played_matches.forEach((game) => {
         const listElement = document.createElement('li');
+        listElement.classList.add('bg-main-second');
         listElement.classList.add('list-group-item');
+        listElement.classList.add('bg-transparent');
         listElement.classList.add('border-0');
-        listElement.classList.add('bg-purple');
         listElement.classList.add('textWhite');
         listElement.innerHTML = game.loser_username;
         matchHistoryLoser.appendChild(listElement);
     });
     userStatJson.played_matches.forEach((game) => {
         const listElement = document.createElement('li');
+        listElement.classList.add('bg-main-second');
         listElement.classList.add('list-group-item');
+        listElement.classList.add('bg-transparent');
         listElement.classList.add('border-0');
-        listElement.classList.add('bg-purple');
         listElement.classList.add('textWhite');
         listElement.innerHTML = game.loser_score;
         matchHistoryLoseScore.appendChild(listElement);

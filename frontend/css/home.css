@@ -34,6 +34,12 @@
     width: 40px;
 }
 
+#divGame {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
 .hide {
     display: none;
 }
@@ -42,18 +48,24 @@
     display: block !important;
 }
 
-.bg-purple {
-    background-color: #22092c !important;
+.bg-main-second {
+    background-color: var(--bg-main-second);
 }
 
-.bg-red {
-    background-color: #872341 !important;
-}
-
-.bg-orange {
-    background-color: #f05941 !important;
+.bg-main {
+    background-color: var(--bg-main);
 }
 
 .textWhite {
     color: white !important;
+}
+
+.btn-primary {
+    background-color: var(--bg-main-second) !important;
+    border-color: var(--bg-main-second) !important;
+}
+
+.btn-primary:hover {
+    background-color: #872341 !important;
+    border-color: #872341 !important;
 }

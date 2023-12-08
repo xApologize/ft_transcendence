@@ -3,7 +3,7 @@
 }
 
 #id-modal-title {
-    color:black;
+    color: black;
 }
 
 .hover-pointer:hover {
@@ -14,4 +14,12 @@
     background-color: #e0e0e0;
     padding: 8px;
     border-radius: 4px;
+}
+
+.card:hover {
+    background-color: #f05941 !important;
+}
+
+.card {
+    transition: 0.25s;
 }
