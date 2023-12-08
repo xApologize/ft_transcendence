@@ -21,8 +21,6 @@
 }
 
 .userList {
-    background-color: black;
-    opacity: 85%;
     height: 100%;
 }
 
@@ -42,4 +40,20 @@
 
 .show {
     display: block !important;
+}
+
+.bg-purple {
+    background-color: #22092c !important;
+}
+
+.bg-red {
+    background-color: #872341 !important;
+}
+
+.bg-orange {
+    background-color: #f05941 !important;
+}
+
+.textWhite {
+    color: white !important;
 }
