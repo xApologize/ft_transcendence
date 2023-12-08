@@ -74,7 +74,7 @@ async function loadPage() {
     const template = await templateComponent();
     // const footer = await footerComponent()
 
-    // body.append(header);
+    body.append(header);
     body.append(template);
     const path = window.location.pathname;
     navigateTo(path);
