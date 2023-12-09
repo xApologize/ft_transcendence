@@ -164,3 +164,8 @@ class Friends(View):
         if user_data:
             return JsonResponse({'users': user_data}, status=200)
         return HttpResponse('No friends found') # 404
+
+@token_validation
+def token(request: HttpRequest):
+    print("FETCH")
+    return HttpResponse("Token fetch")

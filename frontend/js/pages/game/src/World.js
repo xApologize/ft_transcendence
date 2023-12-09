@@ -77,9 +77,9 @@ class World {
 				World._instance.initMatch();
 			}
 			if ( event.code == "KeyA" && this.player == undefined )
-				this.createSocket( '/ws/pong/UserA', -7.2, this.terrain.leftGoalZone, this.terrain.rightGoalZone );
+				this.createSocket( '/ws/pong/1/a', -7.2, this.terrain.leftGoalZone, this.terrain.rightGoalZone );
 			if ( event.code == "KeyB" && this.player == undefined )
-				this.createSocket( '/ws/pong/UserB', 7.2, this.terrain.rightGoalZone, this.terrain.leftGoalZone );
+				this.createSocket( '/ws/pong/1/b', 7.2, this.terrain.rightGoalZone, this.terrain.leftGoalZone );
 		}, false);
 	}
 

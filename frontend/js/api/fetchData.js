@@ -141,3 +141,10 @@ export const fetchFriend = async (method, apiPath = '', data = null) => {
     let result = await performFetch(url, method, data)
     return result;
 }
+
+export const fetchToken = async(method, data = null) => {
+    const path = 'user/token/'
+    const url = buildApiUrl(path);
+    let result = await performFetch(url, method, data);
+    return result;
+}
