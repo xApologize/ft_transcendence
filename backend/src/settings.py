@@ -40,13 +40,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     "channels",
-    'channels_postgres',
+    "channels_postgres",
     "user_profile",
     "friend_list",
     "block_list",
     "match_history",
     "tournament_history",
-    'chat',
+    "chat",
+    "interactive"
 ]
 
 MIDDLEWARE = [

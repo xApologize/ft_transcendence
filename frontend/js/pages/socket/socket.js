@@ -1,46 +1,24 @@
 import { loadHTMLPage } from '../../api/fetchData.js';
+import interactiveSocket from '../home/socket.js'
 
 export async function showSocket() {
   try {
     await loadHTMLPage('./js/pages/socket/socket.html');
-    let chatSocketA, chatSocketB;
 
-    document.getElementById('CreateSocketA').addEventListener('click', () => {
-      chatSocketA = new WebSocket('wss://' + window.location.host + '/ws/pong/UserA' + "?" + sessionStorage.getItem('jwt'));
-      console.log("Hi!");
-      chatSocketA.addEventListener("close", (event) => {
-        console.log(event.code)
-      })
+    // function asyncPrompt(message) {
+    //   return new Promise((resolve) => {
+    //     const userInput = prompt(message);
+    //     resolve(userInput);
+    //   });
+    // }
+
+    document.getElementById('SendMessageInteractive').addEventListener('click', async () => {
+      interactiveSocket.sendMessageSocket("Find Match")
+      console.log("Message was sent")
     });
 
-    document.getElementById('CreateSocketB').addEventListener('click', () => {
-      chatSocketB = new WebSocket('wss://' + window.location.host + '/ws/pong/UserB');
-      console.log("SocketB= ", chatSocketB);
-    });
-
-    function asyncPrompt(message) {
-      return new Promise((resolve) => {
-        const userInput = prompt(message);
-        resolve(userInput);
-      });
-    }
-
-    document.getElementById('SendA').addEventListener('click', async () => {
-      if (chatSocketA.readyState === WebSocket.OPEN) {
-        const message = await asyncPrompt("Enter the message you want to send to user A");
-        chatSocketA.send(message);
-      } else {
-        console.error("SocketA is not open!");
-      }
-    });
-
-    document.getElementById('SendB').addEventListener('click', async () => {
-      if (chatSocketB.readyState === WebSocket.OPEN) {
-        const message = await asyncPrompt("Enter the message you want to send to user A");
-        chatSocketB.send(message);
-      } else {
-        console.error("SocketB is not open!");
-      }
+    document.getElementById('JoinMatch').addEventListener('click', async () => {
+      interactiveSocket.sendMessageSocket("Find Match")
     });
 
   } catch (error) {
