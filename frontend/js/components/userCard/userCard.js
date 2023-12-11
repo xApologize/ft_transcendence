@@ -15,65 +15,18 @@ export async function userCardListener() {
         await logoutUser()
     })
 
-
     document.getElementById('userSettingsModal').addEventListener('show.bs.modal', function (event) {
         console.log('Settings Modal is about to be shown');
+        const userNickname = document.getElementById('nickname').innerText;
+        const nicknameInput = document.getElementById('nicknameInput');
+
+        nicknameInput.value = userNickname
     });
 
 
     document.getElementById('userSettingsModal').addEventListener('hide.bs.modal', function (event) {
         console.log('Settings Modal is about to be hide')
     });
-
-
-    document.getElementById('editNicknameBtn').addEventListener('click', function(event) {
-        const nicknameText = document.getElementById('nicknameText');
-        const nicknameInput = document.getElementById('nicknameInput');
-        const editBtn = document.getElementById('editNicknameBtn');
-
-        // Toggle visibility of the text and input fields
-        nicknameText.style.display = (nicknameText.style.display === 'none') ? 'inline' : 'none';
-        nicknameInput.style.display = (nicknameInput.style.display === 'none') ? 'inline' : 'none';
-
-        // If the input field is visible, focus on it
-        if (nicknameInput.style.display !== 'none') {
-            nicknameInput.value = nicknameText.innerText.trim();
-            nicknameInput.focus();
-        }
-
-        // Change the button text based on the state
-        editBtn.innerText = (nicknameText.style.display === 'none') ? 'Save' : 'Edit';
-
-        // If the input field is visible and the button text is 'Save', update the text
-        if (nicknameInput.style.display === 'none' && editBtn.innerText === 'Edit') {
-            nicknameText.innerText = nicknameInput.value.trim();
-        }
-        document.getElementById('cancelNicknameBtn').classList.toggle('hide')
-    });
-
-
-    document.getElementById('cancelNicknameBtn').addEventListener('click', function(event) {
-        const nicknameText = document.getElementById('nicknameText');
-        const nicknameInput = document.getElementById('nicknameInput');
-        const cancelBtn = document.getElementById('cancelNicknameBtn');
-
-        // Toggle visibility of the text and input fields
-        nicknameText.style.display = (nicknameText.style.display === 'none') ? 'inline' : 'none';
-        nicknameInput.style.display = (nicknameInput.style.display === 'none') ? 'inline' : 'none';
-
-        // If the text field is visible, update the input value
-        if (nicknameText.style.display !== 'none') {
-            nicknameInput.value = nicknameText.innerText.trim();
-        }
-
-        // Toggle visibility of the cancel button
-        cancelBtn.classList.toggle('hide');
-
-        const editBtn = document.getElementById('editNicknameBtn');
-        editBtn.innerText = (nicknameText.style.display === 'none') ? 'Save' : 'Edit';
-
-    });
-
 
     settingsListener()
 }

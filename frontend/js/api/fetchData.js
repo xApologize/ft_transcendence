@@ -65,7 +65,7 @@ const performFetch = async (url, method, data = null) => {
         console.log(url)
         // var bc breaking without it
         var response = await fetch(url, options);
-        if (response.status == 401) {
+        if (response.status == 401 || response.status > 500 && response.status < 503) {
             return redirectToHome()
         }
         const jwt_token = setNewToken(response)

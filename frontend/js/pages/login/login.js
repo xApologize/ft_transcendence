@@ -47,14 +47,16 @@ async function login(username = null, password = null) {
 
     try {
         const response = await fetchAuth('POST','login/', loginData);
-        const result = await response.json();
-        if (response.ok) {
-            if (result.success) {
-                console.log('Login successful: ', await result.success);
-                navigateTo('/home');
-                return ;
+        if (response) {
+            if (response.ok) {
+                const result = await response.json();
+                if (result.success) {
+                    console.log('Login successful: ', await result.success);
+                    navigateTo('/home');
+                    return ;
+                }
+                console.log('Login failed: ', await result.error);
             }
-            console.log('Login failed: ', await result.error);
         }
     } catch (error) {
         console.error('Error during login:', error);

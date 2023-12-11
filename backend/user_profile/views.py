@@ -1,16 +1,17 @@
 from .models import User
 from django.db.utils import IntegrityError
-from django.http import JsonResponse, HttpResponse, HttpResponseNotFound, HttpResponseBadRequest, HttpRequest
+from django.http import JsonResponse, HttpResponse, HttpResponseNotFound, HttpResponseBadRequest, HttpRequest, Http404
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from match_history.models import MatchHistory
 from django.views import View
 from utils.decorators import token_validation
-from utils.functions import  decrypt_user_id
+from utils.functions import  decrypt_user_id, get_user_obj
 from friend_list.models import FriendList
 import json
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
+from django.core.exceptions import PermissionDenied
 
 
 @method_decorator(csrf_exempt, name='dispatch') #- to apply to every function in the class.
@@ -78,18 +79,19 @@ class Users(View):
         # return first_token(response, primary_key)
 
     # Delete a specific users
-    def delete(self, request: HttpRequest):
-        nickname = request.GET.get('nickname')
-        if not nickname:
-            return HttpResponseBadRequest('No nickname provided for deletion.') # 400
-        user = User.objects.filter(nickname=nickname).first()
-        if not user:
-            return HttpResponseNotFound(f'No user found with the nickname: {nickname}') # 404
-        user.delete()
-        return HttpResponse(status=204)
+    # def delete(self, request: HttpRequest):
+    #     nickname = request.GET.get('nickname')
+    #     if not nickname:
+    #         return HttpResponseBadRequest('No nickname provided for deletion.') # 400
+    #     user = User.objects.filter(nickname=nickname).first()
+    #     if not user:
+    #         return HttpResponseNotFound(f'No user found with the nickname: {nickname}') # 404
+    #     user.delete()
+    #     return HttpResponse(status=204)
 
 
     # update specific user
+    @token_validation
     def patch(self, request: HttpRequest):
         nickname = request.GET.get('nickname')
         if not nickname:
@@ -113,38 +115,40 @@ class Users(View):
 class Me(View):
     @token_validation
     def get(self, request: HttpRequest):
-        refresh_jwt_cookie = request.COOKIES.get("refresh_jwt")
-        if refresh_jwt_cookie is None:
-            return HttpResponse("Couldn't locate cookie jwt", status=401)
-        decrypt_result: int = decrypt_user_id(refresh_jwt_cookie)
-        if decrypt_result > 0:
-            user = get_object_or_404(User, id=decrypt_result)
+        try:
+            user = get_user_obj(request)
+        except PermissionDenied as e:
+            return HttpResponse(str(e), status=401)
+        except Http404 as e:
+            return HttpResponse(str(e), status=404)
 
-            # Fetch won, lost, and played matches
-            won_matches = user.winner.all()
-            lost_matches = user.loser.all()
-            played_matches = MatchHistory.objects.filter(Q(winner=user) | Q(loser=user))
+        # Fetch won, lost, and played matches
+        won_matches = user.winner.all()
+        lost_matches = user.loser.all()
+        played_matches = MatchHistory.objects.filter(Q(winner=user) | Q(loser=user))
 
-            user_data = {
-                'nickname': user.nickname,
-                'email': user.email,
-                'avatar': user.avatar,
-                'status': user.status,
-                'admin': user.admin,
-                'won_matches': [{'winner_score': match.winner_score, 'loser_score': match.loser_score, 'date_of_match': match.date_of_match} for match in won_matches],
-                'lost_matches': [{'winner_score': match.winner_score, 'loser_score': match.loser_score, 'date_of_match': match.date_of_match} for match in lost_matches],
-                'played_matches': [{'winner_score': match.winner_score, 'winner_username': match.winner.nickname, 'loser_score': match.loser_score, 'loser_username': match.loser.nickname , 'date_of_match': match.date_of_match} for match in played_matches],
-            }
-            return JsonResponse({'users': user_data}, status=200)
-        return HttpResponseBadRequest("Error access token", status=401)
+        user_data = {
+            'nickname': user.nickname,
+            'email': user.email,
+            'avatar': user.avatar,
+            'status': user.status,
+            'admin': user.admin,
+            'won_matches': [{'winner_score': match.winner_score, 'loser_score': match.loser_score, 'date_of_match': match.date_of_match} for match in won_matches],
+            'lost_matches': [{'winner_score': match.winner_score, 'loser_score': match.loser_score, 'date_of_match': match.date_of_match} for match in lost_matches],
+            'played_matches': [{'winner_score': match.winner_score, 'winner_username': match.winner.nickname, 'loser_score': match.loser_score, 'loser_username': match.loser.nickname , 'date_of_match': match.date_of_match} for match in played_matches],
+        }
+        return JsonResponse({'users': user_data}, status=200)
 
 @method_decorator(csrf_exempt, name='dispatch') #- to apply to every function in the class.
 class Friends(View):
     @token_validation
     def get(self, request):
-        userCookie =  request.COOKIES.get("refresh_jwt")
-        decrypt_user = decrypt_user_id(userCookie)
-        user = get_object_or_404(User, id=decrypt_user)
+        try:
+            user = get_user_obj(request)
+        except PermissionDenied as e:
+            return HttpResponse(str(e), status=401)
+        except Http404 as e:
+            return HttpResponse(str(e), status=404)
         friend_list = FriendList.objects.filter(
             Q(friend1=user, status="ACCEPTED") | Q(friend2=user, status="ACCEPTED")
         )
