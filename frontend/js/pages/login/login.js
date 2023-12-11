@@ -6,8 +6,9 @@ export async function showLogin() {
     try {
         await loadHTMLPage('./js/pages/login/login.html');
         // sessionStorage.clear()
-        document.getElementById('loginButton').addEventListener('click', async () => {
-            await login();
+        document.getElementById('login-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+            login();
         });
         document
             .getElementById('signUpButton')
@@ -27,11 +28,10 @@ export async function showLogin() {
 
 
 async function login(username = null, password = null) {
-    const usernameInput = username !== null ? username : document.getElementById('usernameInput').value;
+    const usernameInput = username !== null ? username : document.getElementById('validationDefault01').value;
     const passwordInput = password !== null ? password : document.getElementById('passwordInput').value;
 
     if (!usernameInput || !passwordInput) {
-        alert('Fill the form.');
         return;
     }
 

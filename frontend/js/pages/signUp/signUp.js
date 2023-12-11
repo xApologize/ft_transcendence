@@ -7,8 +7,9 @@ export async function showSignUp() {
     try {
         await loadHTMLPage('./js/pages/signUp/signUp.html');
         document
-            .getElementById('signUpButton')
-            .addEventListener('click', () => {
+            .getElementById('signupForm')
+            .addEventListener('submit', function (event){
+                event.preventDefault();
                 signUp();
             });
     } catch (error) {
@@ -49,7 +50,7 @@ async function signUp() {
     ).value;
     const avatar = document.getElementById('inputAvatar').value;
     if (!nickname || !email || !password || !passwordConfirm || !avatar) {
-        alert('Fill the form.');
+        console.log("RETURN")
         return;
     }
     const userData = {

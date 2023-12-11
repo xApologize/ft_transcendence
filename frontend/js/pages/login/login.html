@@ -1,4 +1,4 @@
-<div class="form-div">
+<form id="login-form" class="form-div">
     <div class="form">
         <div class="m-3 text-center">
             <h1>Login</h1>
@@ -7,22 +7,24 @@
             <input
                 type="text"
                 class="form-control"
-                id="usernameInput"
+                id="validationDefault01"
                 placeholder=" "
-            />
-            <label for="usernameInput">Username</label>
+                required
+            >
+            <label class="form-label" for="validationDefault01">Username</label>
         </div>
         <div class="form-floating m-3">
             <input
-                type="password"
+                type="current-password"
                 class="form-control"
                 id="passwordInput"
                 placeholder=" "
-            />
+                required
+            >
             <label for="passwordInput">Password</label>
         </div>
         <div class="m-3 text-center">
-            <button class="btn btn-secondary loginButton" id="loginButton">
+            <button type="submit" class="btn btn-secondary loginButton" id="loginButton">
                 Login
             </button>
         </div>
@@ -47,4 +49,4 @@
             demo-user2
         </button>
     </div>
-</div>
+</form>
