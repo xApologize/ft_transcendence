@@ -21,19 +21,35 @@ export async function userCardListener() {
     settingsListener()
 }
 
+function closeSettings() {
+    const settingsModal = document.getElementById('userSettingsModal');
+    if (settingsModal) {
+        const modalInstance = bootstrap.Modal.getInstance(settingsModal);
+        if (modalInstance) {
+            modalInstance.hide();
+        }
+    }  
+}
 
 async function saveSettings() {
     const nicknameInput = document.getElementById('nicknameInput').value;
     const userNickname = document.getElementById('nickname').innerText;
-    const data = {
-        "nickname": nicknameInput
-    }
+    
+    const data = new Object();
     if (userNickname != nicknameInput) {
-        console.log("CHANGE NICKNAME!")
-        const response = await fetchUser('PATCH', null, data)
-    } else {
-        console.log("NO CHANGE!")
+        console.log("APPEND NICKNAME!")
+        data.nickname = nicknameInput
     }
+    // const userInput = window.prompt("Please enter your password:");
+    // data.validPassword = userInput // TODO: check if password is valid in backend
+    if (Object.keys(data).length > 0) {
+        const response = await fetchUser('PATCH', null, data)
+        if (response && response.status  > 400) {
+            // display visually ?
+            console.log("Error while saving settings")
+        }
+    }
+    closeSettings()
 }
 
 

@@ -55,11 +55,11 @@ def decrypt_user_id(jwt_token: str) -> int:
         return INVALID
 
 def get_user_obj(request: HttpRequest) -> User:
-    refresh_jwt_cookie = request.COOKIES.get("refresh_jwt")
-    if refresh_jwt_cookie is None:
-        raise PermissionDenied("Couldn't locate cookie jwt")
+    access_jwt_cookie = request.headers.get("jwt-access")
+    if access_jwt_cookie is None:
+        raise PermissionDenied("Couldn't locate access jwt")
     
-    decrypt_result = decrypt_user_id(refresh_jwt_cookie)
+    decrypt_result = decrypt_user_id(access_jwt_cookie)
     if decrypt_result <= 0:
         raise Http404("User not found")
 

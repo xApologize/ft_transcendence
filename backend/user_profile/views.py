@@ -6,13 +6,14 @@ from django.views.decorators.csrf import csrf_exempt
 from match_history.models import MatchHistory
 from django.views import View
 from utils.decorators import token_validation
-from utils.functions import  decrypt_user_id, get_user_obj
+from utils.functions import get_user_obj
 from friend_list.models import FriendList
 import json
-from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from django.core.exceptions import PermissionDenied
 
+
+# https://stackoverflow.com/questions/3290182/which-status-code-should-i-use-for-failed-validations-or-invalid-duplicates
 
 @method_decorator(csrf_exempt, name='dispatch') #- to apply to every function in the class.
 class Users(View):
@@ -102,7 +103,7 @@ class Users(View):
         try:
             user_data = json.loads(request.body)
             for field in ['nickname', 'email', 'avatar']:
-                if field in user_data:
+                if field in user_data and getattr(user, field) != user_data[field]:
                     setattr(user, field, user_data[field])
             user.save()
         except json.JSONDecodeError:
