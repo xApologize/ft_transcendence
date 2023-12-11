@@ -10,6 +10,9 @@ const interactiveSocket = {
                 const result = await fetchToken('GET', { status: ['ONL', 'ING'] });
                 console.log(result)
             };
+            this.interactive_socket.onmessage = function(event) {
+                console.log("Received message:", event.data);
+            };
         } else {
             console.log("Token already existed")
         }

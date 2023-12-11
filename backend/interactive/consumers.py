@@ -19,7 +19,9 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
     async def disconnect(self, close_code: any):
         print("Disconected interactive socket code:", close_code)
         if self.waiting == True:
-            pass
+            match_entry = await sync_to_async(
+                LookingForMatch.objects.filter(paddleA=self.user_id).first)()
+            await sync_to_async(match_entry.delete)()
         await self.channel_layer.group_discard(
             "interactive",
             self.channel_name
@@ -47,6 +49,15 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         if self.channel_name == data["sender"]:
             await self.send(text_data=json.dumps(data["message"]))
 
+    async def send_message_and_clean_db(self, data: any):
+        if self.channel_name == data["sender"]:
+            match_entry = await sync_to_async(
+                LookingForMatch.objects.filter(paddleA=self.user_id).first)()
+            print("REMOVE ENTRY FROM DB")
+            await sync_to_async(match_entry.delete)()
+            self.waiting = False
+            await self.send(text_data=json.dumps(data["message"]))
+
     async def find_match(self):
         match_entry = await sync_to_async(LookingForMatch.objects.filter(paddleB=-1).first)()
         if match_entry:
@@ -69,7 +80,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         await self.channel_layer.group_send(
                 "interactive",
                 create_layer_dict(
-                    "send_mailbox_message", handle_a, match.mailbox_a)
+                    "send_message_and_clean_db", handle_a, match.mailbox_a)
                 )
         await self.channel_layer.group_send(
                 "interactive",
@@ -79,7 +90,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
     async def create_math_handle(self, first_id: int, second_id: int, paddle: str) -> dict:
         handle = {
             "type": "Found Match",
-            "handle": f"ws/pong/{first_id}{second_id}{paddle}",
+            "handle": f"ws/pong/{first_id}{second_id}/{paddle}",
             "paddle": paddle
         }
         return handle
