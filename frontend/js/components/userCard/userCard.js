@@ -1,4 +1,4 @@
-import { fetchAuth, loadHTMLComponent } from "../../api/fetchData.js";
+import { fetchAuth, fetchUser, loadHTMLComponent } from "../../api/fetchData.js";
 import { navigateTo } from "../../router.js";
 
 export async function userCardComponent() {
@@ -11,24 +11,39 @@ export async function userCardComponent() {
 }
 
 export async function userCardListener() {
-    document.getElementById('logout').addEventListener('click', async () => {
-        await logoutUser()
-    })
-
-    document.getElementById('userSettingsModal').addEventListener('show.bs.modal', function (event) {
-        console.log('Settings Modal is about to be shown');
-        const userNickname = document.getElementById('nickname').innerText;
-        const nicknameInput = document.getElementById('nicknameInput');
-
-        nicknameInput.value = userNickname
-    });
-
-
+    document.getElementById('logout').addEventListener('click', logoutUser)
+    document.getElementById('saveSettings').addEventListener('click', saveSettings)
+    document.getElementById('userSettingsModal').addEventListener('show.bs.modal', setupSettings)
     document.getElementById('userSettingsModal').addEventListener('hide.bs.modal', function (event) {
         console.log('Settings Modal is about to be hide')
     });
 
     settingsListener()
+}
+
+
+async function saveSettings() {
+    const nicknameInput = document.getElementById('nicknameInput').value;
+    const userNickname = document.getElementById('nickname').innerText;
+    const data = {
+        "nickname": nicknameInput
+    }
+    if (userNickname != nicknameInput) {
+        console.log("CHANGE NICKNAME!")
+        const response = await fetchUser('PATCH', null, data)
+    } else {
+        console.log("NO CHANGE!")
+    }
+}
+
+
+function setupSettings() {
+    console.log('Settings Modal is about to be shown');
+    // Do the same for email
+    const userNickname = document.getElementById('nickname').innerText;
+    const nicknameInput = document.getElementById('nicknameInput');
+
+    nicknameInput.value = userNickname
 }
 
 function settingsListener() {

@@ -93,15 +93,15 @@ class Users(View):
     # update specific user
     @token_validation
     def patch(self, request: HttpRequest):
-        nickname = request.GET.get('nickname')
-        if not nickname:
-            return HttpResponseBadRequest('No nickname provided for update.') # 400
-        user = User.objects.filter(nickname=nickname).first()
-        if not user:
-            return HttpResponseNotFound(f'No user found with the nickname: {nickname}') # 404
+        try:
+            user = get_user_obj(request)
+        except PermissionDenied as e:
+            return HttpResponse(str(e), status=401)
+        except Http404 as e:
+            return HttpResponse(str(e), status=404)
         try:
             user_data = json.loads(request.body)
-            for field in ['nickname', 'email', 'avatar', 'status', 'admin']:
+            for field in ['nickname', 'email', 'avatar']:
                 if field in user_data:
                     setattr(user, field, user_data[field])
             user.save()
@@ -109,7 +109,7 @@ class Users(View):
             return HttpResponseBadRequest('Invalid JSON data in the request body.') # 400
         except IntegrityError:
             return HttpResponseBadRequest(f'Nickname {user_data["nickname"]} is already in use.') # 400
-        return HttpResponse(f'User with nickname {nickname} updated successfully.', status=200)
+        return HttpResponse(f'User updated successfully.', status=200)
 
 @method_decorator(csrf_exempt, name='dispatch') #- to apply to every function in the class.
 class Me(View):

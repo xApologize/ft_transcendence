@@ -58,15 +58,13 @@ async function signUp() {
         avatar,
         password,
     };
-
-    console.log(`'${userData['nickname']}'`);
+    console.log(userData)
     const users = await fetchUser('POST', null, userData);
     if (!users) {
         console.log('Error creating user');
         return;
     }
     const responseText = await users.text();
-    console.log(users.status)
     if (!users.ok) {
         displayErrorMessage(responseText);
     } else {
