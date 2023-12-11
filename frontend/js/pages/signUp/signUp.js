@@ -50,7 +50,10 @@ async function signUp() {
     ).value;
     const avatar = document.getElementById('inputAvatar').value;
     if (!nickname || !email || !password || !passwordConfirm || !avatar) {
-        console.log("RETURN")
+        return;
+    }
+    if (password !== passwordConfirm) {
+        displayErrorMessage('Passwords do not match');
         return;
     }
     const userData = {
@@ -58,6 +61,7 @@ async function signUp() {
         email,
         avatar,
         password,
+        passwordConfirm,
     };
     console.log(userData)
     const users = await fetchUser('POST', null, userData);

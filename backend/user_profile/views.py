@@ -48,17 +48,19 @@ class Users(View):
     def post(self, request: HttpRequest):
         try:
             user_data = json.loads(request.body)
-            required_fields = ['nickname', 'email', 'avatar', 'password']
+            required_fields = ['nickname', 'email', 'avatar', 'password', 'passwordConfirm']
             extra_fields = user_data.keys() - required_fields
             if extra_fields:
                 error_message = f'Unexpected fields: {", ".join(extra_fields)}'
                 return HttpResponseBadRequest(error_message) # 400
+            elif user_data['password'] != user_data['passwordConfirm']:
+                return HttpResponseBadRequest('Passwords do not match')
             try:
                 # not empty
-                if any(user_data.get(field, '') == '' for field in ['nickname', 'email', 'avatar', 'password']):
+                if any(user_data.get(field, '') == '' for field in ['nickname', 'email', 'avatar', 'password', 'passwordConfirm']):
                     return HttpResponseBadRequest('Missing one or more required fields') # 400
                 # does not contain space
-                if any(' ' in user_data.get(field, '') for field in ['nickname', 'email', 'avatar', 'password']):
+                if any(' ' in user_data.get(field, '') for field in ['nickname', 'email', 'avatar', 'password', 'passwordConfirm']):
                     return HttpResponseBadRequest('Field contain space') # 400
                 user = User.objects.create(
                     nickname=user_data['nickname'],
@@ -70,7 +72,7 @@ class Users(View):
                 )
                 user.save()
             except IntegrityError:
-                return HttpResponseBadRequest(f'User {user_data["nickname"]} already exists') # 400    
+                return HttpResponseBadRequest(f'Username {user_data["nickname"]} is already taken.') # 400    
         except json.JSONDecodeError:
             return HttpResponseBadRequest('Invalid JSON data in the request body') # 400
         response: HttpResponse =  HttpResponse(f'User {user_data["nickname"]} created successfully', status=201)
