@@ -107,7 +107,7 @@ function closeModal() {
 }
 
 function closeSettingsModal() {
-  const settingsModal = document.getElementById('settingsModal');
+  const settingsModal = document.getElementById('userSettingsModal');
   if (settingsModal) {
       const modalInstance = bootstrap.Modal.getInstance(settingsModal);
       if (modalInstance) {

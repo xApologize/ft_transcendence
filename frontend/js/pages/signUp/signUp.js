@@ -7,8 +7,9 @@ export async function showSignUp() {
     try {
         await loadHTMLPage('./js/pages/signUp/signUp.html');
         document
-            .getElementById('signUpButton')
-            .addEventListener('click', () => {
+            .getElementById('signupForm')
+            .addEventListener('submit', function (event){
+                event.preventDefault();
                 signUp();
             });
     } catch (error) {
@@ -47,22 +48,26 @@ async function signUp() {
     const passwordConfirm = document.getElementById(
         'inputPasswordConfirm'
     ).value;
-    const avatar = document.getElementById('inputAvatar').value;
-    if (!nickname || !email || !password || !passwordConfirm || !avatar) {
-        alert('Fill the form.');
+    if (!nickname || !email || !password || !passwordConfirm) {
+        return;
+    }
+    if (password !== passwordConfirm) {
+        displayErrorMessage('Passwords do not match');
         return;
     }
     const userData = {
         nickname,
         email,
-        avatar,
         password,
+        passwordConfirm,
     };
-
-    console.log(`'${userData['nickname']}'`);
+    console.log(userData)
     const users = await fetchUser('POST', null, userData);
+    if (!users) {
+        console.log('Error creating user');
+        return;
+    }
     const responseText = await users.text();
-    console.log(users.status)
     if (!users.ok) {
         displayErrorMessage(responseText);
     } else {

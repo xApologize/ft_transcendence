@@ -61,7 +61,6 @@ async function displayFriend() {
 }
 
 async function displayEveryone() {
-    // Filtrer le user lui même dans le backend pour ne pas qu'il puisse se voir ?
     const onlineUsers = await fetchUser('GET', { status: ['ONL', 'ING'] });
     if (!onlineUsers || !onlineUsers.ok)
         // if !onlineUsers, c'est que le status == 401 et si !onlineUsers.ok == Aucun user Online
@@ -78,6 +77,10 @@ async function initPage() {
     }
     // initSocket()  - Si fetch socket et stateSocket is close, get new access Token et re fetch le socket   
     const userAssembled = await assembleUser(user);
+    if (!userAssembled || typeof userAssembled !== 'object') {
+        console.log('Error assembling user');
+        return;
+    }
     displayUserCard(userAssembled);
     displayEveryone();
     displayMatchHistory(userAssembled);

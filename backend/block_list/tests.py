@@ -10,14 +10,12 @@ class UserTestCase(TestCase):
         blockerTest = User.objects.create(
             nickname="BozoCat",
             email="BozoCat@gmail.com",
-            avatar="gekwghkrehkre",
             status="OFF",
             admin=False
         )
         blockedUserTest = User.objects.create(
             nickname="BozoDog",
             email="BozoDog@gmail.com",
-            avatar="gekwghkrehkre",
             status="OFF",
             admin=False
         )
