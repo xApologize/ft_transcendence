@@ -1,6 +1,7 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 
+
 class PongRoom(AsyncWebsocketConsumer):
     async def connect(self):
         await self.accept()

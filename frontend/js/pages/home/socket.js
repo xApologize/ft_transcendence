@@ -1,33 +1,46 @@
 import { fetchToken } from '../../api/fetchData.js';
+import { logoutUser } from '../../components/userCard/userCard.js'
 
 const interactiveSocket = {
     interactive_socket: null,
     connexion_attempt: 0,
-    
+
     initSocket: function() {
+        // TODO add double socket try incase of failure?
+        const self = this;
         if (this.interactive_socket === null){
+            if (this.connexion_attempt === 2){
+                logoutUser();
+            }
             this.interactive_socket = new WebSocket('wss://' + window.location.host + '/ws/pong/interactive' + "?" + sessionStorage.getItem('jwt'));
             this.connexion_attempt++
-            this.interactive_socket.onerror = function(event) {
+            // console.log("Attempt counter:", this.connexion_attempt)
+            self.interactive_socket.onerror = function(event) {
                 console.error("WebSocket error:", event);
-                return
-              };
+                logoutUser();
+            };
+            this.interactive_socket.onopen = async function(event) {
+                console.log("𝕴𝖓𝖙𝖊𝖗𝖆𝖈𝖙𝖎𝖛𝖊 𝖘𝖔𝖈𝖐𝖊𝖙 𝖎𝖘 𝖓𝖔𝖜 𝖔𝖕𝖊𝖓")
+            }
             this.interactive_socket.onclose = async function(event) {
-                failure_counter++
-                if (this.failure_counter === 2) {
-                    // Make user logout TODO
-                    return
-                } else {
-                    await fetchToken('GET', { status: ['ONL', 'ING'] });
-                    initSocket()
-                }
+                console.log("𝕴𝖓𝖙𝖊𝖗𝖆𝖈𝖙𝖎𝖛𝖊 𝖘𝖔𝖈𝖐𝖊𝖙 𝖍𝖆𝖘 𝖇𝖊𝖊𝖓 𝖈𝖑𝖔𝖘𝖊𝖉")
             };
             this.interactive_socket.onmessage = function(event) {
-                console.log("Received message:", event.data);
+                self.parseMessage(event);
             };
         } else {
             // Should never see this in the future
-            console.log("Interactive socket already exist")
+            console.error("Interactive socket already exist")
+        }
+    },
+
+    parseMessage: function(message) {
+        const type = JSON.parse(message.data).type;
+        console.log(type)
+        if (type == "Found Match"){
+            console.log("ADD FIND MATCH LOGIC HERE")
+        } else {
+            console.error("What are you doing?")
         }
     },
     
@@ -44,7 +57,6 @@ const interactiveSocket = {
         if (this.interactive_socket) {
             this.interactive_socket.close();
             this.interactive_socket = null;
-            console.log("The interactive socket has been closed")
         }
     }
 };

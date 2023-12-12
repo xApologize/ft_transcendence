@@ -1,5 +1,6 @@
 import { fetchAuth, loadHTMLComponent } from "../../api/fetchData.js";
 import { navigateTo } from "../../router.js";
+import interactiveSocket from '../../pages/home/socket.js'
 
 export async function userCardComponent() {
     try {
@@ -97,13 +98,14 @@ function settingsListener() {
 
 }
 
-async function logoutUser() {
+export async function logoutUser() {
     console.log('logout!')
     const logoutResponse = await fetchAuth('POST', 'logout/')
     if (logoutResponse.status == 200) {
         sessionStorage.clear()
         navigateTo('/')
     }
+    interactiveSocket.closeSocket()
     return ;
 }
 

@@ -30,7 +30,8 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
 
     async def receive(self, text_data: any):
         data = json.loads(text_data)
-        message_type = data.get("type")
+        message_type = data["type"]
+        print("Json:", message_type)
         if message_type == "Find Match":
             await self.find_match()
         elif message_type == "Refresh User":
