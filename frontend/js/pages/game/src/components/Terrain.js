@@ -40,6 +40,7 @@ class Terrain {
 		this.wallBot.delete();
 		this.leftGoalZone.delete();
 		this.rightGoalZone.delete();
+		this.Floor.delete();
 	}
 }
 

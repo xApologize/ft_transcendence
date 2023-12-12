@@ -1,48 +1,60 @@
-import { Updatable } from '../modules/Updatable.js';
-import { Renderer } from '../modules/Renderer.js';
 import { Collider } from '../modules/Collider.js';
+import { Updatable } from '../modules/Updatable.js';
 import { Layers } from '../systems/Layers.js';
+import { InputMap } from '../systems/InputManager.js';
+import { Paddle } from './Paddle.js';
 import {
-	Mesh,
+	Color,
 	Raycaster,
-	Vector2,
 	Vector3
 } from 'three';
+import { World } from '../World.js';
 
-class Player extends Mesh {
-	constructor( geometry, material, position, inputMap ) {
-		super( geometry, material );
+class Player extends Paddle {
+	constructor( geometry, material, position, socket ) {
+		super( geometry, material, position );
 
-		this.updatable = new Updatable( this );
-		this.renderer = new Renderer( this );
-		this.collider = new Collider( this );
-
-		this.position.copy( position );
-
-		const from = new Vector2( this.position.x, this.position.y );
-		this.rotation.set( 0, 0, from.angle() );
-		this.dir = new Vector3( 1, 0, 0 );
-		this.dir.applyQuaternion( this.quaternion );
+		this.isPlayer = true;
 
 		this.speed = 5;
-
-		this.setupInputs( inputMap );
 
 		this.ray = new Raycaster();
 		this.ray.layers.set( Layers.Solid );
 
-		this.renderer.setLayers( Layers.Default, Layers.Player );
+		this.msg = {
+			pos: this.position,
+			ballInst: undefined,
+			scored: false,
+			goalScoredId: undefined
+		};
+
+		this.socket = socket;
+		this.socket.addEventListener("open", (event) => {
+			this.material.color = new Color( 0x00aaff );
+			this.socket.send("Joined");
+		});
+
+		this.collider = new Collider( this );
+		this.updatable = new Updatable( this );
+
+		//TEMP WARNING NOT DESTROYED
+		document.addEventListener("boostButtonPressed", (e) => {
+			this.speed = 10;
+		});
+		document.addEventListener("boostButtonReleased", (e) => {
+			this.speed = 5;
+		});
 	}
 
 	update( dt ) {
-		let movement = undefined;
-
-		if ( this.inputStrength.x > this.inputStrength.y )
-			movement = new Vector3( 0, 1, 0 );
-		else if ( this.inputStrength.x < this.inputStrength.y )
-			movement = new Vector3( 0, -1, 0 );
-		if ( movement === undefined )
+		if ( InputMap.movementAxis.value === 0 )
 			return;
+		// if ( InputMap.boostButton.value === true )
+		// 	this.speed = 10;
+		// else
+		// 	this.speed = 5;
+
+		let movement = new Vector3( 0, InputMap.movementAxis.value, 0 );
 		
 		this.ray.set( this.position, movement );
 		this.ray.far = 1.4 + this.speed * dt;
@@ -52,47 +64,39 @@ class Player extends Mesh {
 		} else {
 			this.position.add(movement.multiplyScalar( this.speed * dt ));
 		}
+
+		if ( this.socket != undefined && this.socket.readyState === WebSocket.OPEN) {
+			this.socket.send( JSON.stringify( this.msg ) );
+		}
 	}
 
 	onCollision( hit ) {
-		// console.log("hit");
-		// hit.vars.dir.reflect( closerHit.normal );
-
+		if ( this.socket != undefined && this.socket.readyState === WebSocket.OPEN) {
+			this.msg.ballInst = hit;
+			this.socket.send( JSON.stringify( this.msg ) );
+		}
+		this.msg.ballInst = undefined;
 	}
 
-	onKeyDown( event, inputMap ) {
-		if ( event.code == inputMap.pos )
-			this.inputStrength.x = this.inputStrength.y + 1;
-		if ( event.code == inputMap.neg )
-			this.inputStrength.y = this.inputStrength.x + 1;
-		if ( event.code == inputMap.boost )
-			this.speed = 10;
-	}
-
-	onKeyUp( event, inputMap ) {
-		if ( event.code == inputMap.pos )
-			this.inputStrength.x = 0;
-		if ( event.code == inputMap.neg )
-			this.inputStrength.y = 0;
-		if ( event.code == inputMap.boost )
-			this.speed = 5;
-	}
-
-	setupInputs( inputMap ) {
-		this.inputStrength = new Vector2( 0, 0 );
-
-		this.onKeyDownEvent = (event) => this.onKeyDown( event, inputMap );
-		this.onKeyUpEvent = (event) => this.onKeyUp( event, inputMap );
-
-		document.addEventListener('keydown', this.onKeyDownEvent, false);
-		document.addEventListener('keyup', this.onKeyUpEvent, false);
+	ballMissed( hit ) {
+		if ( this.socket != undefined && this.socket.readyState === WebSocket.OPEN) {
+			this.msg.ballInst = hit;
+			this.msg.scored = true;
+			if (this.position.x < 0)
+				this.msg.goalScoredId = 2;
+			else
+				this.msg.goalScoredId = 1;
+			this.socket.send( JSON.stringify( this.msg ) );
+			World.scoreAdd( this.msg.goalScoredId );
+		}
+		this.msg.ballInst = undefined;
+		this.msg.scored = false;
+		this.msg.goalScoredId = undefined;
 	}
 
 	delete() {
-		document.removeEventListener('keydown', this.onKeyDownEvent, false);
-		document.removeEventListener('keyup', this.onKeyUpEvent, false);
+		super.delete();
 		this.updatable.delete();
-		this.renderer.delete();
 		this.collider.delete();
 	}
 }
