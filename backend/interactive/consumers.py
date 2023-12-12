@@ -19,6 +19,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
     async def disconnect(self, close_code: any):
         print("Disconected interactive socket code:", close_code)
         if self.waiting == True:
+            print("REMOVED ENTRY FROM DB")
             match_entry = await sync_to_async(
                 LookingForMatch.objects.filter(paddleA=self.user_id).first)()
             await sync_to_async(match_entry.delete)()
@@ -28,15 +29,14 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         )
 
     async def receive(self, text_data: any):
-        if text_data == "Find Match":
+        data = json.loads(text_data)
+        message_type = data.get("type")
+        if message_type == "Find Match":
             await self.find_match()
-        elif text_data == "Refresh User":
+        elif message_type == "Refresh User":
             pass
         else:
-            await self.channel_layer.group_send(
-                "interactive", 
-                create_layer_dict("send_message_echo", text_data, self.channel_name)
-                )
+            print("Invalid input given to socket, check syntax")
 
     async def send_message_echo(self, data: any):
         await self.send(text_data=json.dumps(data["message"]))
