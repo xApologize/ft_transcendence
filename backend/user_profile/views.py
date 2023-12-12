@@ -8,10 +8,13 @@ from django.views import View
 from utils.decorators import token_validation
 from utils.functions import get_user_obj
 from friend_list.models import FriendList
-import json
+import json, os
 from django.db.models import Q
 from django.core.exceptions import PermissionDenied
+from django.conf import settings
 
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 
 # https://stackoverflow.com/questions/3290182/which-status-code-should-i-use-for-failed-validations-or-invalid-duplicates
 
@@ -33,7 +36,7 @@ class Users(View):
             {
                 'nickname': user.nickname,
                 'email': user.email,
-                'avatar': user.avatar,
+                'avatar': user.avatar.url if user.avatar else '',
                 'status': user.status,
             }
             for user in users
@@ -103,16 +106,23 @@ class Users(View):
         except Http404 as e:
             return HttpResponse(str(e), status=404)
         try:
-            user_data = json.loads(request.body)
-            for field in ['nickname', 'email', 'avatar']:
-                if field in user_data and getattr(user, field) != user_data[field]:
-                    setattr(user, field, user_data[field])
+            # if request.content_type == 'application/json':
+            data = json.loads(request.body)
+            for field in ['nickname', 'email']:
+                if field in data and getattr(user, field) != data[field]:
+                    setattr(user, field, data[field])
+            # elif request.content_type == 'multipart/form-data':
+            #     if 'avatar' in request.FILES:
+            #         print("AVATAR IN REQUEST.FILES")
+            #         user.avatar = request.FILES['avatar']
             user.save()
+            return HttpResponse(f'User updated successfully.', status=200)
         except json.JSONDecodeError:
             return HttpResponseBadRequest('Invalid JSON data in the request body.') # 400
         except IntegrityError:
-            return HttpResponseBadRequest(f'Nickname {user_data["nickname"]} is already in use.') # 400
-        return HttpResponse(f'User updated successfully.', status=200)
+            return HttpResponseBadRequest(f'Nickname {user["nickname"]} is already in use.') # 400
+        except Exception as e:
+            return HttpResponseBadRequest('Unexpexted Error:', e) # 400
 
 @method_decorator(csrf_exempt, name='dispatch') #- to apply to every function in the class.
 class Me(View):
@@ -124,16 +134,20 @@ class Me(View):
             return HttpResponse(str(e), status=401)
         except Http404 as e:
             return HttpResponse(str(e), status=404)
-
+        base_dir = settings.BASE_DIR
+        print("BASE_DIR is:", base_dir)  # Print to the console
         # Fetch won, lost, and played matches
         won_matches = user.winner.all()
         lost_matches = user.loser.all()
         played_matches = MatchHistory.objects.filter(Q(winner=user) | Q(loser=user))
 
+        avatar_url = ''
+        if user.avatar:
+            avatar_url = request.build_absolute_uri(user.avatar.url)
         user_data = {
             'nickname': user.nickname,
             'email': user.email,
-            'avatar': user.avatar,
+            'avatar': avatar_url,
             'status': user.status,
             'admin': user.admin,
             'won_matches': [{'winner_score': match.winner_score, 'loser_score': match.loser_score, 'date_of_match': match.date_of_match} for match in won_matches],
@@ -161,11 +175,12 @@ class Friends(View):
                 friends.append(entry.friend2)
             else:
                 friends.append(entry.friend1)
+
         user_data = [
             {
                 'nickname': user.nickname,
                 'email': user.email,
-                'avatar': user.avatar,
+                'avatar': request.build_absolute_uri(user.avatar.url) if user.avatar else '',
                 'status': user.status,
             }
             for user in friends
@@ -173,3 +188,34 @@ class Friends(View):
         if user_data:
             return JsonResponse({'users': user_data}, status=200)
         return HttpResponse('No friends found') # 404
+    
+@method_decorator(csrf_exempt, name='dispatch') #- to apply to every function in the class.
+class Upload(View):
+    @token_validation
+    def post(self, request: HttpRequest):
+        try:
+            user = get_user_obj(request)
+        except PermissionDenied as e:
+            return HttpResponse(str(e), status=401)
+        except Http404 as e:
+            return HttpResponse(str(e), status=404)
+        try:
+            if 'avatar' in request.FILES:
+                file = request.FILES['avatar']
+                file_extension = os.path.splitext(file.name)[1]
+                new_file_name = f"user_{user.id}{file_extension}"
+
+                # Delete any existing avatar file for this user
+                avatar_dir = os.path.join(settings.MEDIA_ROOT, 'avatars')
+                for item in os.listdir(avatar_dir):
+                    if item.startswith(f"user_{user.id}"):
+                        os.remove(os.path.join(avatar_dir, item))
+
+                # Set the new file jto user's avatar field; Django saves it automatically
+                user.avatar.save(new_file_name, file)
+
+                return HttpResponse(f'Avatar updated successfully.', status=200)
+            else:
+                return HttpResponseBadRequest('No avatar provided.') # 400
+        except Exception as e:
+            return HttpResponseBadRequest('Unexpexted Error:', e) # 400

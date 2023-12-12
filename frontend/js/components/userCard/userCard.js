@@ -1,4 +1,4 @@
-import { fetchAuth, fetchUser, loadHTMLComponent } from "../../api/fetchData.js";
+import { fetchAuth, fetchUpload, fetchUser, loadHTMLComponent } from "../../api/fetchData.js";
 import { navigateTo } from "../../router.js";
 
 export async function userCardComponent() {
@@ -16,6 +16,8 @@ export async function userCardListener() {
     document.getElementById('userSettingsModal').addEventListener('show.bs.modal', setupSettings)
     document.getElementById('userSettingsModal').addEventListener('hide.bs.modal', function (event) {
         console.log('Settings Modal is about to be hide')
+        document.getElementById('avatarInput').value = ''
+
     });
 
     settingsListener()
@@ -31,24 +33,42 @@ function closeSettings() {
     }  
 }
 
+async function saveChangedSettings(objectData, formData) {
+    console.log("SAVE SETTINGS")
+
+    if (Object.keys(objectData).length > 0) {
+        const response = await fetchUser('PATCH', null, objectData);
+        if (response && response.status > 400) {
+            console.log("Error while saving settings");
+        }
+    }
+    if (formData.has('avatar')) {
+        const response = await fetchUpload('POST', formData);
+        console.log(await response.text())
+        if (response && response.status > 400) {
+            console.log("Error while saving settings");
+        }
+    }
+}
+
 async function saveSettings() {
     const nicknameInput = document.getElementById('nicknameInput').value;
     const userNickname = document.getElementById('nickname').innerText;
-    
-    const data = new Object();
+    const avatarInput = document.getElementById('avatarInput').files[0];
+    const objectData = new Object();
+    const formData = new FormData();
+
     if (userNickname != nicknameInput) {
-        console.log("APPEND NICKNAME!")
-        data.nickname = nicknameInput
+        console.log("APPEND NICKNAME")
+        objectData.nickname = nicknameInput;
+    }
+    if (avatarInput) {
+        console.log("APPEND AVATAR")
+        formData.append('avatar', avatarInput);
     }
     // const userInput = window.prompt("Please enter your password:");
     // data.validPassword = userInput // TODO: check if password is valid in backend
-    if (Object.keys(data).length > 0) {
-        const response = await fetchUser('PATCH', null, data)
-        if (response && response.status  > 400) {
-            // display visually ?
-            console.log("Error while saving settings")
-        }
-    }
+    await saveChangedSettings(objectData, formData);
     closeSettings()
 }
 
@@ -103,6 +123,7 @@ export async function displayUserCard(meUser) {
 
 function updateUserCard(userObject) {
     const profilePicture = document.getElementById('avatar-img');
+    console.log(userObject)
     profilePicture.src = userObject.avatar;
 
     const nicknameElement = document.getElementById('nickname');
