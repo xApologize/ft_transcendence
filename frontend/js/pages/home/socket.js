@@ -1,5 +1,6 @@
 import { fetchToken } from '../../api/fetchData.js';
 import { logoutUser } from '../../components/userCard/userCard.js'
+import { World } from '../game/src/World.js';
 
 const interactiveSocket = {
     interactive_socket: null,
@@ -38,6 +39,8 @@ const interactiveSocket = {
         const type = JSON.parse(message.data).type;
         console.log("IM StuPID:", message)
         if (type == "Found Match"){
+			World._instance.wsPath = JSON.parse(message.data).handle;
+			World._instance.side = JSON.parse(message.data).paddle;
             console.log("ADD FIND MATCH LOGIC HERE")
         } else {
             console.error("What are you doing?")
