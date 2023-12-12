@@ -36,7 +36,7 @@ const interactiveSocket = {
 
     parseMessage: function(message) {
         const type = JSON.parse(message.data).type;
-        console.log(type)
+        console.log("IM StuPID:", message)
         if (type == "Found Match"){
             console.log("ADD FIND MATCH LOGIC HERE")
         } else {
