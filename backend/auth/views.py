@@ -14,6 +14,7 @@ from utils.functions import get_user_obj
 @method_decorator(csrf_exempt, name='dispatch')
 class Login(View):
     def post(self, request):
+        errorMessage = {"error": "Invalid credentials."}
         login_data = json.loads(request.body)
         nickname = login_data.get('nickname', '')
         password = login_data.get('password', '')
@@ -24,10 +25,10 @@ class Login(View):
         try:
             user = User.objects.get(nickname=nickname)
         except User.DoesNotExist:
-            return JsonResponse({'error': 'User not found in the database.'}, status=404)
+            return JsonResponse(errorMessage, status=400)
 
         if user.password != password:
-            return JsonResponse({'error': 'Invalid credentials.'}, status=400)
+            return JsonResponse(errorMessage, status=400)
         else:
             user.status = "ONL"
             user.save()

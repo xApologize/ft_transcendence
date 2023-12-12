@@ -47,16 +47,19 @@ async function login(username = null, password = null) {
 
     try {
         const response = await fetchAuth('POST','login/', loginData);
-        if (response) {
-            if (response.ok) {
-                const result = await response.json();
-                if (result.success) {
-                    console.log('Login successful: ', await result.success);
-                    navigateTo('/home');
-                    return ;
-                }
-                console.log('Login failed: ', await result.error);
-            }
+        if (!response)
+            return;
+        const result = await response.json();
+        if (response.success) {
+            console.log(await result.success);
+            navigateTo('/home');
+        } else {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = result.error;
+            errorMessage.classList.remove('d-none')
+            setTimeout(() => {
+                errorMessage.classList.add('d-none')
+            }, 10000); // Adjust the time (in milliseconds) for the fade out effect
         }
     } catch (error) {
         console.error('Error during login:', error);
