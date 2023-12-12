@@ -10,12 +10,32 @@ from utils.functions import get_user_obj
 from friend_list.models import FriendList
 import json, os,base64,mimetypes
 from django.db.models import Q
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.conf import settings
 
 from django.core.files.storage import default_storage
 
+DEFAULT_AVATAR_URL = "avatars/default.png"
+
 # https://stackoverflow.com/questions/3290182/which-status-code-should-i-use-for-failed-validations-or-invalid-duplicates
+
+
+def get_image_as_base64(image_path):
+    with default_storage.open(image_path, 'rb') as image_file:
+        return base64.b64encode(image_file.read()).decode('utf-8')
+
+def get_avatar_data(user):
+    if user.avatar:
+        avatar_base64 = get_image_as_base64(user.avatar.name)
+        content_type, _ = mimetypes.guess_type(user.avatar.name)
+    else:
+        avatar_base64 = get_image_as_base64(DEFAULT_AVATAR_URL)
+        content_type, _ = mimetypes.guess_type(DEFAULT_AVATAR_URL)
+
+    if content_type is None:
+        content_type = 'image/jpeg'
+    return f'data:{content_type};base64,{avatar_base64}'
+
 
 @method_decorator(csrf_exempt, name='dispatch') #- to apply to every function in the class.
 class Users(View):
@@ -35,7 +55,7 @@ class Users(View):
             {
                 'nickname': user.nickname,
                 'email': user.email,
-                'avatar': user.avatar.url if user.avatar else '',
+                'avatar': get_avatar_data(user),
                 'status': user.status,
             }
             for user in users
@@ -50,7 +70,7 @@ class Users(View):
     def post(self, request: HttpRequest):
         try:
             user_data = json.loads(request.body)
-            required_fields = ['nickname', 'email', 'avatar', 'password', 'passwordConfirm']
+            required_fields = ['nickname', 'email', 'password', 'passwordConfirm']
             extra_fields = user_data.keys() - required_fields
             if extra_fields:
                 error_message = f'Unexpected fields: {", ".join(extra_fields)}'
@@ -59,15 +79,15 @@ class Users(View):
                 return HttpResponseBadRequest('Passwords do not match')
             try:
                 # not empty
-                if any(user_data.get(field, '') == '' for field in ['nickname', 'email', 'avatar', 'password', 'passwordConfirm']):
+                if any(user_data.get(field, '') == '' for field in ['nickname', 'email', 'password', 'passwordConfirm']):
                     return HttpResponseBadRequest('Missing one or more required fields') # 400
                 # does not contain space
-                if any(' ' in user_data.get(field, '') for field in ['nickname', 'email', 'avatar', 'password', 'passwordConfirm']):
+                if any(' ' in user_data.get(field, '') for field in ['nickname', 'email', 'password', 'passwordConfirm']):
                     return HttpResponseBadRequest('Field contain space') # 400
                 user = User.objects.create(
                     nickname=user_data['nickname'],
                     email=user_data['email'],
-                    avatar=user_data['avatar'],
+                    avatar='',
                     status='OFF',
                     admin=False,
                     password=user_data['password']
@@ -84,15 +104,15 @@ class Users(View):
         # return first_token(response, primary_key)
 
     # Delete a specific users
-    # def delete(self, request: HttpRequest):
-    #     nickname = request.GET.get('nickname')
-    #     if not nickname:
-    #         return HttpResponseBadRequest('No nickname provided for deletion.') # 400
-    #     user = User.objects.filter(nickname=nickname).first()
-    #     if not user:
-    #         return HttpResponseNotFound(f'No user found with the nickname: {nickname}') # 404
-    #     user.delete()
-    #     return HttpResponse(status=204)
+    def delete(self, request: HttpRequest):
+        nickname = request.GET.get('nickname')
+        if not nickname:
+            return HttpResponseBadRequest('No nickname provided for deletion.') # 400
+        user = User.objects.filter(nickname=nickname).first()
+        if not user:
+            return HttpResponseNotFound(f'No user found with the nickname: {nickname}') # 404
+        user.delete()
+        return HttpResponse(status=204)
 
 
     # update specific user
@@ -105,15 +125,11 @@ class Users(View):
         except Http404 as e:
             return HttpResponse(str(e), status=404)
         try:
-            # if request.content_type == 'application/json':
             data = json.loads(request.body)
+            # Do password check !! @TODO
             for field in ['nickname', 'email']:
                 if field in data and getattr(user, field) != data[field]:
                     setattr(user, field, data[field])
-            # elif request.content_type == 'multipart/form-data':
-            #     if 'avatar' in request.FILES:
-            #         print("AVATAR IN REQUEST.FILES")
-            #         user.avatar = request.FILES['avatar']
             user.save()
             return HttpResponse(f'User updated successfully.', status=200)
         except json.JSONDecodeError:
@@ -133,17 +149,11 @@ class Me(View):
             return HttpResponse(str(e), status=401)
         except Http404 as e:
             return HttpResponse(str(e), status=404)
-        base_dir = settings.BASE_DIR
-        print("BASE_DIR is:", base_dir)  # Print to the console
-        # Fetch won, lost, and played matches
         won_matches = user.winner.all()
         lost_matches = user.loser.all()
         played_matches = MatchHistory.objects.filter(Q(winner=user) | Q(loser=user))
 
-        if user.avatar:
-            avatar_data = get_avatar_data(user)
-        else:
-            avatar_data = ''
+        avatar_data = get_avatar_data(user)
         user_data = {
             'nickname': user.nickname,
             'email': user.email,
@@ -156,21 +166,6 @@ class Me(View):
         }
         return JsonResponse({'users': user_data}, status=200)
 
-
-
-def get_image_as_base64(image_path):
-    with default_storage.open(image_path, 'rb') as image_file:
-        return base64.b64encode(image_file.read()).decode('utf-8')
-
-def get_avatar_data(user):
-    if user.avatar:
-        avatar_base64 = get_image_as_base64(user.avatar.name)
-        content_type, _ = mimetypes.guess_type(user.avatar.name)
-        if content_type is None:
-            content_type = 'image/jpeg'  # Default content type or use a sensible guess
-        return f'data:{content_type};base64,{avatar_base64}'
-    else:
-        return ''
 
 @method_decorator(csrf_exempt, name='dispatch') #- to apply to every function in the class.
 class Friends(View):
@@ -196,7 +191,7 @@ class Friends(View):
             {
                 'nickname': user.nickname,
                 'email': user.email,
-                'avatar': request.build_absolute_uri(user.avatar.url) if user.avatar else '',
+                'avatar': get_avatar_data(user),
                 'status': user.status,
             }
             for user in friends
@@ -225,8 +220,10 @@ class Upload(View):
                 for item in os.listdir(avatar_dir):
                     if item.startswith(f"user_{user.id}"):
                         os.remove(os.path.join(avatar_dir, item))
-
-                user.avatar.save(new_file_name, file)
+                try:
+                    user.avatar.save(new_file_name, file)
+                except ValidationError as e:
+                    return HttpResponseBadRequest(e)
 
                 return HttpResponse(f'Avatar updated successfully.', status=200)
             else:

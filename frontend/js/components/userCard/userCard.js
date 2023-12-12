@@ -44,7 +44,6 @@ async function saveChangedSettings(objectData, formData) {
     }
     if (formData.has('avatar')) {
         const response = await fetchUpload('POST', formData);
-        console.log(await response.text())
         if (response && response.status > 400) {
             console.log("Error while saving settings");
         }

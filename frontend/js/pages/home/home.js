@@ -61,7 +61,6 @@ async function displayFriend() {
 }
 
 async function displayEveryone() {
-    // Filtrer le user lui même dans le backend pour ne pas qu'il puisse se voir ?
     const onlineUsers = await fetchUser('GET', { status: ['ONL', 'ING'] });
     if (!onlineUsers || !onlineUsers.ok)
         // if !onlineUsers, c'est que le status == 401 et si !onlineUsers.ok == Aucun user Online

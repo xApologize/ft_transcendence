@@ -10,14 +10,12 @@ class UserTestCase(TestCase):
         user = User.objects.create(
             nickname="BozoCat",
             email="BozoCat@gmail.com",
-            avatar="gekwghkrehkre",
             status="OFF",
             admin=False
         )
         user2 = User.objects.create(
             nickname="BozoDog",
             email="BozoDog@gmail.com",
-            avatar="gekwghkrehkre",
             status="OFF",
             admin=False
         )

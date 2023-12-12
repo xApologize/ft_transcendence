@@ -48,7 +48,7 @@ async function loopDisplayUser(objectAllUsers, currentUser, userContainer) {
         const nameElement = clonedUserTemplate.querySelector('#user-name');
         const statusBadge = clonedUserTemplate.querySelector('#badge');
         statusBadge.style.backgroundColor = setStatus(user.status);
-        avatarElement.src = user.avatar.url;
+        avatarElement.src = user.avatar;
         nameElement.textContent = user.nickname;
 
         userContainer.appendChild(clonedUserTemplate);

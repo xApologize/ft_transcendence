@@ -48,8 +48,7 @@ async function signUp() {
     const passwordConfirm = document.getElementById(
         'inputPasswordConfirm'
     ).value;
-    const avatar = document.getElementById('inputAvatar').value;
-    if (!nickname || !email || !password || !passwordConfirm || !avatar) {
+    if (!nickname || !email || !password || !passwordConfirm) {
         return;
     }
     if (password !== passwordConfirm) {
@@ -59,7 +58,6 @@ async function signUp() {
     const userData = {
         nickname,
         email,
-        avatar,
         password,
         passwordConfirm,
     };
