@@ -1,19 +1,19 @@
-<div class="form-div m-3">
+<form id="signupForm" class="form-div m-3">
     <div class="form">
         <div class="m-3 text-center">
             <h1>Sign up</h1>
         </div>
         <div class="m-3">
             <label class="form-label" id="usernameLabel"> Username </label>
-            <input type="email" class="form-control" id="inputUsername" />
+            <input type="username" class="form-control" id="inputUsername" autocomplete="username" required>
         </div>
         <div class="m-3">
             <label class="form-label" id="emailLabel"> Email address </label>
-            <input type="email" class="form-control" id="inputEmail" />
+            <input type="email" class="form-control" id="inputEmail" autocomplete="email" required>
         </div>
         <div class="m-3">
             <label class="form-label" id="passwordLabel"> Password</label>
-            <input type="password" class="form-control" id="inputPassword" />
+            <input type="password" class="form-control" id="inputPassword" autocomplete="new-password" required>
         </div>
         <div class="m-3">
             <label class="form-label" id="passwordLabel">
@@ -23,11 +23,9 @@
                 type="password"
                 class="form-control"
                 id="inputPasswordConfirm"
+                autocomplete="new-password"
+                required
             />
-        </div>
-        <div class="m-3">
-            <label class="form-label" id="avatarLabel"> Avatar</label>
-            <input type="text" class="form-control" id="inputAvatar" />
         </div>
         <div class="m-3 text-center">
             <button class="btn btn-secondary signupButton" id="signUpButton">
@@ -36,4 +34,4 @@
         </div>
         <p id="errorMessage" class="alert alert-danger d-none"></p>
     </div>
-</div>
+</form>

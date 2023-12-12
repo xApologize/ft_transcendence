@@ -7,8 +7,6 @@ import { show404 } from './pages/404/404.js';
 import { showLogin } from './pages/login/login.js';
 import { headerComponent } from './components/header/header.js';
 import { templateComponent } from './components/template/template.js';
-import { GameModal } from './pages/home/gameModal.js';
-import { fetchAuth } from './api/fetchData.js';
 import { showSocket } from './pages/socket/socket.js';
 
 var currentRoute = '';
@@ -50,13 +48,14 @@ async function checkIfCookie() {
 export async function handleRoute() {
     var pageFunction = null;
     var goPath = window.location.pathname;
-    if (goPath == '/home') {
-        var cookieResponse = await checkIfCookie();
-        if (cookieResponse.status == 401) {
-            history.pushState(null, null, '/');
-            goPath = '/';
-        }
-    }
+    // make this work properly with the history
+    // if (goPath == '/home') {
+    //     var cookieResponse = await checkIfCookie();
+    //     if (cookieResponse.status == 401) {
+    //         history.pushState(null, null, '/');
+    //         goPath = '/';
+    //     }
+    // }
 
     if (routes[goPath]) {
         pageFunction = routes[goPath];
@@ -72,7 +71,6 @@ async function loadPage() {
     const body = document.getElementById('content');
     const header = await headerComponent();
     const template = await templateComponent();
-    // const footer = await footerComponent()
 
     body.append(header);
     body.append(template);
@@ -80,9 +78,7 @@ async function loadPage() {
     navigateTo(path);
 }
 
-// Rediriger vers /home if refresh token.
 document.addEventListener('DOMContentLoaded', async () => {
-    // isPathGame()
     await loadPage();
 
     const navContainer = document.getElementById('navbar');
@@ -110,9 +106,9 @@ function closeModal() {
 }
 
 function closeSettingsModal() {
-    var settingsModal = document.getElementById('settingsModal');
+    const settingsModal = document.getElementById('userSettingsModal');
     if (settingsModal) {
-        var modalInstance = bootstrap.Modal.getInstance(settingsModal);
+        const modalInstance = bootstrap.Modal.getInstance(settingsModal);
         if (modalInstance) {
             modalInstance.hide();
             modalInstance.dispose();

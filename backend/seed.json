@@ -5,7 +5,7 @@
         "fields": {
             "nickname": "Dave",
             "email": "bozo@gmail.com",
-            "avatar": "https://i.imgur.com/bZ6nXdv.png",
+            "avatar": "",
             "status": "ONL",
             "admin": false,
             "password": "abc"
@@ -17,7 +17,7 @@
         "fields": {
             "nickname": "80%",
             "email": "abc@gmail.com",
-            "avatar": "https://i.imgur.com/bZ6nXdv.png",
+            "avatar": "",
             "status": "ONL",
             "admin": false,
             "password": "abc"
@@ -29,7 +29,7 @@
         "fields": {
             "nickname": "81%",
             "email": "def@gmail.com",
-            "avatar": "https://i.imgur.com/bZ6nXdv.png",
+            "avatar": "",
             "status": "ING",
             "admin": false,
             "password": "abc"
@@ -41,7 +41,7 @@
         "fields": {
             "nickname": "demo-user",
             "email": "demo@gmail.com",
-            "avatar": "https://i.imgur.com/bZ6nXdv.png",
+            "avatar": "",
             "status": "OFF",
             "admin": true,
             "password": "demo-user"
@@ -53,7 +53,7 @@
         "fields": {
             "nickname": "demo-user2",
             "email": "demo2@gmail.com",
-            "avatar": "https://i.imgur.com/bZ6nXdv.png",
+            "avatar": "",
             "status": "OFF",
             "admin": true,
             "password": "demo-user2"
@@ -71,8 +71,8 @@
         "model": "friend_list.FriendList",
         "pk": 1,
         "fields": {
-            "friend1": 1,
-            "friend2": 2,
+            "friend1": 4,
+            "friend2": 5,
             "status": "ACCEPTED"
         }
     },
@@ -80,17 +80,17 @@
         "model": "friend_list.FriendList",
         "pk": 2,
         "fields": {
-            "friend1": 3,
+            "friend1": 5,
             "friend2": 1,
-            "status": "PENDING"
+            "status": "ACCEPTED"
         }
     },
     {
         "model": "friend_list.FriendList",
         "pk": 3,
         "fields":{
-            "friend1": 1,
-            "friend2": 4,
+            "friend1": 4,
+            "friend2": 3,
             "status": "ACCEPTED"
         }
     },
@@ -98,7 +98,7 @@
         "model": "friend_list.FriendList",
         "pk": 4,
         "fields":{
-            "friend1": 4,
+            "friend1": 5,
             "friend2": 2,
             "status": "ACCEPTED"
         }

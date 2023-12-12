@@ -5,12 +5,15 @@ import { createScene } from './components/scene.js';
 
 import { Resizer } from './systems/Resizer.js';
 import { Loop } from './systems/Loop.js';
-import { Player1InputMap, Player2InputMap } from './systems/InputMaps.js';
+import { InputManager } from './systems/InputManager.js';
 
 import { Terrain } from './components/Terrain.js';
 import { Ball } from './components/Ball.js';
 import { Player } from './components/Player.js';
+import { Opponent } from './components/Opponent.js';
 import { Score3D } from './components/3DScore.js';
+import { airHockeyTable } from './systems/Loader.js';
+
 import {
 	CapsuleGeometry,
 	Color,
@@ -23,13 +26,22 @@ import {
 	Vector2,
 	Vector3
 } from 'three';
-import { airHockeyTable } from './systems/Loader.js';
 
 let scene;
 let camera;
 let renderer;
 let loop;
-let scoreUI;
+let score;
+let resizer;
+let input;
+
+const GameState = {
+	InMenu: "inMenu",
+	InMatch: "inGame",
+	MatchEnding: "matchEnding",
+	Matchmaking: "matchmaking",
+	Connecting: "connecting"
+}
 
 class World {
 	constructor( container ) {
@@ -48,13 +60,51 @@ class World {
 		this.start = function() { loop.start();	}
 		this.stop = function() { loop.stop(); }
 
+		this.currentGameState = GameState.InMenu;
+
 		/// DEBUG TEMP
 		document.addEventListener('keydown', (event) => {
 			if ( event.code == "KeyR" ) {
 				console.warn("-- DELETION! --");
 				World._instance.deleteGame();
 			}
+			if ( event.code == "KeyE" ) {
+				console.warn("-- RESUME! --");
+				World._instance.createGame();
+			}
+			if ( event.code == "KeyI" ) {
+				console.warn("-- RESUME! --");
+				World._instance.initMatch();
+			}
+			if ( event.code == "KeyA" && this.player == undefined )
+				this.createSocket( '/ws/pong/UserA', -7.2, this.terrain.leftGoalZone, this.terrain.rightGoalZone );
+			if ( event.code == "KeyB" && this.player == undefined )
+				this.createSocket( '/ws/pong/UserB', 7.2, this.terrain.rightGoalZone, this.terrain.leftGoalZone );
 		}, false);
+	}
+
+	createSocket( path, xpos, goalZone, opponentGoalZone ) {
+		this.currentGameState = GameState.Matchmaking;
+		console.log("-- Socket Created! --");
+		console.log("-- Waiting for Opponent --");
+
+		this.socket = new WebSocket('wss://' + window.location.host + path);
+
+		this.player = new Player( this.g_caps, new MeshStandardMaterial(), new Vector3(  xpos, 0, 0 ), this.socket );
+		this.player.position.setZ(-1);
+		goalZone.paddle = this.player;
+
+		this.socket.addEventListener("message", (event) => {
+			if ( this.opponent != undefined )
+				return;
+			this.opponent = new Opponent( this.g_caps, new MeshStandardMaterial(), new Vector3( -xpos, 0, 0 ), this.socket );
+			this.opponent.position.setZ(-1);
+			opponentGoalZone.paddle = this.opponent;
+			if ( event.data == "Joined" )
+				this.socket.send("Joined Back");
+			console.log("-- Opponent found --");
+			this.initMatch();
+		});
 	}
 
 	createInstance() {
@@ -64,13 +114,18 @@ class World {
 		scene = createScene();
 		renderer = createRenderer();
 		loop = new Loop(camera, scene, renderer);
-		scoreUI = new Score3D();
+		score = new Score3D();
+		input = new InputManager();
+
+
+		const { ambientLight, mainLight } = createLights();
+
+		scene.add( ambientLight, mainLight );
 	}
 	
 	createContainer( container ) {
-		// container.append( scoreUI.div );
 		container.append( renderer.domElement );
-		const resizer = new Resizer(container, camera, renderer);
+		resizer = new Resizer(container, camera, renderer);
 	}
 	
 	createGame() {
@@ -85,32 +140,74 @@ class World {
 		this.g_sphere = new SphereGeometry( 0.2 );
 		this.m_white = new MeshStandardMaterial({ color: 'white' });
 
-		this.players = [];
-		this.players.push( new Player( this.g_caps, this.m_white, new Vector3( -7.2, 0, 0 ), Player1InputMap ) );
-		this.players.push( new Player( this.g_caps, this.m_white, new Vector3(  7.2, 0, 0 ), Player2InputMap ) );
-
-		this.balls = new Ball( this.g_sphere, this.m_white, 1 );
-
-		// this.particles = new InstancedMesh( new DodecahedronGeometry( 0.2, 0 ), this.m_white, 10000 );
-		// const matrix = new Matrix4();
-		// for (let i = 0; i < 10000; i++) {
-		// 	matrix.setPosition( MathUtils.randFloat( -16, 16 ), MathUtils.randFloat( -10, 10 ), MathUtils.randFloat( -10, 0 ) );
-		// 	this.particles.setMatrixAt( i, matrix );
-		// }
-		// World.add( this.particles );
+		this.balls = new Ball( this.g_sphere, this.m_white, 2 );
 		
-		const { ambientLight, mainLight } = createLights();
+		camera.viewLarge( 0 );
+		loop.start();
+	}
 
-		scene.add( ambientLight, mainLight );
+	initMatch() {
+		this.balls.resetAll();
+		score.reset();
+		this.player.position.setZ(0)
+		this.opponent.position.setZ(0)
+		this.balls.renderer.setEnabled(true);
+		camera.viewTable( 1, function() {
+			this.balls.init();
+			this.balls.updatable.setEnabled(true);
+		}.bind( this ) );
+
+		this.socket.addEventListener("message", (event) => {
+			const msg = JSON.parse( event.data );
+			if ( this.opponent != undefined )
+				this.opponent.position.copy( msg.pos );
+			if ( msg.ballInst != undefined ) {
+				if ( msg.scored == true ) {
+					World.scoreAdd( msg.goalScoredId );
+					this.balls.initInst( this.balls.ballInst[ msg.ballInst.id ] );
+				}
+				else
+					this.balls.overwriteInst( msg.ballInst );
+			}
+		})
+
+		console.log("-- Starting Match --");
+		this.currentGameState = GameState.InMatch;
+	}
+
+	endMatch() {
+		camera.viewLarge( 1 );
+		this.player.delete();
+		this.player = undefined;
+		this.opponent.delete();
+		this.opponent = undefined;
+		this.balls.updatable.setEnabled(false);
+		this.balls.renderer.setEnabled(false);
+
+		if ( this.socket != undefined)
+			this.socket.close();
 	}
 
 	deleteGame() {
+		scene.remove( airHockeyTable.scene );
 		this.balls.delete();
-		for (let i = 0; i < this.players.length; i++)
-			this.players[i].delete();
-		scoreUI.reset();
+		if ( this.player != undefined ) {
+			this.player.delete();
+			this.player = undefined;
+		}
+		if ( this.opponent != undefined ) {
+			this.opponent.delete();
+			this.opponent = undefined;
+		}
+		score.reset();
 		this.terrain.delete();
 		renderer.renderLists.dispose();
+		resizer.delete();
+		camera.viewLarge( 0 );
+		loop.stop();
+
+		if ( this.socket != undefined)
+			this.socket.close();
 	}
 
 	static add( mesh ) {
@@ -122,7 +219,7 @@ class World {
 	}
 
 	static scoreAdd( playerId ) {
-		scoreUI.add( playerId );
+		score.add( playerId );
 	}
 }
 

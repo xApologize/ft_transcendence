@@ -1,4 +1,4 @@
-import { fetchAuth, loadHTMLComponent } from "../../api/fetchData.js";
+import { fetchAuth, fetchUpload, fetchUser, loadHTMLComponent } from "../../api/fetchData.js";
 import { navigateTo } from "../../router.js";
 
 export async function userCardComponent() {
@@ -11,23 +11,93 @@ export async function userCardComponent() {
 }
 
 export async function userCardListener() {
-    document.getElementById('logout').addEventListener('click', async () => {
-        await logoutUser()
-    })
-
-    document.getElementById('settingsModal').addEventListener('show.bs.modal', function (event) {
-        console.log('Settings Modal is about to be shown');
-    });
-
-    document.getElementById('settingsModal').addEventListener('hide.bs.modal', function (event) {
+    document.getElementById('logout').addEventListener('click', logoutUser)
+    document.getElementById('saveSettings').addEventListener('click', saveSettings)
+    document.getElementById('userSettingsModal').addEventListener('show.bs.modal', setupSettings)
+    document.getElementById('userSettingsModal').addEventListener('hide.bs.modal', function (event) {
         console.log('Settings Modal is about to be hide')
+        document.getElementById('avatarInput').value = ''
+
     });
 
-    document.getElementById('changeEmailLink').addEventListener('click', function() {
-        document.getElementById('currentEmail').classList.add('d-none');
-        document.getElementById('newEmailInput').classList.remove('d-none');
-        document.getElementById('newEmailInput').focus();
+    settingsListener()
+}
+
+function closeSettings() {
+    const settingsModal = document.getElementById('userSettingsModal');
+    if (settingsModal) {
+        const modalInstance = bootstrap.Modal.getInstance(settingsModal);
+        if (modalInstance) {
+            modalInstance.hide();
+        }
+    }  
+}
+
+async function saveChangedSettings(objectData, formData) {
+    console.log("SAVE SETTINGS")
+
+    if (Object.keys(objectData).length > 0) {
+        const response = await fetchUser('PATCH', null, objectData);
+        if (response && response.status > 400) {
+            console.log("Error while saving settings");
+        }
+    }
+    if (formData.has('avatar')) {
+        const response = await fetchUpload('POST', formData);
+        if (response && response.status > 400) {
+            console.log("Error while saving settings");
+        }
+    }
+}
+
+async function saveSettings() {
+    const nicknameInput = document.getElementById('nicknameInput').value;
+    const userNickname = document.getElementById('nickname').innerText;
+    const avatarInput = document.getElementById('avatarInput').files[0];
+    const objectData = new Object();
+    const formData = new FormData();
+
+    if (userNickname != nicknameInput) {
+        console.log("APPEND NICKNAME")
+        objectData.nickname = nicknameInput;
+    }
+    if (avatarInput) {
+        console.log("APPEND AVATAR")
+        formData.append('avatar', avatarInput);
+    }
+    // const userInput = window.prompt("Please enter your password:");
+    // data.validPassword = userInput // TODO: check if password is valid in backend
+    await saveChangedSettings(objectData, formData);
+    closeSettings()
+}
+
+
+function setupSettings() {
+    console.log('Settings Modal is about to be shown');
+    // Do the same for email
+    const userNickname = document.getElementById('nickname').innerText;
+    const nicknameInput = document.getElementById('nicknameInput');
+
+    nicknameInput.value = userNickname
+}
+
+function settingsListener() {
+    // Left column listener
+    document.querySelectorAll('.left-column-settings i').forEach(function(icon) {
+            icon.addEventListener('click', function() {
+            document.querySelectorAll('.left-column-settings i').forEach(function(icon) {
+                icon.classList.remove('active');
+            });
+            icon.classList.add('active');
+            document.querySelectorAll('.right-column-settings .collapse').forEach(function(menu) {
+                menu.classList.remove('show');
+            });
+            const targetMenuId = icon.getAttribute('data-bs-target').substring(1);
+            const targetMenu = document.getElementById(targetMenuId);
+            targetMenu.classList.add('show');
+        });
     });
+
 }
 
 async function logoutUser() {
