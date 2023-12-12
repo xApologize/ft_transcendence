@@ -51,16 +51,23 @@ async function saveChangedSettings(objectData, formData) {
 }
 
 async function saveSettings() {
-    const nicknameInput = document.getElementById('nicknameInput').value;
-    const userNickname = document.getElementById('nickname').innerText;
-    const avatarInput = document.getElementById('avatarInput').files[0];
     const objectData = new Object();
     const formData = new FormData();
 
+    const nicknameInput = document.getElementById('nicknameInput').value;
+    const userNickname = document.getElementById('nickname').innerText;
     if (userNickname != nicknameInput) {
         console.log("APPEND NICKNAME")
         objectData.nickname = nicknameInput;
     }
+    const emailInput = document.getElementById('emailInput').value;
+    const userEmail = document.getElementById('email').innerText;
+    if (userEmail != emailInput) {
+        console.log("APPEND EMAIL")
+        objectData.email = emailInput;
+    }
+
+    const avatarInput = document.getElementById('avatarInput').files[0];
     if (avatarInput) {
         console.log("APPEND AVATAR")
         formData.append('avatar', avatarInput);
@@ -79,6 +86,10 @@ function setupSettings() {
     const nicknameInput = document.getElementById('nicknameInput');
 
     nicknameInput.value = userNickname
+
+    const userEmail = document.getElementById('email').innerText;
+    const emailInput = document.getElementById('emailInput');
+    emailInput.value = userEmail;
 }
 
 function settingsListener() {
@@ -125,7 +136,10 @@ function updateUserCard(userObject) {
     profilePicture.src = userObject.avatar;
 
     const nicknameElement = document.getElementById('nickname');
-    nicknameElement.querySelector('h5').innerText = userObject.nickname;
+    nicknameElement.innerText = userObject.nickname;
+
+    const emailElement = document.getElementById('email');
+    emailElement.innerText = userObject.email;
 
     const winsElement = document.getElementById('wins');
     const lossesElement = document.getElementById('losses');
