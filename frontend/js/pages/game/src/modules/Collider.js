@@ -3,8 +3,8 @@ import { Component } from "./Component.js";
 const solids = []
 
 class Collider extends Component {
-	onCollision() {
-		this.obj.onCollision();
+	onCollision( ...args ) {
+		this.obj.onCollision( ...args );
 	}
 
 	_onEnabled() {

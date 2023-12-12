@@ -18,12 +18,13 @@ export async function showGame() {
 	// start animation loop
 	world.start();
 
-	document.addEventListener( 'visibilitychange', () => {
-		if (document.hidden)
-			world.stop();
-		else
-			world.start();
-	});
+	// DESYNC: NEED CUSTOM SOLUTION
+	// document.addEventListener( 'visibilitychange', () => {
+	// 	if (document.hidden)
+	// 		world.stop();
+	// 	else
+	// 		world.start();
+	// });
 
   } catch (error) {
 	  console.error('Error fetching game.html:', error);
