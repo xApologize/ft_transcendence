@@ -8,13 +8,12 @@ from django.views import View
 from utils.decorators import token_validation
 from utils.functions import get_user_obj
 from friend_list.models import FriendList
-import json, os
+import json, os,base64,mimetypes
 from django.db.models import Q
 from django.core.exceptions import PermissionDenied
 from django.conf import settings
 
 from django.core.files.storage import default_storage
-from django.core.files.base import ContentFile
 
 # https://stackoverflow.com/questions/3290182/which-status-code-should-i-use-for-failed-validations-or-invalid-duplicates
 
@@ -141,13 +140,14 @@ class Me(View):
         lost_matches = user.loser.all()
         played_matches = MatchHistory.objects.filter(Q(winner=user) | Q(loser=user))
 
-        avatar_url = ''
         if user.avatar:
-            avatar_url = request.build_absolute_uri(user.avatar.url)
+            avatar_data = get_avatar_data(user)
+        else:
+            avatar_data = ''
         user_data = {
             'nickname': user.nickname,
             'email': user.email,
-            'avatar': avatar_url,
+            'avatar': avatar_data,
             'status': user.status,
             'admin': user.admin,
             'won_matches': [{'winner_score': match.winner_score, 'loser_score': match.loser_score, 'date_of_match': match.date_of_match} for match in won_matches],
@@ -155,6 +155,22 @@ class Me(View):
             'played_matches': [{'winner_score': match.winner_score, 'winner_username': match.winner.nickname, 'loser_score': match.loser_score, 'loser_username': match.loser.nickname , 'date_of_match': match.date_of_match} for match in played_matches],
         }
         return JsonResponse({'users': user_data}, status=200)
+
+
+
+def get_image_as_base64(image_path):
+    with default_storage.open(image_path, 'rb') as image_file:
+        return base64.b64encode(image_file.read()).decode('utf-8')
+
+def get_avatar_data(user):
+    if user.avatar:
+        avatar_base64 = get_image_as_base64(user.avatar.name)
+        content_type, _ = mimetypes.guess_type(user.avatar.name)
+        if content_type is None:
+            content_type = 'image/jpeg'  # Default content type or use a sensible guess
+        return f'data:{content_type};base64,{avatar_base64}'
+    else:
+        return ''
 
 @method_decorator(csrf_exempt, name='dispatch') #- to apply to every function in the class.
 class Friends(View):
@@ -205,13 +221,11 @@ class Upload(View):
                 file_extension = os.path.splitext(file.name)[1]
                 new_file_name = f"user_{user.id}{file_extension}"
 
-                # Delete any existing avatar file for this user
                 avatar_dir = os.path.join(settings.MEDIA_ROOT, 'avatars')
                 for item in os.listdir(avatar_dir):
                     if item.startswith(f"user_{user.id}"):
                         os.remove(os.path.join(avatar_dir, item))
 
-                # Set the new file jto user's avatar field; Django saves it automatically
                 user.avatar.save(new_file_name, file)
 
                 return HttpResponse(f'Avatar updated successfully.', status=200)

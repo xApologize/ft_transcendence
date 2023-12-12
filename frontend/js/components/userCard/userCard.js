@@ -123,7 +123,6 @@ export async function displayUserCard(meUser) {
 
 function updateUserCard(userObject) {
     const profilePicture = document.getElementById('avatar-img');
-    console.log(userObject)
     profilePicture.src = userObject.avatar;
 
     const nicknameElement = document.getElementById('nickname');
