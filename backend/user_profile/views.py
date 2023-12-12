@@ -120,6 +120,8 @@ class Users(View):
     def patch(self, request: HttpRequest):
         try:
             user = get_user_obj(request)
+            if "demo-user" == user.nickname or "demo-user2" == user.nickname:
+                return HttpResponseBadRequest('Demo user cannot be updated.') # 400
         except PermissionDenied as e:
             return HttpResponse(str(e), status=401)
         except Http404 as e:
