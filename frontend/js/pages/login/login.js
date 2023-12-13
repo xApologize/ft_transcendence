@@ -49,12 +49,11 @@ async function login(username = null, password = null) {
         const response = await fetchAuth('POST','login/', loginData);
         if (!response)
             return;
-        const result = await response.json();
-        if (response.success) {
-            console.log(await result.success);
+        if (response.ok) {
             navigateTo('/home');
         } else {
             const errorMessage = document.getElementById('errorMessage');
+            const result = await response.json();
             errorMessage.textContent = result.error;
             errorMessage.classList.remove('d-none')
             setTimeout(() => {

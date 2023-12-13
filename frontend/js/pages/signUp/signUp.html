@@ -3,29 +3,30 @@
         <div class="m-3 text-center">
             <h1>Sign up</h1>
         </div>
-        <div class="m-3">
-            <label class="form-label" id="usernameLabel"> Username </label>
-            <input type="username" class="form-control" id="inputUsername" autocomplete="username" required>
+        <div class="form-floating m-3">
+            <input type="text" class="form-control" id="inputUsername" placeholder=" " autocomplete="username" required>
+            <label class="form-label" for="inputUsername"> Username </label>
         </div>
-        <div class="m-3">
-            <label class="form-label" id="emailLabel"> Email address </label>
-            <input type="email" class="form-control" id="inputEmail" autocomplete="email" required>
+        <div class="form-floating m-3">
+            <input type="text" class="form-control" placeholder=" " id="inputEmail" autocomplete="email" required>
+            <label class="form-label" for="inputEmail"> Email address </label>
         </div>
-        <div class="m-3">
-            <label class="form-label" id="passwordLabel"> Password</label>
-            <input type="password" class="form-control" id="inputPassword" autocomplete="new-password" required>
+        <div class="form-floating m-3">
+            <input type="text" class="form-control" placeholder=" " id="inputPassword" autocomplete="new-password" required>
+            <label class="form-label" for="inputPassword"> Password</label>
         </div>
-        <div class="m-3">
-            <label class="form-label" id="passwordLabel">
-                Confirm Password</label
-            >
+        <div class="form-floating m-3">
             <input
-                type="password"
+                type="text"
                 class="form-control"
                 id="inputPasswordConfirm"
+                placeholder=" "
                 autocomplete="new-password"
                 required
             />
+            <label class="form-label" for="inputPasswordConfirm">
+                Confirm Password</label
+            >
         </div>
         <div class="m-3 text-center">
             <button class="btn btn-secondary signupButton" id="signUpButton">
