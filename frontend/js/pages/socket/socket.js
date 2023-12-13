@@ -13,7 +13,7 @@ export async function showSocket() {
     // }
 
     document.getElementById('SendMessageInteractive').addEventListener('click', async () => {
-      interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Find Match"}))
+      interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Refresh"}))
     });
 
     document.getElementById('JoinMatch').addEventListener('click', async () => {

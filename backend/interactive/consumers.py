@@ -29,13 +29,22 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         )
 
     async def receive(self, text_data: any):
-        data = json.loads(text_data)
+        try:
+            data = json.loads(text_data)
+        except:
+            print("Invalid data sent to socket, json decode error")
+            return
         message_type = data["type"]
         print("Json:", message_type)
         if message_type == "Find Match":
             await self.find_match()
-        elif message_type == "Refresh User":
-            pass
+        elif message_type == "Refresh":
+            print("???")
+            await self.channel_layer.group_send(
+                "interactive",
+                create_layer_dict(
+                    "send_message_echo", {"type": "refresh"}, self.channel_name)
+                )
         else:
             print("Invalid input given to socket, check syntax")
 
