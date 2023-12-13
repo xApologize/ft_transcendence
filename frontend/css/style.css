@@ -28,12 +28,8 @@ img.img-thumbnail {
 .user-card {
     /* position: absolute; */
     padding: 20px; /* Adjust the padding as needed */
-    background-color: rgba(
-        255,
-        255,
-        255,
-        0.8
-    ); /* Semi-transparent white background */
+    background-color: var(--bg-main-second);
+    /* Semi-transparent white background */
     border-radius: 10px;
 }
 #contentContainer {
