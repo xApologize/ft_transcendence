@@ -38,14 +38,15 @@ const redirectToHome = () => {
 
 const createOptions = (method, data) => {
     const accessTokenLive = sessionStorage.getItem('jwt');
+    const isFormData = data instanceof FormData;
     const options = {
         method,
         credentials: 'include',
         headers: {
           ...(accessTokenLive ? { 'jwt': `${accessTokenLive}` } : {}),
-          ...(data ? { 'Content-Type': 'application/json' } : {}),
+          ...(!isFormData ? { 'Content-Type': 'application/json' } : {}),
         },
-        body: data ? JSON.stringify(data) : null,
+        body: isFormData ? data : (data ? JSON.stringify(data) : null),
     };
     return options
 };
@@ -65,7 +66,7 @@ const performFetch = async (url, method, data = null) => {
         console.log(url)
         // var bc breaking without it
         var response = await fetch(url, options);
-        if (response.status == 401) {
+        if (response.status == 401 || response.status >= 500 && response.status < 503) {
             return redirectToHome()
         }
         const jwt_token = setNewToken(response)
@@ -142,9 +143,10 @@ export const fetchFriend = async (method, apiPath = '', data = null) => {
     return result;
 }
 
-export const fetchToken = async(method, data = null) => {
-    const path = 'user/token/'
-    const url = buildApiUrl(path);
-    let result = await performFetch(url, method, data);
+// Upload avatar
+export const fetchUpload = async (method, data = null) => {
+    const path = 'user/upload/'
+    const url = buildApiUrl(path)
+    let result = await performFetch(url, method, data)
     return result;
 }

@@ -3,14 +3,14 @@
     <div class="d-flex align-items-center mb-3">
         <img
             src="https://png.pngtree.com/png-clipart/20190904/ourmid/pngtree-80-3d-text-png-image_18456.jpg"
-            alt="User Image"
+            alt="User Img"
             class="rounded-circle"
             id="avatar-img"
             width="50"
             height="50"
         />
         <div id="nickname" class="ms-3">
-            <h5>nickname</h5>
+            <h5>Loading...</h5>
         </div>
     </div>
 
@@ -21,7 +21,7 @@
             class="d-flex justify-content-between align-items-center"
         >
             <h6>Wins</h6>
-            <p id="wins">0</p>
+            <p id="wins">Loading...</p>
         </div>
 
         <!-- Losses -->
@@ -29,7 +29,7 @@
             class="d-flex justify-content-between align-items-center"
         >
             <h6>Losses</h6>
-            <p id="losses">0</p>
+            <p id="losses">Loading...</p>
         </div>
 
         <!-- Games Played -->
@@ -37,7 +37,7 @@
             class="d-flex justify-content-between align-items-center"
         >
             <h6>Games Played</h6>
-            <p id="game-played">0</p>
+            <p id="game-played">Loading...</p>
         </div>
     </div>
 
@@ -56,74 +56,74 @@
     <!-- User Settings Modal -->
     <div class="modal fade" id="userSettingsModal" tabindex="-1" data-bs-keyboard="false" data-bs-backdrop="static" aria-labelledby="useSettingsModal-title" aria-hidden="true">
         <div class="modal-dialog modal-lg">
-        <div class="modal-content" id="userSettingsModal-content">
-    
-            <!-- Modal Header -->
-            <div class="modal-header text-center">
-                <h5 class="modal-title w-100" id="useSettingsModal-title">Settings</h5>
-            </div>
-    
-            <!-- Modal Body -->
-            <div class="modal-body d-flex">
-                <!-- Left Column with Icon -->
-                <div class="left-column-settings d-flex flex-column">
-                    <i class="fa fa-cog fa-lg mb-2 active" data-bs-target="#userMenu1" aria-expanded="false" aria-controls="userMenu1"></i>
-                    <i class="fa fa-wrench fa-lg" data-bs-target="#userMenu2" aria-expanded="false" aria-controls="userMenu2"></i>
-                    <!-- Add more icons as needed -->
-                </div>                
-
-                <div class="right-column-settings w-100">
-                    <!-- Menu Content 1 -->
-                    <div class="collapse show" id="userMenu1" data-bs-parent=".right-column-settings">
-                        <div class="menu-content">
-                            <div class="row mb-3">
-                                <div class="col-md-2">
-                                    <p>Nickname:</p>
-                                </div>
-                                <div class="col-md-4">
-                                    <p id="nicknameText">HardCode</p>
-                                    <input type="text" class="form-control" id="nicknameInput" style="display: none;">
-                                </div>
-                                <div class="col-md-2">
-                                    <button class="btn btn-primary" id="editNicknameBtn">Edit</button>
-                                </div>
-                                <div class="col-md-1 hide" id="cancelNicknameBtn">
-                                    <button class="btn btn-danger">Cancel</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="menu-content">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    <p>Email:</p>
-                                </div>
-                                <div class="col-md-2">
-                                    <p>HardCode</p>
-                                </div>
-                                <div class="col-md-2">
-                                    <button class="btn btn-primary">Edit</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>   
-
-                    <!-- Menu Content 2 -->
-                    <div class="collapse" id="userMenu2" data-bs-parent=".right-column-settings">
-                        <div class="menu-content">
-                            <p>Menu 2 Content Item 1</p>
-                        </div>
-                    </div>
-                    <!-- Add more menu content as needed -->
+            <div class="modal-content" id="userSettingsModal-content">
+        
+                <!-- Modal Header -->
+                <div class="modal-header text-center">
+                    <h5 class="modal-title w-100" id="useSettingsModal-title">Settings</h5>
                 </div>
-            </div>
+        
+                <!-- Modal Body -->
+                <div class="modal-body d-flex">
+                    <!-- Left Column with Icon -->
+                    <div class="left-column-settings d-flex flex-column">
+                        <i class="fa fa-cog fa-lg mb-2 active" data-bs-target="#userMenu1" aria-expanded="false" aria-controls="userMenu1"></i>
+                        <i class="fa fa-wrench fa-lg" data-bs-target="#userMenu2" aria-expanded="false" aria-controls="userMenu2"></i>
+                        <!-- Add more icons as needed -->
+                    </div>                
+
+                    <div class="right-column-settings w-100">
+                        <!-- Menu Content 1 -->
+                        <div class="collapse show" id="userMenu1" data-bs-parent=".right-column-settings">
+                            <div class="menu-content">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <p>Nickname:</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input type="text" class="form-control" id="nicknameInput">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="menu-content">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <p>Email:</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input type="text" class="form-control" id="nicknameInput" value="NOT WORKING">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="menu-content">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <p>Update Profile Picture:</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input type="file" class="form-control" id="avatarInput">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>   
+
+                        <!-- Menu Content 2 -->
+                        <div class="collapse" id="userMenu2" data-bs-parent=".right-column-settings">
+                            <div class="menu-content">
+                                <p>Menu 2 Content Item 1</p>
+                            </div>
+                        </div>
+                        <!-- Add more menu content as needed -->
+                    </div>
+                </div>
+        
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+                <button id="saveSettings" type="button" class="btn btn-primary">Save Changes</button>
+                </div>
     
-            <!-- Modal Footer -->
-            <div class="modal-footer">
-            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
-            <!-- <button type="button" class="btn btn-primary">Save Changes</button> -->
             </div>
-    
-        </div>
         </div>
     </div>
 </div>

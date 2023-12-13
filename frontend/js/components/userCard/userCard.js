@@ -1,4 +1,4 @@
-import { fetchAuth, loadHTMLComponent } from "../../api/fetchData.js";
+import { fetchAuth, fetchUpload, fetchUser, loadHTMLComponent } from "../../api/fetchData.js";
 import { navigateTo } from "../../router.js";
 import interactiveSocket from '../../pages/home/socket.js'
 
@@ -12,71 +12,74 @@ export async function userCardComponent() {
 }
 
 export async function userCardListener() {
-    document.getElementById('logout').addEventListener('click', async () => {
-        await logoutUser()
-    })
-
-
-    document.getElementById('userSettingsModal').addEventListener('show.bs.modal', function (event) {
-        console.log('Settings Modal is about to be shown');
-    });
-
-
+    document.getElementById('logout').addEventListener('click', logoutUser)
+    document.getElementById('saveSettings').addEventListener('click', saveSettings)
+    document.getElementById('userSettingsModal').addEventListener('show.bs.modal', setupSettings)
     document.getElementById('userSettingsModal').addEventListener('hide.bs.modal', function (event) {
         console.log('Settings Modal is about to be hide')
-    });
-
-
-    document.getElementById('editNicknameBtn').addEventListener('click', function(event) {
-        const nicknameText = document.getElementById('nicknameText');
-        const nicknameInput = document.getElementById('nicknameInput');
-        const editBtn = document.getElementById('editNicknameBtn');
-
-        // Toggle visibility of the text and input fields
-        nicknameText.style.display = (nicknameText.style.display === 'none') ? 'inline' : 'none';
-        nicknameInput.style.display = (nicknameInput.style.display === 'none') ? 'inline' : 'none';
-
-        // If the input field is visible, focus on it
-        if (nicknameInput.style.display !== 'none') {
-            nicknameInput.value = nicknameText.innerText.trim();
-            nicknameInput.focus();
-        }
-
-        // Change the button text based on the state
-        editBtn.innerText = (nicknameText.style.display === 'none') ? 'Save' : 'Edit';
-
-        // If the input field is visible and the button text is 'Save', update the text
-        if (nicknameInput.style.display === 'none' && editBtn.innerText === 'Edit') {
-            nicknameText.innerText = nicknameInput.value.trim();
-        }
-        document.getElementById('cancelNicknameBtn').classList.toggle('hide')
-    });
-
-
-    document.getElementById('cancelNicknameBtn').addEventListener('click', function(event) {
-        const nicknameText = document.getElementById('nicknameText');
-        const nicknameInput = document.getElementById('nicknameInput');
-        const cancelBtn = document.getElementById('cancelNicknameBtn');
-
-        // Toggle visibility of the text and input fields
-        nicknameText.style.display = (nicknameText.style.display === 'none') ? 'inline' : 'none';
-        nicknameInput.style.display = (nicknameInput.style.display === 'none') ? 'inline' : 'none';
-
-        // If the text field is visible, update the input value
-        if (nicknameText.style.display !== 'none') {
-            nicknameInput.value = nicknameText.innerText.trim();
-        }
-
-        // Toggle visibility of the cancel button
-        cancelBtn.classList.toggle('hide');
-
-        const editBtn = document.getElementById('editNicknameBtn');
-        editBtn.innerText = (nicknameText.style.display === 'none') ? 'Save' : 'Edit';
+        document.getElementById('avatarInput').value = ''
 
     });
-
 
     settingsListener()
+}
+
+function closeSettings() {
+    const settingsModal = document.getElementById('userSettingsModal');
+    if (settingsModal) {
+        const modalInstance = bootstrap.Modal.getInstance(settingsModal);
+        if (modalInstance) {
+            modalInstance.hide();
+        }
+    }  
+}
+
+async function saveChangedSettings(objectData, formData) {
+    console.log("SAVE SETTINGS")
+
+    if (Object.keys(objectData).length > 0) {
+        const response = await fetchUser('PATCH', null, objectData);
+        if (response && response.status > 400) {
+            console.log("Error while saving settings");
+        }
+    }
+    if (formData.has('avatar')) {
+        const response = await fetchUpload('POST', formData);
+        if (response && response.status > 400) {
+            console.log("Error while saving settings");
+        }
+    }
+}
+
+async function saveSettings() {
+    const nicknameInput = document.getElementById('nicknameInput').value;
+    const userNickname = document.getElementById('nickname').innerText;
+    const avatarInput = document.getElementById('avatarInput').files[0];
+    const objectData = new Object();
+    const formData = new FormData();
+
+    if (userNickname != nicknameInput) {
+        console.log("APPEND NICKNAME")
+        objectData.nickname = nicknameInput;
+    }
+    if (avatarInput) {
+        console.log("APPEND AVATAR")
+        formData.append('avatar', avatarInput);
+    }
+    // const userInput = window.prompt("Please enter your password:");
+    // data.validPassword = userInput // TODO: check if password is valid in backend
+    await saveChangedSettings(objectData, formData);
+    closeSettings()
+}
+
+
+function setupSettings() {
+    console.log('Settings Modal is about to be shown');
+    // Do the same for email
+    const userNickname = document.getElementById('nickname').innerText;
+    const nicknameInput = document.getElementById('nicknameInput');
+
+    nicknameInput.value = userNickname
 }
 
 function settingsListener() {
