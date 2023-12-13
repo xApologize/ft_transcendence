@@ -1,5 +1,6 @@
 import { fetchAuth, fetchUpload, fetchUser, loadHTMLComponent } from "../../api/fetchData.js";
 import { navigateTo } from "../../router.js";
+import { closeAlertAvatar, closeAlertInfo, setupSettings, removeAllAlerts, noChangeMadeAlert } from "./utils.js";
 
 export async function userCardComponent() {
     try {
@@ -14,40 +15,16 @@ export async function userCardListener() {
     document.getElementById('logout').addEventListener('click', logoutUser)
     document.getElementById('saveInfo').addEventListener('click', saveInfo)
     document.getElementById('saveAvatar').addEventListener('click', saveAvatar)
-    document.getElementById('btnErrorAvatar').addEventListener('click', closeAlertAvatar)
-    document.getElementById('btnErrorInfo').addEventListener('click', closeAlertInfo)
     document.getElementById('userSettingsModal').addEventListener('show.bs.modal', setupSettings)
     document.getElementById('userSettingsModal').addEventListener('hide.bs.modal', function (event) {
         console.log('Settings Modal is about to be hide')
         document.getElementById('avatarInput').value = ''
-
+        
     });
+    document.getElementById('btnErrorAvatar').addEventListener('click', closeAlertAvatar)
+    document.getElementById('btnErrorInfo').addEventListener('click', closeAlertInfo)
 
     settingsListener()
-}
-
-
-function closeAlertInfo() {
-    const alert = document.getElementById('alertErrorInfo');
-    alert.classList.remove('show');
-    alert.classList.add('hide');
-}
-
-
-function closeAlertAvatar() {
-    const alert = document.getElementById('alertErrorAvatar');
-    alert.classList.remove('show');
-    alert.classList.add('hide');
-}
-
-function closeSettings() {
-    const settingsModal = document.getElementById('userSettingsModal');
-    if (settingsModal) {
-        const modalInstance = bootstrap.Modal.getInstance(settingsModal);
-        if (modalInstance) {
-            modalInstance.hide();
-        }
-    }  
 }
 
 async function displayAlertStatus(response, type) {
@@ -55,24 +32,21 @@ async function displayAlertStatus(response, type) {
     const alertText = document.getElementById('messageError' + type);
 
     let message =  await response.text();
+    removeAllAlerts(alert);
     if (response.status == 200) {
         alert.classList.add('alert-success');
-        alert.classList.remove('alert-danger');
         message = "Your " + type + " has been updated"
-    } else  if (response.status == 413) {
-        message = "File is too big, max size is 5MB"
-    }
-    else {
+    } else {
         alert.classList.add('alert-danger');
-        alert.classList.remove('alert-success');
+    }
+
+    if (response.status == 413) {
+        alert.classList.add('alert-danger');
+        message = "File is too big, max size is 1MB"
     }
     alert.classList.remove('hide');
     alert.classList.add('show');
     alertText.textContent = message
-    setTimeout(() => {
-        alert.classList.add('hide');
-        alert.classList.remove('show');
-    }, 10000);
 }
 
 
@@ -88,7 +62,7 @@ async function saveAvatar() {
         if (!response) { return }
         displayAlertStatus(response, 'Avatar')
     } else {
-        console.log("NO AVATAR UPLOAD")
+        noChangeMadeAlert('messageErrorAvatar', 'alertErrorAvatar');
     }
 }
 
@@ -110,28 +84,12 @@ async function saveInfo() {
     }
 
     if (Object.keys(objectData).length > 0) {
-        // const userInput = window.prompt("Please enter your password:");
-        // data.validPassword = userInput // TODO: check if password is valid in backend
         const response = await fetchUser('PATCH', null, objectData);
         if (!response) { return }
         displayAlertStatus(response, 'Info')
     } else {
-        console.log("NO CHANGES")
+        noChangeMadeAlert('messageErrorInfo', 'alertErrorInfo');
     }
-}
-
-
-function setupSettings() {
-    console.log('Settings Modal is about to be shown');
-    // Do the same for email
-    const userNickname = document.getElementById('nickname').innerText;
-    const nicknameInput = document.getElementById('nicknameInput');
-
-    nicknameInput.value = userNickname
-
-    const userEmail = document.getElementById('email').innerText;
-    const emailInput = document.getElementById('emailInput');
-    emailInput.value = userEmail;
 }
 
 function settingsListener() {

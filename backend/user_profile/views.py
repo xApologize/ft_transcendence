@@ -127,21 +127,28 @@ class Users(View):
             return HttpResponse(str(e), status=401)
         except Http404 as e:
             return HttpResponse(str(e), status=404)
+        
+        allowed_fields = {'nickname', 'email'}
         try:
             data = json.loads(request.body)
-            # Check if data contain wrong field
-            # Do password check !! @TODO
-            for field in ['nickname', 'email']:
-                if field in data and getattr(user, field) != data[field]:
-                    setattr(user, field, data[field])
+            
+            # Check for any fields in data that are not allowed
+            if any(field not in allowed_fields for field in data):
+                return HttpResponseBadRequest('Invalid field(s) in data.')
+
+            for field in allowed_fields:
+                if field in data:
+                    if getattr(user, field) != data[field]:
+                        setattr(user, field, data[field])
             user.save()
             return HttpResponse(f'User updated successfully.', status=200)
+
         except json.JSONDecodeError:
             return HttpResponseBadRequest('Invalid JSON data in the request body.') # 400
         except IntegrityError:
             return HttpResponseBadRequest(f'Nickname is already in use.') # 400
         except Exception as e:
-            return HttpResponseBadRequest('Unexpexted Error:', e) # 400
+            return HttpResponseBadRequest(f'Unexpected Error: {e}') # 400
 
 @method_decorator(csrf_exempt, name='dispatch') #- to apply to every function in the class.
 class Me(View):
