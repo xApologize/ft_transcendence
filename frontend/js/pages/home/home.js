@@ -67,7 +67,7 @@ async function displayFriend() {
     await displayUser(allFriends);
 }
 
-async function displayEveryone() {
+export async function displayEveryone() {
     const onlineUsers = await fetchUser('GET', { status: ['ONL', 'ING'] });
     if (!onlineUsers || !onlineUsers.ok)
         // if !onlineUsers, c'est que le status == 401 et si !onlineUsers.ok == Aucun user Online

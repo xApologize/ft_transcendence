@@ -6,5 +6,4 @@ urlpatterns = [
     path('upload/', Upload.as_view(), name="upload"),
     path('me/', Me.as_view(), name="me"),
     path('friends/', Friends.as_view(), name="friends"),
-    path("token/", token, name="token")
 ]

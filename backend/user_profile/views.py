@@ -2,6 +2,7 @@ from .models import User
 from django.db.utils import IntegrityError
 from django.http import JsonResponse, HttpResponse, HttpResponseNotFound, HttpResponseBadRequest, HttpRequest, Http404
 from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from match_history.models import MatchHistory
 from django.views import View
 from utils.decorators import token_validation
@@ -9,6 +10,31 @@ from utils.functions import get_user_obj
 from friend_list.models import FriendList
 import json, os,base64,mimetypes
 from django.db.models import Q
+from django.core.exceptions import PermissionDenied, ValidationError
+from django.conf import settings
+
+from django.core.files.storage import default_storage
+
+DEFAULT_AVATAR_URL = "avatars/default.png"
+
+# https://stackoverflow.com/questions/3290182/which-status-code-should-i-use-for-failed-validations-or-invalid-duplicates
+
+
+def get_image_as_base64(image_path):
+    with default_storage.open(image_path, 'rb') as image_file:
+        return base64.b64encode(image_file.read()).decode('utf-8')
+
+def get_avatar_data(user):
+    if user.avatar:
+        avatar_base64 = get_image_as_base64(user.avatar.name)
+        content_type, _ = mimetypes.guess_type(user.avatar.name)
+    else:
+        avatar_base64 = get_image_as_base64(DEFAULT_AVATAR_URL)
+        content_type, _ = mimetypes.guess_type(DEFAULT_AVATAR_URL)
+
+    if content_type is None:
+        content_type = 'image/jpeg'
+    return f'data:{content_type};base64,{avatar_base64}'
 
 
 class Users(View):
@@ -63,7 +89,7 @@ class Users(View):
                     avatar='',
                     status='OFF',
                     admin=False,
-                    password=make_password(user_data['password'])
+                    password=user_data['password']
                 )
                 user.save()
             except IntegrityError:
@@ -141,7 +167,6 @@ class Me(View):
         return JsonResponse({'users': user_data}, status=200)
 
 
-
 class Friends(View):
     @token_validation
     def get(self, request):
@@ -173,3 +198,33 @@ class Friends(View):
         if user_data:
             return JsonResponse({'users': user_data}, status=200)
         return HttpResponse('No friends found') # 404
+
+class Upload(View):
+    @token_validation
+    def post(self, request: HttpRequest):
+        try:
+            user = get_user_obj(request)
+        except PermissionDenied as e:
+            return HttpResponse(str(e), status=401)
+        except Http404 as e:
+            return HttpResponse(str(e), status=404)
+        try:
+            if 'avatar' in request.FILES:
+                file = request.FILES['avatar']
+                file_extension = os.path.splitext(file.name)[1]
+                new_file_name = f"user_{user.id}{file_extension}"
+
+                avatar_dir = os.path.join(settings.MEDIA_ROOT, 'avatars')
+                for item in os.listdir(avatar_dir):
+                    if item.startswith(f"user_{user.id}"):
+                        os.remove(os.path.join(avatar_dir, item))
+                try:
+                    user.avatar.save(new_file_name, file)
+                except ValidationError as e:
+                    return HttpResponseBadRequest(e)
+
+                return HttpResponse(f'Avatar updated successfully.', status=200)
+            else:
+                return HttpResponseBadRequest('No avatar provided.') # 400
+        except Exception as e:
+            return HttpResponseBadRequest('Unexpexted Error:', e) # 400

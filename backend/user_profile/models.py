@@ -41,7 +41,7 @@ class User(models.Model):
     avatar = models.ImageField(null=True, blank=True, upload_to="avatars/")
     status = models.CharField(max_length=10, choices=status_enum, default="OFF")
     admin = models.BooleanField(default=False)
-    password = models.CharField(max_length=50, default="abc")
+    password = models.CharField(max_length=128, default="abc")
     def save(self, *args, **kwargs):
         if self.avatar:
             validate_image(self.avatar)
