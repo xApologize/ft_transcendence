@@ -31,7 +31,7 @@ class Player extends Paddle {
 		this.socket = socket;
 		this.socket.addEventListener("open", (event) => {
 			this.material.color = new Color( 0x00aaff );
-			this.socket.send("Joined");
+			// this.socket.send("Joined");
 		});
 
 		this.collider = new Collider( this );
@@ -44,6 +44,15 @@ class Player extends Paddle {
 		document.addEventListener("boostButtonReleased", (e) => {
 			this.speed = 5;
 		});
+	}
+
+	fixedUpdate ( dt ) {
+		if ( InputMap.movementAxis.value === 0 )
+			return;
+		
+		if ( this.socket != undefined && this.socket.readyState === WebSocket.OPEN) {
+			this.socket.send( JSON.stringify( this.msg ) );
+		}
 	}
 
 	update( dt ) {
@@ -64,10 +73,6 @@ class Player extends Paddle {
 		} else {
 			this.position.add(movement.multiplyScalar( this.speed * dt ));
 		}
-
-		if ( this.socket != undefined && this.socket.readyState === WebSocket.OPEN) {
-			this.socket.send( JSON.stringify( this.msg ) );
-		}
 	}
 
 	onCollision( hit ) {
@@ -87,7 +92,7 @@ class Player extends Paddle {
 			else
 				this.msg.goalScoredId = 1;
 			this.socket.send( JSON.stringify( this.msg ) );
-			World.scoreAdd( this.msg.goalScoredId );
+			World._instance.score.add( this.msg.goalScoredId );
 		}
 		this.msg.ballInst = undefined;
 		this.msg.scored = false;

@@ -16,30 +16,18 @@ import { airHockeyTable } from './systems/Loader.js';
 
 import {
 	CapsuleGeometry,
-	Color,
-	DodecahedronGeometry,
-	InstancedMesh,
-	MathUtils,
-	Matrix4,
 	MeshStandardMaterial,
 	SphereGeometry,
 	Vector2,
 	Vector3
 } from 'three';
-
-let scene;
-let camera;
-let renderer;
-let loop;
-let score;
-let resizer;
-let input;
+import interactiveSocket from '../../home/socket.js';
 
 const GameState = {
 	InMenu: "inMenu",
 	InMatch: "inGame",
 	MatchEnding: "matchEnding",
-	Matchmaking: "matchmaking",
+	LookingForPlayer: "lookingForPlayer",
 	Connecting: "connecting"
 }
 
@@ -49,8 +37,6 @@ class World {
 			World._instance.deleteGame();
 			World._instance.createContainer( container );
 			World._instance.createGame();
-			console.log(World._instance.wsPath);
-			console.log(World._instance.side);
 			return World._instance;
 		}
 		this.createInstance();
@@ -58,50 +44,46 @@ class World {
 		this.createContainer( container );
 		this.createGame();
 
-		this.render = function() { renderer.render(scene, camera); }
-		this.start = function() { loop.start();	}
-		this.stop = function() { loop.stop(); }
-
-		this.currentGameState = GameState.InMenu;
-
 		/// DEBUG TEMP
 		document.addEventListener('keydown', (event) => {
-			if ( event.code == "KeyR" ) {
-				console.warn("-- DELETION! --");
-				World._instance.deleteGame();
+			// if ( event.code == "KeyR" ) {
+			// 	console.warn("-- DELETION! --");
+			// 	World._instance.deleteGame();
+			// }
+			// if ( event.code == "KeyE" ) {
+			// 	console.warn("-- RESUME! --");
+			// 	World._instance.createGame();
+			// }
+			if ( event.code == "Space" && this.currentGameState == GameState.InMenu ) {
+				if ( !interactiveSocket.interactive_socket )
+					return console.error("interactiveSocket not up");
+				console.log("-- Waiting for Opponent --");
+				this.currentGameState = GameState.LookingForPlayer;
+				interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Find Match"}));
 			}
-			if ( event.code == "KeyE" ) {
-				console.warn("-- RESUME! --");
-				World._instance.createGame();
-			}
-			if ( event.code == "KeyI" ) {
-				console.warn("-- RESUME! --");
-				World._instance.initMatch();
-			}
-			if ( event.code == "KeyA" && this.player == undefined )
-				this.createSocket( '/ws/pong/1/a', -7.2, this.terrain.leftGoalZone, this.terrain.rightGoalZone );
-			if ( event.code == "KeyB" && this.player == undefined )
-				this.createSocket( '/ws/pong/1/b', 7.2, this.terrain.rightGoalZone, this.terrain.leftGoalZone );
-			if ( event.code == "Space" && this.player == undefined )
-				this.joinMatch();
 		}, false);
 
-		// World._instance.wsPath = undefined;
-		// World._instance.side = undefined;
+		World._instance.wsPath = undefined;
+		World._instance.side = undefined;
 	}
 
-	joinMatch() {
-		if ( World._instance.side == "A" )
-			this.createSocket( '/' + World._instance.wsPath, 7.2, this.terrain.rightGoalZone, this.terrain.leftGoalZone );
-		else if ( World._instance.side == "B" )
-			this.createSocket( '/' + World._instance.wsPath, -7.2, this.terrain.leftGoalZone, this.terrain.rightGoalZone );
+	joinMatch( wsPath, side ) {
+		// HOST
+		if ( side == "A" ) {
+			console.log("-- Becoming Host --");
+			this.createSocket( '/' + wsPath, 7.2, this.terrain.rightGoalZone, this.terrain.leftGoalZone );
+		}
+		// CLIENT
+		else if ( side == "B" ) {
+			console.log("-- Becoming Client --");
+			this.createSocket( '/' + wsPath, -7.2, this.terrain.leftGoalZone, this.terrain.rightGoalZone );
+		}
 
 	}
 
 	createSocket( path, xpos, goalZone, opponentGoalZone ) {
-		this.currentGameState = GameState.Matchmaking;
 		console.log("-- Socket Created! --");
-		console.log("-- Waiting for Opponent --");
+		this.currentGameState = GameState.Connecting;
 
 		this.socket = new WebSocket('wss://' + window.location.host + path);
 
@@ -109,42 +91,37 @@ class World {
 		this.player.position.setZ(-1);
 		goalZone.paddle = this.player;
 
-		this.socket.addEventListener("message", (event) => {
-			if ( this.opponent != undefined )
-				return;
-			this.opponent = new Opponent( this.g_caps, new MeshStandardMaterial(), new Vector3( -xpos, 0, 0 ), this.socket );
-			this.opponent.position.setZ(-1);
-			opponentGoalZone.paddle = this.opponent;
-			if ( event.data == "Joined" )
-				this.socket.send("Joined Back");
-			console.log("-- Opponent found --");
-			this.initMatch();
-		});
+		this.opponent = new Opponent( this.g_caps, new MeshStandardMaterial(), new Vector3( -xpos, 0, 0 ), this.socket );
+		this.opponent.position.setZ(-1);
+		opponentGoalZone.paddle = this.opponent;
+
+		this.initMatch();
 	}
 
 	createInstance() {
 		World._instance = this;
 
-		camera = new MainCamera();
-		scene = createScene();
-		renderer = createRenderer();
-		loop = new Loop(camera, scene, renderer);
-		score = new Score3D();
-		input = new InputManager();
-
+		this.camera = new MainCamera();
+		this.scene = createScene();
+		this.renderer = createRenderer();
+		this.loop = new Loop( this.camera, this.scene, this.renderer );
+		this.score = new Score3D();
+		this.input = new InputManager();
 
 		const { ambientLight, mainLight } = createLights();
 
-		scene.add( ambientLight, mainLight );
+		this.scene.add( ambientLight, mainLight );
 	}
 	
 	createContainer( container ) {
-		container.append( renderer.domElement );
-		resizer = new Resizer(container, camera, renderer);
+		container.append( this.renderer.domElement );
+		this.resizer = new Resizer( container, this.camera, this.renderer );
 	}
 	
 	createGame() {
-		scene.add( airHockeyTable.scene );
+		this.currentGameState = GameState.InMenu;
+
+		this.scene.add( airHockeyTable.scene );
 		airHockeyTable.scene.scale.set( 0.07, 0.07, 0.07 );
 		airHockeyTable.scene.rotation.set( Math.PI / 2, 0, 0 );
 		airHockeyTable.scene.position.set( 3, 26, -5.5 );
@@ -157,17 +134,17 @@ class World {
 
 		this.balls = new Ball( this.g_sphere, this.m_white, 2 );
 		
-		camera.viewLarge( 0 );
-		loop.start();
+		this.camera.viewLarge( 0 );
+		this.loop.start();
 	}
 
 	initMatch() {
 		this.balls.resetAll();
-		score.reset();
+		this.score.reset();
 		this.player.position.setZ(0)
 		this.opponent.position.setZ(0)
 		this.balls.renderer.setEnabled(true);
-		camera.viewTable( 1, function() {
+		this.camera.viewTable( 1, function() {
 			this.balls.init();
 			this.balls.updatable.setEnabled(true);
 		}.bind( this ) );
@@ -178,7 +155,7 @@ class World {
 				this.opponent.position.copy( msg.pos );
 			if ( msg.ballInst != undefined ) {
 				if ( msg.scored == true ) {
-					World.scoreAdd( msg.goalScoredId );
+					this.score.add( msg.goalScoredId );
 					this.balls.initInst( this.balls.ballInst[ msg.ballInst.id ] );
 				}
 				else
@@ -191,7 +168,7 @@ class World {
 	}
 
 	endMatch() {
-		camera.viewLarge( 1 );
+		this.camera.viewLarge( 1 );
 		this.player.delete();
 		this.player = undefined;
 		this.opponent.delete();
@@ -201,10 +178,11 @@ class World {
 
 		if ( this.socket != undefined)
 			this.socket.close();
+		this.currentGameState = GameState.InMenu;
 	}
 
 	deleteGame() {
-		scene.remove( airHockeyTable.scene );
+		this.scene.remove( airHockeyTable.scene );
 		this.balls.delete();
 		if ( this.player != undefined ) {
 			this.player.delete();
@@ -214,27 +192,15 @@ class World {
 			this.opponent.delete();
 			this.opponent = undefined;
 		}
-		score.reset();
+		this.score.reset();
 		this.terrain.delete();
-		renderer.renderLists.dispose();
-		resizer.delete();
-		camera.viewLarge( 0 );
-		loop.stop();
+		this.renderer.renderLists.dispose();
+		this.resizer.delete();
+		this.camera.viewLarge( 0 );
+		this.loop.stop();
 
 		if ( this.socket != undefined)
 			this.socket.close();
-	}
-
-	static add( mesh ) {
-		scene.add( mesh )
-	}
-
-	static remove( mesh ) {
-		scene.remove( mesh );
-	}
-
-	static scoreAdd( playerId ) {
-		score.add( playerId );
 	}
 }
 

@@ -12,11 +12,11 @@ class Renderer extends Component {
 	}
 
 	_onEnabled() {
-		World.add( this.obj );
+		World._instance.scene.add( this.obj );
 	}
 
 	_onDisabled() {
-		World.remove( this.obj );
+		World._instance.scene.remove( this.obj );
 	}
 
 	delete() {

@@ -9,22 +9,7 @@ export async function showGame() {
 	await loadModel();
     await loadHTMLPage('./js/pages/game/game.html')
 
-	// Get a reference to the container element
-	const container = document.querySelector('#sceneContainer');
-
-	// 1. Create an instance of the World app
-	const world = new World(container);
-
-	// start animation loop
-	world.start();
-
-	// DESYNC: NEED CUSTOM SOLUTION
-	// document.addEventListener( 'visibilitychange', () => {
-	// 	if (document.hidden)
-	// 		world.stop();
-	// 	else
-	// 		world.start();
-	// });
+	const world = new World( document.querySelector('#sceneContainer') );
 
   } catch (error) {
 	  console.error('Error fetching game.html:', error);

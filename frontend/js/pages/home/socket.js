@@ -36,14 +36,11 @@ const interactiveSocket = {
     },
 
     parseMessage: function(message) {
-        const type = JSON.parse(message.data).type;
-        console.log("IM StuPID:", message)
-        if (type == "Found Match"){
-			World._instance.wsPath = JSON.parse(message.data).handle;
-			World._instance.side = JSON.parse(message.data).paddle;
-            console.log("ADD FIND MATCH LOGIC HERE")
+        const data = JSON.parse(message.data);
+        if ( data.type == "Found Match" ) {
+			World._instance.joinMatch( data.handle, data.paddle );
         } else {
-            console.error("What are you doing?")
+            console.error("Weird data received from WS")
         }
     },
     
