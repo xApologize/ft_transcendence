@@ -75,7 +75,7 @@ class Users(View):
             if extra_fields:
                 error_message = f'Unexpected fields: {", ".join(extra_fields)}'
                 return HttpResponseBadRequest(error_message) # 400
-            elif user_data['password'] != user_data['passwordConfirm']:
+            if user_data['password'] != user_data['passwordConfirm']:
                 return HttpResponseBadRequest('Passwords do not match')
             try:
                 # not empty

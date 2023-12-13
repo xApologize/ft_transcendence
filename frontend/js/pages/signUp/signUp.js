@@ -13,8 +13,7 @@ export async function showSignUp() {
                 signUp();
             });
     } catch (error) {
-        if (error) console.error('Error fetching signUp.html:', error);
-        else console.log('error null');
+        console.error('Error fetching signUp.html:', error);
     }
 }
 
@@ -25,20 +24,16 @@ async function loginAfterSignup(nickname, password) {
     };
     try {
         const response = await fetchAuth('POST','login/', loginData);
-        const result = await response.json();
-        console.log(result)
         if (response.ok) {
-            if (result.success) {
-                console.log('Login successful: ', await result.success);
-                navigateTo('/home');
-                return ;
-            }
-            console.log('Login failed: ', await result.error);
+            navigateTo('/home');
+            return ;
+        } else {
+            const result = await response.text();
+            displayErrorMessage(result)
         }
     } catch (error) {
         console.error('Error during login:', error);
     }
-    // navigateTo('/home')
 }
 
 async function signUp() {
@@ -61,29 +56,25 @@ async function signUp() {
         password,
         passwordConfirm,
     };
-    console.log(userData)
     const users = await fetchUser('POST', null, userData);
     if (!users) {
         console.log('Error creating user');
         return;
     }
     const responseText = await users.text();
-    if (!users.ok) {
-        displayErrorMessage(responseText);
-    } else {
-        console.log("SignUp Success: ", responseText)
-        loginAfterSignup(nickname, password);
-    }
+    if (!users.ok) { displayErrorMessage(responseText); }
+    else { loginAfterSignup(nickname, password); }
 }
 
 function displayErrorMessage(errorMessage) {
     const error = document.getElementById('errorMessage');
     error.classList.remove('d-none');
     error.textContent = errorMessage;
+
+    // Hide the error message after 3 seconds
+    setTimeout(() => {
+        error.classList.add('d-none');
+        error.textContent = '';
+    }, 3000);
 }
 
-function displaySuccessMessage(responseText, SuccessElement) {
-    const successMessage = document.getElementById(SuccessElement);
-    successMessage.textContent = responseText;
-    successMessage.classList.remove('d-none');
-}
