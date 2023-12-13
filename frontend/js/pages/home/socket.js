@@ -15,41 +15,35 @@ const interactiveSocket = {
                 logoutUser();
             }
             this.interactive_socket = new WebSocket('wss://' + window.location.host + '/ws/pong/interactive' + "?" + sessionStorage.getItem('jwt'));
-            this.connexion_attempt++
-            // console.log("Attempt counter:", this.connexion_attempt)
+            this.connexion_attempt++;
             self.interactive_socket.onerror = function(event) {
                 console.error("WebSocket error:", event);
                 logoutUser();
             };
             this.interactive_socket.onopen = async function(event) {
-                console.log("𝕴𝖓𝖙𝖊𝖗𝖆𝖈𝖙𝖎𝖛𝖊 𝖘𝖔𝖈𝖐𝖊𝖙 𝖎𝖘 𝖓𝖔𝖜 𝖔𝖕𝖊𝖓")
+                console.log("𝕴𝖓𝖙𝖊𝖗𝖆𝖈𝖙𝖎𝖛𝖊 𝖘𝖔𝖈𝖐𝖊𝖙 𝖎𝖘 𝖓𝖔𝖜 𝖔𝖕𝖊𝖓");
             }
             this.interactive_socket.onclose = async function(event) {
-                console.log("𝕴𝖓𝖙𝖊𝖗𝖆𝖈𝖙𝖎𝖛𝖊 𝖘𝖔𝖈𝖐𝖊𝖙 𝖍𝖆𝖘 𝖇𝖊𝖊𝖓 𝖈𝖑𝖔𝖘𝖊𝖉")
+                console.log("𝕴𝖓𝖙𝖊𝖗𝖆𝖈𝖙𝖎𝖛𝖊 𝖘𝖔𝖈𝖐𝖊𝖙 𝖍𝖆𝖘 𝖇𝖊𝖊𝖓 𝖈𝖑𝖔𝖘𝖊𝖉");
             };
             this.interactive_socket.onmessage = function(event) {
                 self.parseMessage(event);
             };
         } else {
-            // Should never see this in the future
-            console.error("Interactive socket already exist")
+            console.error("Interactive socket already exist");
         }
     },
 
     parseMessage: function(message) {
         const type = JSON.parse(message.data).type;
-        console.log("IM StuPID:", message)
         if (type == "Found Match"){
 			World._instance.wsPath = JSON.parse(message.data).handle;
 			World._instance.side = JSON.parse(message.data).paddle;
-            console.log("ADD FIND MATCH LOGIC HERE")
         if (type == "Refresh"){
-            console.log("HI!")
-            displayEveryone()
+            displayEveryone();
         }
         } else {
-            displayEveryone()
-            console.error("What are you doing?")
+            console.error("What are you doing?");
         }
     },
     

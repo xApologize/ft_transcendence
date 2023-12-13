@@ -39,7 +39,6 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         if message_type == "Find Match":
             await self.find_match()
         elif message_type == "Refresh":
-            print("???")
             await self.channel_layer.group_send(
                 "interactive",
                 create_layer_dict(
@@ -63,7 +62,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         if self.channel_name == data["sender"]:
             match_entry = await sync_to_async(
                 LookingForMatch.objects.filter(paddleA=self.user_id).first)()
-            print("REMOVE ENTRY FROM DB")
+            print("REMOVED ENTRY FROM DB")
             await sync_to_async(match_entry.delete)()
             self.waiting = False
             await self.send(text_data=json.dumps(data["message"]))
@@ -76,13 +75,11 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             await self.create_lfm()
 
     async def create_lfm(self):
-        print("CREATE MATCH")
         await sync_to_async(LookingForMatch.objects.create)(
                 paddleA=self.user_id, mailbox_a=self.channel_name, paddleB=-1)
         self.waiting: bool = True
 
     async def setup_match(self, match: any):
-        print("SETUP MATCH")
         match.paddleB = self.user_id
         await sync_to_async(match.save)()
         handle_a: dict = await self.create_math_handle(match.paddleA, match.paddleB, "A")

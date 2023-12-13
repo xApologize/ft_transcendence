@@ -22,7 +22,6 @@ urlpatterns = [
     path('api/user/', include('user_profile.urls')),
     path('api/friend/', include('friend_list.urls')),
     path('api/login/', include('auth.urls')),
-    path("chat/", include("chat.urls")),
     path('api/auth/', include('auth.urls')),
 ]
 

@@ -46,7 +46,6 @@ INSTALLED_APPS = [
     "block_list",
     "match_history",
     "tournament_history",
-    "chat",
     "interactive"
 ]
 
@@ -91,15 +90,7 @@ DATABASES = {
         "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "password"),
         "HOST": os.environ.get("POSTGRES_HOST", "localhost"),
         "PORT": os.environ.get("POSTGRES_PORT", "5432"),
-    },
-    'channels_postgres': {
-		'ENGINE': 'django.db.backends.postgresql_psycopg2',
-		"NAME": os.environ.get("POSTGRES_DB", BASE_DIR / "db.sqlite3"),
-        "USER": os.environ.get("POSTGRES_USER", "user"),
-        "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "password"),
-        "HOST": os.environ.get("POSTGRES_HOST", "localhost"),
-        "PORT": os.environ.get("POSTGRES_PORT", "5432"),
-	}
+    }
 }
 
 
