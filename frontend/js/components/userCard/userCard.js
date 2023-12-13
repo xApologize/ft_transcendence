@@ -12,8 +12,8 @@ export async function userCardComponent() {
 
 export async function userCardListener() {
     document.getElementById('logout').addEventListener('click', logoutUser)
-    document.getElementById('saveSettings').addEventListener('click', saveSettings)
-    document.getElementById('saveAvatar').addEventListener('click', saveSettings)
+    document.getElementById('saveInfo').addEventListener('click', saveInfo)
+    document.getElementById('saveAvatar').addEventListener('click', saveAvatar)
     document.getElementById('btnErrorAvatar').addEventListener('click', closeAlertAvatar)
     document.getElementById('btnErrorInfo').addEventListener('click', closeAlertInfo)
     document.getElementById('userSettingsModal').addEventListener('show.bs.modal', setupSettings)
@@ -53,13 +53,12 @@ function closeSettings() {
 async function displayAlertStatus(response, type) {
     const alert = document.getElementById('alertError' + type);
     const alertText = document.getElementById('messageError' + type);
-    alert.classList.remove('hide');
-    alert.classList.add('show');
 
     let message =  await response.text();
     if (response.status == 200) {
-        closeSettings()
-        return ;
+        alert.classList.add('alert-success');
+        alert.classList.remove('alert-danger');
+        message = "Your " + type + " has been updated"
     } else  if (response.status == 413) {
         message = "File is too big, max size is 5MB"
     }
@@ -67,31 +66,35 @@ async function displayAlertStatus(response, type) {
         alert.classList.add('alert-danger');
         alert.classList.remove('alert-success');
     }
-    alertText.innerText = message
+    alert.classList.remove('hide');
+    alert.classList.add('show');
+    alertText.textContent = message
     setTimeout(() => {
         alert.classList.add('hide');
         alert.classList.remove('show');
     }, 10000);
 }
 
-async function saveChangedSettings(objectData, formData) {
-    console.log("SAVE SETTINGS")
 
-    if (Object.keys(objectData).length > 0) {
-        const response = await fetchUser('PATCH', null, objectData);
-        if (!response) { return }
-        displayAlertStatus(response, 'Info')
+async function saveAvatar() {
+    const formData = new FormData();
+    const avatarInput = document.getElementById('avatarInput').files[0];
+    if (avatarInput) {
+        console.log("APPEND AVATAR")
+        formData.append('avatar', avatarInput);
     }
     if (formData.has('avatar')) {
         const response = await fetchUpload('POST', formData);
         if (!response) { return }
         displayAlertStatus(response, 'Avatar')
+    } else {
+        console.log("NO AVATAR UPLOAD")
     }
 }
 
-async function saveSettings() {
+
+async function saveInfo() {
     const objectData = new Object();
-    const formData = new FormData();
 
     const nicknameInput = document.getElementById('nicknameInput').value;
     const userNickname = document.getElementById('nickname').innerText;
@@ -106,15 +109,15 @@ async function saveSettings() {
         objectData.email = emailInput;
     }
 
-    const avatarInput = document.getElementById('avatarInput').files[0];
-    if (avatarInput) {
-        console.log("APPEND AVATAR")
-        formData.append('avatar', avatarInput);
+    if (Object.keys(objectData).length > 0) {
+        // const userInput = window.prompt("Please enter your password:");
+        // data.validPassword = userInput // TODO: check if password is valid in backend
+        const response = await fetchUser('PATCH', null, objectData);
+        if (!response) { return }
+        displayAlertStatus(response, 'Info')
+    } else {
+        console.log("NO CHANGES")
     }
-    // const userInput = window.prompt("Please enter your password:");
-    // data.validPassword = userInput // TODO: check if password is valid in backend
-    await saveChangedSettings(objectData, formData);
-    // closeSettings()
 }
 
 
