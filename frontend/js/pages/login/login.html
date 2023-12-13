@@ -26,7 +26,6 @@
             <label for="passwordInput">Password</label>
         </div>
         <div class="m-3 text-center">
-            <p id="errorMessage" class="d-none alert alert-danger"></p>
             <button type="submit" class="btn btn-secondary loginButton" id="loginButton">
                 Login
             </button>
@@ -35,12 +34,16 @@
             <p>
                 Don't have an accout?
                 <a
-                    id="signUpButton"
-                    class="link-secondary link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover linkHover"
-                    >Sign up</a
+                id="signUpButton"
+                class="link-secondary link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover linkHover"
+                >Sign up</a
                 >
             </p>
         </div>
+    </div>
+    <div id="alertErrorLogin" class="alert alert-danger alert-dismissible fade hide" role="alert">
+        <p id="messageErrorLogin"></p>
+        <button id="btnAlertCloseLogin" type="button" class="btn-close" aria-label="Close"></button>
     </div>
 </form>
 

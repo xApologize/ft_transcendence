@@ -12,6 +12,7 @@ export async function showSignUp() {
                 event.preventDefault();
                 signUp();
             });
+        document.getElementById('btnAlertCloseSignup').addEventListener('click', hideSignupAlert)
     } catch (error) {
         console.error('Error fetching signUp.html:', error);
     }
@@ -29,7 +30,7 @@ async function loginAfterSignup(nickname, password) {
             return ;
         } else {
             const result = await response.text();
-            displayErrorMessage(result)
+            displaySignupError(result)
         }
     } catch (error) {
         console.error('Error during login:', error);
@@ -47,7 +48,7 @@ async function signUp() {
         return;
     }
     if (password !== passwordConfirm) {
-        displayErrorMessage('Passwords do not match');
+        displaySignupError('Passwords do not match');
         return;
     }
     const userData = {
@@ -62,19 +63,21 @@ async function signUp() {
         return;
     }
     const responseText = await users.text();
-    if (!users.ok) { displayErrorMessage(responseText); }
+    if (!users.ok) { displaySignupError(responseText); }
     else { loginAfterSignup(nickname, password); }
 }
 
-function displayErrorMessage(errorMessage) {
-    const error = document.getElementById('errorMessage');
-    error.classList.remove('d-none');
-    error.textContent = errorMessage;
-
-    // Hide the error message after 3 seconds
-    setTimeout(() => {
-        error.classList.add('d-none');
-        error.textContent = '';
-    }, 3000);
+function displaySignupError(errorMessage) {
+    const errorAlert = document.getElementById('alertErrorSignup');
+    const errorParagraph = document.getElementById('messageErrorSignup');
+    errorParagraph.textContent = errorMessage;
+    errorAlert.classList.add('show');
+    errorAlert.classList.remove('hide');
 }
 
+
+function hideSignupAlert() {
+    const errorAlert = document.getElementById('alertErrorSignup');
+    errorAlert.classList.remove('show');
+    errorAlert.classList.add('hide');
+}

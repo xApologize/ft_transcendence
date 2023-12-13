@@ -15,6 +15,7 @@ export async function showLogin() {
             .addEventListener('click', () => {
                 navigateTo('/signUp');
             });
+        document.getElementById('btnAlertCloseLogin').addEventListener('click', hideLoginAlert)
         document.getElementById('demo-user-btn').addEventListener('click', () => {
             login("demo-user", "demo-user");
         });
@@ -52,15 +53,25 @@ async function login(username = null, password = null) {
         if (response.ok) {
             navigateTo('/home');
         } else {
-            const errorMessage = document.getElementById('errorMessage');
             const result = await response.json();
-            errorMessage.textContent = result.error;
-            errorMessage.classList.remove('d-none')
-            setTimeout(() => {
-                errorMessage.classList.add('d-none')
-            }, 10000); // Adjust the time (in milliseconds) for the fade out effect
+            displayLoginError(result)
         }
     } catch (error) {
         console.error('Error during login:', error);
     }
+}
+
+async function displayLoginError(message) {
+    const alert = document.getElementById('alertErrorLogin');
+    const msg = document.getElementById('messageErrorLogin');
+    msg.textContent = message.error;
+    alert.classList.remove('hide');
+    alert.classList.add('show');
+}
+
+function hideLoginAlert() {
+    const alert = document.getElementById('alertErrorLogin');
+    alert.classList.add('hide');
+    alert.classList.remove('show');
+
 }
