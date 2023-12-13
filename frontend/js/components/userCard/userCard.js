@@ -13,6 +13,9 @@ export async function userCardComponent() {
 export async function userCardListener() {
     document.getElementById('logout').addEventListener('click', logoutUser)
     document.getElementById('saveSettings').addEventListener('click', saveSettings)
+    document.getElementById('saveAvatar').addEventListener('click', saveSettings)
+    document.getElementById('btnErrorAvatar').addEventListener('click', closeAlertAvatar)
+    document.getElementById('btnErrorInfo').addEventListener('click', closeAlertInfo)
     document.getElementById('userSettingsModal').addEventListener('show.bs.modal', setupSettings)
     document.getElementById('userSettingsModal').addEventListener('hide.bs.modal', function (event) {
         console.log('Settings Modal is about to be hide')
@@ -21,6 +24,20 @@ export async function userCardListener() {
     });
 
     settingsListener()
+}
+
+
+function closeAlertInfo() {
+    const alert = document.getElementById('alertErrorInfo');
+    alert.classList.remove('show');
+    alert.classList.add('hide');
+}
+
+
+function closeAlertAvatar() {
+    const alert = document.getElementById('alertErrorAvatar');
+    alert.classList.remove('show');
+    alert.classList.add('hide');
 }
 
 function closeSettings() {
@@ -33,20 +50,42 @@ function closeSettings() {
     }  
 }
 
+async function displayAlertStatus(response, type) {
+    const alert = document.getElementById('alertError' + type);
+    const alertText = document.getElementById('messageError' + type);
+    alert.classList.remove('hide');
+    alert.classList.add('show');
+
+    let message =  await response.text();
+    if (response.status == 200) {
+        closeSettings()
+        return ;
+    } else  if (response.status == 413) {
+        message = "File is too big, max size is 5MB"
+    }
+    else {
+        alert.classList.add('alert-danger');
+        alert.classList.remove('alert-success');
+    }
+    alertText.innerText = message
+    setTimeout(() => {
+        alert.classList.add('hide');
+        alert.classList.remove('show');
+    }, 10000);
+}
+
 async function saveChangedSettings(objectData, formData) {
     console.log("SAVE SETTINGS")
 
     if (Object.keys(objectData).length > 0) {
         const response = await fetchUser('PATCH', null, objectData);
-        if (response && response.status > 400) {
-            console.log("Error while saving settings");
-        }
+        if (!response) { return }
+        displayAlertStatus(response, 'Info')
     }
     if (formData.has('avatar')) {
         const response = await fetchUpload('POST', formData);
-        if (response && response.status > 400) {
-            console.log("Error while saving settings");
-        }
+        if (!response) { return }
+        displayAlertStatus(response, 'Avatar')
     }
 }
 
@@ -75,7 +114,7 @@ async function saveSettings() {
     // const userInput = window.prompt("Please enter your password:");
     // data.validPassword = userInput // TODO: check if password is valid in backend
     await saveChangedSettings(objectData, formData);
-    closeSettings()
+    // closeSettings()
 }
 
 
@@ -93,7 +132,6 @@ function setupSettings() {
 }
 
 function settingsListener() {
-    // Left column listener
     document.querySelectorAll('.left-column-settings i').forEach(function(icon) {
             icon.addEventListener('click', function() {
             document.querySelectorAll('.left-column-settings i').forEach(function(icon) {

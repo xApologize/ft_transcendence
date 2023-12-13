@@ -8,11 +8,12 @@ from django.views import View
 from utils.decorators import token_validation
 from utils.functions import get_user_obj
 from friend_list.models import FriendList
-import json, os,base64,mimetypes
+import json, os,base64,mimetypes, imghdr
 from django.db.models import Q
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.conf import settings
-
+from PIL import Image, UnidentifiedImageError
+from io import BytesIO
 from django.core.files.storage import default_storage
 
 DEFAULT_AVATAR_URL = "avatars/default.png"
@@ -128,6 +129,7 @@ class Users(View):
             return HttpResponse(str(e), status=404)
         try:
             data = json.loads(request.body)
+            # Check if data contain wrong field
             # Do password check !! @TODO
             for field in ['nickname', 'email']:
                 if field in data and getattr(user, field) != data[field]:
@@ -137,7 +139,7 @@ class Users(View):
         except json.JSONDecodeError:
             return HttpResponseBadRequest('Invalid JSON data in the request body.') # 400
         except IntegrityError:
-            return HttpResponseBadRequest(f'Nickname {user["nickname"]} is already in use.') # 400
+            return HttpResponseBadRequest(f'Nickname is already in use.') # 400
         except Exception as e:
             return HttpResponseBadRequest('Unexpexted Error:', e) # 400
 
@@ -212,23 +214,67 @@ class Upload(View):
             return HttpResponse(str(e), status=401)
         except Http404 as e:
             return HttpResponse(str(e), status=404)
+
         try:
             if 'avatar' in request.FILES:
                 file = request.FILES['avatar']
                 file_extension = os.path.splitext(file.name)[1]
                 new_file_name = f"user_{user.id}{file_extension}"
 
+                # Validate the new avatar first
+                try:
+                    validate_image(file)  # Assuming validate_image is your validation function
+                except ValidationError as e:
+                    return HttpResponseBadRequest(f"{str(e.message)}")  # Return the validation error
+
+                # Delete the old avatar if validation is successful
                 avatar_dir = os.path.join(settings.MEDIA_ROOT, 'avatars')
                 for item in os.listdir(avatar_dir):
                     if item.startswith(f"user_{user.id}"):
                         os.remove(os.path.join(avatar_dir, item))
-                try:
-                    user.avatar.save(new_file_name, file)
-                except ValidationError as e:
-                    return HttpResponseBadRequest(e)
 
-                return HttpResponse(f'Avatar updated successfully.', status=200)
+                # Save the new avatar
+                user.avatar.save(new_file_name, file)
+                return HttpResponse('Avatar updated successfully.', status=200)
             else:
-                return HttpResponseBadRequest('No avatar provided.') # 400
+                return HttpResponseBadRequest('No avatar provided.')  # 400
         except Exception as e:
-            return HttpResponseBadRequest('Unexpexted Error:', e) # 400
+            return HttpResponseBadRequest('Unexpected Error: ' + str(e))  # 400
+
+
+def validate_image(image_field):
+    # Check file extension
+    valid_extensions = ['.jpg', '.jpeg', '.png']
+    extension = os.path.splitext(image_field.name)[1]
+    if extension.lower() not in valid_extensions:
+        raise ValidationError(f"Unsupported file extension. Allowed extensions: {', '.join(valid_extensions)}")
+
+    file_size = image_field.file.getbuffer().nbytes
+    max_size = 1 * (1024 * 1024)  # 1MB
+    if file_size > max_size:
+        raise ValidationError("Maximum file size exceeded. Limit is 1MB.")
+
+    try:
+        # Temporarily save the image to a BytesIO object to check dimensions and format
+        with Image.open(image_field.file) as img:
+            img.verify()  # Verify that this is an image
+            width, height = img.size
+            max_width = 1920
+            max_height = 1080
+            if width > max_width or height > max_height:
+                raise ValidationError(f"Image dimensions should not exceed {max_width}x{max_height}px.")
+    except UnidentifiedImageError:
+        raise ValidationError("Uploaded file is not a valid image.")
+    except Exception as e:
+        raise ValidationError("Error: Please do not upload garbage to fail us.")
+
+    # Reset the file pointer after Image.open()
+    image_field.file.seek(0)
+
+    # Check for actual image format using imghdr
+    image_format = imghdr.what(None, h=image_field.file.read())
+    if not image_format:
+        raise ValidationError("Invalid image format.")
+    
+    # Reset the file pointer after checking extensions
+    image_field.file.seek(0)
