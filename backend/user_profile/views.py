@@ -2,7 +2,6 @@ from .models import User
 from django.db.utils import IntegrityError
 from django.http import JsonResponse, HttpResponse, HttpResponseNotFound, HttpResponseBadRequest, HttpRequest, Http404
 from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
 from match_history.models import MatchHistory
 from django.views import View
 from utils.decorators import token_validation
@@ -12,8 +11,8 @@ import json, os,base64,mimetypes
 from django.db.models import Q
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.conf import settings
-
 from django.core.files.storage import default_storage
+from django.contrib.auth.hashers import make_password
 
 DEFAULT_AVATAR_URL = "avatars/default.png"
 
@@ -45,7 +44,6 @@ class Users(View):
         nicknames = request.GET.getlist('nickname')
         if not nicknames and not status:
             return HttpResponseBadRequest('No parameter.')
-
         if nicknames:
             users = User.objects.filter(nickname__in=nicknames)
         elif status:
@@ -89,7 +87,7 @@ class Users(View):
                     avatar='',
                     status='OFF',
                     admin=False,
-                    password=user_data['password']
+                    password=make_password(user_data['password'])
                 )
                 user.save()
             except IntegrityError:
