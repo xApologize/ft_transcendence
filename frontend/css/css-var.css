@@ -1,5 +1,10 @@
+/*  color hunt palette
+    bg-main: last row
+    bg-main-second: first row
+    bg-accent: third row
+*/
 :root {
-    --bg-main: #092635;
-    --bg-main-second: #1B4242;
-    --bg-accent: #9EC8B9;
+    --bg-main: #508D69;
+    --bg-main-second: #FF8F8F;
+    --bg-accent: #9ADE7B;
 }
