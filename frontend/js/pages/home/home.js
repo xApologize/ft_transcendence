@@ -37,9 +37,15 @@ export async function showHome() {
         const userCol = document.getElementById('left-column');
         const gameCol = document.getElementById('right-column');
         const buttonToggle = document.getElementById('userBtn');
+        const iconStyle = document.getElementById('icon');
         buttonToggle.addEventListener('click', () => {
-            let toggleText = buttonToggle.innerText;
-            buttonToggle.innerText = toggleText == 'Users' ? 'Game' : 'Users';
+            if (iconStyle.classList.contains('fa-user')) {
+                iconStyle.classList.add('fa-gamepad');
+                iconStyle.classList.remove('fa-user');
+            } else {
+                iconStyle.classList.remove('fa-gamepad');
+                iconStyle.classList.add('fa-user');
+            }
             userCol.classList.toggle('show');
             gameCol.classList.toggle('hide');
         });

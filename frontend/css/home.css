@@ -21,8 +21,6 @@
 }
 
 .userList {
-    background-color: black;
-    opacity: 85%;
     height: 100%;
 }
 
@@ -36,6 +34,12 @@
     width: 40px;
 }
 
+#divGame {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
 .hide {
     display: none;
 }
@@ -46,4 +50,26 @@
 }
 .show {
     display: block !important;
+}
+
+.bg-main-second {
+    background-color: var(--bg-main-second);
+}
+
+.bg-main {
+    background-color: var(--bg-main);
+}
+
+.textWhite {
+    color: white !important;
+}
+
+.btn-primary {
+    background-color: var(--bg-main-second) !important;
+    border-color: var(--bg-main-second) !important;
+}
+
+.btn-primary:hover {
+    background-color: var(--bg-accent) !important;
+    border-color: var(--bg-accent) !important;
 }
