@@ -8,34 +8,15 @@ from django.views import View
 from utils.decorators import token_validation
 from utils.functions import get_user_obj
 from friend_list.models import FriendList
-import json, os,base64,mimetypes, imghdr
+import json, os, imghdr
 from django.db.models import Q
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.conf import settings
+from .utils import get_avatar_data, check_info_update, check_info_signup
 from PIL import Image, UnidentifiedImageError
-from io import BytesIO
-from django.core.files.storage import default_storage
 
-DEFAULT_AVATAR_URL = "avatars/default.png"
 
 # https://stackoverflow.com/questions/3290182/which-status-code-should-i-use-for-failed-validations-or-invalid-duplicates
-
-
-def get_image_as_base64(image_path):
-    with default_storage.open(image_path, 'rb') as image_file:
-        return base64.b64encode(image_file.read()).decode('utf-8')
-
-def get_avatar_data(user):
-    if user.avatar:
-        avatar_base64 = get_image_as_base64(user.avatar.name)
-        content_type, _ = mimetypes.guess_type(user.avatar.name)
-    else:
-        avatar_base64 = get_image_as_base64(DEFAULT_AVATAR_URL)
-        content_type, _ = mimetypes.guess_type(DEFAULT_AVATAR_URL)
-
-    if content_type is None:
-        content_type = 'image/jpeg'
-    return f'data:{content_type};base64,{avatar_base64}'
 
 
 @method_decorator(csrf_exempt, name='dispatch') #- to apply to every function in the class.
@@ -72,19 +53,12 @@ class Users(View):
         try:
             user_data = json.loads(request.body)
             required_fields = ['nickname', 'email', 'password', 'passwordConfirm']
-            extra_fields = user_data.keys() - required_fields
-            if extra_fields:
-                error_message = f'Unexpected fields: {", ".join(extra_fields)}'
-                return HttpResponseBadRequest(error_message) # 400
+            checkup = check_info_signup(user_data, required_fields)
+            if checkup is not None:
+                return checkup
             if user_data['password'] != user_data['passwordConfirm']:
                 return HttpResponseBadRequest('Passwords do not match')
             try:
-                # not empty
-                if any(user_data.get(field, '') == '' for field in ['nickname', 'email', 'password', 'passwordConfirm']):
-                    return HttpResponseBadRequest('Missing one or more required fields') # 400
-                # does not contain space
-                if any(' ' in user_data.get(field, '') for field in ['nickname', 'email', 'password', 'passwordConfirm']):
-                    return HttpResponseBadRequest('Field contain space') # 400
                 user = User.objects.create(
                     nickname=user_data['nickname'],
                     email=user_data['email'],
@@ -131,10 +105,9 @@ class Users(View):
         allowed_fields = {'nickname', 'email'}
         try:
             data = json.loads(request.body)
-            
-            # Check for any fields in data that are not allowed
-            if any(field not in allowed_fields for field in data):
-                return HttpResponseBadRequest('Invalid field(s) in data.')
+            checkup = check_info_update(data, allowed_fields)
+            if checkup is not None:
+                return checkup
 
             for field in allowed_fields:
                 if field in data:
@@ -285,3 +258,4 @@ def validate_image(image_field):
     
     # Reset the file pointer after checking extensions
     image_field.file.seek(0)
+    

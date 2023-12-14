@@ -70,6 +70,10 @@ async function saveAvatar() {
 async function saveInfo() {
     const objectData = new Object();
 
+    const alert = document.getElementById('alertErrorInfo');
+    removeAllAlerts(alert);
+    closeAlertInfo()
+
     const nicknameInput = document.getElementById('nicknameInput').value;
     const userNickname = document.getElementById('nickname').innerText;
     if (userNickname != nicknameInput) {
