@@ -15,6 +15,7 @@ export async function showLogin() {
             .addEventListener('click', () => {
                 navigateTo('/signUp');
             });
+        document.getElementById('btnAlertCloseLogin').addEventListener('click', hideLoginAlert)
         document.getElementById('demo-user-btn').addEventListener('click', () => {
             login("demo-user", "demo-user");
         });
@@ -47,18 +48,30 @@ async function login(username = null, password = null) {
 
     try {
         const response = await fetchAuth('POST','login/', loginData);
-        if (response) {
-            if (response.ok) {
-                const result = await response.json();
-                if (result.success) {
-                    console.log('Login successful: ', await result.success);
-                    navigateTo('/home');
-                    return ;
-                }
-                console.log('Login failed: ', await result.error);
-            }
+        if (!response)
+            return;
+        if (response.ok) {
+            navigateTo('/home');
+        } else {
+            const result = await response.json();
+            displayLoginError(result)
         }
     } catch (error) {
         console.error('Error during login:', error);
     }
+}
+
+async function displayLoginError(message) {
+    const alert = document.getElementById('alertErrorLogin');
+    const msg = document.getElementById('messageErrorLogin');
+    msg.textContent = message.error;
+    alert.classList.remove('hide');
+    alert.classList.add('show');
+}
+
+function hideLoginAlert() {
+    const alert = document.getElementById('alertErrorLogin');
+    alert.classList.add('hide');
+    alert.classList.remove('show');
+
 }

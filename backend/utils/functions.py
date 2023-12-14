@@ -61,6 +61,7 @@ def get_user_obj(request: HttpRequest) -> User:
     
     decrypt_result = decrypt_user_id(access_jwt_cookie)
     if decrypt_result <= 0:
+        # IF 404 DELETE COOKIE ?? IF LOG, MAKE NUKE, MAKE AND TOKEN STILL THERE, WILL NOT FIND USER
         raise Http404("User not found")
 
     user = get_object_or_404(User, id=decrypt_result)
