@@ -1,4 +1,4 @@
-import { displayErrorAlert } from '../../utils/utilityFunctions.js';
+import { displayAlertMsg } from '../../utils/utilityFunctions.js';
 import { fetchUpload, fetchUser } from '../../api/fetchData.js';
 import { closeAlertInfo, removeAllAlerts } from './utils.js';
 
@@ -26,7 +26,7 @@ export async function displayAlertStatus(response, type) {
     alert.classList.remove('hide');
     alert.classList.add('show');
 
-    displayErrorAlert(message, alert);
+    displayAlertMsg(message, alert);
 }
 
 export async function saveAvatar() {
@@ -76,7 +76,7 @@ export function noChangeMadeAlert(alertError) {
     const text = "No changes were made";
     removeAllAlerts(alert);
 
-    displayErrorAlert(text, alert);
+    displayAlertMsg(text, alert);
     alert.classList.add('alert-primary');
     alert.classList.add('show');
 }

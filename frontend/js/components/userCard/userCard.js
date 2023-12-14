@@ -1,8 +1,8 @@
 import { fetchAuth, fetchUpload, fetchUser, loadHTMLComponent } from "../../api/fetchData.js";
 import { navigateTo } from "../../router.js";
 import { closeAlertAvatar, closeAlertInfo, setupSettings, closeAlert2FA } from "./utils.js";
-import { disable2FA, enable2FA, updateMenu2FA } from "./menu2FA.js";
-import { saveAvatar, saveInfo, displayAlertStatus } from "./menuInfo.js";
+import { disable2FA, enable2FA, updateMenu2FA, checkConfirmationCode } from "./menu2FA.js";
+import { saveAvatar, saveInfo } from "./menuInfo.js";
 
 
 export async function userCardComponent() {
@@ -29,7 +29,7 @@ export async function userCardListener() {
     document.getElementById('btnErrorAvatar').addEventListener('click', closeAlertAvatar)
     document.getElementById('btnErrorInfo').addEventListener('click', closeAlertInfo)
     document.getElementById('closeAlert2FA').addEventListener('click', closeAlert2FA)
-
+    document.getElementById('2FAForm').addEventListener('submit', checkConfirmationCode)
     settingsListener()
 }
 

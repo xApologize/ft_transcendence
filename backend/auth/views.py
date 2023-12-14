@@ -94,7 +94,7 @@ class Create2FA(View):
 
         return JsonResponse({'error': 'There is no 2FA on this account.'}, status=400)
 
-
+@method_decorator(csrf_exempt, name='dispatch')
 class Confirm2FA(View):
     @token_validation
     def post(self, request):
@@ -111,7 +111,9 @@ class Confirm2FA(View):
 
         # Retrieve the unconfirmed TOTP device for this user
         device = TOTPDevice.objects.filter(user=user, confirmed=False).first()
-        if device and device.verify_token(otp_token):
+        if not device:
+            return JsonResponse({'error': 'You have no pending 2FA confirmation.'}, status=400)
+        if device.verify_token(otp_token):
             # If the OTP token is valid, confirm the device
             device.confirmed = True
             device.save()

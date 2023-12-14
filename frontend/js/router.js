@@ -28,6 +28,7 @@ function showPage(pageFunction) {
 export function navigateTo(route) {
     // console.log("navigateTo!")
     if (route === currentRoute) return;
+    console.log("PUSH STATE")
     history.pushState({ route: route }, null, route);
     handleRoute();
 }

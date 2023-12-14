@@ -1,4 +1,4 @@
-export function displayErrorAlert(text, alert) {
+export function displayAlertMsg(text, alert) {
     while (alert.firstChild && alert.firstChild.nodeType === Node.TEXT_NODE) {
         alert.removeChild(alert.firstChild);
     }

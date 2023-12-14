@@ -1,7 +1,7 @@
 import { loadHTMLPage } from '../../api/fetchData.js';
 import { navigateTo } from '../../router.js'
 import { fetchAuth } from '../../api/fetchData.js';
-import { displayErrorAlert } from '../../utils/utilityFunctions.js';
+import { displayAlertMsg } from '../../utils/utilityFunctions.js';
 
 export async function showLogin() {
     try {
@@ -65,7 +65,7 @@ async function login(username = null, password = null) {
 async function displayLoginError(message) {
     const alert = document.getElementById('alertErrorLogin');
     const msg = message.error;
-    displayErrorAlert(msg, alert);
+    displayAlertMsg(msg, alert);
     alert.classList.remove('hide');
     alert.classList.add('show');
 }
