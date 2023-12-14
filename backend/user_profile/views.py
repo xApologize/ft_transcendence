@@ -1,11 +1,11 @@
 from .models import User
 from django.db.utils import IntegrityError
 from django.http import JsonResponse, HttpResponse, HttpResponseNotFound, HttpResponseBadRequest, HttpRequest, Http404
-from django.utils.decorators import method_decorator
 from match_history.models import MatchHistory
 from django.views import View
 from utils.decorators import token_validation
 from utils.functions import get_user_obj
+from django.contrib.auth.hashers import make_password
 from friend_list.models import FriendList
 import json, os, imghdr
 from django.db.models import Q
@@ -17,7 +17,6 @@ from .utils import get_avatar_data, check_info_update, check_info_signup, valida
 # https://stackoverflow.com/questions/3290182/which-status-code-should-i-use-for-failed-validations-or-invalid-duplicates
 
 
-@method_decorator(csrf_exempt, name='dispatch') #- to apply to every function in the class.
 class Users(View):
     # Get All Users or specific users
     @token_validation

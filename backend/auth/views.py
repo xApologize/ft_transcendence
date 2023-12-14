@@ -1,10 +1,10 @@
 from django.db.utils import IntegrityError
 from django.http import JsonResponse, HttpResponse, Http404
-from django.utils.decorators import method_decorator
 from django.views import View
 from utils.decorators import token_validation
 from django.core.exceptions import PermissionDenied
 import json
+from django.contrib.auth.hashers import check_password
 from user_profile.models import User
 from utils.functions import first_token
 from utils.functions import get_user_obj
@@ -14,7 +14,7 @@ import base64
 import qrcode
 from io import BytesIO
 
-@method_decorator(csrf_exempt, name='dispatch')
+
 class Auth2FA(View):
     @token_validation
     def post(self, request):
@@ -63,13 +63,8 @@ class Login(View):
         except User.DoesNotExist:
             return JsonResponse(errorMessage, status=400)
 
-<<<<<<< HEAD
         if check_password(password, user.password) is False:
-            return JsonResponse({'error': 'Invalid credentials.'}, status=400)
-=======
-        if user.password != password:
             return JsonResponse(errorMessage, status=400)
->>>>>>> main
         else:
             user.status = "ONL"
             user.save()

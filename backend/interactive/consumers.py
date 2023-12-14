@@ -7,7 +7,6 @@ import json
 class UserInteractiveSocket(AsyncWebsocketConsumer):
     async def connect(self):
         self.user_id: int = self.scope.get("user_id")
-        print("Channel name", self.channel_name)
         if self.user_id < 0:
             await self.close()
         else:
@@ -35,7 +34,6 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             print("Invalid data sent to socket, json decode error")
             return
         message_type = data["type"]
-        print("Json:", message_type)
         if message_type == "Find Match":
             await self.find_match()
         elif message_type == "Refresh":
