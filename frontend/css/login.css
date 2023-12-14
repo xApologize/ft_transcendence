@@ -31,3 +31,11 @@
     bottom: 5%;
     left: 0;
 }
+
+.textWhite {
+    color: white;
+}
+
+.link-secondary {
+    color: rgb(93, 89, 89) !important;
+}
