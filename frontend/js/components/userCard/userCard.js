@@ -31,17 +31,19 @@ async function displayAlertStatus(response, type) {
     const alert = document.getElementById('alertError' + type);
     const alertText = document.getElementById('messageError' + type);
 
-    let message =  await response.text();
+    let message = ""
     removeAllAlerts(alert);
     if (response.status == 413) {
         alert.classList.add('alert-danger');
         message = "File is too big, max size is 1MB"
     } else if (response.status == 200) {
-        document.getElementById('nickname').innerText = document.getElementById('nicknameInput').value;
-        document.getElementById('email').innerText = document.getElementById('emailInput').value;
+        const dataSuccess = await response.json();
+        document.getElementById('nickname').innerText = dataSuccess.user.nickname;
+        document.getElementById('email').innerText = dataSuccess.user.email;
         alert.classList.add('alert-success');
         message = "Your " + type + " has been updated"
     } else {
+        message = await response.text();
         alert.classList.add('alert-danger');
     }
 

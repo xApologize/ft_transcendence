@@ -2,7 +2,9 @@ from django.http import HttpResponseBadRequest
 from django.conf import settings
 from io import BytesIO
 from django.core.files.storage import default_storage
-import base64, mimetypes, logging
+import base64, mimetypes, imghdr, os
+from PIL import Image, UnidentifiedImageError
+
 
 DEFAULT_AVATAR_URL = "avatars/default.png"
 
@@ -81,3 +83,40 @@ def get_avatar_data(user):
         content_type = 'image/jpeg'  # Default content type
 
     return f'data:{content_type};base64,{avatar_base64}'
+
+def validate_image(image_field):
+    # Check file extension
+    valid_extensions = ['.jpg', '.jpeg', '.png']
+    extension = os.path.splitext(image_field.name)[1]
+    if extension.lower() not in valid_extensions:
+        raise ValidationError(f"Unsupported file extension. Allowed extensions: {', '.join(valid_extensions)}")
+
+    file_size = image_field.file.getbuffer().nbytes
+    max_size = 1 * (1024 * 1024)  # 1MB
+    if file_size > max_size:
+        raise ValidationError("Maximum file size exceeded. Limit is 1MB.")
+
+    try:
+        # Temporarily save the image to a BytesIO object to check dimensions and format
+        with Image.open(image_field.file) as img:
+            img.verify()  # Verify that this is an image
+            width, height = img.size
+            max_width = 1920
+            max_height = 1080
+            if width > max_width or height > max_height:
+                raise ValidationError(f"Image dimensions should not exceed {max_width}x{max_height}px.")
+    except UnidentifiedImageError:
+        raise ValidationError("Uploaded file is not a valid image.")
+    except Exception as e:
+        raise ValidationError("Error: Please do not upload garbage to fail us.")
+
+    # Reset the file pointer after Image.open()
+    image_field.file.seek(0)
+
+    # Check for actual image format using imghdr
+    image_format = imghdr.what(None, h=image_field.file.read())
+    if not image_format:
+        raise ValidationError("Invalid image format.")
+    
+    # Reset the file pointer after checking extensions
+    image_field.file.seek(0)

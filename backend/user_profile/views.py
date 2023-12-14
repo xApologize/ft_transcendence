@@ -12,8 +12,7 @@ import json, os, imghdr
 from django.db.models import Q
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.conf import settings
-from .utils import get_avatar_data, check_info_update, check_info_signup
-from PIL import Image, UnidentifiedImageError
+from .utils import get_avatar_data, check_info_update, check_info_signup, validate_image
 
 
 # https://stackoverflow.com/questions/3290182/which-status-code-should-i-use-for-failed-validations-or-invalid-duplicates
@@ -114,7 +113,13 @@ class Users(View):
                     if getattr(user, field) != data[field]:
                         setattr(user, field, data[field])
             user.save()
-            return HttpResponse(f'User updated successfully.', status=200)
+            return JsonResponse({
+                "message": "User updated successfully.",
+                "user": {
+                    'nickname': user.nickname,
+                    'email': user.email,
+                }
+            }, status=200)
 
         except json.JSONDecodeError:
             return HttpResponseBadRequest('Invalid JSON data in the request body.') # 400
@@ -221,41 +226,4 @@ class Upload(View):
         except Exception as e:
             return HttpResponseBadRequest('Unexpected Error: ' + str(e))  # 400
 
-
-def validate_image(image_field):
-    # Check file extension
-    valid_extensions = ['.jpg', '.jpeg', '.png']
-    extension = os.path.splitext(image_field.name)[1]
-    if extension.lower() not in valid_extensions:
-        raise ValidationError(f"Unsupported file extension. Allowed extensions: {', '.join(valid_extensions)}")
-
-    file_size = image_field.file.getbuffer().nbytes
-    max_size = 1 * (1024 * 1024)  # 1MB
-    if file_size > max_size:
-        raise ValidationError("Maximum file size exceeded. Limit is 1MB.")
-
-    try:
-        # Temporarily save the image to a BytesIO object to check dimensions and format
-        with Image.open(image_field.file) as img:
-            img.verify()  # Verify that this is an image
-            width, height = img.size
-            max_width = 1920
-            max_height = 1080
-            if width > max_width or height > max_height:
-                raise ValidationError(f"Image dimensions should not exceed {max_width}x{max_height}px.")
-    except UnidentifiedImageError:
-        raise ValidationError("Uploaded file is not a valid image.")
-    except Exception as e:
-        raise ValidationError("Error: Please do not upload garbage to fail us.")
-
-    # Reset the file pointer after Image.open()
-    image_field.file.seek(0)
-
-    # Check for actual image format using imghdr
-    image_format = imghdr.what(None, h=image_field.file.read())
-    if not image_format:
-        raise ValidationError("Invalid image format.")
-    
-    # Reset the file pointer after checking extensions
-    image_field.file.seek(0)
     
