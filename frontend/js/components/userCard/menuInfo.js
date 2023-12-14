@@ -1,0 +1,82 @@
+import { displayErrorAlert } from '../../utils/utilityFunctions.js';
+import { fetchUpload, fetchUser } from '../../api/fetchData.js';
+import { closeAlertInfo, removeAllAlerts } from './utils.js';
+
+export async function displayAlertStatus(response, type) {
+    const alert = document.getElementById('alertError' + type);
+
+    let message = ""
+    removeAllAlerts(alert);
+    if (response.status == 413) {
+        alert.classList.add('alert-danger');
+        message = "File is too big, max size is 1MB"
+    } else if (response.status == 200) {
+        if (response.headers.get("Content-Type").includes("application/json")) {
+            const dataSuccess = await response.json();
+            document.getElementById('nickname').innerText = dataSuccess.user.nickname;
+            document.getElementById('email').innerText = dataSuccess.user.email;
+        }
+        alert.classList.add('alert-success');
+        message = "Your " + type + " has been updated"
+    } else {
+        message = await response.text();
+        alert.classList.add('alert-danger');
+    }
+
+    alert.classList.remove('hide');
+    alert.classList.add('show');
+
+    displayErrorAlert(message, alert);
+}
+
+export async function saveAvatar() {
+    const formData = new FormData();
+    const avatarInput = document.getElementById('avatarInput').files[0];
+    if (avatarInput) {
+        formData.append('avatar', avatarInput);
+    }
+    if (formData.has('avatar')) {
+        const response = await fetchUpload('POST', formData);
+        if (!response) { return }
+        displayAlertStatus(response, 'Avatar')
+    } else {
+        noChangeMadeAlert('alertErrorAvatar');
+    }
+}
+
+export async function saveInfo() {
+    const objectData = new Object();
+
+    const alert = document.getElementById('alertErrorInfo');
+    removeAllAlerts(alert);
+    closeAlertInfo()
+
+    const nicknameInput = document.getElementById('nicknameInput').value;
+    const userNickname = document.getElementById('nickname').innerText;
+    if (userNickname != nicknameInput) {
+        objectData.nickname = nicknameInput;
+    }
+    const emailInput = document.getElementById('emailInput').value;
+    const userEmail = document.getElementById('email').innerText;
+    if (userEmail != emailInput) {
+        objectData.email = emailInput;
+    }
+
+    if (Object.keys(objectData).length > 0) {
+        const response = await fetchUser('PATCH', null, objectData);
+        if (!response) { return }
+        await displayAlertStatus(response, 'Info')
+    } else {
+        noChangeMadeAlert('alertErrorInfo');
+    }
+}
+
+export function noChangeMadeAlert(alertError) {
+    const alert = document.getElementById(alertError);
+    const text = "No changes were made";
+    removeAllAlerts(alert);
+
+    displayErrorAlert(text, alert);
+    alert.classList.add('alert-primary');
+    alert.classList.add('show');
+}

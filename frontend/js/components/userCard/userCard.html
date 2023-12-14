@@ -94,13 +94,12 @@
                                         <p>Email:</p>
                                     </div>
                                     <div class="col-md-6">
-                                        <input type="text" class="form-control" id="emailInput">
+                                        <input type="email" class="form-control" id="emailInput">
                                     </div>
                                 </div>
                             </div>
                             <button id="saveInfo" type="button" class="btn btn-primary">Save Info</button>
                             <div id="alertErrorInfo" class="alert alert-danger alert-dismissible fade hide" role="alert">
-                                <p id="messageErrorInfo"></p>
                                 <button id="btnErrorInfo" type="button" class="btn-close" aria-label="Close"></button>
                             </div>
                             <hr>
@@ -115,7 +114,6 @@
                                 </div>
                                 <button id="saveAvatar" type="button" class="btn btn-primary">Save Avatar</button>
                                 <div id="alertErrorAvatar" class="alert alert-danger alert-dismissible fade hide" role="alert">
-                                    <p id="messageErrorAvatar"></p>
                                     <button id="btnErrorAvatar" type="button" class="btn-close" aria-label="Close"></button>
                                 </div>
                             </div>
@@ -127,13 +125,34 @@
                                     <div class="col-md-4">
                                         <p>Two-factor authentication: </p>
                                     </div>
-                                    <div class="col-md-2">
-                                        <button class="btn btn-primary">Enable</button>
+                                    <div class="col-md-4">
+                                        <button id="enable2FA" class="btn btn-primary">Enable 2FA</button>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button id="disable2FA" class="btn btn-danger" disabled>Disable 2FA</button>
+                                    </div>
+                                </div>
+                                <!-- Hidden section for 2FA details -->
+                                <div class="row mb-3 d-none" id="twoFactorAuthEnable">
+                                    <div class="col-md-12">
+                                        <div id="2FAInfoEnable" class="alert alert-warning" role="alert">  
+                                            <input type="number" id="2FAConfirmInput">                                         
+                                            <button id="2FAConfirmBtn" class="btn btn-primary">Confirm 2FA</button>
+                                        </div>
+                                        <p><strong>Secret Key:</strong> <span id="secretKey"></span></p>
+                                        <p><strong>QR Code:</strong></p>
+                                        <img id="qrCodeImage" src="" alt="QR Code" />
+                                    </div>
+                                </div>
+                                <div class="row mb-3 d-none" id="twoFactorAuthDisplay">
+                                    <div class="col-md-12">
+                                        <div id="2FAInfoDisplay" class="alert alert-success" role="alert">
+                                            <button id="closeAlert2FA" type="button" class="btn-close" aria-label="Close"></button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <!-- Add more menu content as needed -->
                     </div>
                 </div>
         

@@ -1,5 +1,5 @@
 from django.db.utils import IntegrityError
-from django.http import JsonResponse, HttpResponse, Http404
+from django.http import JsonResponse, HttpResponse, Http404, HttpResponseBadRequest
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views import View
@@ -11,12 +11,91 @@ from utils.functions import first_token
 from utils.functions import get_user_obj
 from django_otp.plugins.otp_totp.models import TOTPDevice
 from django.http import JsonResponse
-import base64
-import qrcode
+import base64, qrcode
 from io import BytesIO
+from base64 import b64encode
 
 @method_decorator(csrf_exempt, name='dispatch')
-class Auth2FA(View):
+class Create2FA(View):
+    @token_validation
+    def post(self, request):
+        try:
+            user = get_user_obj(request)
+            if "demo-user" == user.nickname or "demo-user2" == user.nickname:
+                return HttpResponseBadRequest('Demo user cannot enable 2FA.') # 400
+        except PermissionDenied as e:
+            return HttpResponse(str(e), status=401)
+        except Http404 as e:
+            return HttpResponse(str(e), status=404)
+
+        # Check if a TOTP device exists for the user
+        device = TOTPDevice.objects.filter(user=user).first()
+        device_info = ""
+
+        if device and device.confirmed:
+            return HttpResponseBadRequest("2FA is already enabled and confirmed.")
+
+        if not device:
+            # Create a new TOTP device if none exists
+            device = TOTPDevice.objects.create(
+                user=user,
+                name='default',
+                confirmed=False
+            )
+        device_info = "Enter the code on your Auth app to confirm 2FA on your account"
+
+
+        # Generate QR code for the device
+        secret_key = base64.b32encode(device.bin_key).decode('utf-8')
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=4,
+        )
+        qr.add_data(device.config_url)
+        qr.make(fit=True)
+
+        img = qr.make_image(fill_color="black", back_color="white")
+
+        stream = BytesIO()
+        img.save(stream, format="PNG")
+        stream.seek(0)
+        qr_code_base64 = b64encode(stream.getvalue()).decode('utf-8')
+
+        return JsonResponse({
+            'qr_code': f"data:image/png;base64,{qr_code_base64}",
+            'secret_key': secret_key,
+            'confirm': device.confirmed,
+            'info': device_info  # Include information about the device's status
+        })
+
+    @token_validation
+    def delete(self, request):
+        try:
+            user = get_user_obj(request)
+        except PermissionDenied as e:
+            return HttpResponse(str(e), status=401)
+        except Http404 as e:
+            return HttpResponse(str(e), status=404)
+
+        # otp_token = request.POST.get('otp_token')
+        # if not otp_token:
+        #     return JsonResponse({'error': 'OTP token is required.'}, status=400)
+
+        # Retrieve the confirmed TOTP device for this user
+        device = TOTPDevice.objects.filter(user=user).first()
+        if device:
+            # If the OTP token is valid, disable 2FA
+            TOTPDevice.objects.filter(user=user).delete()  # Delete all TOTP devices
+            # user.two_factor_auth = False  # Update the user model
+            # user.save()
+            return JsonResponse({'success': '2FA has been disabled.'})
+
+        return JsonResponse({'error': 'There is no 2FA on this account.'}, status=400)
+
+
+class Confirm2FA(View):
     @token_validation
     def post(self, request):
         try:
@@ -25,28 +104,21 @@ class Auth2FA(View):
             return HttpResponse(str(e), status=401)
         except Http404 as e:
             return HttpResponse(str(e), status=404)
-        
-        if not TOTPDevice.objects.filter(user=user, confirmed=False).exists():
-            # Create a new TOTP device
-            device = TOTPDevice.objects.create(
-                user=user, 
-                name='default',
-                confirmed=False  # Will be set to True after verification
-            )
 
-            # Generate the QR code
-            secret_key = base64.b32encode(device.bin_key).decode('utf-8')
-            img = qrcode.make(device.config_url(), image_factory=qrcode.image.svg.SvgImage)
-            stream = BytesIO()
-            img.save(stream)
+        otp_token = request.POST.get('otp_token')
+        if not otp_token:
+            return JsonResponse({'error': 'OTP token is required.'}, status=400)
 
-            return JsonResponse({
-                'qr_code': stream.getvalue().decode('utf-8'),  # SVG data can be sent directly as a string
-                'secret_key': secret_key,  # Optionally send the secret key to the user
-            })
+        # Retrieve the unconfirmed TOTP device for this user
+        device = TOTPDevice.objects.filter(user=user, confirmed=False).first()
+        if device and device.verify_token(otp_token):
+            # If the OTP token is valid, confirm the device
+            device.confirmed = True
+            device.save()
+            return JsonResponse({'success': '2FA has been enabled and confirmed.'})
 
-        else:
-            return JsonResponse({'error': '2FA is already enabled or pending confirmation.'}, status=400)
+        # OTP verification failed
+        return JsonResponse({'error': 'Invalid OTP.'}, status=400)
 
 
 @method_decorator(csrf_exempt, name='dispatch')

@@ -33,6 +33,8 @@ ALLOWED_HOSTS = "localhost backend 127.0.0.1 [::1]".split(" ")  # FIX LATER,
 # BOZO BANDAID FIX FOR NOW
 
 
+AUTH_USER_MODEL = 'user_profile.User'
+
 # Application definition
 
 INSTALLED_APPS = [

@@ -48,3 +48,7 @@
 .right-column-settings {
     padding: 20px;
 }
+
+.btn.disabled {
+    cursor: not-allowed;
+}

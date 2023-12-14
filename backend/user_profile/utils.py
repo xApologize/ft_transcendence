@@ -4,6 +4,7 @@ from io import BytesIO
 from django.core.files.storage import default_storage
 import base64, mimetypes, imghdr, os
 from PIL import Image, UnidentifiedImageError
+from django.core.exceptions import ValidationError
 
 
 DEFAULT_AVATAR_URL = "avatars/default.png"

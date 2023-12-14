@@ -1,6 +1,9 @@
 import { fetchAuth, fetchUpload, fetchUser, loadHTMLComponent } from "../../api/fetchData.js";
 import { navigateTo } from "../../router.js";
-import { closeAlertAvatar, closeAlertInfo, setupSettings, removeAllAlerts, noChangeMadeAlert } from "./utils.js";
+import { closeAlertAvatar, closeAlertInfo, setupSettings, closeAlert2FA } from "./utils.js";
+import { disable2FA, enable2FA, updateMenu2FA } from "./menu2FA.js";
+import { saveAvatar, saveInfo, displayAlertStatus } from "./menuInfo.js";
+
 
 export async function userCardComponent() {
     try {
@@ -21,80 +24,15 @@ export async function userCardListener() {
         document.getElementById('avatarInput').value = ''
         
     });
+    document.getElementById('disable2FA').addEventListener('click', disable2FA)
+    document.getElementById('enable2FA').addEventListener('click', enable2FA)
     document.getElementById('btnErrorAvatar').addEventListener('click', closeAlertAvatar)
     document.getElementById('btnErrorInfo').addEventListener('click', closeAlertInfo)
+    document.getElementById('closeAlert2FA').addEventListener('click', closeAlert2FA)
 
     settingsListener()
 }
 
-async function displayAlertStatus(response, type) {
-    const alert = document.getElementById('alertError' + type);
-    const alertText = document.getElementById('messageError' + type);
-
-    let message = ""
-    removeAllAlerts(alert);
-    if (response.status == 413) {
-        alert.classList.add('alert-danger');
-        message = "File is too big, max size is 1MB"
-    } else if (response.status == 200) {
-        const dataSuccess = await response.json();
-        document.getElementById('nickname').innerText = dataSuccess.user.nickname;
-        document.getElementById('email').innerText = dataSuccess.user.email;
-        alert.classList.add('alert-success');
-        message = "Your " + type + " has been updated"
-    } else {
-        message = await response.text();
-        alert.classList.add('alert-danger');
-    }
-
-    alert.classList.remove('hide');
-    alert.classList.add('show');
-    alertText.textContent = message
-}
-
-
-async function saveAvatar() {
-    const formData = new FormData();
-    const avatarInput = document.getElementById('avatarInput').files[0];
-    if (avatarInput) {
-        formData.append('avatar', avatarInput);
-    }
-    if (formData.has('avatar')) {
-        const response = await fetchUpload('POST', formData);
-        if (!response) { return }
-        displayAlertStatus(response, 'Avatar')
-    } else {
-        noChangeMadeAlert('messageErrorAvatar', 'alertErrorAvatar');
-    }
-}
-
-
-async function saveInfo() {
-    const objectData = new Object();
-
-    const alert = document.getElementById('alertErrorInfo');
-    removeAllAlerts(alert);
-    closeAlertInfo()
-
-    const nicknameInput = document.getElementById('nicknameInput').value;
-    const userNickname = document.getElementById('nickname').innerText;
-    if (userNickname != nicknameInput) {
-        objectData.nickname = nicknameInput;
-    }
-    const emailInput = document.getElementById('emailInput').value;
-    const userEmail = document.getElementById('email').innerText;
-    if (userEmail != emailInput) {
-        objectData.email = emailInput;
-    }
-
-    if (Object.keys(objectData).length > 0) {
-        const response = await fetchUser('PATCH', null, objectData);
-        if (!response) { return }
-        displayAlertStatus(response, 'Info')
-    } else {
-        noChangeMadeAlert('messageErrorInfo', 'alertErrorInfo');
-    }
-}
 
 function settingsListener() {
     document.querySelectorAll('.left-column-settings i').forEach(function(icon) {
@@ -124,6 +62,7 @@ async function logoutUser() {
     return ;
 }
 
+
 // Call in home.js
 export async function displayUserCard(meUser) {
     let userContainer = document.getElementById('own-user-card');
@@ -131,6 +70,7 @@ export async function displayUserCard(meUser) {
     let userCard = await userCardComponent();
     userContainer.appendChild(userCard);
     userCardListener(); // enable js on the userCard
+    updateMenu2FA(meUser);
     updateUserCard(meUser);
 }
 

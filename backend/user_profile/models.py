@@ -1,6 +1,7 @@
 from django.db import models
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 
-class User(models.Model):
+class User(AbstractBaseUser, PermissionsMixin):
     status_enum = [
         ("ONL", "Online"),
         ("OFF", "Offline"),
@@ -13,3 +14,7 @@ class User(models.Model):
     status = models.CharField(max_length=10, choices=status_enum, default="OFF")
     admin = models.BooleanField(default=False)
     password = models.CharField(max_length=50, default="abc")
+    two_factor_auth = models.BooleanField(default=False)
+
+    USERNAME_FIELD = 'nickname' 
+    REQUIRED_FIELDS = ['password']
