@@ -30,10 +30,10 @@ class Player extends Paddle {
 
 		this.socket = socket;
 		// DEBUG COLOR
-		this.socket.addEventListener("open", (event) => {
-			this.material.color = new Color( 0x00aaff );
+		// this.socket.addEventListener("open", (event) => {
+			// this.material.color = new Color( 0x00aaff );
 			// this.socket.send("Joined");
-		});
+		// });
 
 		this.collider = new Collider( this );
 		this.updatable = new Updatable( this );

@@ -16,6 +16,7 @@ import { airHockeyTable } from './systems/Loader.js';
 
 import interactiveSocket from '../../home/socket.js';
 import {
+	BoxGeometry,
 	CapsuleGeometry,
 	MeshStandardMaterial,
 	SphereGeometry,
@@ -30,6 +31,7 @@ import { FilmPass } from '/node_modules/three/examples/jsm/postprocessing/FilmPa
 import { OutputPass } from '/node_modules/three/examples/jsm/postprocessing/OutputPass.js';
 import { GlitchPass } from '/node_modules/three/examples/jsm/postprocessing/GlitchPass.js';
 import { RenderPixelatedPass } from '/node_modules/three/examples/jsm/postprocessing/RenderPixelatedPass.js';
+import { ParticleSystem } from './components/ParticleSystem.js';
 
 const GameState = {
 	InMenu: "inMenu",
@@ -152,6 +154,24 @@ class World {
 		
 		this.camera.viewLarge( 0 );
 		this.loop.start();
+
+		const bg = new BoxGeometry( 2, 2, 2 );
+		const blue = new MeshStandardMaterial({ color: 'blue' });
+		const parameters = {
+			duration: 0.8,
+			position: new Vector3( 0, 0, 0 ),
+			positionRandomRange: new Vector3( 2, 2, 2 ),
+			direction: new Vector3( 0, 0, 0 ),
+			directionRandomRange: new Vector3( 0, 0, 0 ),
+			speed: 100,
+			speedOverTime: 0,
+			eulerRotation: new Vector3( 0, 0, 0 ),
+			eulerRotationRandomRange: new Vector3( Math.PI, Math.PI, Math.PI ),
+			scale: new Vector3( 1, 1, 1 ),
+			scaleRandomRange: new Vector3( 0, 0, 0 ),
+			scaleOverTime: new Vector3( 0, 0, 0 )
+		}
+		this.particles = new ParticleSystem( bg, blue, 1000, parameters );
 	}
 
 	initMatch() {

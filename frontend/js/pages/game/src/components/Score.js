@@ -1,4 +1,4 @@
-import { Helvetiker } from '../systems/Fonts.js';
+import { DigitalFont } from '../systems/Fonts.js';
 import { Renderer } from '../modules/Renderer.js';
 import { World } from '../World.js';
 import { Color, Mesh, MeshStandardMaterial, Object3D, ShapeGeometry } from 'three';
@@ -13,7 +13,7 @@ class Score extends Object3D {
 		const mat = new MeshStandardMaterial( { color: 'Orange' } );
 		mat.emissive = new Color( 0xffff00 );
 		const mat_shade = new MeshStandardMaterial( { color: 'Brown' } );
-		const shape = Helvetiker.generateShapes( "88", 1 );
+		const shape = DigitalFont.generateShapes( "88", 1 );
 		let geo = new ShapeGeometry( shape );
 		this.leftScore = new Mesh( geo, mat );
 		this.rightScore = new Mesh( geo, mat );
@@ -33,11 +33,11 @@ class Score extends Object3D {
 	}
 	
 	setText( l, r ) {
-		const l_shape = Helvetiker.generateShapes( l, 1 );
+		const l_shape = DigitalFont.generateShapes( l, 1 );
 		const l_geo = new ShapeGeometry( l_shape );
 		this.leftScore.geometry = l_geo;
 
-		const r_shape = Helvetiker.generateShapes( r, 1 );
+		const r_shape = DigitalFont.generateShapes( r, 1 );
 		const r_geo = new ShapeGeometry( r_shape );
 		this.rightScore.geometry = r_geo;
 	}
