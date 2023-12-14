@@ -33,17 +33,18 @@ async function displayAlertStatus(response, type) {
 
     let message =  await response.text();
     removeAllAlerts(alert);
-    if (response.status == 200) {
+    if (response.status == 413) {
+        alert.classList.add('alert-danger');
+        message = "File is too big, max size is 1MB"
+    } else if (response.status == 200) {
+        document.getElementById('nickname').innerText = document.getElementById('nicknameInput').value;
+        document.getElementById('email').innerText = document.getElementById('emailInput').value;
         alert.classList.add('alert-success');
         message = "Your " + type + " has been updated"
     } else {
         alert.classList.add('alert-danger');
     }
 
-    if (response.status == 413) {
-        alert.classList.add('alert-danger');
-        message = "File is too big, max size is 1MB"
-    }
     alert.classList.remove('hide');
     alert.classList.add('show');
     alertText.textContent = message
@@ -54,7 +55,6 @@ async function saveAvatar() {
     const formData = new FormData();
     const avatarInput = document.getElementById('avatarInput').files[0];
     if (avatarInput) {
-        console.log("APPEND AVATAR")
         formData.append('avatar', avatarInput);
     }
     if (formData.has('avatar')) {
@@ -77,13 +77,11 @@ async function saveInfo() {
     const nicknameInput = document.getElementById('nicknameInput').value;
     const userNickname = document.getElementById('nickname').innerText;
     if (userNickname != nicknameInput) {
-        console.log("APPEND NICKNAME")
         objectData.nickname = nicknameInput;
     }
     const emailInput = document.getElementById('emailInput').value;
     const userEmail = document.getElementById('email').innerText;
     if (userEmail != emailInput) {
-        console.log("APPEND EMAIL")
         objectData.email = emailInput;
     }
 
