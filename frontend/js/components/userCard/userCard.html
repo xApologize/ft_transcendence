@@ -133,31 +133,27 @@
                                     </div>
                                 </div>
                                 <!-- Hidden section for 2FA details -->
-                                <div class="row mb-3" id="twoFactorAuthEnable">
+                                <div class="row mb-3 d-none" id="twoFactorAuthEnable">
                                     <div class="col-md-12">
                                         <div id="2FAInfoEnable" class="alert alert-warning" role="alert">
-                                            <form id="2FAForm" class="needs-validation" novalidate>
+                                            <form id="2FAForm">
                                                 <div class="row justify-content-center">
                                                     <div class="col-md-6">
-                                                        <input id="confirmationCode" type="tel" class="form-control" placeholder="Enter 2FA Code" required>
-                                                        <div class="invalid-feedback">
-                                                            Please enter the 2FA code.
-                                                        </div>
-                                                        <button type="submit" id="2FAConfirmBtn" class="btn btn-primary mt-2 d-block mx-auto">Confirm 2FA</button>
+                                                        <input id="confirmationCode" type="text" class="form-control" placeholder="Enter 2FA Code">
+                                                        <p id="errorConfirmCode" class="text-danger mt-2 mb-2"></p>
+                                                        <button type="submit" id="2FAConfirmBtn" class="btn btn-primary d-block mx-auto">Confirm 2FA</button>
                                                     </div>
                                                 </div>
                                             </form>
                                         </div>
-                                        <div class="row mb-3 d-none" id="twoFactorAuthDisplay">
-                                            <div class="col-md-12">
-                                                <div id="2FAInfoDisplay" class="alert alert-success" role="alert">
-                                                    <button id="closeAlert2FA" type="button" class="btn-close" aria-label="Close"></button>
-                                                </div>
-                                            </div>
-                                        </div>
                                         <p><strong>Secret Key:</strong> <span id="secretKey"></span></p>
                                         <p><strong>QR Code:</strong></p>
                                         <img id="qrCodeImage" src="" alt="QR Code" />
+                                    </div>
+                                </div>
+                                <div id="twoFactorAuthDisplay" class="row col-md-12 mb-3 d-none">
+                                    <div id="2FAInfoDisplay" class="alert alert-success" role="alert">
+                                        <button id="closeAlert2FA" type="button" class="btn-close" aria-label="Close"></button>
                                     </div>
                                 </div>
                             </div>

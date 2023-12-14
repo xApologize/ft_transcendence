@@ -73,6 +73,7 @@ export async function enable2FA() {
     }
 }
 
+let errorTimeout
 export async function checkConfirmationCode(event) {
     event.preventDefault()
     const confirmationCode = document.getElementById('confirmationCode').value;
@@ -80,20 +81,24 @@ export async function checkConfirmationCode(event) {
     if (!response) { return }
     const data = await response.json();
     if (response.status == 200) {
-        const alert2FAEnable = document.getElementById('2FAInfoDisplay')
         const info = data.success;
-        displayAlertMsg(info, alert2FAEnable);
-        document.getElementById('twoFactorAuthDisplay').classList.remove('d-none');
+        const alert2FADisplay = document.getElementById('2FAInfoDisplay')
+        displayAlertMsg(info, alert2FADisplay);
         document.getElementById('twoFactorAuthEnable').classList.add('d-none');
-        toggle2FAButton()
+        document.getElementById('twoFactorAuthDisplay').classList.remove('d-none');
+        document.getElementById('confirmationCode').value = '';
+        document.getElementById('disable2FA').textContent = "Disable 2FA"
+        // toggle2FAButton()
     } else {
         const dataError = data.error;
-        const alert2FADisplay = document.getElementById('2FAInfoDisplay')
-        displayAlertMsg(dataError, alert2FADisplay);
-        alert2FADisplay.classList.add('alert-danger');
-        alert2FADisplay.classList.remove('alert-success');
-        document.getElementById('twoFactorAuthDisplay').classList.remove('d-none');
-        document.getElementById('twoFactorAuthEnable').classList.remove('d-none');
+        const errorMsg = document.getElementById('errorConfirmCode')
+        errorMsg.textContent = dataError;
+        if (errorTimeout) {
+            clearTimeout(errorTimeout);
+        }
+        errorTimeout = setTimeout(function() {
+            errorMsg.textContent = '';
+        }, 5000);
     }
 }
 
@@ -107,6 +112,7 @@ function setup2FAMenu(TFAState) {
         enable2FA()
         console.log("2FA Enable but not confirm")
     }
+    toggle2FAButton()
 }
 
 export function updateMenu2FA(userObject) {

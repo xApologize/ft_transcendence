@@ -36,7 +36,6 @@ export function removeAllAlerts(alertElement) {
 
 export function setupSettings(event) {
     console.log('Settings Modal is about to be shown');
-    console.log(event)
 
     const userNickname = document.getElementById('nickname').textContent;
     const nicknameInput = document.getElementById('nicknameInput');

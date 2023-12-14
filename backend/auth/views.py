@@ -105,11 +105,14 @@ class Confirm2FA(View):
         except Http404 as e:
             return HttpResponse(str(e), status=404)
 
-        otp_token = request.POST.get('otp_token')
-        if not otp_token:
-            return JsonResponse({'error': 'OTP token is required.'}, status=400)
+        try:
+            data = json.loads(request.body)
+            otp_token = data.get('otp_token')
+            if not otp_token:
+                return JsonResponse({'error': 'Please enter a code.'}, status=400)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON.'}, status=400)
 
-        # Retrieve the unconfirmed TOTP device for this user
         device = TOTPDevice.objects.filter(user=user, confirmed=False).first()
         if not device:
             return JsonResponse({'error': 'You have no pending 2FA confirmation.'}, status=400)
@@ -120,7 +123,7 @@ class Confirm2FA(View):
             return JsonResponse({'success': '2FA has been enabled and confirmed.'})
 
         # OTP verification failed
-        return JsonResponse({'error': 'Invalid OTP.'}, status=400)
+        return JsonResponse({'error': 'Invalid Code.'}, status=400)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
