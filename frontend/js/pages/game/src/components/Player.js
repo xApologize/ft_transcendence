@@ -29,6 +29,7 @@ class Player extends Paddle {
 		};
 
 		this.socket = socket;
+		// DEBUG COLOR
 		this.socket.addEventListener("open", (event) => {
 			this.material.color = new Color( 0x00aaff );
 			// this.socket.send("Joined");
@@ -87,12 +88,9 @@ class Player extends Paddle {
 		if ( this.socket != undefined && this.socket.readyState === WebSocket.OPEN) {
 			this.msg.ballInst = hit;
 			this.msg.scored = true;
-			if (this.position.x < 0)
-				this.msg.goalScoredId = 2;
-			else
-				this.msg.goalScoredId = 1;
+			this.msg.goalScoredId = this.position.x < 0 ? 2 : 1;
 			this.socket.send( JSON.stringify( this.msg ) );
-			World._instance.score.add( this.msg.goalScoredId );
+			World._instance.score.increment( this.msg.goalScoredId );
 		}
 		this.msg.ballInst = undefined;
 		this.msg.scored = false;

@@ -11,9 +11,10 @@ import { Terrain } from './components/Terrain.js';
 import { Ball } from './components/Ball.js';
 import { Player } from './components/Player.js';
 import { Opponent } from './components/Opponent.js';
-import { Score3D } from './components/3DScore.js';
+import { Score } from './components/Score.js';
 import { airHockeyTable } from './systems/Loader.js';
 
+import interactiveSocket from '../../home/socket.js';
 import {
 	CapsuleGeometry,
 	MeshStandardMaterial,
@@ -21,7 +22,14 @@ import {
 	Vector2,
 	Vector3
 } from 'three';
-import interactiveSocket from '../../home/socket.js';
+import { EffectComposer } from '/node_modules/three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from '/node_modules/three/examples/jsm/postprocessing/RenderPass.js';
+import { BloomPass } from '/node_modules/three/examples/jsm/postprocessing/BloomPass.js';
+import { UnrealBloomPass } from '/node_modules/three/examples/jsm/postprocessing/UnrealBloomPass.js';
+import { FilmPass } from '/node_modules/three/examples/jsm/postprocessing/FilmPass.js';
+import { OutputPass } from '/node_modules/three/examples/jsm/postprocessing/OutputPass.js';
+import { GlitchPass } from '/node_modules/three/examples/jsm/postprocessing/GlitchPass.js';
+import { RenderPixelatedPass } from '/node_modules/three/examples/jsm/postprocessing/RenderPixelatedPass.js';
 
 const GameState = {
 	InMenu: "inMenu",
@@ -62,9 +70,6 @@ class World {
 				interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Find Match"}));
 			}
 		}, false);
-
-		World._instance.wsPath = undefined;
-		World._instance.side = undefined;
 	}
 
 	joinMatch( wsPath, side ) {
@@ -104,8 +109,19 @@ class World {
 		this.camera = new MainCamera();
 		this.scene = createScene();
 		this.renderer = createRenderer();
-		this.loop = new Loop( this.camera, this.scene, this.renderer );
-		this.score = new Score3D();
+
+		this.composer = new EffectComposer( this.renderer);
+		// this.composer.addPass( new RenderPass( this.scene, this.camera ) );
+		this.composer.addPass( new RenderPixelatedPass( 2, this.scene, this.camera ) );
+		// this.composer.addPass( new BloomPass( 1, 25, 4, 256 ) );
+		this.composer.addPass( new UnrealBloomPass( 256, 0.5, 0.5, 0.5 ) );
+		this.composer.addPass( new FilmPass( 0.15, false ) );
+		// this.composer.addPass( new GlitchPass( 0 ) );
+		this.composer.addPass( new OutputPass() );
+
+		// this.loop = new Loop( this.camera, this.scene, this.renderer );
+		this.loop = new Loop( this.camera, this.scene, this.renderer, this.composer );
+		this.score = new Score();
 		this.input = new InputManager();
 
 		const { ambientLight, mainLight } = createLights();
@@ -115,7 +131,7 @@ class World {
 	
 	createContainer( container ) {
 		container.append( this.renderer.domElement );
-		this.resizer = new Resizer( container, this.camera, this.renderer );
+		this.resizer = new Resizer( container, this.camera, this.renderer, this.composer );
 	}
 	
 	createGame() {
@@ -155,7 +171,7 @@ class World {
 				this.opponent.position.copy( msg.pos );
 			if ( msg.ballInst != undefined ) {
 				if ( msg.scored == true ) {
-					this.score.add( msg.goalScoredId );
+					this.score.increment( msg.goalScoredId );
 					this.balls.initInst( this.balls.ballInst[ msg.ballInst.id ] );
 				}
 				else
