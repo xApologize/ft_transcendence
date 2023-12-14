@@ -9,8 +9,11 @@
             width="50"
             height="50"
         />
-        <div id="nickname" class="ms-3">
-            <h5>Loading...</h5>
+        <div class="ms-3">
+            <h5>Nickname: <span id="nickname">Loading...</span></h5>
+        </div>
+        <div class="ms-3">
+            <h5>Email: <span id="email">Loading...</span></h5>
         </div>
     </div>
 
@@ -74,7 +77,7 @@
 
                     <div class="right-column-settings w-100">
                         <!-- Menu Content 1 -->
-                        <div class="collapse show" id="userMenu1" data-bs-parent=".right-column-settings">
+                        <div class="collapse show" id="userMenu1">
                             <div class="menu-content">
                                 <div class="row mb-3">
                                     <div class="col-md-6">
@@ -91,10 +94,16 @@
                                         <p>Email:</p>
                                     </div>
                                     <div class="col-md-6">
-                                        <input type="text" class="form-control" id="nicknameInput" value="NOT WORKING">
+                                        <input type="text" class="form-control" id="emailInput">
                                     </div>
                                 </div>
                             </div>
+                            <button id="saveInfo" type="button" class="btn btn-primary">Save Info</button>
+                            <div id="alertErrorInfo" class="alert alert-danger alert-dismissible fade hide" role="alert">
+                                <p id="messageErrorInfo"></p>
+                                <button id="btnErrorInfo" type="button" class="btn-close" aria-label="Close"></button>
+                            </div>
+                            <hr>
                             <div class="menu-content">
                                 <div class="row mb-3">
                                     <div class="col-md-6">
@@ -104,13 +113,24 @@
                                         <input type="file" class="form-control" id="avatarInput">
                                     </div>
                                 </div>
+                                <button id="saveAvatar" type="button" class="btn btn-primary">Save Avatar</button>
+                                <div id="alertErrorAvatar" class="alert alert-danger alert-dismissible fade hide" role="alert">
+                                    <p id="messageErrorAvatar"></p>
+                                    <button id="btnErrorAvatar" type="button" class="btn-close" aria-label="Close"></button>
+                                </div>
                             </div>
                         </div>   
-
                         <!-- Menu Content 2 -->
                         <div class="collapse" id="userMenu2" data-bs-parent=".right-column-settings">
                             <div class="menu-content">
-                                <p>Menu 2 Content Item 1</p>
+                                <div class="row mb-3">
+                                    <div class="col-md-4">
+                                        <p>Two-factor authentication: </p>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button class="btn btn-primary">Enable</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <!-- Add more menu content as needed -->
@@ -119,10 +139,8 @@
         
                 <!-- Modal Footer -->
                 <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
-                <button id="saveSettings" type="button" class="btn btn-primary">Save Changes</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                 </div>
-    
             </div>
         </div>
     </div>
