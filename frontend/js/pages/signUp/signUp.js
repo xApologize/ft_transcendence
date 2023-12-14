@@ -2,6 +2,7 @@ import { fetchUser } from '../../api/fetchData.js';
 import { loadHTMLPage } from '../../api/fetchData.js';
 import { navigateTo } from '../../router.js';
 import { fetchAuth } from '../../api/fetchData.js';
+import { displayErrorAlert } from '../../utils/utilityFunctions.js';
 
 export async function showSignUp() {
     try {
@@ -69,8 +70,7 @@ async function signUp() {
 
 function displaySignupError(errorMessage) {
     const errorAlert = document.getElementById('alertErrorSignup');
-    const errorParagraph = document.getElementById('messageErrorSignup');
-    errorParagraph.textContent = errorMessage;
+    displayErrorAlert(errorMessage, errorAlert);
     errorAlert.classList.add('show');
     errorAlert.classList.remove('hide');
 }
