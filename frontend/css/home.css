@@ -40,13 +40,19 @@
     justify-content: center;
 }
 
+.divFill {
+    height: calc(100% - 38px);
+    width: 100%;
+    overflow: scroll;
+}
+
 .hide {
     display: none;
 }
 
 .active-dark {
-    background-color: black !important;
-    color: #ffffff  !important;
+    background-color: var(--bg-accent) !important;
+    color: #ffffff !important;
 }
 .show {
     display: block !important;
