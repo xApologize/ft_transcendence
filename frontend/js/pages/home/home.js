@@ -3,6 +3,9 @@ import { assembleUser } from '../../api/assembler.js';
 import { displayUserCard } from '../../components/userCard/userCard.js';
 import { displayMatchHistory } from '../../components/matchHistory/matchHistory.js';
 import { displayUser } from './leftColumn.js';
+import { World } from '../game/src/World.js';
+import { loadFonts } from '../game/src/systems/Fonts.js';
+import { loadModel } from '../game/src/systems/Loader.js';
 ////////
 // [TO DO]
 // - Ne pas pouvoir avoir 2 connections en même temps sur le même compte
@@ -12,43 +15,31 @@ import { displayUser } from './leftColumn.js';
 // - Trouver facon update en temps reel (socket ?)
 ////////
 
+let otherUserModal;
+let gameModal;
+
 export async function showHome() {
     try {
         console.log('SHOW HOME !');
         await loadHTMLPage('./js/pages/home/home.html');
         initPage();
+        gameModal = new bootstrap.Modal(document.getElementById('gameDisplayModal'))
+        otherUserModal = new bootstrap.Modal(document.getElementById('otherUserInfo'))
+
         const friendsBtn = document.getElementById('friendsBtn');
-        const everyoneBtn = document.getElementById('everyoneBtn');
-        // everyoneBtn.classList.add('active');
-
-
-        // document.getElementById('middleBtnRight').addEventListener('click', () => {
-        // })
-
+        const everyoneBtn = document.getElementById('everyoneBtn');        
+        
+        
+        document.getElementById('findGame').addEventListener('click', displayGameModal)
         friendsBtn.addEventListener('click', () => {
             friendsBtnFunc(friendsBtn, everyoneBtn);
         });
         document
-            .getElementById('everyoneBtn')
-            .addEventListener('click', async () => {
-                everyoneBtnFunc(friendsBtn, everyoneBtn);
-            });
-
-        const userCol = document.getElementById('left-column');
-        const gameCol = document.getElementById('right-column');
-        const buttonToggle = document.getElementById('userBtn');
-        const iconStyle = document.getElementById('icon');
-        buttonToggle.addEventListener('click', () => {
-            if (iconStyle.classList.contains('fa-user')) {
-                iconStyle.classList.add('fa-gamepad');
-                iconStyle.classList.remove('fa-user');
-            } else {
-                iconStyle.classList.remove('fa-gamepad');
-                iconStyle.classList.add('fa-user');
-            }
-            userCol.classList.toggle('show');
-            gameCol.classList.toggle('hide');
+        .getElementById('everyoneBtn')
+        .addEventListener('click', async () => {
+            everyoneBtnFunc(friendsBtn, everyoneBtn);
         });
+    
     } catch (error) {
         console.error('Error fetching home.html:', error);
     }
@@ -90,11 +81,40 @@ async function initPage() {
     displayUserCard(userAssembled);
     displayEveryone();
     displayMatchHistory(userAssembled);
+
+    // wtf ?
+    const userCol = document.getElementById('left-column');
+    const gameCol = document.getElementById('right-column');
+    const buttonToggle = document.getElementById('userBtn');
+    const iconStyle = document.getElementById('icon');
+    buttonToggle.addEventListener('click', () => {
+        if (iconStyle.classList.contains('fa-user')) {
+            iconStyle.classList.add('fa-gamepad');
+            iconStyle.classList.remove('fa-user');
+        } else {
+            iconStyle.classList.remove('fa-gamepad');
+            iconStyle.classList.add('fa-user');
+        }
+        userCol.classList.toggle('show');
+        gameCol.classList.toggle('hide');
+    });
 }
 
 ///////////////////////////////
 //  Event Listener function  //
 ///////////////////////////////
+
+async function displayGameModal() {
+    gameModal.show();
+    // gameModal.hide()
+
+    // await loadFonts();
+    // await loadModel();
+    // const container = document.querySelector('#gameDisplayContainer');
+    // const world = new World(container);
+    // world.start();
+}
+
 
 function everyoneBtnFunc(friendsBtn, everyoneBtn) {
     if (friendsBtn.classList.contains('active-dark')) {
