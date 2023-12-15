@@ -10,9 +10,6 @@ const interactiveSocket = {
         // TODO add double socket try incase of failure?
         const self = this;
         if (this.interactive_socket === null){
-            if (this.connexion_attempt === 2){
-                logoutUser();
-            }
             this.interactive_socket = new WebSocket('wss://' + window.location.host + '/ws/pong/interactive' + "?" + sessionStorage.getItem('jwt'));
             this.connexion_attempt++;
             self.interactive_socket.onerror = function(event) {
