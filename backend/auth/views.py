@@ -166,31 +166,32 @@ class Login2FA(View):
             return JsonResponse(errorTime, status=404)
     
         user_id = decrypt_user_id(token)
-        # Put more specific error message?
-        if (user_id == -1):
-            return JsonResponse(errorTime, status=404)
-        elif (user_id == -2):
-            return JsonResponse(errorTime, status=404)
+        if user_id in [-1, -2]:
+            response : HttpResponse = JsonResponse(errorTime, 404)
+            response.delete_cookie('2fa_token')
+            return response
     
         try:
             data = json.loads(request.body)
+            otp_token = data.get('otp_token')
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON.'}, status=400)
         
-        otp_token = data.get('otp_token')
-        if not otp_token:
-            return JsonResponse({'error': 'Please enter 2FA Code.'}, status=400)
-        elif otp_token.isdigit() == False or len(otp_token) != 6:
-            return JsonResponse(errorCode, status=400)
+        if not otp_token or not otp_token.isdigit() or len(otp_token) != 6:
+            return JsonResponse({'error': 'Invalid 2FA Code.'}, status=400)
         
         try:
             user = User.objects.get(pk=user_id)
         except User.DoesNotExist:
-            return JsonResponse({'error': 'This account does not exist.'}, status=404)
+            response : HttpResponse = JsonResponse({'error': 'This account does not exist.'}, 404)
+            response.delete_cookie('2fa_token')
+            return response
         
         device = TOTPDevice.objects.filter(user=user, confirmed=True).first()
         if not device:
-            return JsonResponse({'error': '2FA device not found or not confirmed.'}, status=404)
+            response : HttpResponse = JsonResponse({'error': '2FA device not found or not confirmed.'}, 404)
+            response.delete_cookie('2fa_token')
+            return response
         
         if not device.verify_token(otp_token):
             return JsonResponse(errorCode, status=400)
