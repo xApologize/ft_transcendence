@@ -12,6 +12,7 @@ from django.db.models import Q
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.conf import settings
 from .utils import get_avatar_data, check_info_update, check_info_signup, validate_image
+from django_otp.plugins.otp_totp.models import TOTPDevice
 
 
 # https://stackoverflow.com/questions/3290182/which-status-code-should-i-use-for-failed-validations-or-invalid-duplicates
@@ -31,6 +32,7 @@ class Users(View):
             users = User.objects.filter(status__in=status)
         user_data = [
             {
+                'id': user.id,
                 'nickname': user.nickname,
                 'email': user.email,
                 'avatar': get_avatar_data(user),
@@ -60,8 +62,9 @@ class Users(View):
                     email=user_data['email'],
                     avatar='',
                     status='OFF',
+                    password=make_password(user_data['password']),
                     admin=False,
-                    password=make_password(user_data['password'])
+                    two_factor_auth=False,
                 )
                 user.save()
             except IntegrityError:
@@ -107,8 +110,13 @@ class Users(View):
 
             for field in allowed_fields:
                 if field in data:
-                    if getattr(user, field) != data[field]:
-                        setattr(user, field, data[field])
+                    if not data[field] == getattr(user, field):
+                        if getattr(user, field) != data[field]:
+                            setattr(user, field, data[field])
+                    else:
+                        return HttpResponseBadRequest(f'Your {field} is already {getattr(user, field)}')
+
+                    
             user.save()
             return JsonResponse({
                 "message": "User updated successfully.",
@@ -149,6 +157,16 @@ class Me(View):
             'lost_matches': [{'winner_score': match.winner_score, 'loser_score': match.loser_score, 'date_of_match': match.date_of_match} for match in lost_matches],
             'played_matches': [{'winner_score': match.winner_score, 'winner_username': match.winner.nickname, 'loser_score': match.loser_score, 'loser_username': match.loser.nickname , 'date_of_match': match.date_of_match} for match in played_matches],
         }
+        # Determine the 2FA status
+        two_factor_status = None  # Default to no auth
+        totp_device = TOTPDevice.objects.filter(user=user).first()
+        if totp_device:
+            if totp_device.confirmed:
+                two_factor_status = True  # Auth is confirmed
+            else:
+                two_factor_status = False  # Auth exists but is not confirmed
+
+        user_data['two_factor_auth'] = two_factor_status
         return JsonResponse({'users': user_data}, status=200)
 
 
@@ -173,6 +191,7 @@ class Friends(View):
 
         user_data = [
             {
+                'id': user.id,
                 'nickname': user.nickname,
                 'email': user.email,
                 'avatar': get_avatar_data(user),

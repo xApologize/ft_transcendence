@@ -2,6 +2,7 @@ import { fetchUser } from '../../api/fetchData.js';
 import { loadHTMLPage } from '../../api/fetchData.js';
 import { navigateTo } from '../../router.js';
 import { fetchAuth } from '../../api/fetchData.js';
+import { displayAlertMsg } from '../../utils/utilityFunctions.js';
 
 export async function showSignUp() {
     try {
@@ -13,6 +14,9 @@ export async function showSignUp() {
                 signUp();
             });
         document.getElementById('btnAlertCloseSignup').addEventListener('click', hideSignupAlert)
+        document.getElementById('loginUpButton').addEventListener('click', function () {
+            navigateTo('/login');
+        });
     } catch (error) {
         console.error('Error fetching signUp.html:', error);
     }
@@ -69,8 +73,7 @@ async function signUp() {
 
 function displaySignupError(errorMessage) {
     const errorAlert = document.getElementById('alertErrorSignup');
-    const errorParagraph = document.getElementById('messageErrorSignup');
-    errorParagraph.textContent = errorMessage;
+    displayAlertMsg(errorMessage, errorAlert);
     errorAlert.classList.add('show');
     errorAlert.classList.remove('hide');
 }
