@@ -166,7 +166,10 @@ class Login2FA(View):
             return JsonResponse(errorTime, status=404)
     
         user_id = decrypt_user_id(token)
-        if (user_id < 0):
+        # Put more specific error message?
+        if (user_id == -1):
+            return JsonResponse(errorTime, status=404)
+        elif (user_id == -2):
             return JsonResponse(errorTime, status=404)
     
         try:
