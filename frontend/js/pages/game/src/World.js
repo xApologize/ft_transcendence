@@ -49,6 +49,8 @@ class World {
 			World._instance.deleteGame();
 			World._instance.createContainer( container );
 			World._instance.createGame();
+			console.log(World._instance.wsPath);
+			console.log(World._instance.side);
 			return World._instance;
 		}
 		this.createInstance();
@@ -77,10 +79,23 @@ class World {
 				World._instance.initMatch();
 			}
 			if ( event.code == "KeyA" && this.player == undefined )
-				this.createSocket( '/ws/pong/UserA', -7.2, this.terrain.leftGoalZone, this.terrain.rightGoalZone );
+				this.createSocket( '/ws/pong/1/a', -7.2, this.terrain.leftGoalZone, this.terrain.rightGoalZone );
 			if ( event.code == "KeyB" && this.player == undefined )
-				this.createSocket( '/ws/pong/UserB', 7.2, this.terrain.rightGoalZone, this.terrain.leftGoalZone );
+				this.createSocket( '/ws/pong/1/b', 7.2, this.terrain.rightGoalZone, this.terrain.leftGoalZone );
+			if ( event.code == "Space" && this.player == undefined )
+				this.joinMatch();
 		}, false);
+
+		// World._instance.wsPath = undefined;
+		// World._instance.side = undefined;
+	}
+
+	joinMatch() {
+		if ( World._instance.side == "A" )
+			this.createSocket( '/' + World._instance.wsPath, 7.2, this.terrain.rightGoalZone, this.terrain.leftGoalZone );
+		else if ( World._instance.side == "B" )
+			this.createSocket( '/' + World._instance.wsPath, -7.2, this.terrain.leftGoalZone, this.terrain.rightGoalZone );
+
 	}
 
 	createSocket( path, xpos, goalZone, opponentGoalZone ) {
