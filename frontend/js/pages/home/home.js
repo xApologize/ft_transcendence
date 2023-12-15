@@ -40,7 +40,12 @@ export async function showHome() {
         .addEventListener('click', async () => {
             everyoneBtnFunc(friendsBtn, everyoneBtn);
         });
-    
+
+        await loadFonts();
+        await loadModel();
+        const container = document.querySelector('#sceneContainer');
+        const world = new World(container);
+        world.start();
     } catch (error) {
         console.error('Error fetching home.html:', error);
     }
