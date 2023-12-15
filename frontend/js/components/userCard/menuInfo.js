@@ -51,11 +51,13 @@ export async function saveInfo() {
     removeAllAlerts(alert);
     closeAlertInfo()
 
+    /// FETCH DATA AT THE OPENING OF SETTINGS AND PUT NICKNAME IN SESSION STORAGE ?
     const nicknameInput = document.getElementById('nicknameInput').value;
     const userNickname = document.getElementById('nickname').innerText;
     if (userNickname != nicknameInput) {
         objectData.nickname = nicknameInput;
     }
+
     const emailInput = document.getElementById('emailInput').value;
     const userEmail = document.getElementById('email').innerText;
     if (userEmail != emailInput) {

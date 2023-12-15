@@ -21,31 +21,19 @@ let gameModal;
 
 export async function showHome() {
     try {
-        console.log('SHOW HOME !');
         await loadHTMLPage('./js/pages/home/home.html');
         initPage();
-        gameModal = new bootstrap.Modal(document.getElementById('gameDisplayModal'))
         otherUserModal = new bootstrap.Modal(document.getElementById('otherUserInfo'))
 
         const friendsBtn = document.getElementById('friendsBtn');
         const everyoneBtn = document.getElementById('everyoneBtn');        
-        
-        
-        document.getElementById('findGame').addEventListener('click', displayGameModal)
         friendsBtn.addEventListener('click', () => {
             friendsBtnFunc(friendsBtn, everyoneBtn);
         });
-        document
-        .getElementById('everyoneBtn')
-        .addEventListener('click', async () => {
+        everyoneBtn.addEventListener('click', async () => {
             everyoneBtnFunc(friendsBtn, everyoneBtn);
         });
-
-        await loadFonts();
-        await loadModel();
-        const container = document.querySelector('#sceneContainer');
-        const world = new World(container);
-        world.start();
+        responsiveLeftColumn()
     } catch (error) {
         console.error('Error fetching home.html:', error);
     }
@@ -88,38 +76,11 @@ async function initPage() {
     displayEveryone();
     displayMatchHistory(userAssembled);
 
-    // wtf ?
-    const userCol = document.getElementById('left-column');
-    const gameCol = document.getElementById('right-column');
-    const buttonToggle = document.getElementById('userBtn');
-    const iconStyle = document.getElementById('icon');
-    buttonToggle.addEventListener('click', () => {
-        if (iconStyle.classList.contains('fa-user')) {
-            iconStyle.classList.add('fa-gamepad');
-            iconStyle.classList.remove('fa-user');
-        } else {
-            iconStyle.classList.remove('fa-gamepad');
-            iconStyle.classList.add('fa-user');
-        }
-        userCol.classList.toggle('show');
-        gameCol.classList.toggle('hide');
-    });
 }
 
 ///////////////////////////////
 //  Event Listener function  //
 ///////////////////////////////
-
-async function displayGameModal() {
-    gameModal.show();
-    // gameModal.hide()
-
-    // await loadFonts();
-    // await loadModel();
-    // const container = document.querySelector('#gameDisplayContainer');
-    // const world = new World(container);
-    // world.start();
-}
 
 
 function everyoneBtnFunc(friendsBtn, everyoneBtn) {
@@ -136,4 +97,24 @@ function friendsBtnFunc(friendsBtn, everyoneBtn) {
         friendsBtn.classList.add('active-dark');
         displayFriend()
     }
+}
+
+/////
+
+function responsiveLeftColumn() {
+    const userCol = document.getElementById('left-column');
+    const gameCol = document.getElementById('right-column');
+    const buttonToggle = document.getElementById('userBtn');
+    const iconStyle = document.getElementById('icon');
+    buttonToggle.addEventListener('click', () => {
+        if (iconStyle.classList.contains('fa-user')) {
+            iconStyle.classList.add('fa-gamepad');
+            iconStyle.classList.remove('fa-user');
+        } else {
+            iconStyle.classList.remove('fa-gamepad');
+            iconStyle.classList.add('fa-user');
+        }
+        userCol.classList.toggle('show');
+        gameCol.classList.toggle('hide');
+    });
 }

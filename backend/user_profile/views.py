@@ -110,8 +110,13 @@ class Users(View):
 
             for field in allowed_fields:
                 if field in data:
-                    if getattr(user, field) != data[field]:
-                        setattr(user, field, data[field])
+                    if not data[field] == getattr(user, field):
+                        if getattr(user, field) != data[field]:
+                            setattr(user, field, data[field])
+                    else:
+                        return HttpResponseBadRequest(f'Your {field} is already {getattr(user, field)}')
+
+                    
             user.save()
             return JsonResponse({
                 "message": "User updated successfully.",
