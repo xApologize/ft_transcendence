@@ -83,7 +83,7 @@ async function submit2FACode(result) {
         document.getElementById("2FAErrorMsg").textContent = data.error; 
     } else if (response.status == 404) {
         modal2FA.hide()
-        displayLoginError(data.error)
+        displayLoginError(data)
     }
 
 }
