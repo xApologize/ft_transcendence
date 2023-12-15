@@ -1,6 +1,5 @@
-import { ConstantColorFactor } from "three";
 import { navigateTo } from "../router.js";
-import { assembleUser } from "./assembler.js";
+import { closeAllModals } from "../utils/utilityFunctions.js";
 
 // Load frontend page.
 export const loadHTMLPage = async (filePath) => {
@@ -31,6 +30,7 @@ export const loadHTMLComponent = async (filePath) => {
 };
 
 const redirectToHome = () => {
+    closeAllModals();
     sessionStorage.clear();
     navigateTo('/');
     return null
