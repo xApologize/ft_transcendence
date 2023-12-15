@@ -49,7 +49,6 @@ function settingsListener() {
 }
 
 async function logoutUser() {
-    console.log('logout!')
     const logoutResponse = await fetchAuth('POST', 'logout/')
     if (!logoutResponse) { return }
     if (logoutResponse.status == 200) {

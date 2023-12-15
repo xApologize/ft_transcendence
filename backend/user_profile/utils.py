@@ -108,8 +108,10 @@ def validate_image(image_field):
                 raise ValidationError(f"Image dimensions should not exceed {max_width}x{max_height}px.")
     except UnidentifiedImageError:
         raise ValidationError("Uploaded file is not a valid image.")
+    except ValidationError as e:
+        raise ValidationError(e)
     except Exception as e:
-        raise ValidationError("Error: Please do not upload garbage to fail us.")
+        raise Exception("Error: Please do not upload garbage to fail us.")
 
     # Reset the file pointer after Image.open()
     image_field.file.seek(0)

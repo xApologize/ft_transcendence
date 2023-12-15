@@ -106,11 +106,9 @@ function setup2FAMenu(TFAState) {
     const disable2FA = document.getElementById('disable2FA')
     if (TFAState == true) {
         disable2FA.textContent = "Disable 2FA"
-        console.log("2FA Enable and Confirm")
     } else {
         disable2FA.textContent = "Cancel 2FA"
         enable2FA()
-        console.log("2FA Enable but not confirm")
     }
     toggle2FAButton()
 }
@@ -121,6 +119,5 @@ export function updateMenu2FA(userObject) {
         setup2FAMenu(TFAState)
     } else {
         document.getElementById('disable2FA').classList.add('disabled');
-        console.log("THERE IS NO 2FA")
     }
 }

@@ -35,8 +35,6 @@ export function removeAllAlerts(alertElement) {
 
 
 export function setupSettings(event) {
-    console.log('Settings Modal is about to be shown');
-
     const userNickname = document.getElementById('nickname').textContent;
     const nicknameInput = document.getElementById('nicknameInput');
     nicknameInput.value = userNickname
@@ -48,8 +46,6 @@ export function setupSettings(event) {
 }
 
 export function clearSettings(event) {
-    console.log('Settings Modal is about to be hidden');
-
     document.getElementById('confirmationCode').value = '';
     closeAlert2FA();
     closeAlertAvatar();

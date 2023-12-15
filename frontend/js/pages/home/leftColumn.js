@@ -42,10 +42,9 @@ async function loopDisplayUser(objectAllUsers, currentUser, userContainer) {
         userContainer.appendChild(document.createElement('hr'));
 
         const clonedUserTemplate = templateUser.cloneNode(true);
-
-        console.log(clonedUserTemplate)
         clonedUserTemplate.id = user.id;
 
+        
         const avatarElement =
             clonedUserTemplate.querySelector('#user-avatar');
         const nameElement = clonedUserTemplate.querySelector('#user-name');

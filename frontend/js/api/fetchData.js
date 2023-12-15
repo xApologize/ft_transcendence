@@ -71,10 +71,8 @@ const performFetch = async (url, method, data = null) => {
         }
         const jwt_token = setNewToken(response)
         if (jwt_token) {
-            console.log("New access Token!")
             const isFirstToken = response.headers.get('new')
             if (!isFirstToken) {
-                console.log("second fetch!")
                 const access_token = response.headers.get('jwt')
                 options.headers.jwt = access_token;
                 response = await fetch(url, options)
