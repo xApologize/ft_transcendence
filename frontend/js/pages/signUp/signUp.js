@@ -14,6 +14,9 @@ export async function showSignUp() {
                 signUp();
             });
         document.getElementById('btnAlertCloseSignup').addEventListener('click', hideSignupAlert)
+        document.getElementById('loginUpButton').addEventListener('click', function () {
+            navigateTo('/login');
+        });
     } catch (error) {
         console.error('Error fetching signUp.html:', error);
     }
