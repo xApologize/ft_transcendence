@@ -7,7 +7,7 @@ import { show404 } from './pages/404/404.js';
 import { showLogin } from './pages/login/login.js';
 import { headerComponent } from './components/header/header.js';
 import { templateComponent } from './components/template/template.js';
-import { showSocket } from './pages/socket/socket.js';
+import { showSocket } from './pages/socket/debug_socket.js';
 
 var currentRoute = '';
 const routes = {
@@ -26,11 +26,10 @@ function showPage(pageFunction) {
 }
 
 export function navigateTo(route) {
-  // console.log("navigateTo!")
-  if (route === currentRoute)
-    return ;
-  history.pushState({'route': route}, null, route);
-  handleRoute();
+    // console.log("navigateTo!")
+    if (route === currentRoute) return;
+    history.pushState({ route: route }, null, route);
+    handleRoute();
 }
 
 async function checkIfCookie() {
@@ -96,23 +95,23 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function handlePopState(event) {
-  closeModal()
-  handleRoute()
+    closeModal();
+    handleRoute();
 }
 
 function closeModal() {
-  closeSettingsModal()
-  // closePlayerModal()
-  // closeInviteModal()
+    closeSettingsModal();
+    // closePlayerModal()
+    // closeInviteModal()
 }
 
 function closeSettingsModal() {
-  const settingsModal = document.getElementById('settingsModal');
-  if (settingsModal) {
-      const modalInstance = bootstrap.Modal.getInstance(settingsModal);
-      if (modalInstance) {
-          modalInstance.hide();
-          modalInstance.dispose();
-      }
-  }
+    const settingsModal = document.getElementById('userSettingsModal');
+    if (settingsModal) {
+        const modalInstance = bootstrap.Modal.getInstance(settingsModal);
+        if (modalInstance) {
+            modalInstance.hide();
+            modalInstance.dispose();
+        }
+    }
 }

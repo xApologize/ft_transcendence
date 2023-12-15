@@ -7,7 +7,6 @@ import json
 class UserInteractiveSocket(AsyncWebsocketConsumer):
     async def connect(self):
         self.user_id: int = self.scope.get("user_id")
-        print("Channel name", self.channel_name)
         if self.user_id < 0:
             await self.close()
         else:
@@ -29,13 +28,20 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         )
 
     async def receive(self, text_data: any):
-        data = json.loads(text_data)
+        try:
+            data = json.loads(text_data)
+        except:
+            print("Invalid data sent to socket, json decode error")
+            return
         message_type = data["type"]
-        print("Json:", message_type)
         if message_type == "Find Match":
             await self.find_match()
-        elif message_type == "Refresh User":
-            pass
+        elif message_type == "Refresh":
+            await self.channel_layer.group_send(
+                "interactive",
+                create_layer_dict(
+                    "send_message_echo", {"type": "refresh"}, self.channel_name)
+                )
         else:
             print("Invalid input given to socket, check syntax")
 
@@ -54,7 +60,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         if self.channel_name == data["sender"]:
             match_entry = await sync_to_async(
                 LookingForMatch.objects.filter(paddleA=self.user_id).first)()
-            print("REMOVE ENTRY FROM DB")
+            print("REMOVED ENTRY FROM DB")
             await sync_to_async(match_entry.delete)()
             self.waiting = False
             await self.send(text_data=json.dumps(data["message"]))
@@ -67,13 +73,11 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             await self.create_lfm()
 
     async def create_lfm(self):
-        print("CREATE MATCH")
         await sync_to_async(LookingForMatch.objects.create)(
                 paddleA=self.user_id, mailbox_a=self.channel_name, paddleB=-1)
         self.waiting: bool = True
 
     async def setup_match(self, match: any):
-        print("SETUP MATCH")
         match.paddleB = self.user_id
         await sync_to_async(match.save)()
         handle_a: dict = await self.create_math_handle(match.paddleA, match.paddleB, "A")

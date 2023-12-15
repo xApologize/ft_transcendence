@@ -5,7 +5,7 @@
         "fields": {
             "nickname": "Dave",
             "email": "bozo@gmail.com",
-            "avatar": "https://i.imgur.com/bZ6nXdv.png",
+            "avatar": "",
             "status": "ONL",
             "admin": false,
             "password": "abc"
@@ -17,7 +17,7 @@
         "fields": {
             "nickname": "80%",
             "email": "abc@gmail.com",
-            "avatar": "https://i.imgur.com/bZ6nXdv.png",
+            "avatar": "",
             "status": "ONL",
             "admin": false,
             "password": "abc"
@@ -29,7 +29,7 @@
         "fields": {
             "nickname": "81%",
             "email": "def@gmail.com",
-            "avatar": "https://i.imgur.com/bZ6nXdv.png",
+            "avatar": "",
             "status": "ING",
             "admin": false,
             "password": "abc"
@@ -41,7 +41,7 @@
         "fields": {
             "nickname": "demo-user",
             "email": "demo@gmail.com",
-            "avatar": "https://i.imgur.com/bZ6nXdv.png",
+            "avatar": "",
             "status": "OFF",
             "admin": true,
             "password": "pbkdf2_sha256$390000$80cswTzjCoGsGCtkulEwOg$hPnG+2ALlJ45KyuQxG0D1GRyqWQHCJ5nobmMATQ3rWg="
@@ -53,7 +53,7 @@
         "fields": {
             "nickname": "demo-user2",
             "email": "demo2@gmail.com",
-            "avatar": "https://i.imgur.com/bZ6nXdv.png",
+            "avatar": "",
             "status": "OFF",
             "admin": true,
             "password": "pbkdf2_sha256$390000$D5BizRq5c0D05Z4ObkDaJu$cNhvilc05PdpPVbr9NBdCFYiafvfVKHSmYd2VR/foZ8="

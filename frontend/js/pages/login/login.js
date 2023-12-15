@@ -6,14 +6,16 @@ export async function showLogin() {
     try {
         await loadHTMLPage('./js/pages/login/login.html');
         // sessionStorage.clear()
-        document.getElementById('loginButton').addEventListener('click', async () => {
-            await login();
+        document.getElementById('login-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+            login();
         });
         document
             .getElementById('signUpButton')
             .addEventListener('click', () => {
                 navigateTo('/signUp');
             });
+        document.getElementById('btnAlertCloseLogin').addEventListener('click', hideLoginAlert)
         document.getElementById('demo-user-btn').addEventListener('click', () => {
             login("demo-user", "demo-user");
         });
@@ -27,11 +29,10 @@ export async function showLogin() {
 
 
 async function login(username = null, password = null) {
-    const usernameInput = username !== null ? username : document.getElementById('usernameInput').value;
+    const usernameInput = username !== null ? username : document.getElementById('validationDefault01').value;
     const passwordInput = password !== null ? password : document.getElementById('passwordInput').value;
 
     if (!usernameInput || !passwordInput) {
-        alert('Fill the form.');
         return;
     }
 
@@ -47,16 +48,30 @@ async function login(username = null, password = null) {
 
     try {
         const response = await fetchAuth('POST','login/', loginData);
-        const result = await response.json();
+        if (!response)
+            return;
         if (response.ok) {
-            if (result.success) {
-                console.log('Login successful: ', await result.success);
-                navigateTo('/home');
-                return ;
-            }
-            console.log('Login failed: ', await result.error);
+            navigateTo('/home');
+        } else {
+            const result = await response.json();
+            displayLoginError(result)
         }
     } catch (error) {
         console.error('Error during login:', error);
     }
+}
+
+async function displayLoginError(message) {
+    const alert = document.getElementById('alertErrorLogin');
+    const msg = document.getElementById('messageErrorLogin');
+    msg.textContent = message.error;
+    alert.classList.remove('hide');
+    alert.classList.add('show');
+}
+
+function hideLoginAlert() {
+    const alert = document.getElementById('alertErrorLogin');
+    alert.classList.add('hide');
+    alert.classList.remove('show');
+
 }

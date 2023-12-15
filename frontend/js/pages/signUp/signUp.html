@@ -1,39 +1,32 @@
-<div class="form-div m-3">
+<form id="signupForm" class="form-div m-3">
     <div class="form">
         <div class="m-3 text-center">
             <h1>Sign up</h1>
         </div>
-        <div class="m-3">
-            <label class="form-label" id="usernameLabel"> Username </label>
-            <input type="email" class="form-control" id="inputUsername" />
+        <div class="form-floating m-3">
+            <input type="text" class="form-control" id="inputUsername" placeholder="Username" autocomplete="username" required>
+            <label for="inputUsername">Username</label>
         </div>
-        <div class="m-3">
-            <label class="form-label" id="emailLabel"> Email address </label>
-            <input type="email" class="form-control" id="inputEmail" />
+        <div class="form-floating m-3">
+            <input type="email" class="form-control" id="inputEmail" placeholder="name@example.com" autocomplete="email" required>
+            <label for="inputEmail">Email address</label>
         </div>
-        <div class="m-3">
-            <label class="form-label" id="passwordLabel"> Password</label>
-            <input type="password" class="form-control" id="inputPassword" />
+        <div class="form-floating m-3">
+            <input type="password" class="form-control" id="inputPassword" placeholder="Password" autocomplete="new-password" required>
+            <label for="inputPassword">Password</label>
         </div>
-        <div class="m-3">
-            <label class="form-label" id="passwordLabel">
-                Confirm Password</label
-            >
-            <input
-                type="password"
-                class="form-control"
-                id="inputPasswordConfirm"
-            />
-        </div>
-        <div class="m-3">
-            <label class="form-label" id="avatarLabel"> Avatar</label>
-            <input type="text" class="form-control" id="inputAvatar" />
+        <div class="form-floating m-3">
+            <input type="password" class="form-control" id="inputPasswordConfirm" placeholder="Confirm Password" autocomplete="new-password" required>
+            <label for="inputPasswordConfirm">Confirm Password</label>
         </div>
         <div class="m-3 text-center">
-            <button class="btn btn-secondary signupButton" id="signUpButton">
+            <button class="btn btn-secondary signupButton" id="signUpButton" type="submit">
                 Sign up
             </button>
         </div>
-        <p id="errorMessage" class="alert alert-danger d-none"></p>
+        <div id="alertErrorSignup" class="alert alert-danger alert-dismissible fade hide" role="alert">
+            <p id="messageErrorSignup"></p>
+            <button id="btnAlertCloseSignup" type="button" class="btn-close" aria-label="Close"></button>
+        </div>
     </div>
-</div>
+</form>

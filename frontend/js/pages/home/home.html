@@ -3,10 +3,12 @@
 <div id="ui" class="container-fluid position-absolute">
     <div class="row vh-100">
         <div class="buttonResponsive">
-            <button class="btn" id="userBtn">Users</button>
+            <button class="btn shadow-none btn-primary textWhite" id="userBtn">
+                <i id="icon" class="fa fa-user" style="font-size: 1.5em"></i>
+            </button>
         </div>
         <div
-            class="text-center userList col-md-4 col-lg-4 col-xl-3 col-xxl-3"
+            class="text-center userList bg-main-second col-md-4 col-lg-4 col-xl-3 col-xxl-3"
             id="left-column"
         >
             <div class="row">
@@ -36,21 +38,29 @@
             id="right-column"
         >
             <div id="rightPart" class="row m-3 rightPartCol">
-                <div class="col-12 col-md-3 col-xl-3 text-center">
-                    <h1 class="m-3 text-center">Find game</h1>
-                    <button id="findGame" class="btn btn-secondary">
-                        Find game
-                    </button>
+                <div
+                    id="divGame"
+                    class="col-12 col-md-3 col-xl-3 text-center textWhite p-2"
+                >
+                    <div>
+                        <h1 class="m-3 text-center">Find game</h1>
+                        <button
+                            id="findGame"
+                            class="btn shadow-none btn-primary textWhite"
+                        >
+                            Find game
+                        </button>
+                    </div>
                 </div>
                 <div id="userCol" class="col-12 col-md-9 col-xl-9">
                     <div class="rightCol text-center">
                         <div class="upperRow">
                             <div
                                 id="own-user-card"
-                                class="user-card bg-dark text-light p-3"
+                                class="user-card bg-main-second text-light p-3"
                             ></div>
                         </div>
-                        <div class="lowerRow">
+                        <div class="lowerRow bg-main-second">
                             <h1 class="m-3 text-center">Match history</h1>
                             <div id="matchHistory"></div>
                         </div>

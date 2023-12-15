@@ -7,13 +7,14 @@ export async function showSignUp() {
     try {
         await loadHTMLPage('./js/pages/signUp/signUp.html');
         document
-            .getElementById('signUpButton')
-            .addEventListener('click', () => {
+            .getElementById('signupForm')
+            .addEventListener('submit', function (event){
+                event.preventDefault();
                 signUp();
             });
+        document.getElementById('btnAlertCloseSignup').addEventListener('click', hideSignupAlert)
     } catch (error) {
-        if (error) console.error('Error fetching signUp.html:', error);
-        else console.log('error null');
+        console.error('Error fetching signUp.html:', error);
     }
 }
 
@@ -24,20 +25,16 @@ async function loginAfterSignup(nickname, password) {
     };
     try {
         const response = await fetchAuth('POST','login/', loginData);
-        const result = await response.json();
-        console.log(result)
         if (response.ok) {
-            if (result.success) {
-                console.log('Login successful: ', await result.success);
-                navigateTo('/home');
-                return ;
-            }
-            console.log('Login failed: ', await result.error);
+            navigateTo('/home');
+            return ;
+        } else {
+            const result = await response.text();
+            displaySignupError(result)
         }
     } catch (error) {
         console.error('Error during login:', error);
     }
-    // navigateTo('/home')
 }
 
 async function signUp() {
@@ -47,38 +44,40 @@ async function signUp() {
     const passwordConfirm = document.getElementById(
         'inputPasswordConfirm'
     ).value;
-    const avatar = document.getElementById('inputAvatar').value;
-    if (!nickname || !email || !password || !passwordConfirm || !avatar) {
-        alert('Fill the form.');
+    if (!nickname || !email || !password || !passwordConfirm) {
+        return;
+    }
+    if (password !== passwordConfirm) {
+        displaySignupError('Passwords do not match');
         return;
     }
     const userData = {
         nickname,
         email,
-        avatar,
         password,
+        passwordConfirm,
     };
-
-    console.log(`'${userData['nickname']}'`);
     const users = await fetchUser('POST', null, userData);
-    const responseText = await users.text();
-    console.log(users.status)
-    if (!users.ok) {
-        displayErrorMessage(responseText);
-    } else {
-        console.log("SignUp Success: ", responseText)
-        loginAfterSignup(nickname, password);
+    if (!users) {
+        console.log('Error creating user');
+        return;
     }
+    const responseText = await users.text();
+    if (!users.ok) { displaySignupError(responseText); }
+    else { loginAfterSignup(nickname, password); }
 }
 
-function displayErrorMessage(errorMessage) {
-    const error = document.getElementById('errorMessage');
-    error.classList.remove('d-none');
-    error.textContent = errorMessage;
+function displaySignupError(errorMessage) {
+    const errorAlert = document.getElementById('alertErrorSignup');
+    const errorParagraph = document.getElementById('messageErrorSignup');
+    errorParagraph.textContent = errorMessage;
+    errorAlert.classList.add('show');
+    errorAlert.classList.remove('hide');
 }
 
-function displaySuccessMessage(responseText, SuccessElement) {
-    const successMessage = document.getElementById(SuccessElement);
-    successMessage.textContent = responseText;
-    successMessage.classList.remove('d-none');
+
+function hideSignupAlert() {
+    const errorAlert = document.getElementById('alertErrorSignup');
+    errorAlert.classList.remove('show');
+    errorAlert.classList.add('hide');
 }

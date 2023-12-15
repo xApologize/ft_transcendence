@@ -1,6 +1,6 @@
-import { fetchToken } from '../../api/fetchData.js';
 import { logoutUser } from '../../components/userCard/userCard.js'
 import { World } from '../game/src/World.js';
+import { displayEveryone } from './home.js'
 
 const interactiveSocket = {
     interactive_socket: null,
@@ -10,28 +10,23 @@ const interactiveSocket = {
         // TODO add double socket try incase of failure?
         const self = this;
         if (this.interactive_socket === null){
-            if (this.connexion_attempt === 2){
-                logoutUser();
-            }
             this.interactive_socket = new WebSocket('wss://' + window.location.host + '/ws/pong/interactive' + "?" + sessionStorage.getItem('jwt'));
-            this.connexion_attempt++
-            // console.log("Attempt counter:", this.connexion_attempt)
+            this.connexion_attempt++;
             self.interactive_socket.onerror = function(event) {
                 console.error("WebSocket error:", event);
                 logoutUser();
             };
             this.interactive_socket.onopen = async function(event) {
-                console.log("𝕴𝖓𝖙𝖊𝖗𝖆𝖈𝖙𝖎𝖛𝖊 𝖘𝖔𝖈𝖐𝖊𝖙 𝖎𝖘 𝖓𝖔𝖜 𝖔𝖕𝖊𝖓")
+                console.log("𝕴𝖓𝖙𝖊𝖗𝖆𝖈𝖙𝖎𝖛𝖊 𝖘𝖔𝖈𝖐𝖊𝖙 𝖎𝖘 𝖓𝖔𝖜 𝖔𝖕𝖊𝖓");
             }
             this.interactive_socket.onclose = async function(event) {
-                console.log("𝕴𝖓𝖙𝖊𝖗𝖆𝖈𝖙𝖎𝖛𝖊 𝖘𝖔𝖈𝖐𝖊𝖙 𝖍𝖆𝖘 𝖇𝖊𝖊𝖓 𝖈𝖑𝖔𝖘𝖊𝖉")
+                console.log("𝕴𝖓𝖙𝖊𝖗𝖆𝖈𝖙𝖎𝖛𝖊 𝖘𝖔𝖈𝖐𝖊𝖙 𝖍𝖆𝖘 𝖇𝖊𝖊𝖓 𝖈𝖑𝖔𝖘𝖊𝖉");
             };
             this.interactive_socket.onmessage = function(event) {
                 self.parseMessage(event);
             };
         } else {
-            // Should never see this in the future
-            console.error("Interactive socket already exist")
+            console.error("Interactive socket already exist");
         }
     },
 
@@ -39,6 +34,8 @@ const interactiveSocket = {
         const data = JSON.parse(message.data);
         if ( data.type == "Found Match" ) {
 			World._instance.joinMatch( data.handle, data.paddle );
+        } else if (type == "Refresh"){
+            displayEveryone();
         } else {
             console.error("Weird data received from WS")
         }

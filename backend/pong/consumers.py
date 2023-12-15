@@ -1,7 +1,6 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 
-
 class PongRoom(AsyncWebsocketConsumer):
     async def connect(self):
         await self.accept()
@@ -17,7 +16,7 @@ class PongRoom(AsyncWebsocketConsumer):
             self.match_id,
             self.channel_name
         )
-        print("Disconnect code:", close_code)
+        print("Pong socket disconnect code:", close_code)
 
     async def receive(self, text_data):
         await self.channel_layer.group_send(

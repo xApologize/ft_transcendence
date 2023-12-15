@@ -41,9 +41,15 @@ export async function showHome() {
         const userCol = document.getElementById('left-column');
         const gameCol = document.getElementById('right-column');
         const buttonToggle = document.getElementById('userBtn');
+        const iconStyle = document.getElementById('icon');
         buttonToggle.addEventListener('click', () => {
-            let toggleText = buttonToggle.innerText;
-            buttonToggle.innerText = toggleText == 'Users' ? 'Game' : 'Users';
+            if (iconStyle.classList.contains('fa-user')) {
+                iconStyle.classList.add('fa-gamepad');
+                iconStyle.classList.remove('fa-user');
+            } else {
+                iconStyle.classList.remove('fa-gamepad');
+                iconStyle.classList.add('fa-user');
+            }
             userCol.classList.toggle('show');
             gameCol.classList.toggle('hide');
         });
@@ -78,8 +84,7 @@ async function displayFriend() {
     await displayUser(allFriends);
 }
 
-async function displayEveryone() {
-    // Filtrer le user lui même dans le backend pour ne pas qu'il puisse se voir ?
+export async function displayEveryone() {
     const onlineUsers = await fetchUser('GET', { status: ['ONL', 'ING'] });
     if (!onlineUsers || !onlineUsers.ok)
         // if !onlineUsers, c'est que le status == 401 et si !onlineUsers.ok == Aucun user Online
@@ -96,6 +101,10 @@ async function initPage() {
     }
     interactiveSocket.initSocket()
     const userAssembled = await assembleUser(user);
+    if (!userAssembled || typeof userAssembled !== 'object') {
+        console.log('Error assembling user');
+        return;
+    }
     displayUserCard(userAssembled);
     displayEveryone();
     displayMatchHistory(userAssembled);

@@ -1,6 +1,7 @@
-import { fetchAuth, loadHTMLComponent } from "../../api/fetchData.js";
+import { fetchAuth, fetchUpload, fetchUser, loadHTMLComponent } from "../../api/fetchData.js";
 import { navigateTo } from "../../router.js";
 import interactiveSocket from '../../pages/home/socket.js'
+import { closeAlertAvatar, closeAlertInfo, setupSettings, removeAllAlerts, noChangeMadeAlert } from "./utils.js";
 
 export async function userCardComponent() {
     try {
@@ -12,75 +13,91 @@ export async function userCardComponent() {
 }
 
 export async function userCardListener() {
-    document.getElementById('logout').addEventListener('click', async () => {
-        await logoutUser()
-    })
-
-
-    document.getElementById('userSettingsModal').addEventListener('show.bs.modal', function (event) {
-        console.log('Settings Modal is about to be shown');
-    });
-
-
+    document.getElementById('logout').addEventListener('click', logoutUser)
+    document.getElementById('saveInfo').addEventListener('click', saveInfo)
+    document.getElementById('saveAvatar').addEventListener('click', saveAvatar)
+    document.getElementById('userSettingsModal').addEventListener('show.bs.modal', setupSettings)
     document.getElementById('userSettingsModal').addEventListener('hide.bs.modal', function (event) {
         console.log('Settings Modal is about to be hide')
+        document.getElementById('avatarInput').value = ''
+        
     });
-
-
-    document.getElementById('editNicknameBtn').addEventListener('click', function(event) {
-        const nicknameText = document.getElementById('nicknameText');
-        const nicknameInput = document.getElementById('nicknameInput');
-        const editBtn = document.getElementById('editNicknameBtn');
-
-        // Toggle visibility of the text and input fields
-        nicknameText.style.display = (nicknameText.style.display === 'none') ? 'inline' : 'none';
-        nicknameInput.style.display = (nicknameInput.style.display === 'none') ? 'inline' : 'none';
-
-        // If the input field is visible, focus on it
-        if (nicknameInput.style.display !== 'none') {
-            nicknameInput.value = nicknameText.innerText.trim();
-            nicknameInput.focus();
-        }
-
-        // Change the button text based on the state
-        editBtn.innerText = (nicknameText.style.display === 'none') ? 'Save' : 'Edit';
-
-        // If the input field is visible and the button text is 'Save', update the text
-        if (nicknameInput.style.display === 'none' && editBtn.innerText === 'Edit') {
-            nicknameText.innerText = nicknameInput.value.trim();
-        }
-        document.getElementById('cancelNicknameBtn').classList.toggle('hide')
-    });
-
-
-    document.getElementById('cancelNicknameBtn').addEventListener('click', function(event) {
-        const nicknameText = document.getElementById('nicknameText');
-        const nicknameInput = document.getElementById('nicknameInput');
-        const cancelBtn = document.getElementById('cancelNicknameBtn');
-
-        // Toggle visibility of the text and input fields
-        nicknameText.style.display = (nicknameText.style.display === 'none') ? 'inline' : 'none';
-        nicknameInput.style.display = (nicknameInput.style.display === 'none') ? 'inline' : 'none';
-
-        // If the text field is visible, update the input value
-        if (nicknameText.style.display !== 'none') {
-            nicknameInput.value = nicknameText.innerText.trim();
-        }
-
-        // Toggle visibility of the cancel button
-        cancelBtn.classList.toggle('hide');
-
-        const editBtn = document.getElementById('editNicknameBtn');
-        editBtn.innerText = (nicknameText.style.display === 'none') ? 'Save' : 'Edit';
-
-    });
-
+    document.getElementById('btnErrorAvatar').addEventListener('click', closeAlertAvatar)
+    document.getElementById('btnErrorInfo').addEventListener('click', closeAlertInfo)
 
     settingsListener()
 }
 
+async function displayAlertStatus(response, type) {
+    const alert = document.getElementById('alertError' + type);
+    const alertText = document.getElementById('messageError' + type);
+
+    let message = ""
+    removeAllAlerts(alert);
+    if (response.status == 413) {
+        alert.classList.add('alert-danger');
+        message = "File is too big, max size is 1MB"
+    } else if (response.status == 200) {
+        const dataSuccess = await response.json();
+        document.getElementById('nickname').innerText = dataSuccess.user.nickname;
+        document.getElementById('email').innerText = dataSuccess.user.email;
+        alert.classList.add('alert-success');
+        message = "Your " + type + " has been updated"
+    } else {
+        message = await response.text();
+        alert.classList.add('alert-danger');
+    }
+
+    alert.classList.remove('hide');
+    alert.classList.add('show');
+    alertText.textContent = message
+}
+
+
+async function saveAvatar() {
+    const formData = new FormData();
+    const avatarInput = document.getElementById('avatarInput').files[0];
+    if (avatarInput) {
+        formData.append('avatar', avatarInput);
+    }
+    if (formData.has('avatar')) {
+        const response = await fetchUpload('POST', formData);
+        if (!response) { return }
+        displayAlertStatus(response, 'Avatar')
+    } else {
+        noChangeMadeAlert('messageErrorAvatar', 'alertErrorAvatar');
+    }
+}
+
+
+async function saveInfo() {
+    const objectData = new Object();
+
+    const alert = document.getElementById('alertErrorInfo');
+    removeAllAlerts(alert);
+    closeAlertInfo()
+
+    const nicknameInput = document.getElementById('nicknameInput').value;
+    const userNickname = document.getElementById('nickname').innerText;
+    if (userNickname != nicknameInput) {
+        objectData.nickname = nicknameInput;
+    }
+    const emailInput = document.getElementById('emailInput').value;
+    const userEmail = document.getElementById('email').innerText;
+    if (userEmail != emailInput) {
+        objectData.email = emailInput;
+    }
+
+    if (Object.keys(objectData).length > 0) {
+        const response = await fetchUser('PATCH', null, objectData);
+        if (!response) { return }
+        displayAlertStatus(response, 'Info')
+    } else {
+        noChangeMadeAlert('messageErrorInfo', 'alertErrorInfo');
+    }
+}
+
 function settingsListener() {
-    // Left column listener
     document.querySelectorAll('.left-column-settings i').forEach(function(icon) {
             icon.addEventListener('click', function() {
             document.querySelectorAll('.left-column-settings i').forEach(function(icon) {
@@ -124,7 +141,10 @@ function updateUserCard(userObject) {
     profilePicture.src = userObject.avatar;
 
     const nicknameElement = document.getElementById('nickname');
-    nicknameElement.querySelector('h5').innerText = userObject.nickname;
+    nicknameElement.innerText = userObject.nickname;
+
+    const emailElement = document.getElementById('email');
+    emailElement.innerText = userObject.email;
 
     const winsElement = document.getElementById('wins');
     const lossesElement = document.getElementById('losses');
