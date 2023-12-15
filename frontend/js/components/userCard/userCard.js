@@ -1,6 +1,6 @@
 import { fetchAuth, fetchUpload, fetchUser, loadHTMLComponent } from "../../api/fetchData.js";
 import { navigateTo } from "../../router.js";
-import { closeAlertAvatar, closeAlertInfo, setupSettings, closeAlert2FA } from "./utils.js";
+import { closeAlertAvatar, closeAlertInfo, setupSettings, closeAlert2FA, clearSettings } from "./utils.js";
 import { disable2FA, enable2FA, updateMenu2FA, checkConfirmationCode } from "./menu2FA.js";
 import { saveAvatar, saveInfo } from "./menuInfo.js";
 
@@ -19,11 +19,7 @@ export async function userCardListener() {
     document.getElementById('saveInfo').addEventListener('click', saveInfo)
     document.getElementById('saveAvatar').addEventListener('click', saveAvatar)
     document.getElementById('userSettingsModal').addEventListener('show.bs.modal', setupSettings)
-    document.getElementById('userSettingsModal').addEventListener('hide.bs.modal', function (event) {
-        console.log('Settings Modal is about to be hide')
-        document.getElementById('avatarInput').value = ''
-        
-    });
+    document.getElementById('userSettingsModal').addEventListener('hide.bs.modal', clearSettings);
     document.getElementById('disable2FA').addEventListener('click', disable2FA)
     document.getElementById('enable2FA').addEventListener('click', enable2FA)
     document.getElementById('btnErrorAvatar').addEventListener('click', closeAlertAvatar)

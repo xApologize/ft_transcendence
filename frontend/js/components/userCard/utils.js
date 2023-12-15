@@ -47,4 +47,12 @@ export function setupSettings(event) {
     emailInput.value = userEmail;
 }
 
+export function clearSettings(event) {
+    console.log('Settings Modal is about to be hidden');
+
+    document.getElementById('confirmationCode').value = '';
+    closeAlert2FA();
+    closeAlertAvatar();
+    closeAlertInfo();
+}
 

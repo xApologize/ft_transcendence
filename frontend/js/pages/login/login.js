@@ -3,19 +3,21 @@ import { navigateTo } from '../../router.js'
 import { fetchAuth } from '../../api/fetchData.js';
 import { displayAlertMsg } from '../../utils/utilityFunctions.js';
 
+let modal2FA
 export async function showLogin() {
     try {
         await loadHTMLPage('./js/pages/login/login.html');
         // sessionStorage.clear()
+        modal2FA = new bootstrap.Modal(document.getElementById('twoFAModal'))
         document.getElementById('login-form').addEventListener('submit', function (event) {
             event.preventDefault();
             login();
         });
         document
-            .getElementById('signUpButton')
-            .addEventListener('click', () => {
-                navigateTo('/signUp');
-            });
+        .getElementById('signUpButton')
+        .addEventListener('click', () => {
+            navigateTo('/signUp');
+        });
         document.getElementById('btnAlertCloseLogin').addEventListener('click', hideLoginAlert)
         document.getElementById('demo-user-btn').addEventListener('click', () => {
             login("demo-user", "demo-user");
@@ -23,6 +25,9 @@ export async function showLogin() {
         document.getElementById('demo-user-btn2').addEventListener('click', () => {
             login("demo-user2", "demo-user2");
         });
+
+        document.getElementById('submit2FACode').addEventListener('click', submit2FACode);
+        
     } catch (error) {
         console.error('Error fetching home.html:', error);
     }
@@ -51,15 +56,36 @@ async function login(username = null, password = null) {
         const response = await fetchAuth('POST','login/', loginData);
         if (!response)
             return;
+        const result = await response.json();
         if (response.ok) {
+            if (result['2fa_required']) {
+                modal2FA.show()
+                return ; 
+            }
             navigateTo('/home');
         } else {
-            const result = await response.json();
             displayLoginError(result)
         }
     } catch (error) {
         console.error('Error during login:', error);
     }
+}
+
+async function submit2FACode(result) {
+    const code = document.getElementById('2faCodeInput').value
+    const response = await fetchAuth('POST', 'login2fa/', {'otp_token': code})
+    if (!response) { return } // @TODO: handle error bc no token so not suppose to throw 401
+    const data = await response.json();
+    if (response.status == 200) {
+        modal2FA.hide()
+        navigateTo('/home');
+    } else if (response.status == 400) {
+        document.getElementById("2FAErrorMsg").textContent = data.error; 
+    } else if (response.status == 404) {
+        modal2FA.hide()
+        displayLoginError(data.error)
+    }
+
 }
 
 async function displayLoginError(message) {

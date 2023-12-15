@@ -1,4 +1,3 @@
-from django.db.utils import IntegrityError
 from django.http import JsonResponse, HttpResponse, Http404, HttpResponseBadRequest
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -8,7 +7,7 @@ from django.core.exceptions import PermissionDenied
 import json
 from user_profile.models import User
 from utils.functions import first_token
-from utils.functions import get_user_obj
+from utils.functions import get_user_obj, generate_2fa_token, decrypt_user_id
 from django_otp.plugins.otp_totp.models import TOTPDevice
 from django.http import JsonResponse
 import base64, qrcode
@@ -83,13 +82,11 @@ class Create2FA(View):
         # if not otp_token:
         #     return JsonResponse({'error': 'OTP token is required.'}, status=400)
 
-        # Retrieve the confirmed TOTP device for this user
         device = TOTPDevice.objects.filter(user=user).first()
         if device:
-            # If the OTP token is valid, disable 2FA
             TOTPDevice.objects.filter(user=user).delete()  # Delete all TOTP devices
-            # user.two_factor_auth = False  # Update the user model
-            # user.save()
+            user.two_factor_auth = False
+            user.save()
             return JsonResponse({'success': '2FA has been disabled.'})
 
         return JsonResponse({'error': 'There is no 2FA on this account.'}, status=400)
@@ -110,6 +107,8 @@ class Confirm2FA(View):
             otp_token = data.get('otp_token')
             if not otp_token:
                 return JsonResponse({'error': 'Please enter a code.'}, status=400)
+            elif len(otp_token) != 6 and not otp_token.isdigit():
+                return JsonResponse({'error': 'Invalid code.'}, status=400)
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON.'}, status=400)
 
@@ -117,12 +116,12 @@ class Confirm2FA(View):
         if not device:
             return JsonResponse({'error': 'You have no pending 2FA confirmation.'}, status=400)
         if device.verify_token(otp_token):
-            # If the OTP token is valid, confirm the device
+            user.two_factor_auth = True
+            user.save()
             device.confirmed = True
             device.save()
             return JsonResponse({'success': '2FA has been enabled and confirmed.'})
 
-        # OTP verification failed
         return JsonResponse({'error': 'Invalid Code.'}, status=400)
 
 
@@ -144,6 +143,11 @@ class Login(View):
 
         if user.password != password:
             return JsonResponse(errorMessage, status=400)
+        if user.two_factor_auth == True:
+            response = JsonResponse({'2fa_required': True})
+            temp_token = generate_2fa_token(user.id)
+            response.set_cookie('2fa_token', temp_token, httponly=True, secure=True, max_age=300)
+            return response
         else:
             user.status = "ONL"
             user.save()
@@ -151,6 +155,50 @@ class Login(View):
             primary_key = User.objects.get(nickname=nickname).pk
             return first_token(response, primary_key)
 
+
+@method_decorator(csrf_exempt, name='dispatch')
+class Login2FA(View):
+    def post(self, request):
+        errorTime = {'error': '2FA verification time expired. Please try again.'}
+        errorCode = {'error': 'Invalid 2FA Code.'}
+        token = request.COOKIES.get('2fa_token')
+        if not token:
+            return JsonResponse(errorTime, status=404)
+    
+        user_id = decrypt_user_id(token)
+        if (user_id < 0):
+            return JsonResponse(errorTime, status=404)
+    
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON.'}, status=400)
+        
+        otp_token = data.get('otp_token')
+        if not otp_token:
+            return JsonResponse({'error': 'Please enter 2FA Code.'}, status=400)
+        elif otp_token.isdigit() == False or len(otp_token) != 6:
+            return JsonResponse(errorCode, status=400)
+        
+        try:
+            user = User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            return JsonResponse({'error': 'This account does not exist.'}, status=404)
+        
+        device = TOTPDevice.objects.filter(user=user, confirmed=True).first()
+        if not device:
+            return JsonResponse({'error': '2FA device not found or not confirmed.'}, status=404)
+        
+        if not device.verify_token(otp_token):
+            return JsonResponse(errorCode, status=400)
+        else:
+            user.status = "ONL"
+            user.save()
+            response: HttpResponse = JsonResponse({'success': 'Login successful.'})
+            primary_key = User.objects.get(nickname=user.nickname).pk
+            return first_token(response, primary_key)
+            
+        
 @method_decorator(csrf_exempt, name='dispatch')
 class Logout(View):
     @token_validation
