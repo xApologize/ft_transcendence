@@ -103,6 +103,7 @@ class World {
 		opponentGoalZone.paddle = this.opponent;
 
 		this.initMatch();
+		document.getElementById('lfp').classList.add("d-none");
 	}
 
 	createInstance() {
@@ -180,9 +181,9 @@ class World {
 		this.player.position.setZ(0)
 		this.opponent.position.setZ(0)
 		this.balls.renderer.setEnabled(true);
+		this.balls.updatable.setEnabled(true);
 		this.camera.viewTable( 1, function() {
 			this.balls.init();
-			this.balls.updatable.setEnabled(true);
 		}.bind( this ) );
 
 		this.socket.addEventListener("message", (event) => {
@@ -204,7 +205,9 @@ class World {
 	}
 
 	endMatch() {
-		this.camera.viewLarge( 1 );
+		this.camera.viewLarge( 1 , function() {
+			document.getElementById('startBtn').classList.remove("d-none");
+		} );
 		this.player.delete();
 		this.player = undefined;
 		this.opponent.delete();

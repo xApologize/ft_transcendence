@@ -4,6 +4,9 @@ import { displayUserCard } from '../../components/userCard/userCard.js';
 import { displayMatchHistory } from '../../components/matchHistory/matchHistory.js';
 import { displayUser } from './leftColumn.js';
 import interactiveSocket from './socket.js';
+import { World } from '../game/src/World.js';
+import { loadFonts } from '../game/src/systems/Fonts.js';
+import { loadModel } from '../game/src/systems/Loader.js';
 ////////
 // [TO DO]
 // - Ne pas pouvoir avoir 2 connections en même temps sur le même compte
@@ -20,12 +23,12 @@ export async function showHome() {
         initPage();
         const friendsBtn = document.getElementById('friendsBtn');
         const everyoneBtn = document.getElementById('everyoneBtn');
+        const findGameBtn = document.getElementById('findGame');
         // everyoneBtn.classList.add('active');
 
 
         // document.getElementById('middleBtnRight').addEventListener('click', () => {
         // })
-
         friendsBtn.addEventListener('click', () => {
             friendsBtnFunc(friendsBtn, everyoneBtn);
         });
@@ -44,6 +47,20 @@ export async function showHome() {
             userCol.classList.toggle('show');
             gameCol.classList.toggle('hide');
         });
+
+
+		await loadFonts();
+		await loadModel();
+		// await loadHTMLPage('./js/pages/game/game.html')
+
+		const world = new World( document.querySelector('#sceneContainer') );
+
+        findGameBtn.addEventListener('click', () => {
+            document.getElementById('ui').classList.add("d-none");
+			world.currentGameState = "lookingForPlayer";
+			interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Find Match"}));
+        });
+
     } catch (error) {
         console.error('Error fetching home.html:', error);
     }
