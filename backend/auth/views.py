@@ -198,6 +198,7 @@ class Login2FA(View):
             user.status = "ONL"
             user.save()
             response: HttpResponse = JsonResponse({'success': 'Login successful.'})
+            response.delete_cookie('2fa_token')
             primary_key = User.objects.get(nickname=user.nickname).pk
             return first_token(response, primary_key)
             
