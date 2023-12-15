@@ -26,17 +26,13 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(os.environ.get("DEBUG", default=0))
 
-# 'DJANGO_ALLOWED_HOSTS' should be a single string of hosts with a
-#  space between each.
-# For example: 'DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]'
-ALLOWED_HOSTS = "localhost backend 127.0.0.1 [::1]".split(" ")  # FIX LATER, 
-# BOZO BANDAID FIX FOR NOW
-
+# DJANGO ALLOWED_HOSTS used with AllowedHostsOriginValidator.
+#ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
+ALLOWED_HOSTS = ['*']
 
 AUTH_USER_MODEL = 'user_profile.User'
 
 # Application definition
-
 INSTALLED_APPS = [
     "daphne",
     'django.contrib.admin',
@@ -48,20 +44,19 @@ INSTALLED_APPS = [
     'django_otp',
     'django_otp.plugins.otp_totp',
     "channels",
-    'channels_postgres',
+    "channels_postgres",
     "user_profile",
     "friend_list",
     "block_list",
     "match_history",
     "tournament_history",
-    'chat',
+    "interactive"
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -99,15 +94,7 @@ DATABASES = {
         "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "password"),
         "HOST": os.environ.get("POSTGRES_HOST", "localhost"),
         "PORT": os.environ.get("POSTGRES_PORT", "5432"),
-    },
-    'channels_postgres': {
-		'ENGINE': 'django.db.backends.postgresql_psycopg2',
-		"NAME": os.environ.get("POSTGRES_DB", BASE_DIR / "db.sqlite3"),
-        "USER": os.environ.get("POSTGRES_USER", "user"),
-        "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "password"),
-        "HOST": os.environ.get("POSTGRES_HOST", "localhost"),
-        "PORT": os.environ.get("POSTGRES_PORT", "5432"),
-	}
+    }
 }
 
 
@@ -159,14 +146,6 @@ ASGI_APPLICATION = "src.asgi.application"
 
 CHANNEL_LAYERS = {
     'default': {
-        'BACKEND': 'channels_postgres.core.PostgresChannelLayer',
-        'CONFIG': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            "NAME": os.environ.get("POSTGRES_DB", BASE_DIR / "db.sqlite3"),
-            "USER": os.environ.get("POSTGRES_USER", "user"),
-            "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "password"),
-            "HOST": os.environ.get("POSTGRES_HOST", "localhost"),
-            "PORT": os.environ.get("POSTGRES_PORT", "5432"),
-        },
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
     },
 }

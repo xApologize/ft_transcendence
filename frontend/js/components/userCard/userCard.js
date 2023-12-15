@@ -1,9 +1,11 @@
-import { fetchAuth, fetchUpload, fetchUser, loadHTMLComponent } from "../../api/fetchData.js";
+import { fetchAuth, loadHTMLComponent } from "../../api/fetchData.js";
 import { navigateTo } from "../../router.js";
 import { closeAlertAvatar, closeAlertInfo, setupSettings, closeAlert2FA, clearSettings } from "./utils.js";
 import { disable2FA, enable2FA, updateMenu2FA, checkConfirmationCode } from "./menu2FA.js";
 import { saveAvatar, saveInfo } from "./menuInfo.js";
 
+import interactiveSocket from '../../pages/home/socket.js'
+import { closeAlertAvatar, closeAlertInfo, setupSettings } from "./utils.js";
 
 export async function userCardComponent() {
     try {
@@ -48,13 +50,15 @@ function settingsListener() {
 
 }
 
-async function logoutUser() {
+export async function logoutUser() {
+    console.log('logout!')
     const logoutResponse = await fetchAuth('POST', 'logout/')
     if (!logoutResponse) { return }
     if (logoutResponse.status == 200) {
         sessionStorage.clear()
         navigateTo('/')
     }
+    interactiveSocket.closeSocket()
     return ;
 }
 

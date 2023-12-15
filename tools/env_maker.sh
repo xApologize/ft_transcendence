@@ -36,17 +36,8 @@ do
 done
 databasePassword="POSTGRES_PASSWORD=${dataBasePasswordPrompt}"
 
-# while [ -z "$backEndSecretKeyPrompt" ];
-# do
-#     echo -e -n "${Red}Please enter the secret key for the backend: ${Reset}"
-#     read backEndSecretKeyPrompt
-# done
-
 # Setup .env at the root of the directory with the result from the prompts
 echo -e -n "$databaseName\n$databaseUser\n$databasePassword" > .env
-
-# encryption for secret key
-backEndSecretKeyPrompt=$(openssl rand -base64 48)
 
 # Setup variables for the .env in the backend (for django)
 POSTGRES_HOST="POSTGRES_HOST=postgres"
@@ -56,7 +47,7 @@ POSTGRES_DB="POSTGRES_DB=$dataBaseNamePrompt"
 POSTGRES_PORT="POSTGRES_PORT=5432"
 
 DEBUG="DEBUG=1"
-SECRET_KEY="SECRET_KEY=$backEndSecretKeyPrompt"
-DJANGO_ALLOWED_HOSTS="DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]"
+SECRET_KEY="SECRET_KEY=$(openssl rand -base64 48)"
+DJANGO_ALLOWED_HOSTS="DJANGO_ALLOWED_HOSTS=$(hostname) localhost backend 127.0.0.1 [::1]"
 
 echo -e -n "$POSTGRES_HOST\n$POSTGRES_USER\n$POSTGRES_PASSWORD\n$POSTGRES_DB\n$POSTGRES_PORT\n\n$DEBUG\n$SECRET_KEY\n$DJANGO_ALLOWED_HOSTS" > backend/.env

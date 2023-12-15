@@ -6,6 +6,7 @@ import { displayUser } from './leftColumn.js';
 import { World } from '../game/src/World.js';
 import { loadFonts } from '../game/src/systems/Fonts.js';
 import { loadModel } from '../game/src/systems/Loader.js';
+import interactiveSocket from './socket.js';
 ////////
 // [TO DO]
 // - Ne pas pouvoir avoir 2 connections en même temps sur le même compte
@@ -57,7 +58,7 @@ async function displayFriend() {
     await displayUser(allFriends);
 }
 
-async function displayEveryone() {
+export async function displayEveryone() {
     const onlineUsers = await fetchUser('GET', { status: ['ONL', 'ING'] });
     if (!onlineUsers || !onlineUsers.ok)
         // if !onlineUsers, c'est que le status == 401 et si !onlineUsers.ok == Aucun user Online
@@ -72,7 +73,7 @@ async function initPage() {
         console.log('Error fetching users');
         return;
     }
-    // initSocket()  - Si fetch socket et stateSocket is close, get new access Token et re fetch le socket   
+    interactiveSocket.initSocket()
     const userAssembled = await assembleUser(user);
     if (!userAssembled || typeof userAssembled !== 'object') {
         console.log('Error assembling user');

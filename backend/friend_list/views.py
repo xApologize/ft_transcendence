@@ -3,7 +3,6 @@ from .models import FriendList
 from django.db.utils import IntegrityError
 from django.http import JsonResponse, HttpResponseForbidden, HttpResponse, Http404, HttpResponseNotFound, HttpResponseBadRequest, HttpRequest
 from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
 from django.views import View
 from django.db.models import Q
 import json

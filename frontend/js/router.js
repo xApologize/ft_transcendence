@@ -8,7 +8,7 @@ import { showLogin } from './pages/login/login.js';
 import { headerComponent } from './components/header/header.js';
 import { templateComponent } from './components/template/template.js';
 import { showSocket } from './pages/socket/socket.js';
-import { closeAllModals } from './utils/utilityFunctions.js';
+import { showSocket } from './pages/socket/debug_socket.js';
 
 var currentRoute = '';
 const routes = {

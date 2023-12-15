@@ -5,6 +5,7 @@ from django.views import View
 from utils.decorators import token_validation
 from django.core.exceptions import PermissionDenied
 import json
+from django.contrib.auth.hashers import check_password
 from user_profile.models import User
 from utils.functions import first_token
 from utils.functions import get_user_obj, generate_2fa_token, decrypt_user_id
@@ -125,7 +126,6 @@ class Confirm2FA(View):
         return JsonResponse({'error': 'Invalid Code.'}, status=400)
 
 
-@method_decorator(csrf_exempt, name='dispatch')
 class Login(View):
     def post(self, request):
         errorMessage = {"error": "Invalid credentials."}
@@ -141,7 +141,7 @@ class Login(View):
         except User.DoesNotExist:
             return JsonResponse(errorMessage, status=400)
 
-        if user.password != password:
+        if check_password(password, user.password) is False:
             return JsonResponse(errorMessage, status=400)
         if user.two_factor_auth == True:
             response = JsonResponse({'2fa_required': True})
@@ -221,7 +221,6 @@ class Logout(View):
         response.delete_cookie('refresh_jwt')
         return response
 
-@method_decorator(csrf_exempt, name='dispatch')
 class Token(View):
     @token_validation
     def get(self, request):

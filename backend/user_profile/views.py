@@ -1,12 +1,11 @@
 from .models import User
 from django.db.utils import IntegrityError
 from django.http import JsonResponse, HttpResponse, HttpResponseNotFound, HttpResponseBadRequest, HttpRequest, Http404
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
 from match_history.models import MatchHistory
 from django.views import View
 from utils.decorators import token_validation
 from utils.functions import get_user_obj
+from django.contrib.auth.hashers import make_password
 from friend_list.models import FriendList
 import json, os, imghdr
 from django.db.models import Q
@@ -19,7 +18,6 @@ from django_otp.plugins.otp_totp.models import TOTPDevice
 # https://stackoverflow.com/questions/3290182/which-status-code-should-i-use-for-failed-validations-or-invalid-duplicates
 
 
-@method_decorator(csrf_exempt, name='dispatch') #- to apply to every function in the class.
 class Users(View):
     # Get All Users or specific users
     @token_validation
@@ -28,7 +26,6 @@ class Users(View):
         nicknames = request.GET.getlist('nickname')
         if not nicknames and not status:
             return HttpResponseBadRequest('No parameter.')
-
         if nicknames:
             users = User.objects.filter(nickname__in=nicknames)
         elif status:
@@ -65,7 +62,7 @@ class Users(View):
                     email=user_data['email'],
                     avatar='',
                     status='OFF',
-                    password=user_data['password'],
+                    password=make_password(user_data['password'])
                     admin=False,
                     two_factor_auth=False,
                 )
@@ -131,7 +128,6 @@ class Users(View):
         except Exception as e:
             return HttpResponseBadRequest(f'Unexpected Error: {e}') # 400
 
-@method_decorator(csrf_exempt, name='dispatch') #- to apply to every function in the class.
 class Me(View):
     @token_validation
     def get(self, request: HttpRequest):
@@ -169,7 +165,6 @@ class Me(View):
         return JsonResponse({'users': user_data}, status=200)
 
 
-@method_decorator(csrf_exempt, name='dispatch') #- to apply to every function in the class.
 class Friends(View):
     @token_validation
     def get(self, request):
@@ -202,8 +197,7 @@ class Friends(View):
         if user_data:
             return JsonResponse({'users': user_data}, status=200)
         return HttpResponse('No friends found') # 404
-    
-@method_decorator(csrf_exempt, name='dispatch') #- to apply to every function in the class.
+
 class Upload(View):
     @token_validation
     def post(self, request: HttpRequest):
