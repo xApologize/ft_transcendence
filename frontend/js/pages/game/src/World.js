@@ -64,13 +64,13 @@ class World {
 			// 	console.warn("-- RESUME! --");
 			// 	World._instance.createGame();
 			// }
-			if ( event.code == "Space" && this.currentGameState == GameState.InMenu ) {
-				if ( !interactiveSocket.interactive_socket )
-					return console.error("interactiveSocket not up");
-				console.log("-- Waiting for Opponent --");
-				this.currentGameState = GameState.LookingForPlayer;
-				interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Find Match"}));
-			}
+			// if ( event.code == "Space" && this.currentGameState == GameState.InMenu ) {
+			// 	if ( !interactiveSocket.interactive_socket )
+			// 		return console.error("interactiveSocket not up");
+			// 	console.log("-- Waiting for Opponent --");
+			// 	this.currentGameState = GameState.LookingForPlayer;
+			// 	interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Find Match"}));
+			// }
 		}, false);
 	}
 
@@ -206,7 +206,7 @@ class World {
 
 	endMatch() {
 		this.camera.viewLarge( 1 , function() {
-			document.getElementById('startBtn').classList.remove("d-none");
+			document.getElementById('ui').classList.remove("d-none");
 		} );
 		this.player.delete();
 		this.player = undefined;

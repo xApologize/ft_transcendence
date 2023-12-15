@@ -7,9 +7,6 @@ import { World } from '../game/src/World.js';
 import { loadFonts } from '../game/src/systems/Fonts.js';
 import { loadModel } from '../game/src/systems/Loader.js';
 import interactiveSocket from './socket.js';
-import { World } from '../game/src/World.js';
-import { loadFonts } from '../game/src/systems/Fonts.js';
-import { loadModel } from '../game/src/systems/Loader.js';
 ////////
 // [TO DO]
 // - Ne pas pouvoir avoir 2 connections en même temps sur le même compte
@@ -41,13 +38,13 @@ export async function showHome() {
 		
 		await loadFonts();
 		await loadModel();
-		
 		const world = new World( document.querySelector('#sceneContainer') );
 		
 		const findGameBtn = document.getElementById('findGame');
         findGameBtn.addEventListener('click', () => {
             document.getElementById('ui').classList.add("d-none");
 			world.currentGameState = "lookingForPlayer";
+			document.getElementById('lfp').classList.remove("d-none");
 			interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Find Match"}));
         });
 
