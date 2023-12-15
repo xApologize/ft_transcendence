@@ -35,6 +35,7 @@ class Users(View):
             users = User.objects.filter(status__in=status)
         user_data = [
             {
+                'id': user.id,
                 'nickname': user.nickname,
                 'email': user.email,
                 'avatar': get_avatar_data(user),
@@ -190,6 +191,7 @@ class Friends(View):
 
         user_data = [
             {
+                'id': user.id,
                 'nickname': user.nickname,
                 'email': user.email,
                 'avatar': get_avatar_data(user),

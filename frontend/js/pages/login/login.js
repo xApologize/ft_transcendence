@@ -27,7 +27,7 @@ export async function showLogin() {
         });
 
         document.getElementById('submit2FACode').addEventListener('click', submit2FACode);
-        
+        document.getElementById('close2FAModal').addEventListener('click', close2FAModal)
     } catch (error) {
         console.error('Error fetching home.html:', error);
     }
@@ -86,6 +86,12 @@ async function submit2FACode(result) {
         displayLoginError(data.error)
     }
 
+}
+
+function close2FAModal() {
+    modal2FA.hide()
+    const error = {'error': '2FA Authentication interrupted. Please try again.'};
+    displayLoginError(error)
 }
 
 async function displayLoginError(message) {
