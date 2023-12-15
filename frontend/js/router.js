@@ -7,7 +7,6 @@ import { show404 } from './pages/404/404.js';
 import { showLogin } from './pages/login/login.js';
 import { headerComponent } from './components/header/header.js';
 import { templateComponent } from './components/template/template.js';
-import { showSocket } from './pages/socket/socket.js';
 import { showSocket } from './pages/socket/debug_socket.js';
 
 var currentRoute = '';

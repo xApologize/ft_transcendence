@@ -62,7 +62,7 @@ class Users(View):
                     email=user_data['email'],
                     avatar='',
                     status='OFF',
-                    password=make_password(user_data['password'])
+                    password=make_password(user_data['password']),
                     admin=False,
                     two_factor_auth=False,
                 )
