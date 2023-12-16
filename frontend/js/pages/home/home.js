@@ -9,28 +9,27 @@ import { loadModel } from '../game/src/systems/Loader.js';
 import interactiveSocket from './socket.js';
 ////////
 // [TO DO]
+// - Afficher otherUserInfo modal
+// - Gérer demande ami
+// - Faire tout fonctionner avec socket interactif
+// - Gérer les status (off when socket close, on when socket on)
 // - Ne pas pouvoir avoir 2 connections en même temps sur le même compte
-// - Friend Column
-// - Settings Modal [+ système pour changer password, email, nickname, avatar, 2FA]
-// - 2FA
-// - Trouver facon update en temps reel (socket ?)
 ////////
 
 let otherUserModal;
-let gameModal;
 
 export async function showHome() {
     try {
         await loadHTMLPage('./js/pages/home/home.html');
         initPage();
         otherUserModal = new bootstrap.Modal(document.getElementById('otherUserInfo'))
-
+        
         const friendsBtn = document.getElementById('friendsBtn');
         const everyoneBtn = document.getElementById('everyoneBtn');        
         friendsBtn.addEventListener('click', () => {
             friendsBtnFunc(friendsBtn, everyoneBtn);
         });
-        everyoneBtn.addEventListener('click', async () => {
+        everyoneBtn.addEventListener('click', () => {
             everyoneBtnFunc(friendsBtn, everyoneBtn);
         });
         responsiveLeftColumn()
