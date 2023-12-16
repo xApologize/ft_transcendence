@@ -4,14 +4,12 @@ import { displayEveryone } from './home.js'
 
 const interactiveSocket = {
     interactive_socket: null,
-    connexion_attempt: 0,
 
     initSocket: function() {
         // TODO add double socket try incase of failure?
         const self = this;
         if (this.interactive_socket === null){
             this.interactive_socket = new WebSocket('wss://' + window.location.host + '/ws/pong/interactive' + "?" + sessionStorage.getItem('jwt'));
-            this.connexion_attempt++;
             self.interactive_socket.onerror = function(event) {
                 console.error("WebSocket error:", event);
                 logoutUser();
@@ -42,7 +40,7 @@ const interactiveSocket = {
             console.error("What are you doing?");
         }
     },
-    
+
     sendMessageSocket: function(message) {
         if (this.interactive_socket) {
             this.interactive_socket.send(message);
