@@ -71,8 +71,8 @@
 
 <!-- Other User Profile Modal -->
 <div class="modal fade" id="otherUserInfo" tabindex="-1" data-bs-keyboard="false" aria-labelledby="otherUserInfoLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
+    <div id="otherUserInfoDialog" class="modal-dialog modal-lg">
+        <div class="modal-content" style="background-image: url('https://media.giphy.com/media/Ju7l5y9osyymQ/giphy.gif');">
             <div class="modal-header">
                 <button id="friendStateBtn"  class="btn btn-success">Add Friend</button>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -83,18 +83,17 @@
                 </div>
                 <h1 id="userNickname" class="text-center mb-3">Loading...</h4>
                 <div class="row text-center">
-                    <p class="col-3">Wins: <span id="userWins" class="fw-bold">0</span></p>
-                    <p class="col-3">Losses: <span id="userLosses" class="fw-bold">0</span></p>
-                    <p class="col-3">Matches Played: <span id="userMatchesPlayed" class="fw-bold">0</span></p>
-                    <p class="col-3">Winrate: <span id="userRatio" class="fw-bold">0</span></p>
+                    <p class="col">Wins: <span id="userWins" class="fw-bold">0</span></p>
+                    <p class="col">Losses: <span id="userLosses" class="fw-bold">0</span></p>
+                    <p class="col">Matches Played: <span id="userMatchesPlayed" class="fw-bold">0</span></p>
+                    <p id="winrate" class="col">Winrate: <span id="userWinrate" class="fw-bold">0</span></p>
                 </div>
-                <hr>
                 <div id="otherMatchHistory" class="d-none">
                     <div class="col text-center mb-4">
                         <h3>Match History</h3>
                     </div>
                     <div>
-                        <div class="row text-center border border-2">
+                        <div class="row text-center border-2 border mb-2">
                             <div class="col">
                                 <p class="mt-2 mb-2">Date of Match</p>
                             </div>
@@ -111,8 +110,8 @@
                                 <p class="mt-2 mb-2">Loser Score</p>
                             </div>
                         </div>
-                        <div class="row text-center">
-                            <!-- Append Match here? -->
+                        <div id="matchHistoryContainer">
+                            
                         </div>
                     </div>
                 </div>

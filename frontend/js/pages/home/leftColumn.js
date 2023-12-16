@@ -1,7 +1,7 @@
 import { userTemplateComponent } from '../../components/userTemplate/userTemplate.js';
 import { assembleUser } from '../../api/assembler.js';
 import { fetchUser } from '../../api/fetchData.js';
-import { displayMatchHistory } from '../../components/matchHistory/matchHistory.js';
+import { otherMatchHistoryComponent } from '../../components/otherMatchHistory/otherMatchHistory.js';
 
 export async function displayUser(allUsers) {
     let userContainer = document.getElementById('userDisplay');
@@ -99,16 +99,27 @@ async function displayOtherUserProfile(event) {
 
     const userInfo = await response.json()
     const currentUserInfo = userInfo.users[0]
+    updateOtherModal(currentUserInfo)
     displayBasicInfo(currentUserInfo)
-    if (currentUserInfo.played_matches.length > 0) {
-        document.getElementById('otherMatchHistory').classList.remove('d-none')
-        displayOtherMatchHistory(currentUserInfo)    
-    } else {
-        document.getElementById('otherMatchHistory').classList.add('d-none')
-    }
+    displayOtherMatchHistory(currentUserInfo)    
+
     otherUserModal.show()
 }
 
+
+function updateOtherModal(currentUserInfo) {
+    const dialog = document.getElementById('otherUserInfoDialog')
+    const ratio = document.getElementById('winrate')
+    if (currentUserInfo.played_matches.length > 0) {
+        dialog.classList.add('modal-lg')
+        ratio.classList.remove('d-none')
+        document.getElementById('otherMatchHistory').classList.remove('d-none')
+    } else {
+        dialog.classList.remove('modal-lg')
+        ratio.classList.add('d-none')
+        document.getElementById('otherMatchHistory').classList.add('d-none')
+    }
+}
 
 function displayBasicInfo(currentUserInfo) {
 
@@ -127,14 +138,40 @@ function displayBasicInfo(currentUserInfo) {
     const matchesPlayed = document.getElementById('userMatchesPlayed')
     matchesPlayed.textContent = currentUserInfo.played_matches.length;
 
-    const ratio = document.getElementById('userRatio')
+    const ratio = document.getElementById('userWinrate')
     if (winCount.textContent == 0) {
         ratio.textContent = 0 + "%"
     } else {
-        ratio.textContent = (winCount.textContent / matchesPlayed.textContent) * 100 + "%"
+        const winCountNumber = parseInt(winCount.textContent, 10);
+        const matchesPlayedNumber = parseInt(matchesPlayed.textContent, 10);
+        
+        const winRatio = (winCountNumber / matchesPlayedNumber) * 100;
+        ratio.textContent = winRatio.toFixed(2) + "%";
     }
 }
 
-function displayOtherMatchHistory(currentUserInfo) {
+async function displayOtherMatchHistory(currentUserInfo) {
+    const matchHistoryContainer = document.getElementById('matchHistoryContainer');
+    matchHistoryContainer.innerHTML = '';
+    const otherMatchHistoryTemplate = await otherMatchHistoryComponent()
+    
+    currentUserInfo.played_matches.forEach(match => {
+        const matchEntry = otherMatchHistoryTemplate.cloneNode(true);
+        
+        matchEntry.querySelector('#otherDateOfMatch').textContent = match.date_of_match;
+        matchEntry.querySelector('#otherWinnerUsername').textContent = match.winner_username;
+        matchEntry.querySelector('#otherWinnerScore').textContent = match.winner_score;
+        matchEntry.querySelector('#otherLoserUsername').textContent = match.loser_username;
+        matchEntry.querySelector('#otherLoserScore').textContent = match.loser_score;
+        
+        matchEntry.querySelector('#otherDateOfMatch').id = '';
+        matchEntry.querySelector('#otherWinnerUsername').id = '';
+        matchEntry.querySelector('#otherWinnerScore').id = '';
+        matchEntry.querySelector('#otherLoserUsername').id = '';
+        matchEntry.querySelector('#otherLoserScore').id = '';
+    
+        matchHistoryContainer.appendChild(matchEntry);
+    });
 }
+
 

@@ -73,3 +73,9 @@
     background-color: var(--bg-accent) !important;
     border-color: var(--bg-accent) !important;
 }
+
+.hover-row:hover {
+    background-color: #e9ecef;
+    cursor: default
+    /* cursor: pointer; */
+}
