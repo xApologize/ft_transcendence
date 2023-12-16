@@ -54,10 +54,10 @@ export async function logoutUser() {
     const logoutResponse = await fetchAuth('POST', 'logout/')
     if (!logoutResponse) { return }
     if (logoutResponse.status == 200) {
+        interactiveSocket.closeSocket()
         sessionStorage.clear()
         navigateTo('/')
     }
-    interactiveSocket.closeSocket()
     return ;
 }
 
