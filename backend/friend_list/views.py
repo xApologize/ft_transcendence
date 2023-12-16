@@ -5,13 +5,14 @@ from django.http import JsonResponse, HttpResponseForbidden, HttpResponse, Http4
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.db.models import Q
+
 import json
 from django.core import serializers
 
 # Need to check if the user that he's looking for exist ?
 # Add timestamp to friend model ?
 # Not forget: If someone block the other one and is friend, remove from friendlist.
-class FriendListView(View):
+class FriendList(View):
     # Retrieve a user's friend list by their nickname. You can filter friends by the status of their relationship (ACCEPTED, PENDING, or REFUSED).
     def get(self, request: HttpRequest):
         user_nickname = request.GET.get('nickname')
@@ -36,3 +37,8 @@ class FriendListView(View):
             for friend in friend_relations
         ]
         return JsonResponse({"friends": friend_data})
+
+
+class FriendRequest(View):
+    pass    
+

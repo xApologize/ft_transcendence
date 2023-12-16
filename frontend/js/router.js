@@ -116,6 +116,14 @@ function checkAllModal() {
             modalInstance.dispose();
         }
     }
+
+    const otherUsersModal = document.getElementById('otherUserInfo');
+    if (otherUsersModal) {
+        const modalInstance = bootstrap.Modal.getInstance(otherUsersModal);
+        if (modalInstance) {
+            modalInstance.dispose();
+        }
+    }
     // Close all other modals, one by one, id by id...
 
 }
