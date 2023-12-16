@@ -1,3 +1,4 @@
+
 export function closeAlertInfo() {
     const alert = document.getElementById('alertErrorInfo');
     alert.classList.remove('show');
@@ -11,6 +12,11 @@ export function closeAlertAvatar() {
     alert.classList.add('hide');
 }
 
+export function closeAlert2FA() {
+    const alert = document.getElementById('twoFactorAuthDisplay');
+    alert.classList.add('d-none');
+}
+
 export function closeSettings() {
     const settingsModal = document.getElementById('userSettingsModal');
     if (settingsModal) {
@@ -21,17 +27,6 @@ export function closeSettings() {
     }  
 }
 
-
-export function noChangeMadeAlert(messageError, alertError) {
-    const alert = document.getElementById(alertError);
-    const alertText = document.getElementById(messageError);
-    removeAllAlerts(alert);
-    alertText.textContent = "No changes were made";
-    alert.classList.add('alert-primary');
-    alert.classList.add('show');
-}
-
-
 export function removeAllAlerts(alertElement) {
     alertElement.classList.remove('alert-success');
     alertElement.classList.remove('alert-danger');
@@ -39,9 +34,7 @@ export function removeAllAlerts(alertElement) {
 }
 
 
-export function setupSettings() {
-    console.log('Settings Modal is about to be shown');
-
+export function setupSettings(event) {
     const userNickname = document.getElementById('nickname').textContent;
     const nicknameInput = document.getElementById('nicknameInput');
     nicknameInput.value = userNickname
@@ -51,3 +44,11 @@ export function setupSettings() {
     const emailInput = document.getElementById('emailInput');
     emailInput.value = userEmail;
 }
+
+export function clearSettings(event) {
+    document.getElementById('confirmationCode').value = '';
+    closeAlert2FA();
+    closeAlertAvatar();
+    closeAlertInfo();
+}
+

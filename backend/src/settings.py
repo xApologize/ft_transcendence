@@ -30,6 +30,8 @@ DEBUG = bool(os.environ.get("DEBUG", default=0))
 #ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 ALLOWED_HOSTS = ['*']
 
+AUTH_USER_MODEL = 'user_profile.User'
+
 # Application definition
 INSTALLED_APPS = [
     "daphne",

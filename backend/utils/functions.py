@@ -66,3 +66,15 @@ def get_user_obj(request: HttpRequest) -> User:
 
     user = get_object_or_404(User, id=decrypt_result)
     return user
+
+def generate_2fa_token(id: int) -> str:
+    '''Function that will generate a jwt token with the id and secret'''
+    current_time: int = int(time.time())
+    lifespan: int = 300
+    payload: dict[str, any] = {
+        "iss": "pong99",
+        "sub": id,
+        "exp": current_time + lifespan,
+        "iat": current_time
+    }
+    return jwt.encode(payload, settings.SECRET_KEY, algorithm="HS256")

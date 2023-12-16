@@ -42,6 +42,12 @@ async function loopDisplayUser(objectAllUsers, currentUser, userContainer) {
         userContainer.appendChild(document.createElement('hr'));
 
         const clonedUserTemplate = templateUser.cloneNode(true);
+        
+        const seeProfileBtn = clonedUserTemplate.querySelector('#seeProfileBtn');
+        seeProfileBtn.addEventListener('click', displayOtherUserProfile)
+
+        const otherUserID = clonedUserTemplate.querySelector('#otherUserID')
+        otherUserID.id = user.id
 
         const avatarElement =
             clonedUserTemplate.querySelector('#user-avatar');
@@ -66,4 +72,14 @@ async function loopDisplayUser(objectAllUsers, currentUser, userContainer) {
                 return 'gray';
         }
     }
+}
+
+async function displayOtherUserProfile(event) {
+    const button = event.currentTarget
+    const iconElement = button.querySelector('i');
+    const id = iconElement ? iconElement.id : NULL;
+
+    
+
+    console.log(id)
 }
