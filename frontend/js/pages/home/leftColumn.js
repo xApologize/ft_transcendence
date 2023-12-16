@@ -1,6 +1,7 @@
 import { userTemplateComponent } from '../../components/userTemplate/userTemplate.js';
 import { assembleUser } from '../../api/assembler.js';
 import { fetchUser } from '../../api/fetchData.js';
+import { displayMatchHistory } from '../../components/matchHistory/matchHistory.js';
 
 export async function displayUser(allUsers) {
     let userContainer = document.getElementById('userDisplay');
@@ -82,7 +83,7 @@ function fillOtherUserInfo(clonedUserTemplate, user) {
 async function displayOtherUserProfile(event) {
     const button = event.currentTarget
     const iconElement = button.querySelector('i');
-    const id = iconElement ? iconElement.id : NULL;
+    const userID = iconElement ? iconElement.id : NULL;
 
     const modalElement = document.getElementById('otherUserInfo')
     const otherUserModal = bootstrap.Modal.getInstance(modalElement);
@@ -91,21 +92,25 @@ async function displayOtherUserProfile(event) {
         return 
     }
 
-    displayBasicInfo(id)
-    // CHECK TO DO NOT FETCH MORE THAN 10 MATCH ?
-    // displayMatchHistory()    
-    otherUserModal.show()
-}
-
-
-async function displayBasicInfo(userID) {
     const response = await fetchUser('GET', {id: userID })
     if (!response) { return }
     if (response.status != 200) // User not found
         return
-    
+
     const userInfo = await response.json()
     const currentUserInfo = userInfo.users[0]
+    displayBasicInfo(currentUserInfo)
+    if (currentUserInfo.played_matches.length > 0) {
+        document.getElementById('otherMatchHistory').classList.remove('d-none')
+        displayOtherMatchHistory(currentUserInfo)    
+    } else {
+        document.getElementById('otherMatchHistory').classList.add('d-none')
+    }
+    otherUserModal.show()
+}
+
+
+function displayBasicInfo(currentUserInfo) {
 
     const nickname = document.getElementById('userNickname')
     nickname.textContent = currentUserInfo.nickname
@@ -121,4 +126,15 @@ async function displayBasicInfo(userID) {
 
     const matchesPlayed = document.getElementById('userMatchesPlayed')
     matchesPlayed.textContent = currentUserInfo.played_matches.length;
+
+    const ratio = document.getElementById('userRatio')
+    if (winCount.textContent == 0) {
+        ratio.textContent = 0 + "%"
+    } else {
+        ratio.textContent = (winCount.textContent / matchesPlayed.textContent) * 100 + "%"
+    }
 }
+
+function displayOtherMatchHistory(currentUserInfo) {
+}
+
