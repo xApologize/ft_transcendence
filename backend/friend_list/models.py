@@ -13,7 +13,7 @@ class FriendList(models.Model):
     friend1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name="friend1")
     friend2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name="friend2")
     status = models.CharField(max_length=10)
-
+    timeLastUpdate = models.DateTimeField(auto_now=True)
     class Meta:
         verbose_name = "friend_list"
         verbose_name_plural = "friend_list"

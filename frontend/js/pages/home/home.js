@@ -14,9 +14,11 @@ import interactiveSocket from './socket.js';
 // - Gérer les status (off when socket close, on when socket open, ing when in game)
 // - Ne pas pouvoir avoir 2 connections en même temps sur le même compte
 ////////
-
+// To update w socket when friend update (unfriend, cancel,  accepted, refused):
+// Friends column
+// Other user modal
+//
 let otherUserModal;
-
 export async function showHome() {
     try {
         await loadHTMLPage('./js/pages/home/home.html');
