@@ -108,13 +108,13 @@ async function deleteFriend() {
     const otherUserID = otherUserContentElement.id;
     const response = await fetchFriendChange('DELETE', { id: otherUserID })
     if (!response) { return }
-    if (response.status != 200 || response.status != 201) { // User not found
-        console.log(response)
-    } 
-    else {
-        const msg = await response.json()
-        console.log(msg)
-    }
+    // if (response.status != 200 || response.status != 201) { // User not found
+    //     console.log(response)
+    // } 
+    // else {
+    const msg = await response.json()
+    console.log(msg)
+    // }
 }
 
 async function addFriend() {
@@ -123,13 +123,13 @@ async function addFriend() {
     const otherUserID = otherUserContentElement.id;
     const response = await fetchFriendChange('POST', { id: otherUserID })
     if (!response) { return }
-    if (response.status != 200 || response.status != 201) { // User not found
-        console.log(response)
-    } 
-    else {
-        const msg = await response.json()
-        console.log(msg)
-    }
+    // if (response.status != 200 || response.status != 201) { // User not found
+    //     console.log(response)
+    // } 
+    // else {
+    const msg = await response.json()
+    console.log(msg)
+    // }
 }
 
 /////

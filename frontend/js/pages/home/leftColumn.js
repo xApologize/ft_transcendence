@@ -130,12 +130,12 @@ async function updateFriendButton(currentUserInfo) {
         addButton.classList.add('d-none')
         deleteBtn.classList.remove('d-none')
         deleteBtn.textContent = 'Remove Friend'
-    } else if (friendState.state == 'SEND') {
+    } else if (friendState.state == 'SENT') {
         // Display cancel request button
         addButton.classList.add('d-none')
         deleteBtn.classList.remove('d-none')
         deleteBtn.textContent = 'Cancel Request'
-    } else if (friendState.state == 'RECEIVE') {
+    } else if (friendState.state == 'RECEIVED') {
         // Display accept or refuse button
         addButton.classList.remove('d-none')
         deleteBtn.classList.remove('d-none')

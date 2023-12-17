@@ -7,6 +7,8 @@ from utils.decorators import token_validation
 from django.core.exceptions import PermissionDenied
 from utils.functions import get_user_obj
 from .models import FriendList
+from django.utils import timezone
+from datetime import timedelta
 
 # Need to check if the user that he's looking for exist ?
 # Add timestamp to friend model to handle spam ?
@@ -34,22 +36,30 @@ class FriendChange(View):
 
         # Check if there's already a friend relationship or pending request between the two users
         existing_relationship = FriendList.objects.filter(
-            (Q(friend1=sender, friend2=receiver) | Q(friend1=receiver, friend2=sender))
-        ).first()
+            Q(friend1=sender, friend2=receiver) | Q(friend1=receiver, friend2=sender)
+        ).order_by('-timeLastUpdate').first()
 
         if existing_relationship:
-            if existing_relationship.status == "PENDING" and existing_relationship.friend2 == sender:
-                existing_relationship.status = "ACCEPTED"
-                existing_relationship.save()
+            status = existing_relationship.status
+            print(status)
+            if status == "CANCEL" or status == "REFUSED" or status == "UNFRIEND":
+                response = handleDelete(existing_relationship, sender, receiver)
+                if response:
+                    return response
+            elif status == "PENDING" and existing_relationship.friend2 == sender: # Current user is accepting a received request
+                changeState(existing_relationship, "ACCEPTED", sender)
                 return JsonResponse({'message': 'Friend request accepted.'})
-            elif existing_relationship.status == "PENDING":
+            elif status == "PENDING" and existing_relationship.friend1 == sender: # Current user is sending a request to someone who already sent one
                 return JsonResponse({'message': 'Friend request already sent.'}, status=200)
+            elif status == "ACCEPTED": # Current user is sending a request to someone he's already friends with
+                return JsonResponse({'message': 'Already friends.'}, status=200)
             else:
-                return JsonResponse({'message': 'Already friends or request pending.'}, status=200)
-
+                return JsonResponse({'message': 'No existing status for relationship.'}, status=404)
+        else:
+            print("Create friend relation")
         # No existing relationship, create a new friend request
         try:
-            FriendList.objects.create(friend1=sender, friend2=receiver, status="PENDING")
+            FriendList.objects.create(friend1=sender, friend2=receiver, status="PENDING", last_action_by=sender)
         except IntegrityError:
             return JsonResponse({'message': 'A request already exists.'}, status=400)
         return JsonResponse({'message': 'Friend request sent.'}, status=201)
@@ -73,13 +83,15 @@ class FriendChange(View):
         except Http404 as e:
             return HttpResponse(str(e), status=404)
     
+        print(FriendList.objects.filter(friend1=current_user, friend2=foreign_user, status="PENDING").exists())
+
         # Check if current user has sent a friend request to foreign user
         if FriendList.objects.filter(friend1=current_user, friend2=foreign_user, status="PENDING").exists():
-            return JsonResponse({'state': 'SEND'})
+            return JsonResponse({'state': 'SENT'})
 
         # Check if current user has received a friend request from foreign user
         if FriendList.objects.filter(friend1=foreign_user, friend2=current_user, status="PENDING").exists():
-            return JsonResponse({'state': 'RECEIVE'})
+            return JsonResponse({'state': 'RECEIVED'})
 
         # Check if they are already friends
         if FriendList.objects.filter(
@@ -114,15 +126,33 @@ class FriendChange(View):
         ).first()
 
         if existing_relationship:
-            if existing_relationship.status == "PENDING" and existing_relationship.friend2 == current_user:
+            status = existing_relationship.status
+            if status == "PENDING" and existing_relationship.friend2 == current_user:
                 # Current user is refusing a received request
-                existing_relationship.status = "REFUSED"
-                existing_relationship.save()
+                changeState(existing_relationship, "REFUSED", current_user)
                 return JsonResponse({'message': 'Friend request refused.'})
-            else:
-                # Either canceling a sent request, unfriending, or deleting a refused request
-                existing_relationship.delete()
-                action = "unfriended" if existing_relationship.status == "ACCEPTED" else "canceled"
-                return JsonResponse({'message': f'Friend request {action}.'})
+            elif status == "PENDING" and existing_relationship.friend1 == current_user:
+                # Current user is canceling a sent request
+                changeState(existing_relationship, "CANCEL", current_user)
+                return JsonResponse({'message': f'Canceled.'})
+            elif status == "ACCEPTED":
+                # Current user is unfriending the other user
+                changeState(existing_relationship, "UNFRIEND", current_user)
+                return JsonResponse({'message': f'Unfriended.'})
 
-        return JsonResponse({'message': 'No existing relationship or request to delete.'}, status=404)
+        return JsonResponse({'message': 'No existing relationship.'}, status=404)
+    
+def changeState(relationShip, state, user):
+    relationShip.status = state
+    relationShip.last_action_by = user
+    relationShip.save()
+    
+def handleDelete(relationShip: FriendList, sender: User, receiver: User):
+    status = relationShip.status
+    if status == "CANCEL" and relationShip.last_action_by == sender:
+        time_diff = timezone.now() - relationShip.timeLastUpdate
+        if time_diff < timedelta(seconds=30):
+            return JsonResponse({'message': 'Action blocked to prevent spamming. Please wait.'}, status=429)
+    
+    relationShip.delete()
+    return None
