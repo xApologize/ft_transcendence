@@ -133,7 +133,7 @@ export const fetchMe = async(method, data = null) => {
     return result;
 }
 
-// Get friend, remove and add friend,
+// Get friend list.
 export const fetchFriend = async (method, apiPath = '', data = null) => {
     const path = 'user/friends/' + apiPath
     const url = buildApiUrl(path)
@@ -146,5 +146,14 @@ export const fetchUpload = async (method, data = null) => {
     const path = 'user/upload/'
     const url = buildApiUrl(path)
     let result = await performFetch(url, method, data)
+    return result;
+}
+
+
+export const fetchFriendChange = async (method, parameters = null) => {
+    const path = 'friend/';
+    const params = buildParams(parameters);
+    const url = buildApiUrl(path, params);
+    let result = await performFetch(url, method);
     return result;
 }

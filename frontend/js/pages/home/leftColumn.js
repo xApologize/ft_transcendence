@@ -2,6 +2,8 @@ import { userTemplateComponent } from '../../components/userTemplate/userTemplat
 import { assembleUser } from '../../api/assembler.js';
 import { fetchUser } from '../../api/fetchData.js';
 import { otherMatchHistoryComponent } from '../../components/otherMatchHistory/otherMatchHistory.js';
+import { fetchFriendChange } from '../../api/fetchData.js';
+
 
 export async function displayUser(allUsers) {
     let userContainer = document.getElementById('userDisplay');
@@ -53,8 +55,6 @@ async function loopDisplayUser(objectAllUsers, currentUser, userContainer) {
     });
 }
 
-
-
 function fillOtherUserInfo(clonedUserTemplate, user) {
     const otherUserID = clonedUserTemplate.querySelector('#otherUserID')
     otherUserID.id = user.id
@@ -80,6 +80,7 @@ function fillOtherUserInfo(clonedUserTemplate, user) {
     return clonedUserTemplate
 }
 
+// TO DO: ERROR HANDLING
 async function displayOtherUserProfile(event) {
     const button = event.currentTarget
     const iconElement = button.querySelector('i');
@@ -100,25 +101,73 @@ async function displayOtherUserProfile(event) {
     const userInfo = await response.json()
     const currentUserInfo = userInfo.users[0]
     updateOtherModal(currentUserInfo)
-    displayBasicInfo(currentUserInfo)
-    displayOtherMatchHistory(currentUserInfo)    
+    displayInfo(currentUserInfo)
 
     otherUserModal.show()
 }
 
-
 function updateOtherModal(currentUserInfo) {
-    const dialog = document.getElementById('otherUserInfoDialog')
+    updateWinrateAndClass(currentUserInfo)
+    updateFriendButton(currentUserInfo)
+}
+
+function displayInfo(currentUserInfo) {
+    displayBasicInfo(currentUserInfo)
+    displayOtherMatchHistory(currentUserInfo)   
+}
+
+// TO DO: ERROR HANDLING
+async function updateFriendButton(currentUserInfo) {
+    const response = await fetchFriendChange('GET', { id: currentUserInfo.id })
+    if (!response) { return }
+    if (response.status != 200) // User not found or no ID Provided ?
+        return
+    const friendState = await response.json();
+    const addButton = document.getElementById('addFriendBtn')
+    const deleteBtn = document.getElementById('deleteFriendBtn')
+    if (friendState.state == 'FRIEND') {
+        // Dislpay unfriend button
+        addButton.classList.add('d-none')
+        deleteBtn.classList.remove('d-none')
+        deleteBtn.textContent = 'Remove Friend'
+    } else if (friendState.state == 'SEND') {
+        // Display cancel request button
+        addButton.classList.add('d-none')
+        deleteBtn.classList.remove('d-none')
+        deleteBtn.textContent = 'Cancel Request'
+    } else if (friendState.state == 'RECEIVE') {
+        // Display accept or refuse button
+        addButton.classList.remove('d-none')
+        deleteBtn.classList.remove('d-none')
+        addButton.textContent = 'Accept'
+        deleteBtn.textContent = 'Refuse'
+    } else if (friendState.state == 'NONE') {
+        // Display add friend button
+        addButton.classList.remove('d-none')
+        deleteBtn.classList.add('d-none')
+        addButton.textContent = 'Add Friend'
+    } else {
+        // Errror, put btn Disabled or hidden.
+        addButton.classList.add('d-none')
+        deleteBtn.classList.add('d-none')
+    }
+}
+
+
+function updateWinrateAndClass(currentUserInfo) {
+    const modalDialog = document.getElementById('otherUserInfoDialog')
+    const modalContent = modalDialog.querySelector('.modal-content')
     const ratio = document.getElementById('winrate')
     if (currentUserInfo.played_matches.length > 0) {
-        dialog.classList.add('modal-lg')
+        modalDialog.classList.add('modal-lg')
         ratio.classList.remove('d-none')
         document.getElementById('otherMatchHistory').classList.remove('d-none')
     } else {
-        dialog.classList.remove('modal-lg')
+        modalDialog.classList.remove('modal-lg')
         ratio.classList.add('d-none')
         document.getElementById('otherMatchHistory').classList.add('d-none')
     }
+    modalContent.id = currentUserInfo.id
 }
 
 function displayBasicInfo(currentUserInfo) {

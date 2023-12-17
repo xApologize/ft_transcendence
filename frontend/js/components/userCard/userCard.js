@@ -80,9 +80,6 @@ function updateUserCard(userObject) {
     const nicknameElement = document.getElementById('nickname');
     nicknameElement.innerText = userObject.nickname;
 
-    const emailElement = document.getElementById('email');
-    emailElement.innerText = userObject.email;
-
     const winsElement = document.getElementById('wins');
     const lossesElement = document.getElementById('losses');
     const gamesPlayedElement = document.getElementById('game-played');

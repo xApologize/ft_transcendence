@@ -1,4 +1,4 @@
-import { fetchUser, fetchFriend,fetchMe, loadHTMLPage } from '../../api/fetchData.js';
+import { fetchUser, fetchFriend,fetchMe, loadHTMLPage, fetchFriendChange } from '../../api/fetchData.js';
 import { assembleUser } from '../../api/assembler.js';
 import { displayUserCard } from '../../components/userCard/userCard.js';
 import { displayMatchHistory } from '../../components/matchHistory/matchHistory.js';
@@ -9,10 +9,9 @@ import { loadModel } from '../game/src/systems/Loader.js';
 import interactiveSocket from './socket.js';
 ////////
 // [TO DO]
-// - Afficher otherUserInfo modal
 // - Gérer demande ami
 // - Faire tout fonctionner avec socket interactif
-// - Gérer les status (off when socket close, on when socket on)
+// - Gérer les status (off when socket close, on when socket open, ing when in game)
 // - Ne pas pouvoir avoir 2 connections en même temps sur le même compte
 ////////
 
@@ -32,6 +31,9 @@ export async function showHome() {
         everyoneBtn.addEventListener('click', () => {
             everyoneBtnFunc(friendsBtn, everyoneBtn);
         });
+
+        document.getElementById('addFriendBtn').addEventListener('click', addFriend);
+        document.getElementById('deleteFriendBtn').addEventListener('click', deleteFriend);
         responsiveLeftColumn()
     } catch (error) {
         console.error('Error fetching home.html:', error);
@@ -95,6 +97,36 @@ function friendsBtnFunc(friendsBtn, everyoneBtn) {
         everyoneBtn.classList.remove('active-dark');
         friendsBtn.classList.add('active-dark');
         displayFriend()
+    }
+}
+
+async function deleteFriend() {
+    const otherUserModal = document.getElementById('otherUserInfo');
+    const otherUserContentElement = otherUserModal.querySelector('.modal-content');
+    const otherUserID = otherUserContentElement.id;
+    const response = await fetchFriendChange('DELETE', { id: otherUserID })
+    if (!response) { return }
+    if (response.status != 200 || response.status != 201) { // User not found
+        console.log(response)
+    } 
+    else {
+        const msg = await response.json()
+        console.log(msg)
+    }
+}
+
+async function addFriend() {
+    const otherUserModal = document.getElementById('otherUserInfo');
+    const otherUserContentElement = otherUserModal.querySelector('.modal-content');
+    const otherUserID = otherUserContentElement.id;
+    const response = await fetchFriendChange('POST', { id: otherUserID })
+    if (!response) { return }
+    if (response.status != 200 || response.status != 201) { // User not found
+        console.log(response)
+    } 
+    else {
+        const msg = await response.json()
+        console.log(msg)
     }
 }
 
