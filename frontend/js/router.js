@@ -53,7 +53,6 @@ export async function handleRoute() {
     // if (goPath == '/home') {
     //     var cookieResponse = await checkIfCookie();
     //     if (cookieResponse.status == 401) {
-    //         history.pushState(null, null, '/');
     //         goPath = '/';
     //     }
     // }
@@ -78,6 +77,11 @@ async function loadPage() {
     const path = window.location.pathname;
     navigateTo(path);
 }
+
+window.addEventListener('beforeunload', () => {
+    sessionStorage.clear();
+    localStorage.clear();
+})
 
 document.addEventListener('DOMContentLoaded', async () => {
     await loadPage();

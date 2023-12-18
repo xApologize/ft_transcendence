@@ -5,29 +5,23 @@
                 <i id="icon" class="fa fa-user" style="font-size: 1.5em"></i>
             </button>
         </div>
-        <div
-            class="text-center userList bg-main-second col-md-4 col-lg-4 col-xl-3 col-xxl-3"
-            id="left-column"
-        >
+        <div class="text-center userList bg-main-second col-md-4 col-lg-4 col-xl-3 col-xxl-3" id="left-column">
             <div class="row">
                 <div class="col p-0">
-                    <button
-                        type="button"
-                        id="everyoneBtn"
-                        class="active-dark btn btn-light btn-block w-100 rounded-0 border shadow-none"
-                    >
+                    <button type="button" id="everyoneBtn" class="active-dark btn btn-light btn-block w-100 rounded-0 border shadow-none">
                         Everyone
                     </button>
                 </div>
                 <div class="col p-0">
-                    <button
-                        type="button"
-                        id="friendsBtn"
-                        class="active btn btn-light btn-block w-100 rounded-0 border"
-                    >
+                    <button type="button" id="friendsBtn" class="active btn btn-light btn-block w-100 rounded-0 border">
                         Friends
                     </button>
                 </div>
+            </div>
+            <div class="row text-center border border-2">
+                <button type="button" id="friendRequestBtn" class="btn btn-light btn-block w-100 rounded-0 border shadow-none" data-bs-toggle="modal" data-bs-target="#friendRequestModal">
+                    Friend Requests
+                </button>
             </div>
             <div class="row row-center" id="userDisplay"></div>
         </div>
@@ -122,3 +116,33 @@
 </div>
 
 
+<!-- Friend Request Modal --> 
+<div class="modal fade" id="friendRequestModal" tabindex="-1" aria-labelledby="friendRequestModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h5 class="modal-title w-100" id="friendRequestModalLabel">Friend Requests</h5>
+            </div>
+            <div class="modal-body">
+                <!-- Friend Requests Sent -->
+                <div class="friend-requests-sent align-items-center">
+                    <h6 class="text-center">Friend Requests Sent</h6>
+                    <div class="list-group">
+                        <!-- List of sent friend requests will go here -->
+                    </div>
+                </div>
+                <hr> <!-- Separator -->
+                <!-- Friend Requests Received -->
+                <div class="friend-requests-received">
+                    <h6 class="text-center">Friend Requests Received</h6>
+                    <div class="list-group">
+                        <!-- List of received friend requests will go here -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

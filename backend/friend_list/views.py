@@ -9,6 +9,8 @@ from .models import FriendList
 from .utils import changeState, handle_add_friend, handle_accept_friend
 import json
 
+# !!! DOIT HANDLE FRIEND REQUESTS A SOIT MÊME
+
 # Envoyer friend request, Cancel ou supprimer.
 class FriendHandling(View):
     # Friend Request

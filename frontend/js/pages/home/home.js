@@ -27,6 +27,7 @@ export async function showHome() {
 
         const friendsBtn = document.getElementById('friendsBtn');
         const everyoneBtn = document.getElementById('everyoneBtn');
+
         friendsBtn.addEventListener('click', () => {
             friendsBtnFunc(friendsBtn, everyoneBtn);
         });
@@ -128,7 +129,6 @@ async function handleFriendAction(event) {
     const apiParam = { id: otherUserID, action: action };
     const method = actionToMethod[action];
     const response = await fetchFriendChange(method, apiParam);
-
     if (!response) {
         return;
     }

@@ -116,51 +116,39 @@ function displayInfo(currentUserInfo) {
     displayOtherMatchHistory(currentUserInfo)
 }
 
-// TO DO: ERROR HANDLING
+// TO DO: ERROR HANDLING FOR RESPONSE
 async function updateFriendButton(currentUserInfo) {
-    const response = await fetchFriendChange('GET', { id: currentUserInfo.id }, 'send/')
-    if (!response) { return }
-    if (response.status != 200) // User not found or no ID Provided ?
-        return
-    const friendState = await response.json();
+    const response = await fetchFriendChange('GET', { id: currentUserInfo.id }, 'send/');
+    if (!response || response.status !== 200) return;
 
+    const friendState = await response.json();
     const addFriendBtn = document.getElementById('addFriendBtn');
     const deleteFriendBtn = document.getElementById('deleteFriendBtn');
-    const state = friendState.state
-    switch (state) {
+
+    function updateButtons(addText, addAction, deleteText, deleteAction, showAdd, showDelete) {
+        addFriendBtn.textContent = addText;
+        addFriendBtn.dataset.action = addAction;
+        addFriendBtn.classList.toggle('d-none', !showAdd);
+        deleteFriendBtn.textContent = deleteText;
+        deleteFriendBtn.dataset.action = deleteAction;
+        deleteFriendBtn.classList.toggle('d-none', !showDelete);
+    }
+
+    switch (friendState.state) {
         case 'none':
-            // Display Add Friend button
-            addFriendBtn.textContent = 'Add Friend';
-            addFriendBtn.dataset.action = 'add';
-            addFriendBtn.classList.remove('d-none');
-            deleteFriendBtn.classList.add('d-none');
+            updateButtons('Add Friend', 'add', '', '', true, false);
             break;
         case 'friend':
-            // Display Delete/Unfriend button
-            deleteFriendBtn.textContent = 'Unfriend';
-            deleteFriendBtn.dataset.action = 'unfriend';
-            deleteFriendBtn.classList.remove('d-none');
-            addFriendBtn.classList.add('d-none');
+            updateButtons('', '', 'Unfriend', 'unfriend', false, true);
             break;
         case 'receivedRequest':
-            // Display Accept and Refuse buttons
-            addFriendBtn.textContent = 'Accept';
-            addFriendBtn.dataset.action = 'accept';
-            deleteFriendBtn.textContent = 'Refuse';
-            deleteFriendBtn.dataset.action = 'refuse';
-            addFriendBtn.classList.remove('d-none');
-            deleteFriendBtn.classList.remove('d-none');
+            updateButtons('Accept', 'accept', 'Refuse', 'refuse', true, true);
             break;
         case 'sentRequest':
-            // Display Cancel Request button
-            deleteFriendBtn.textContent = 'Cancel Request';
-            deleteFriendBtn.dataset.action = 'cancel';
-            deleteFriendBtn.classList.remove('d-none');
-            addFriendBtn.classList.add('d-none');
+            updateButtons('', '', 'Cancel Request', 'cancel', false, true);
             break;
     }
 }
-
 
 function updateWinrateAndClass(currentUserInfo) {
     const modalDialog = document.getElementById('otherUserInfoDialog')
