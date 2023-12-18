@@ -55,7 +55,7 @@ const interactiveSocket = {
                 displayEveryone();
                 break;
             case "Invalid":
-                this.interactive_error_handler(JSON.parse(message.data));
+                this.interactive_error_handler(data);
                 break;
             default:
                 console.error("Invalid type sent to interactive socket");
