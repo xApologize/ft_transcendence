@@ -2,6 +2,7 @@ import { World } from './src/World.js';
 import { loadHTMLPage } from '../../api/fetchData.js';
 import { loadFonts } from './src/systems/Fonts.js';
 import { loadModel } from './src/systems/Loader.js';
+import interactiveSocket from '../home/socket.js';
 
 export async function showGame() {
   try {
@@ -9,22 +10,16 @@ export async function showGame() {
 	await loadModel();
     await loadHTMLPage('./js/pages/game/game.html')
 
-	// Get a reference to the container element
-	const container = document.querySelector('#sceneContainer');
+	const world = new World( document.querySelector('#sceneContainer') );
 
-	// 1. Create an instance of the World app
-	const world = new World(container);
+	const startBtn = document.getElementById('startBtn');
+	startBtn.addEventListener('click', () => {
+		world.currentGameState = "lookingForPlayer";
+		interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Find Match"}));
+		startBtn.classList.add("d-none");
+		document.getElementById('lfp').classList.remove("d-none");
+	});
 
-	// start animation loop
-	world.start();
-
-	// DESYNC: NEED CUSTOM SOLUTION
-	// document.addEventListener( 'visibilitychange', () => {
-	// 	if (document.hidden)
-	// 		world.stop();
-	// 	else
-	// 		world.start();
-	// });
 
   } catch (error) {
 	  console.error('Error fetching game.html:', error);

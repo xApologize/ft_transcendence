@@ -128,45 +128,11 @@ class Ball extends InstancedMesh {
 	}
 
 	reset( ballInst ) {
-		// ballInst.pos.set(MathUtils.randFloat( -2, 2 ), MathUtils.randFloat( -1, 1 ), 0);
 		ballInst.pos.set( 0, 0, -1 );
-		// ballInst.dir.set(MathUtils.randFloat( -1, 1 ), MathUtils.randFloat( -0.5, 0.5 ), 0);
 		ballInst.dir.set( 1, 1, 0 );
 		ballInst.dir.normalize();
 		ballInst.speed = 0;
 		ballInst.colliding = undefined;
-
-
-		// this.matrix.compose(
-		// 	ballInst.pos,
-		// 	new Quaternion(),
-		// 	new Vector3( 1, 1, 1 )
-		// );
-		// this.setMatrixAt( ballInst.id, this.matrix );
-		// this.instanceMatrix.needsUpdate = true;
-
-		// // let promise = new Promise( function (resolve, reject) {
-		// // 	setTimeout(() => resolve(ballInst), 1000);
-		// // });
-		// let promise = new Promise( resolve => {
-		// 	setTimeout(() => resolve(this), 2000);
-		// })
-		// // promise.then(this.test);
-		// promise.then(
-		// 	function(result) {
-		// 		console.log(result);
-		// 		ballInst.pos.set( 0, 0, 0 );
-		// 		ballInst.speed = 5;
-
-		// 		// result.matrix.compose(
-		// 		// 	ballInst.pos,
-		// 		// 	new Quaternion(),
-		// 		// 	new Vector3( 1, 1, 1 )
-		// 		// );
-		// 		// result.setMatrixAt( ballInst.id, result.matrix );
-		// 		// result.instanceMatrix.needsUpdate = true;
-		// 	}
-		// )
 	}
 
 	init() {
@@ -175,20 +141,19 @@ class Ball extends InstancedMesh {
 		}
 	}
 
-	initInst( inst ) {
-		inst.pos.set( 0, 0, 0 );
-		inst.dir.set( 1, inst.id, 0 );
-		inst.dir.normalize();
-		inst.speed = 0;
-		inst.colliding = undefined;
-
+	initInst( ballInst ) {
+		ballInst.pos.set( 0, 0, 0 );
+		ballInst.dir.set( 1, ballInst.id, 0 );
+		ballInst.dir.normalize();
+		ballInst.speed = 0;
+		ballInst.colliding = undefined;
 
 		this.matrix.compose(
-			inst.pos,
+			ballInst.pos,
 			new Quaternion(),
 			new Vector3( 1, 1, 1 )
 		);
-		this.setMatrixAt( inst.id, this.matrix );
+		this.setMatrixAt( ballInst.id, this.matrix );
 		this.instanceMatrix.needsUpdate = true;
 
 		let promise = new Promise( resolve => {
@@ -196,7 +161,7 @@ class Ball extends InstancedMesh {
 		})
 		promise.then(
 			function(result) {
-				inst.speed = 5;
+				ballInst.speed = 5;
 			}
 		)
 	}
@@ -211,7 +176,6 @@ class Ball extends InstancedMesh {
 		this.renderer.delete();
 		this.updatable.delete();
 	}
-
 }
 
 export { Ball };
