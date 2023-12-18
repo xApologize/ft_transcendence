@@ -55,16 +55,11 @@ class World {
 
 	joinMatch( wsPath, side ) {
 		// HOST
-		if ( side == "A" ) {
-			// console.log("-- Becoming Host --");
+		if ( side == "A" )
 			this.createSocket( '/' + wsPath, 7.2, this.terrain.rightGoalZone, this.terrain.leftGoalZone );
-		}
 		// CLIENT
-		else if ( side == "B" ) {
-			// console.log("-- Becoming Client --");
+		else if ( side == "B" )
 			this.createSocket( '/' + wsPath, -7.2, this.terrain.leftGoalZone, this.terrain.rightGoalZone );
-		}
-
 	}
 
 	createSocket( path, xpos, goalZone, opponentGoalZone ) {

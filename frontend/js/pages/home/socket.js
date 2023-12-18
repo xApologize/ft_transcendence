@@ -28,18 +28,6 @@ const interactiveSocket = {
     },
 
     parseMessage: function(message) {
-        const data = JSON.parse(message.data);
-        if ( data.type == "Found Match" ) {
-			World._instance.joinMatch( data.handle, data.paddle );
-        } else if (type == "Refresh"){
-            displayEveryone();
-        } else {
-            console.error("Weird data received from WS")
-        }
-    },
-
-
-    parseMessage: function(message) {
         let data;
         try{
             data = JSON.parse(message.data);

@@ -44,6 +44,8 @@ export async function showHome() {
 		
 		const findGameBtn = document.getElementById('findGame');
         findGameBtn.addEventListener('click', () => {
+       		if ( interactiveSocket.interactive_socket == undefined )
+				return;
             document.getElementById('ui').classList.add("d-none");
 			world.currentGameState = "lookingForPlayer";
 			document.getElementById('lfp').classList.remove("d-none");
