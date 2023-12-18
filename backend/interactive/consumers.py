@@ -1,6 +1,7 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
-from interactive.models import LookingForMatch
+from interactive.models import LookingForMatch, MatchInvite
 from asgiref.sync import sync_to_async
+from user_profile.models import User
 import json
 
 
@@ -17,7 +18,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code: any):
         print("Disconected interactive socket code:", close_code)
-        if self.waiting == True:
+        if self.waiting is True:
             print("REMOVED ENTRY FROM DB")
             match_entry = await sync_to_async(
                 LookingForMatch.objects.filter(paddleA=self.user_id).first)()
@@ -26,24 +27,27 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             "interactive",
             self.channel_name
         )
+        # await self.channel_layer.group_send(
+        #         "interactive",
+        #         create_layer_dict(
+        #             "send_message_echo", {"type": "Refresh"}, self.channel_name)
+        #         )
 
     async def receive(self, text_data: any):
         try:
             data = json.loads(text_data)
-        except:
-            print("Invalid data sent to socket, json decode error")
-            return
-        message_type = data["type"]
-        if message_type == "Find Match":
-            await self.find_match()
-        elif message_type == "Refresh":
-            await self.channel_layer.group_send(
-                "interactive",
-                create_layer_dict(
-                    "send_message_echo", {"type": "refresh"}, self.channel_name)
-                )
-        else:
-            print("Invalid input given to socket, check syntax")
+            message_type = data["type"]
+        except Exception:
+            await self.error_handler("JSON")
+        match message_type:
+            case "Find Match":
+                await self.find_match()
+            case "Send Invite":
+                await self.send_invite(data)
+            case "Refresh":
+                await self.handle_refresh(data)
+            case _:
+                await self.error_handler("argument")
 
     async def send_message_echo(self, data: any):
         await self.send(text_data=json.dumps(data["message"]))
@@ -51,7 +55,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
     async def send_message_no_echo(self, data: any):
         if self.channel_name != data["sender"]:
             await self.send(text_data=json.dumps(data['message']))
-    
+
     async def send_mailbox_message(self, data: any):
         if self.channel_name == data["sender"]:
             await self.send(text_data=json.dumps(data["message"]))
@@ -65,6 +69,10 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             self.waiting = False
             await self.send(text_data=json.dumps(data["message"]))
 
+    async def send_message_match_invite(self, data: any):
+        if self.user_id == data["receiver"]:
+            await self.send(text_data=json.dumps(data["message"]))
+
     async def find_match(self):
         match_entry = await sync_to_async(LookingForMatch.objects.filter(paddleB=-1).first)()
         if match_entry:
@@ -73,24 +81,32 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             await self.create_lfm()
 
     async def create_lfm(self):
-        await sync_to_async(LookingForMatch.objects.create)(
-                paddleA=self.user_id, mailbox_a=self.channel_name, paddleB=-1)
-        self.waiting: bool = True
+        try:
+            await sync_to_async(LookingForMatch.objects.create)(
+                    paddleA=self.user_id, mailbox_a=self.channel_name, paddleB=-1)
+            self.waiting: bool = True
+        except Exception as e:
+            print("Create looking for match exception caught:", e)
+            await self.error_handler("lfm")
 
     async def setup_match(self, match: any):
         match.paddleB = self.user_id
-        await sync_to_async(match.save)()
-        handle_a: dict = await self.create_math_handle(match.paddleA, match.paddleB, "A")
-        handle_b: dict = await self.create_math_handle(match.paddleA, match.paddleB, "B")
-        await self.channel_layer.group_send(
+        try:
+            await sync_to_async(match.save)()
+            handle_a: dict = await self.create_math_handle(match.paddleA, match.paddleB, "A")
+            handle_b: dict = await self.create_math_handle(match.paddleA, match.paddleB, "B")
+            await self.channel_layer.group_send(
                 "interactive",
                 create_layer_dict(
                     "send_message_and_clean_db", handle_a, match.mailbox_a)
                 )
-        await self.channel_layer.group_send(
+            await self.channel_layer.group_send(
                 "interactive",
                 create_layer_dict("send_mailbox_message", handle_b, self.channel_name)
                 )
+        except Exception as e:
+            print("Setup match exception caught:", e)
+            await self.error_handler("lfm")
 
     async def create_math_handle(self, first_id: int, second_id: int, paddle: str) -> dict:
         handle = {
@@ -99,6 +115,45 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             "paddle": paddle
         }
         return handle
+
+    async def create_invite_request(self, sender: id, recipient: id) -> dict:
+        handle = {
+            "type": "Match Invite",
+            "sender": sender,
+            "recipient": recipient
+        }
+        return handle
+
+    async def send_invite(self, data: any) -> None:
+        try:
+            user = data["user"]
+            user_object = await sync_to_async(User.objects.get)(nickname=user)
+            recipient_id: int = user_object.pk
+            await sync_to_async(MatchInvite.objects.create)(
+                user_inviting=self.user_id,
+                recipient=recipient_id
+            )
+        except Exception:
+            print("Error")  # TODO add handling error
+            return
+        request: dict = await self.create_invite_request(self.user_id, recipient_id)
+        await self.channel_layer.group_send(
+            "interactive", {
+                "type": "send_message_match_invite",
+                "message": request,
+                "receiver": recipient_id
+                }
+            )
+
+    async def handle_refresh(self, data: any):
+        await self.channel_layer.group_send(
+            "interactive",
+            create_layer_dict(
+                "send_message_echo", {"type": "refresh"}, self.channel_name)
+            )
+
+    async def error_handler(self, error: str):
+        self.send(text_data=json.dumps({"type": "Invalid", "error": error}))
 
 
 def create_layer_dict(type: str, message: str, sender: str) -> dict:

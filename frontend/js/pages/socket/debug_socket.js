@@ -6,7 +6,7 @@ export async function showSocket() {
     await loadHTMLPage('./js/pages/socket/socket.html');
 
     document.getElementById('SendMessageInteractive').addEventListener('click', async () => {
-      interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Refresh"}));
+      interactiveSocket.sendMessageSocket(JSON.stringify({"type": "gwegiowek", "user": "demo-user2"}));
     });
 
     document.getElementById('JoinMatch').addEventListener('click', async () => {
