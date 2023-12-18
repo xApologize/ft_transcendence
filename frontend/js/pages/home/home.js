@@ -21,6 +21,8 @@ let gameModal;
 
 export async function showHome() {
     try {
+		// await CheckIfRedirectionIsntHappening
+
         await loadHTMLPage('./js/pages/home/home.html');
         initPage();
         otherUserModal = new bootstrap.Modal(document.getElementById('otherUserInfo'))
@@ -34,11 +36,11 @@ export async function showHome() {
 			everyoneBtnFunc(friendsBtn, everyoneBtn);
         });
         responsiveLeftColumn()
-		
-		
+
 		await loadFonts();
 		await loadModel();
-		const world = new World( document.querySelector('#sceneContainer') );
+		const container = document.querySelector('#sceneContainer');
+		const world = new World( container );
 		
 		const findGameBtn = document.getElementById('findGame');
         findGameBtn.addEventListener('click', () => {
@@ -47,7 +49,6 @@ export async function showHome() {
 			document.getElementById('lfp').classList.remove("d-none");
 			interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Find Match"}));
         });
-
     } catch (error) {
         console.error('Error fetching home.html:', error);
     }

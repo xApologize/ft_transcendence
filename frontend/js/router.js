@@ -50,13 +50,13 @@ export async function handleRoute() {
     var pageFunction = null;
     var goPath = window.location.pathname;
     // make this work properly with the history
-    // if (goPath == '/home') {
-    //     var cookieResponse = await checkIfCookie();
-    //     if (cookieResponse.status == 401) {
-    //         history.pushState(null, null, '/');
-    //         goPath = '/';
-    //     }
-    // }
+    if (goPath == '/home') {
+        var cookieResponse = await checkIfCookie();
+        if (cookieResponse.status == 401) {
+            // history.pushState(null, null, '/');
+            goPath = '/';
+        }
+    }
 
     if (routes[goPath]) {
         pageFunction = routes[goPath];

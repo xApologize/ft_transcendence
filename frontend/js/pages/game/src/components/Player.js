@@ -29,11 +29,6 @@ class Player extends Paddle {
 		};
 
 		this.socket = socket;
-		// DEBUG COLOR
-		// this.socket.addEventListener("open", (event) => {
-			// this.material.color = new Color( 0x00aaff );
-			// this.socket.send("Joined");
-		// });
 
 		this.collider = new Collider( this );
 		this.updatable = new Updatable( this );
@@ -82,19 +77,6 @@ class Player extends Paddle {
 			this.socket.send( JSON.stringify( this.msg ) );
 		}
 		this.msg.ballInst = undefined;
-	}
-
-	ballMissed( hit ) {
-		if ( this.socket != undefined && this.socket.readyState === WebSocket.OPEN) {
-			this.msg.ballInst = hit;
-			this.msg.scored = true;
-			this.msg.goalScoredId = this.position.x < 0 ? 2 : 1;
-			this.socket.send( JSON.stringify( this.msg ) );
-			World._instance.score.increment( this.msg.goalScoredId );
-		}
-		this.msg.ballInst = undefined;
-		this.msg.scored = false;
-		this.msg.goalScoredId = undefined;
 	}
 
 	delete() {

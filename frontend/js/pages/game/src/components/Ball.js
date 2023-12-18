@@ -63,9 +63,9 @@ class Ball extends InstancedMesh {
 					ballInst.speed = 0;
 					return;
 				}
-				this.initInst( ballInst );
 				if ( typeof closerHit.object.onCollision === "function" )
 					closerHit.object.onCollision( ballInst );
+				// this.initInst( ballInst );
 				return;
 			}
 			closerHit.normal.setZ( 0 );
