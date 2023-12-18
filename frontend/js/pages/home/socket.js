@@ -28,26 +28,13 @@ const interactiveSocket = {
     },
 
     parseMessage: function(message) {
-        let type;
-        try{
-            type = JSON.parse(message.data).type;
-        } catch (error) {
-            console.error(error);
-            return;
-        }
-        switch (type) {
-            case "Found Match":
-                World._instance.wsPath = JSON.parse(message.data).handle;
-                World._instance.side = JSON.parse(message.data).paddle;
-                break;
-            case "Refresh":
-                displayEveryone();
-                break;
-            case "Invalid":
-                this.interactive_error_handler(JSON.parse(message.data));
-                break;
-            default:
-                console.error("Invalid type sent to interactive socket");
+        const data = JSON.parse(message.data);
+        if ( data.type == "Found Match" ) {
+			World._instance.joinMatch( data.handle, data.paddle );
+        } else if (type == "Refresh"){
+            displayEveryone();
+        } else {
+            console.error("Weird data received from WS")
         }
     },
 

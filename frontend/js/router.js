@@ -28,6 +28,7 @@ function showPage(pageFunction) {
 export function navigateTo(route) {
     // console.log("navigateTo!")
     if (route === currentRoute) return;
+    console.log("PUSH STATE")
     history.pushState({ route: route }, null, route);
     handleRoute();
 }
@@ -95,23 +96,26 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function handlePopState(event) {
-    closeModal();
+    checkAllModal();
     handleRoute();
 }
 
-function closeModal() {
-    closeSettingsModal();
-    // closePlayerModal()
-    // closeInviteModal()
-}
-
-function closeSettingsModal() {
+function checkAllModal() {
     const settingsModal = document.getElementById('userSettingsModal');
     if (settingsModal) {
         const modalInstance = bootstrap.Modal.getInstance(settingsModal);
         if (modalInstance) {
-            modalInstance.hide();
             modalInstance.dispose();
         }
     }
+
+    const twoAuthModal = document.getElementById('twoFAModal');
+    if (twoAuthModal) {
+        const modalInstance = bootstrap.Modal.getInstance(twoAuthModal);
+        if (modalInstance) {
+            modalInstance.dispose();
+        }
+    }
+    // Close all other modals, one by one, id by id...
+
 }
