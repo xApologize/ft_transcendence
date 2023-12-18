@@ -106,7 +106,7 @@ async function deleteFriend() {
     const otherUserModal = document.getElementById('otherUserInfo');
     const otherUserContentElement = otherUserModal.querySelector('.modal-content');
     const otherUserID = otherUserContentElement.id;
-    const response = await fetchFriendChange('DELETE', { id: otherUserID })
+    const response = await fetchFriendChange('DELETE', { id: otherUserID }, 'send/')
     if (!response) { return }
     // if (response.status != 200 || response.status != 201) { // User not found
     //     console.log(response)
@@ -121,7 +121,7 @@ async function addFriend() {
     const otherUserModal = document.getElementById('otherUserInfo');
     const otherUserContentElement = otherUserModal.querySelector('.modal-content');
     const otherUserID = otherUserContentElement.id;
-    const response = await fetchFriendChange('POST', { id: otherUserID })
+    const response = await fetchFriendChange('POST', { id: otherUserID }, 'send/')
     if (!response) { return }
     // if (response.status != 200 || response.status != 201) { // User not found
     //     console.log(response)

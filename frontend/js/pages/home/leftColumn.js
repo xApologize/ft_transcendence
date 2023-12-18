@@ -118,38 +118,42 @@ function displayInfo(currentUserInfo) {
 
 // TO DO: ERROR HANDLING
 async function updateFriendButton(currentUserInfo) {
-    const response = await fetchFriendChange('GET', { id: currentUserInfo.id })
+    const response = await fetchFriendChange('GET', { id: currentUserInfo.id }, 'send/')
     if (!response) { return }
     if (response.status != 200) // User not found or no ID Provided ?
         return
     const friendState = await response.json();
     const addButton = document.getElementById('addFriendBtn')
     const deleteBtn = document.getElementById('deleteFriendBtn')
+    const acceptBtn = document.getElementById('acceptFriendBtn')
+    const refuseBtn = document.getElementById('refuseFriendBtn')
     if (friendState.state == 'FRIEND') {
         // Dislpay unfriend button
         addButton.classList.add('d-none')
         deleteBtn.classList.remove('d-none')
-        deleteBtn.textContent = 'Remove Friend'
     } else if (friendState.state == 'SENT') {
         // Display cancel request button
         addButton.classList.add('d-none')
         deleteBtn.classList.remove('d-none')
-        deleteBtn.textContent = 'Cancel Request'
     } else if (friendState.state == 'RECEIVED') {
         // Display accept or refuse button
-        addButton.classList.remove('d-none')
-        deleteBtn.classList.remove('d-none')
-        addButton.textContent = 'Accept'
-        deleteBtn.textContent = 'Refuse'
+        addButton.classList.add('d-none')
+        deleteBtn.classList.add('d-none')
+        acceptBtn.classList.remove('d-none')
+        refuseBtn.classList.remove('d-none')
     } else if (friendState.state == 'NONE') {
         // Display add friend button
         addButton.classList.remove('d-none')
         deleteBtn.classList.add('d-none')
+        acceptBtn.classList.add('d-none')
+        refuseBtn.classList.add('d-none')
         addButton.textContent = 'Add Friend'
     } else {
         // Errror, put btn Disabled or hidden.
         addButton.classList.add('d-none')
         deleteBtn.classList.add('d-none')
+        acceptBtn.classList.add('d-none')
+        refuseBtn.classList.add('d-none')
     }
 }
 

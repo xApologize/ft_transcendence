@@ -13,7 +13,9 @@ from datetime import timedelta
 # Need to check if the user that he's looking for exist ?
 # Add timestamp to friend model to handle spam ?
 
-class FriendChange(View):
+
+# Envoyer friend request, Cancel ou supprimer.
+class FriendSend(View):
     # Friend Request
     @token_validation
     def post(self, request: HttpRequest): 
@@ -50,7 +52,7 @@ class FriendChange(View):
                 changeState(existing_relationship, "ACCEPTED", sender)
                 return JsonResponse({'message': 'Friend request accepted.'})
             elif status == "PENDING" and existing_relationship.friend1 == sender: # Current user is sending a request to someone who already sent one
-                return JsonResponse({'message': 'Friend request already sent.'}, status=200)
+                return JsonResponse({'message': 'Friend request already sent.'}, status=429)
             elif status == "ACCEPTED": # Current user is sending a request to someone he's already friends with
                 return JsonResponse({'message': 'Already friends.'}, status=200)
             else:
@@ -120,27 +122,26 @@ class FriendChange(View):
         except PermissionDenied as e:
             return HttpResponse(str(e), status=401)
 
-        # Check all friend relationships involving the current user and the other user
+        # Efficient query with first() directly in filter
         existing_relationship = FriendList.objects.filter(
             (Q(friend1=current_user, friend2=other_user) | Q(friend1=other_user, friend2=current_user))
         ).first()
 
-        if existing_relationship:
-            status = existing_relationship.status
-            if status == "PENDING" and existing_relationship.friend2 == current_user:
-                # Current user is refusing a received request
-                changeState(existing_relationship, "REFUSED", current_user)
-                return JsonResponse({'message': 'Friend request refused.'})
-            elif status == "PENDING" and existing_relationship.friend1 == current_user:
-                # Current user is canceling a sent request
-                changeState(existing_relationship, "CANCEL", current_user)
-                return JsonResponse({'message': f'Canceled.'})
-            elif status == "ACCEPTED":
-                # Current user is unfriending the other user
-                changeState(existing_relationship, "UNFRIEND", current_user)
-                return JsonResponse({'message': f'Unfriended.'})
+        if not existing_relationship:
+            return JsonResponse({'message': 'No existing relationship.'}, status=404)
 
-        return JsonResponse({'message': 'No existing relationship.'}, status=404)
+        new_status = ""
+        if existing_relationship.status == "PENDING":
+            new_status = "REFUSED" if existing_relationship.friend2 == current_user else "CANCEL"
+        elif existing_relationship.status == "ACCEPTED":
+            new_status = "UNFRIEND"
+
+        if new_status:
+            changeState(existing_relationship, new_status, current_user)
+            return JsonResponse({'message': f'{new_status.title()} action completed.'})
+
+        return JsonResponse({'message': 'Action not permitted.'}, status=403)
+
     
 def changeState(relationShip, state, user):
     relationShip.status = state
@@ -152,7 +153,19 @@ def handleDelete(relationShip: FriendList, sender: User, receiver: User):
     if status == "CANCEL" and relationShip.last_action_by == sender:
         time_diff = timezone.now() - relationShip.timeLastUpdate
         if time_diff < timedelta(seconds=30):
-            return JsonResponse({'message': 'Action blocked to prevent spamming. Please wait.'}, status=429)
+            wait_time = timedelta(seconds=30) - time_diff
+            remaining_seconds = int(wait_time.total_seconds())
+            return JsonResponse({'message': f'Action blocked to prevent spamming. Please wait {remaining_seconds} seconds.'}, status=429)
     
     relationShip.delete()
     return None
+
+class FriendReceive(View):
+    # Accept friend request
+    @token_validation
+    def post(self, request: HttpRequest):
+        return HttpResponse("POST")
+    
+    # Refuse friend request
+    def delete(self, request: HttpRequest):
+        return HttpResponse("DELETE")
