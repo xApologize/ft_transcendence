@@ -1,6 +1,4 @@
 from django.http import JsonResponse, HttpResponse, Http404, HttpResponseBadRequest
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
 from django.views import View
 from utils.decorators import token_validation
 from django.core.exceptions import PermissionDenied
@@ -15,7 +13,7 @@ import base64, qrcode
 from io import BytesIO
 from base64 import b64encode
 
-@method_decorator(csrf_exempt, name='dispatch')
+
 class Create2FA(View):
     @token_validation
     def post(self, request):
@@ -92,7 +90,7 @@ class Create2FA(View):
 
         return JsonResponse({'error': 'There is no 2FA on this account.'}, status=400)
 
-@method_decorator(csrf_exempt, name='dispatch')
+
 class Confirm2FA(View):
     @token_validation
     def post(self, request):
@@ -156,7 +154,6 @@ class Login(View):
             return first_token(response, primary_key)
 
 
-@method_decorator(csrf_exempt, name='dispatch')
 class Login2FA(View):
     def post(self, request):
         errorTime = {'error': '2FA verification time expired. Please try again.'}
@@ -203,8 +200,7 @@ class Login2FA(View):
             primary_key = User.objects.get(nickname=user.nickname).pk
             return first_token(response, primary_key)
             
-        
-@method_decorator(csrf_exempt, name='dispatch')
+
 class Logout(View):
     @token_validation
     def post(self, request):
