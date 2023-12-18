@@ -1,5 +1,5 @@
 import { userTemplateComponent } from '../../components/userTemplate/userTemplate.js';
-import { assembleUser } from '../../api/assembler.js';
+import { assembler } from '../../api/assembler.js';
 import { fetchUser } from '../../api/fetchData.js';
 import { otherMatchHistoryComponent } from '../../components/otherMatchHistory/otherMatchHistory.js';
 import { fetchFriendChange } from '../../api/fetchData.js';
@@ -9,7 +9,7 @@ export async function displayUser(allUsers) {
     let userContainer = document.getElementById('userDisplay');
     userContainer.innerHTML = '';
     let currentUser;
-    const objectAllUsers = await assembleUser(allUsers);
+    const objectAllUsers = await assembler(allUsers);
     if (typeof objectAllUsers !== 'object' && objectAllUsers !== null) {
         return;
     }
@@ -29,7 +29,7 @@ export async function displayUser(allUsers) {
     } catch {
         currentUser = null
     }
-    
+
     if (!objectAllUsers) { return }
     await loopDisplayUser(objectAllUsers, currentUser, userContainer)
 }
@@ -45,7 +45,7 @@ async function loopDisplayUser(objectAllUsers, currentUser, userContainer) {
         userContainer.appendChild(document.createElement('hr'));
 
         const clonedUserTemplate = templateUser.cloneNode(true);
-        
+
         const seeProfileBtn = clonedUserTemplate.querySelector('#seeProfileBtn');
         seeProfileBtn.addEventListener('click', displayOtherUserProfile)
 
@@ -88,12 +88,12 @@ async function displayOtherUserProfile(event) {
 
     const modalElement = document.getElementById('otherUserInfo')
     const otherUserModal = bootstrap.Modal.getInstance(modalElement);
-    if (!otherUserModal) { 
+    if (!otherUserModal) {
         console.log("no modal")
-        return 
+        return
     }
 
-    const response = await fetchUser('GET', {id: userID })
+    const response = await fetchUser('GET', { id: userID })
     if (!response) { return }
     if (response.status != 200) // User not found
         return
@@ -113,7 +113,7 @@ function updateOtherModal(currentUserInfo) {
 
 function displayInfo(currentUserInfo) {
     displayBasicInfo(currentUserInfo)
-    displayOtherMatchHistory(currentUserInfo)   
+    displayOtherMatchHistory(currentUserInfo)
 }
 
 // TO DO: ERROR HANDLING
@@ -123,37 +123,41 @@ async function updateFriendButton(currentUserInfo) {
     if (response.status != 200) // User not found or no ID Provided ?
         return
     const friendState = await response.json();
-    const addButton = document.getElementById('addFriendBtn')
-    const deleteBtn = document.getElementById('deleteFriendBtn')
-    const acceptBtn = document.getElementById('acceptFriendBtn')
-    const refuseBtn = document.getElementById('refuseFriendBtn')
-    if (friendState.state == 'FRIEND') {
-        // Dislpay unfriend button
-        addButton.classList.add('d-none')
-        deleteBtn.classList.remove('d-none')
-    } else if (friendState.state == 'SENT') {
-        // Display cancel request button
-        addButton.classList.add('d-none')
-        deleteBtn.classList.remove('d-none')
-    } else if (friendState.state == 'RECEIVED') {
-        // Display accept or refuse button
-        addButton.classList.add('d-none')
-        deleteBtn.classList.add('d-none')
-        acceptBtn.classList.remove('d-none')
-        refuseBtn.classList.remove('d-none')
-    } else if (friendState.state == 'NONE') {
-        // Display add friend button
-        addButton.classList.remove('d-none')
-        deleteBtn.classList.add('d-none')
-        acceptBtn.classList.add('d-none')
-        refuseBtn.classList.add('d-none')
-        addButton.textContent = 'Add Friend'
-    } else {
-        // Errror, put btn Disabled or hidden.
-        addButton.classList.add('d-none')
-        deleteBtn.classList.add('d-none')
-        acceptBtn.classList.add('d-none')
-        refuseBtn.classList.add('d-none')
+
+    const addFriendBtn = document.getElementById('addFriendBtn');
+    const deleteFriendBtn = document.getElementById('deleteFriendBtn');
+    const state = friendState.state
+    switch (state) {
+        case 'none':
+            // Display Add Friend button
+            addFriendBtn.textContent = 'Add Friend';
+            addFriendBtn.dataset.action = 'add';
+            addFriendBtn.classList.remove('d-none');
+            deleteFriendBtn.classList.add('d-none');
+            break;
+        case 'friend':
+            // Display Delete/Unfriend button
+            deleteFriendBtn.textContent = 'Unfriend';
+            deleteFriendBtn.dataset.action = 'unfriend';
+            deleteFriendBtn.classList.remove('d-none');
+            addFriendBtn.classList.add('d-none');
+            break;
+        case 'receivedRequest':
+            // Display Accept and Refuse buttons
+            addFriendBtn.textContent = 'Accept';
+            addFriendBtn.dataset.action = 'accept';
+            deleteFriendBtn.textContent = 'Refuse';
+            deleteFriendBtn.dataset.action = 'refuse';
+            addFriendBtn.classList.remove('d-none');
+            deleteFriendBtn.classList.remove('d-none');
+            break;
+        case 'sentRequest':
+            // Display Cancel Request button
+            deleteFriendBtn.textContent = 'Cancel Request';
+            deleteFriendBtn.dataset.action = 'cancel';
+            deleteFriendBtn.classList.remove('d-none');
+            addFriendBtn.classList.add('d-none');
+            break;
     }
 }
 
@@ -197,7 +201,7 @@ function displayBasicInfo(currentUserInfo) {
     } else {
         const winCountNumber = parseInt(winCount.textContent, 10);
         const matchesPlayedNumber = parseInt(matchesPlayed.textContent, 10);
-        
+
         const winRatio = (winCountNumber / matchesPlayedNumber) * 100;
         ratio.textContent = winRatio.toFixed(2) + "%";
     }
@@ -207,22 +211,22 @@ async function displayOtherMatchHistory(currentUserInfo) {
     const matchHistoryContainer = document.getElementById('matchHistoryContainer');
     matchHistoryContainer.innerHTML = '';
     const otherMatchHistoryTemplate = await otherMatchHistoryComponent()
-    
+
     currentUserInfo.played_matches.forEach(match => {
         const matchEntry = otherMatchHistoryTemplate.cloneNode(true);
-        
+
         matchEntry.querySelector('#otherDateOfMatch').textContent = match.date_of_match;
         matchEntry.querySelector('#otherWinnerUsername').textContent = match.winner_username;
         matchEntry.querySelector('#otherWinnerScore').textContent = match.winner_score;
         matchEntry.querySelector('#otherLoserUsername').textContent = match.loser_username;
         matchEntry.querySelector('#otherLoserScore').textContent = match.loser_score;
-        
+
         matchEntry.querySelector('#otherDateOfMatch').id = '';
         matchEntry.querySelector('#otherWinnerUsername').id = '';
         matchEntry.querySelector('#otherWinnerScore').id = '';
         matchEntry.querySelector('#otherLoserUsername').id = '';
         matchEntry.querySelector('#otherLoserScore').id = '';
-    
+
         matchHistoryContainer.appendChild(matchEntry);
     });
 }

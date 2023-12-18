@@ -1,4 +1,4 @@
-import { assembleUser } from "../../api/assembler.js";
+import { assembler } from "../../api/assembler.js";
 import { fetchMe } from "../../api/fetchData.js";
 
 export function closeAlertInfo() {
@@ -26,7 +26,7 @@ export function closeSettings() {
         if (modalInstance) {
             modalInstance.hide();
         }
-    }  
+    }
 }
 
 export function removeAllAlerts(alertElement) {
@@ -39,7 +39,7 @@ export function removeAllAlerts(alertElement) {
 export async function setupSettings(event) {
     const response = await fetchMe('GET');
     if (!response) { return }
-    const userInfo = await assembleUser(response);
+    const userInfo = await assembler(response);
 
     const nickname = userInfo.nickname
     const email = userInfo.email;
