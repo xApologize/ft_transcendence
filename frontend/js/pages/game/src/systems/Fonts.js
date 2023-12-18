@@ -1,6 +1,6 @@
 import { FontLoader } from '/node_modules/three/examples/jsm/loaders/FontLoader.js';
 
-let Helvetiker;
+let DigitalFont;
 const loader = new FontLoader();
 
 function loadFonts() {
@@ -8,23 +8,14 @@ function loadFonts() {
 	
 	return new Promise(resolve => {
 		loader.load(
-			// '/node_modules/three/examples/fonts/helvetiker_regular.typeface.json',
 			'/public/fonts/DSEG.json',
 			
 			function ( font ) {
-				Helvetiker = font;
+				DigitalFont = font;
 				resolve("resolved");
 			}
 		);
-
-		// setTimeout(function () {
-		// 	resolve("resolved");
-		// }, 1000);
 	})
 }
 
-// let Fonts = {
-// 	Font1: Helvetiker
-// }
-
-export { loadFonts, Helvetiker };
+export { loadFonts, DigitalFont };

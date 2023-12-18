@@ -44,7 +44,7 @@
             "avatar": "",
             "status": "OFF",
             "admin": true,
-            "password": "demo-user"
+            "password": "pbkdf2_sha256$390000$80cswTzjCoGsGCtkulEwOg$hPnG+2ALlJ45KyuQxG0D1GRyqWQHCJ5nobmMATQ3rWg="
         }
     },
     {
@@ -56,7 +56,7 @@
             "avatar": "",
             "status": "OFF",
             "admin": true,
-            "password": "demo-user2"
+            "password": "pbkdf2_sha256$390000$D5BizRq5c0D05Z4ObkDaJu$cNhvilc05PdpPVbr9NBdCFYiafvfVKHSmYd2VR/foZ8="
         }
     },
     {

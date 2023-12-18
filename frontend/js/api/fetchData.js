@@ -1,6 +1,5 @@
-import { ConstantColorFactor } from "three";
 import { navigateTo } from "../router.js";
-import { assembleUser } from "./assembler.js";
+import { closeAllModals } from "../utils/utilityFunctions.js";
 
 // Load frontend page.
 export const loadHTMLPage = async (filePath) => {
@@ -31,6 +30,7 @@ export const loadHTMLComponent = async (filePath) => {
 };
 
 const redirectToHome = () => {
+    closeAllModals();
     sessionStorage.clear();
     navigateTo('/');
     return null
@@ -66,15 +66,13 @@ const performFetch = async (url, method, data = null) => {
         console.log(url)
         // var bc breaking without it
         var response = await fetch(url, options);
-        if (response.status == 401 || response.status >= 500 && response.status < 503) {
+        if (response.status == 401) {
             return redirectToHome()
         }
         const jwt_token = setNewToken(response)
         if (jwt_token) {
-            console.log("New access Token!")
             const isFirstToken = response.headers.get('new')
             if (!isFirstToken) {
-                console.log("second fetch!")
                 const access_token = response.headers.get('jwt')
                 options.headers.jwt = access_token;
                 response = await fetch(url, options)

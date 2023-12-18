@@ -52,6 +52,13 @@ async function loopDisplayUser(objectAllUsers, currentUser, userContainer) {
 
         const clonedUserTemplate = templateUser.cloneNode(true);
 
+        const seeProfileBtn =
+            clonedUserTemplate.querySelector('#seeProfileBtn');
+        seeProfileBtn.addEventListener('click', displayOtherUserProfile);
+
+        const otherUserID = clonedUserTemplate.querySelector('#otherUserID');
+        otherUserID.id = user.id;
+
         const avatarElement = clonedUserTemplate.querySelector('#user-avatar');
         const nameElement = clonedUserTemplate.querySelector('#user-name');
         const statusBadge = clonedUserTemplate.querySelector('#badge');
@@ -74,4 +81,12 @@ async function loopDisplayUser(objectAllUsers, currentUser, userContainer) {
                 return 'gray';
         }
     }
+}
+
+async function displayOtherUserProfile(event) {
+    const button = event.currentTarget;
+    const iconElement = button.querySelector('i');
+    const id = iconElement ? iconElement.id : NULL;
+
+    console.log(id);
 }

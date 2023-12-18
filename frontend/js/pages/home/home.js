@@ -3,6 +3,10 @@ import { assembleUser } from '../../api/assembler.js';
 import { displayUserCard } from '../../components/userCard/userCard.js';
 import { displayMatchHistory } from '../../components/matchHistory/matchHistory.js';
 import { displayUser } from './leftColumn.js';
+import { World } from '../game/src/World.js';
+import { loadFonts } from '../game/src/systems/Fonts.js';
+import { loadModel } from '../game/src/systems/Loader.js';
+import interactiveSocket from './socket.js';
 ////////
 // [TO DO]
 // - Ne pas pouvoir avoir 2 connections en même temps sur le même compte
@@ -12,43 +16,38 @@ import { displayUser } from './leftColumn.js';
 // - Trouver facon update en temps reel (socket ?)
 ////////
 
+let otherUserModal;
+let gameModal;
+
 export async function showHome() {
     try {
-        console.log('SHOW HOME !');
         await loadHTMLPage('./js/pages/home/home.html');
         initPage();
+        otherUserModal = new bootstrap.Modal(document.getElementById('otherUserInfo'))
+
         const friendsBtn = document.getElementById('friendsBtn');
         const everyoneBtn = document.getElementById('everyoneBtn');
-        // everyoneBtn.classList.add('active');
-
-
-        // document.getElementById('middleBtnRight').addEventListener('click', () => {
-        // })
-
         friendsBtn.addEventListener('click', () => {
-            friendsBtnFunc(friendsBtn, everyoneBtn);
+			friendsBtnFunc(friendsBtn, everyoneBtn);
         });
-        document
-            .getElementById('everyoneBtn')
-            .addEventListener('click', async () => {
-                everyoneBtnFunc(friendsBtn, everyoneBtn);
-            });
+        everyoneBtn.addEventListener('click', async () => {
+			everyoneBtnFunc(friendsBtn, everyoneBtn);
+        });
+        responsiveLeftColumn()
+		
+		
+		await loadFonts();
+		await loadModel();
+		const world = new World( document.querySelector('#sceneContainer') );
+		
+		const findGameBtn = document.getElementById('findGame');
+        findGameBtn.addEventListener('click', () => {
+            document.getElementById('ui').classList.add("d-none");
+			world.currentGameState = "lookingForPlayer";
+			document.getElementById('lfp').classList.remove("d-none");
+			interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Find Match"}));
+        });
 
-        const userCol = document.getElementById('left-column');
-        const gameCol = document.getElementById('right-column');
-        const buttonToggle = document.getElementById('userBtn');
-        const iconStyle = document.getElementById('icon');
-        buttonToggle.addEventListener('click', () => {
-            if (iconStyle.classList.contains('fa-user')) {
-                iconStyle.classList.add('fa-gamepad');
-                iconStyle.classList.remove('fa-user');
-            } else {
-                iconStyle.classList.remove('fa-gamepad');
-                iconStyle.classList.add('fa-user');
-            }
-            userCol.classList.toggle('show');
-            gameCol.classList.toggle('hide');
-        });
     } catch (error) {
         console.error('Error fetching home.html:', error);
     }
@@ -66,7 +65,7 @@ async function displayFriend() {
     await displayUser(allFriends);
 }
 
-async function displayEveryone() {
+export async function displayEveryone() {
     const onlineUsers = await fetchUser('GET', { status: ['ONL', 'ING'] });
     if (!onlineUsers || !onlineUsers.ok)
         // if !onlineUsers, c'est que le status == 401 et si !onlineUsers.ok == Aucun user Online
@@ -81,7 +80,7 @@ async function initPage() {
         console.log('Error fetching users');
         return;
     }
-    // initSocket()  - Si fetch socket et stateSocket is close, get new access Token et re fetch le socket   
+    interactiveSocket.initSocket()
     const userAssembled = await assembleUser(user);
     if (!userAssembled || typeof userAssembled !== 'object') {
         console.log('Error assembling user');
@@ -90,11 +89,13 @@ async function initPage() {
     displayUserCard(userAssembled);
     displayEveryone();
     displayMatchHistory(userAssembled);
+
 }
 
 ///////////////////////////////
 //  Event Listener function  //
 ///////////////////////////////
+
 
 function everyoneBtnFunc(friendsBtn, everyoneBtn) {
     if (friendsBtn.classList.contains('active-dark')) {
@@ -110,4 +111,24 @@ function friendsBtnFunc(friendsBtn, everyoneBtn) {
         friendsBtn.classList.add('active-dark');
         displayFriend()
     }
+}
+
+/////
+
+function responsiveLeftColumn() {
+    const userCol = document.getElementById('left-column');
+    const gameCol = document.getElementById('right-column');
+    const buttonToggle = document.getElementById('userBtn');
+    const iconStyle = document.getElementById('icon');
+    buttonToggle.addEventListener('click', () => {
+        if (iconStyle.classList.contains('fa-user')) {
+            iconStyle.classList.add('fa-gamepad');
+            iconStyle.classList.remove('fa-user');
+        } else {
+            iconStyle.classList.remove('fa-gamepad');
+            iconStyle.classList.add('fa-user');
+        }
+        userCol.classList.toggle('show');
+        gameCol.classList.toggle('hide');
+    });
 }

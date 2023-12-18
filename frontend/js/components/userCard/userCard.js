@@ -1,5 +1,10 @@
-import { fetchAuth, fetchUpload, fetchUser, loadHTMLComponent } from "../../api/fetchData.js";
+import { fetchAuth, loadHTMLComponent } from "../../api/fetchData.js";
 import { navigateTo } from "../../router.js";
+import { closeAlertAvatar, closeAlertInfo, setupSettings, closeAlert2FA, clearSettings } from "./utils.js";
+import { disable2FA, enable2FA, updateMenu2FA, checkConfirmationCode } from "./menu2FA.js";
+import { saveAvatar, saveInfo } from "./menuInfo.js";
+import interactiveSocket from '../../pages/home/socket.js'
+
 
 export async function userCardComponent() {
     try {
@@ -12,77 +17,21 @@ export async function userCardComponent() {
 
 export async function userCardListener() {
     document.getElementById('logout').addEventListener('click', logoutUser)
-    document.getElementById('saveSettings').addEventListener('click', saveSettings)
+    document.getElementById('saveInfo').addEventListener('click', saveInfo)
+    document.getElementById('saveAvatar').addEventListener('click', saveAvatar)
     document.getElementById('userSettingsModal').addEventListener('show.bs.modal', setupSettings)
-    document.getElementById('userSettingsModal').addEventListener('hide.bs.modal', function (event) {
-        console.log('Settings Modal is about to be hide')
-        document.getElementById('avatarInput').value = ''
-
-    });
-
+    document.getElementById('userSettingsModal').addEventListener('hide.bs.modal', clearSettings);
+    document.getElementById('disable2FA').addEventListener('click', disable2FA)
+    document.getElementById('enable2FA').addEventListener('click', enable2FA)
+    document.getElementById('btnErrorAvatar').addEventListener('click', closeAlertAvatar)
+    document.getElementById('btnErrorInfo').addEventListener('click', closeAlertInfo)
+    document.getElementById('closeAlert2FA').addEventListener('click', closeAlert2FA)
+    document.getElementById('2FAForm').addEventListener('submit', checkConfirmationCode)
     settingsListener()
 }
 
-function closeSettings() {
-    const settingsModal = document.getElementById('userSettingsModal');
-    if (settingsModal) {
-        const modalInstance = bootstrap.Modal.getInstance(settingsModal);
-        if (modalInstance) {
-            modalInstance.hide();
-        }
-    }  
-}
-
-async function saveChangedSettings(objectData, formData) {
-    console.log("SAVE SETTINGS")
-
-    if (Object.keys(objectData).length > 0) {
-        const response = await fetchUser('PATCH', null, objectData);
-        if (response && response.status > 400) {
-            console.log("Error while saving settings");
-        }
-    }
-    if (formData.has('avatar')) {
-        const response = await fetchUpload('POST', formData);
-        if (response && response.status > 400) {
-            console.log("Error while saving settings");
-        }
-    }
-}
-
-async function saveSettings() {
-    const nicknameInput = document.getElementById('nicknameInput').value;
-    const userNickname = document.getElementById('nickname').innerText;
-    const avatarInput = document.getElementById('avatarInput').files[0];
-    const objectData = new Object();
-    const formData = new FormData();
-
-    if (userNickname != nicknameInput) {
-        console.log("APPEND NICKNAME")
-        objectData.nickname = nicknameInput;
-    }
-    if (avatarInput) {
-        console.log("APPEND AVATAR")
-        formData.append('avatar', avatarInput);
-    }
-    // const userInput = window.prompt("Please enter your password:");
-    // data.validPassword = userInput // TODO: check if password is valid in backend
-    await saveChangedSettings(objectData, formData);
-    closeSettings()
-}
-
-
-function setupSettings() {
-    console.log('Settings Modal is about to be shown');
-    // Do the same for email
-    const userNickname = document.getElementById('nickname').innerText;
-    const nicknameInput = document.getElementById('nicknameInput');
-
-    nicknameInput.value = userNickname
-}
 
 function settingsListener() {
-    // Left column listener
     document.querySelectorAll('.left-column-settings i').forEach(function(icon) {
             icon.addEventListener('click', function() {
             document.querySelectorAll('.left-column-settings i').forEach(function(icon) {
@@ -100,15 +49,18 @@ function settingsListener() {
 
 }
 
-async function logoutUser() {
+export async function logoutUser() {
     console.log('logout!')
     const logoutResponse = await fetchAuth('POST', 'logout/')
+    if (!logoutResponse) { return }
     if (logoutResponse.status == 200) {
         sessionStorage.clear()
         navigateTo('/')
     }
+    interactiveSocket.closeSocket()
     return ;
 }
+
 
 // Call in home.js
 export async function displayUserCard(meUser) {
@@ -117,6 +69,7 @@ export async function displayUserCard(meUser) {
     let userCard = await userCardComponent();
     userContainer.appendChild(userCard);
     userCardListener(); // enable js on the userCard
+    updateMenu2FA(meUser);
     updateUserCard(meUser);
 }
 
@@ -125,7 +78,10 @@ function updateUserCard(userObject) {
     profilePicture.src = userObject.avatar;
 
     const nicknameElement = document.getElementById('nickname');
-    nicknameElement.querySelector('h5').innerText = userObject.nickname;
+    nicknameElement.innerText = userObject.nickname;
+
+    const emailElement = document.getElementById('email');
+    emailElement.innerText = userObject.email;
 
     const winsElement = document.getElementById('wins');
     const lossesElement = document.getElementById('losses');

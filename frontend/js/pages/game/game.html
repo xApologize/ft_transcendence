@@ -1,4 +1,8 @@
-<div id="sceneContainer"></div>
+<div id="sceneContainer">
+
+	<button type="button" id="startBtn" class="btn bg-transparent centered">START</button>
+	<div id="lfp" class="d-none centered">Looking for player...</div>
+</div>
 
 <style>
 body {
@@ -23,6 +27,19 @@ body {
 
 	/* background-color: magenta; */
 	/* aspect-ratio: 16 / 9; */
+}
+
+.centered {
+	position: absolute;
+	font-size: 8rem;
+	color: white;
+	transform: translate(-50%, -50%);
+	top: 50%;
+	left: 50%;
+}
+
+#lfp {
+	font-size: rem;
 }
 
 </style>
