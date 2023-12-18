@@ -38,6 +38,30 @@ const interactiveSocket = {
         }
     },
 
+
+    parseMessage: function(message) {
+        let data;
+        try{
+            data = JSON.parse(message.data);
+        } catch (error) {
+            console.error(error);
+            return;
+        }
+        switch (data.type) {
+            case "Found Match":
+                World._instance.joinMatch(data.handle, data.paddle);
+                break;
+            case "Refresh":
+                displayEveryone();
+                break;
+            case "Invalid":
+                this.interactive_error_handler(JSON.parse(message.data));
+                break;
+            default:
+                console.error("Invalid type sent to interactive socket");
+        }
+    },
+
     sendMessageSocket: function(message) {
         if (this.interactive_socket) {
             this.interactive_socket.send(message);
