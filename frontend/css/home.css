@@ -20,6 +20,10 @@
     }
 }
 
+.fill {
+    height: 100%;
+}
+
 .userList {
     height: 100%;
 }
@@ -43,7 +47,8 @@
 .divFill {
     height: calc(100% - 38px);
     width: 100%;
-    overflow: scroll;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .hide {
