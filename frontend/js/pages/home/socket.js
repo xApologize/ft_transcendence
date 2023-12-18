@@ -6,7 +6,6 @@ const interactiveSocket = {
     interactive_socket: null,
 
     initSocket: function() {
-        // TODO add double socket try incase of failure?
         const self = this;
         if (this.interactive_socket === null){
             this.interactive_socket = new WebSocket('wss://' + window.location.host + '/ws/pong/interactive' + "?" + sessionStorage.getItem('jwt'));
@@ -29,15 +28,26 @@ const interactiveSocket = {
     },
 
     parseMessage: function(message) {
-        const type = JSON.parse(message.data).type;
-        if (type == "Found Match"){
-			World._instance.wsPath = JSON.parse(message.data).handle;
-			World._instance.side = JSON.parse(message.data).paddle;
-        if (type == "Refresh"){
-            displayEveryone();
+        let type;
+        try{
+            type = JSON.parse(message.data).type;
+        } catch (error) {
+            console.error(error);
+            return;
         }
-        } else {
-            console.error("What are you doing?");
+        switch (type) {
+            case "Found Match":
+                World._instance.wsPath = JSON.parse(message.data).handle;
+                World._instance.side = JSON.parse(message.data).paddle;
+                break;
+            case "Refresh":
+                displayEveryone();
+                break;
+            case "Invalid":
+                this.interactive_error_handler(JSON.parse(message.data));
+                break;
+            default:
+                console.error("Invalid type sent to interactive socket");
         }
     },
 
@@ -48,6 +58,15 @@ const interactiveSocket = {
         else {
             console.error("CRITICAL ERROR SOCKET WAS NOT SETUP, you should never see this, if you do let me know. Dave");
         }
+    },
+
+    interactive_error_handler: function(message) {
+        const error_type = message.error;
+        if (error_type){
+            console.log("AH");
+            return;
+        }
+        console.log("Error", error_type);
     },
 
     closeSocket: function() {

@@ -1,4 +1,4 @@
-FROM python:3.9.18-slim-bullseye
+FROM python:3.12.1-slim-bullseye
 
 RUN apt-get update && apt-get install -y dumb-init
 

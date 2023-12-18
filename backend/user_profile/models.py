@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class User(models.Model):
     status_enum = [
         ("ONL", "Online"),
