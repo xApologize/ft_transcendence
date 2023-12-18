@@ -13,6 +13,8 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from django.conf import settings
 from .utils import get_avatar_data, check_info_update, check_info_signup, validate_image
 from django_otp.plugins.otp_totp.models import TOTPDevice
+from interactive.consumers import send_refresh
+from asgiref.sync import async_to_sync
 
 
 # https://stackoverflow.com/questions/3290182/which-status-code-should-i-use-for-failed-validations-or-invalid-duplicates
@@ -118,6 +120,7 @@ class Users(View):
 
                     
             user.save()
+            async_to_sync(send_refresh)()
             return JsonResponse({
                 "message": "User updated successfully.",
                 "user": {
@@ -238,5 +241,3 @@ class Upload(View):
                 return HttpResponseBadRequest('No avatar provided.')  # 400
         except Exception as e:
             return HttpResponseBadRequest('Unexpected Error: ' + str(e))  # 400
-
-    

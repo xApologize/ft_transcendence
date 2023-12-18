@@ -2,6 +2,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from interactive.models import LookingForMatch, MatchInvite
 from asgiref.sync import sync_to_async
 from user_profile.models import User
+from channels.layers import get_channel_layer
 import json
 
 
@@ -149,7 +150,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         await self.channel_layer.group_send(
             "interactive",
             create_layer_dict(
-                "send_message_echo", {"type": "refresh"}, self.channel_name)
+                "send_message_echo", {"type": "Refresh"}, self.channel_name)
             )
 
     async def error_handler(self, error: str):
@@ -158,3 +159,13 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
 
 def create_layer_dict(type: str, message: str, sender: str) -> dict:
     return {"type": type, "message": message, "sender": sender}
+
+async def send_refresh() -> None:
+    channel_layer = get_channel_layer()
+    if channel_layer is not None:
+        await channel_layer.group_send(
+            "interactive", {
+                "type": "send_message_echo", 
+                "message": {"type": "Refresh"}
+                }
+            )
