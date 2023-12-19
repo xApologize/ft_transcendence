@@ -1,7 +1,7 @@
 
-import { fetchUser } from '../../api/fetchData.js';
+import { fetchUser, fetchFriendChange } from '../../api/fetchData.js';
 import { otherMatchHistoryComponent } from '../../components/otherMatchHistory/otherMatchHistory.js';
-import { fetchFriendChange } from '../../api/fetchData.js';
+import { handleFriendAction } from './utils.js';
 
 // TO DO: ERROR HANDLING
 export async function displayOtherUserProfile(event) {
@@ -48,6 +48,9 @@ async function updateFriendButton(currentUserInfo) {
     const addFriendBtn = document.getElementById('addFriendBtn');
     const deleteFriendBtn = document.getElementById('deleteFriendBtn');
 
+    addFriendBtn.addEventListener('click', otherProfileAction);
+    deleteFriendBtn.addEventListener('click', otherProfileAction);
+
     function updateButtons(addText, addAction, deleteText, deleteAction, showAdd, showDelete) {
         addFriendBtn.textContent = addText;
         addFriendBtn.dataset.action = addAction;
@@ -65,7 +68,7 @@ async function updateFriendButton(currentUserInfo) {
             updateButtons('', '', 'Unfriend', 'unfriend', false, true);
             break;
         case 'receivedRequest':
-            updateButtons('Accept', 'accept', 'Refuse', 'refuse', true, true);
+            updateButtons('', 'accept', 'Refuse', 'refuse', true, true);
             break;
         case 'sentRequest':
             updateButtons('', '', 'Cancel Request', 'cancel', false, true);
@@ -140,4 +143,21 @@ async function displayOtherMatchHistory(currentUserInfo) {
 
         matchHistoryContainer.appendChild(matchEntry);
     });
+}
+
+export function otherProfileAction(event) {
+    function getOtherUserID() {
+        const otherUserModal = document.getElementById('otherUserInfo');
+        const otherUserContentElement = otherUserModal.querySelector('.modal-content');
+        return otherUserContentElement.id;
+    }
+    const otherUserID = getOtherUserID();
+    if (!otherUserID) {
+        console.error('Other user ID not found');
+        return;
+    }
+
+    const button = event.target.dataset;
+    const action = button.action;
+    handleFriendAction(action, otherUserID)
 }

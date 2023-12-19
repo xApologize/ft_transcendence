@@ -1,12 +1,13 @@
 import { fetchFriendChange } from '../../api/fetchData.js';
 import { userRequestCardComponent } from '../../components/userRequestCard/userRequestCard.js';
 import { assembler } from '../../api/assembler.js';
+import { handleFriendAction } from './utils.js';
 
 export async function updateSocial() {
 
     const userRequestTemplate = await userRequestCardComponent();
     if (!userRequestTemplate) { return }
-    
+
     const response = await fetchFriendChange('GET', {}, 'get/');
     if (!response) { return }
     const data = await assembler(response)
@@ -20,12 +21,9 @@ export async function updateSocial() {
 
 async function updateSocialFriend(userRequestTemplate, allPendingRequests) {
     const sentRequestContainer = document.getElementById('sentRequest');
-    const receiveRequestContainer = document.getElementById('receivedRequest');  
+    const receiveRequestContainer = document.getElementById('receivedRequest');
     sentRequestContainer.innerHTML = '';
     receiveRequestContainer.innerHTML = '';
-
-    document.getElementById('addFriendBtn').addEventListener('click', handleFriendAction);
-    document.getElementById('deleteFriendBtn').addEventListener('click', handleFriendAction);
 
     allPendingRequests.forEach(request => {
         const requestNode = userRequestTemplate.cloneNode(true);
@@ -37,45 +35,6 @@ async function updateSocialFriend(userRequestTemplate, allPendingRequests) {
             receiveRequestContainer.appendChild(requestNode);
         }
     });
-}
-
-export async function handleFriendAction(event) {
-    const actionToMethod = {
-        'add': 'POST',
-        'cancel': 'DELETE',
-        'accept': 'POST',
-        'refuse': 'DELETE',
-        'unfriend': 'DELETE',
-    };
-
-    function getOtherUserID() {
-        const otherUserModal = document.getElementById('otherUserInfo');
-        const otherUserContentElement = otherUserModal.querySelector('.modal-content');
-        return otherUserContentElement.id;
-    }
-
-    const button = event.target.dataset;
-    const action = button.action;
-
-    if (!action || !actionToMethod.hasOwnProperty(action)) {
-        console.error('Unknown action:', action);
-        return;
-    }
-
-    const otherUserID = getOtherUserID();
-    if (!otherUserID) {
-        console.error('Other user ID not found');
-        return;
-    }
-
-    const apiParam = { id: otherUserID, action: action };
-    const method = actionToMethod[action];
-    const response = await fetchFriendChange(method, apiParam);
-    if (!response) {
-        return;
-    }
-    const assemble = await assembler(response);
-    console.log(assemble);
 }
 
 
