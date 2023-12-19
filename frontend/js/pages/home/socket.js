@@ -87,6 +87,7 @@ const interactiveSocket = {
     },
 
     refresh_handler: function() {
+        console.log("HI")
         const test = document.getElementsByClassName('active-dark')[0].id;
         if (test === "everyoneBtn"){
             displayEveryone();

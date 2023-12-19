@@ -16,6 +16,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             await self.channel_layer.group_add(
                 "interactive", self.channel_name)
             self.waiting: bool = False
+            await self.handle_refresh()
 
     async def disconnect(self, close_code: any):
         print("Disconected interactive socket code:", close_code)
@@ -28,11 +29,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             "interactive",
             self.channel_name
         )
-        # await self.channel_layer.group_send(
-        #         "interactive",
-        #         create_layer_dict(
-        #             "send_message_echo", {"type": "Refresh"}, self.channel_name)
-        #         )
+        await self.handle_refresh()
 
     async def receive(self, text_data: any):
         try:
@@ -94,8 +91,10 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         match.paddleB = self.user_id
         try:
             await sync_to_async(match.save)()
-            handle_a: dict = await self.create_math_handle(match.paddleA, match.paddleB, "A")
-            handle_b: dict = await self.create_math_handle(match.paddleA, match.paddleB, "B")
+            player_a_nick = await self.get_user_nickname(match.paddleA)
+            player_b_nick = await self.get_user_nickname(match.paddleB)
+            handle_a: dict = await self.create_math_handle(match.paddleA, match.paddleB, "A", player_a_nick, player_b_nick)
+            handle_b: dict = await self.create_math_handle(match.paddleA, match.paddleB, "B", player_b_nick, player_a_nick)
             await self.channel_layer.group_send(
                 "interactive",
                 create_layer_dict(
@@ -109,13 +108,19 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             print("Setup match exception caught:", e)
             await self.error_handler("lfm")
 
-    async def create_math_handle(self, first_id: int, second_id: int, paddle: str) -> dict:
+    async def create_math_handle(self, first_id: int, second_id: int, paddle: str, me: str, opponent: str) -> dict:
         handle = {
             "type": "Found Match",
             "handle": f"ws/pong/{first_id}{second_id}/{paddle}",
-            "paddle": paddle
+            "paddle": paddle,
+            "me": me,
+            "opponent": opponent
         }
         return handle
+    
+    async def get_user_nickname(self, user_id: int) -> str:
+        user = await sync_to_async(User.objects.get)(pk=user_id)
+        return user.nickname
 
     async def create_invite_request(self, sender: id, recipient: id) -> dict:
         handle = {
@@ -146,11 +151,11 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
                 }
             )
 
-    async def handle_refresh(self, data: any):
+    async def handle_refresh(self):
         await self.channel_layer.group_send(
             "interactive",
             create_layer_dict(
-                "send_message_echo", {"type": "Refresh"}, self.channel_name)
+                "send_message_no_echo", {"type": "Refresh"}, self.channel_name)
             )
 
     async def error_handler(self, error: str):
