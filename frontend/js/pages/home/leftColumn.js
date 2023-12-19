@@ -231,8 +231,8 @@ export async function updateSocial() {
     const allPendingRequests = data.friend_requests;
     console.log(allPendingRequests)
     updateSocialFriend(userRequestTemplate, allPendingRequests);
-    updateSocialBadge();
     // updateSocialInvite(clonedNode);
+    updateSocialBadge();
 
 }
 
@@ -260,6 +260,7 @@ function handleSocialFriendBtn(userNode, request) {
     if (request.role == 'sender') {
         button1.textContent = 'Accept';
         button1.dataset.id = request.id
+        button1.addEventListener('click', acceptFriendRequest);
         button1.id = '';
 
         button2.textContent = 'Refuse';

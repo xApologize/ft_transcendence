@@ -131,7 +131,7 @@ class Users(View):
         except Http404 as e:
             return HttpResponse(str(e), status=404)
         
-        allowed_fields = {'nickname', 'email'}
+        allowed_fields = {'nickname', 'email', 'status'}
         try:
             data = json.loads(request.body)
             checkup = check_info_update(data, allowed_fields)
@@ -141,8 +141,7 @@ class Users(View):
             for field in allowed_fields:
                 if field in data:
                     if not data[field] == getattr(user, field):
-                        if getattr(user, field) != data[field]:
-                            setattr(user, field, data[field])
+                        setattr(user, field, data[field])
                     else:
                         return HttpResponseBadRequest(f'Your {field} is already {getattr(user, field)}')
 

@@ -151,7 +151,6 @@ export const fetchUpload = async (method, data = null) => {
     return result;
 }
 
-
 export const fetchFriendChange = async (method, parameters = null, apiPath = '') => {
     const path = 'friend/' + apiPath;
     const params = buildParams(parameters);
@@ -159,3 +158,8 @@ export const fetchFriendChange = async (method, parameters = null, apiPath = '')
     let result = await performFetch(url, method);
     return result;
 }
+
+// const objectData = new Object();
+// objectData.status = "ING"
+// const response = await fetchUser('PATCH', null, objectData);
+// if (!response) { return }
