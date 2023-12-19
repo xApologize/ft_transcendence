@@ -3,7 +3,7 @@ import { assembler } from '../../api/assembler.js';
 import { fetchUser } from '../../api/fetchData.js';
 import { otherMatchHistoryComponent } from '../../components/otherMatchHistory/otherMatchHistory.js';
 import { fetchFriendChange } from '../../api/fetchData.js';
-
+import { userRequestCardComponent } from '../../components/userRequestCard/userRequestCard.js';
 
 export async function displayUser(allUsers) {
     let userContainer = document.getElementById('userDisplay');
@@ -118,7 +118,7 @@ function displayInfo(currentUserInfo) {
 
 // TO DO: ERROR HANDLING FOR RESPONSE
 async function updateFriendButton(currentUserInfo) {
-    const response = await fetchFriendChange('GET', { id: currentUserInfo.id }, 'send/');
+    const response = await fetchFriendChange('GET', { id: currentUserInfo.id });
     if (!response || response.status !== 200) return;
 
     const friendState = await response.json();
@@ -220,6 +220,56 @@ async function displayOtherMatchHistory(currentUserInfo) {
 }
 
 
-export function updateFriendRequest() {
+export async function updateSocial() {
+
+    const userRequestTemplate = await userRequestCardComponent();
+    if (!userRequestTemplate) { return }
     
+    const response = await fetchFriendChange('GET', {}, 'get/');
+    if (!response) { return }
+    const data = await assembler(response)
+    const allPendingRequests = data.friend_requests;
+    console.log(allPendingRequests)
+    updateSocialSent(userRequestTemplate, allPendingRequests);
+    // updateSocialInvite(clonedNode);
+    // updateSocialReceived(clonedNode);
+
+    updateSocialBadge();
+}
+
+async function updateSocialSent(userRequestTemplate, allPendingRequests) {
+    const sentRequestContainer = document.getElementById('sentRequest');   
+    sentRequestContainer.innerHTML = '';
+
+    allPendingRequests.forEach(request => {
+        if (request.role === 'receiver') {
+            const requestNode = userRequestTemplate.cloneNode(true);
+
+            const img = requestNode.querySelector('#userRequestCardImg');
+            img.src = request.avatar || '';
+            img.alt = request.nickname + "'s avatar";
+            img.id = '';
+
+            const nickname = requestNode.querySelector('#userRequestCardNickname');
+            nickname.textContent = request.nickname;
+            nickname.id = '';
+
+            const button1 = requestNode.querySelector('#button1');
+            const button2 = requestNode.querySelector('#button2');
+
+            if (button1) {
+                button1.remove();
+            }
+
+            button2.textContent = 'Cancel Request';
+            button2.dataset.id = request.id;
+            button2.id = '';
+
+            sentRequestContainer.appendChild(requestNode);
+        }
+    });
+}
+
+function updateSocialBadge() {
+    const socialBadge = document.getElementById('socialBadge');
 }

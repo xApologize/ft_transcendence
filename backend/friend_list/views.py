@@ -8,6 +8,7 @@ from utils.functions import get_user_obj
 from .models import FriendList
 from .utils import changeState, handle_add_friend, handle_accept_friend
 import json
+from user_profile.utils import get_avatar_data
 
 # !!! DOIT HANDLE FRIEND REQUESTS A SOIT MÊME
 
@@ -118,3 +119,31 @@ class FriendHandling(View):
 
         return JsonResponse({'message': f'Action {action.title()} completed successfully.'}, status=200)
 
+class FriendGetAll(View):
+    @token_validation
+    def get(self, request: HttpRequest):
+        try:
+            user = get_user_obj(request)
+        except User.DoesNotExist:
+            return HttpResponseNotFound('User not found.')
+        except PermissionDenied as e:
+            return HttpResponse(str(e), status=401)
+
+        pending_friends = FriendList.objects.filter(
+            Q(friend1=user) | Q(friend2=user),
+            status="PENDING"
+        )
+
+        friend_requests = []
+        for relation in pending_friends:
+            friend = relation.friend1 if relation.friend1 != user else relation.friend2
+            avatar = get_avatar_data(friend)
+            friend_info = {
+                "id": friend.id,
+                "nickname": friend.nickname,
+                "avatar": avatar,
+                "role": "receiver" if relation.friend1 == user else "sender"
+            }
+            friend_requests.append(friend_info)
+
+        return JsonResponse({"friend_requests": friend_requests})

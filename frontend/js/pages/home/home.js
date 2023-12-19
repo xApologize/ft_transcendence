@@ -2,7 +2,7 @@ import { fetchUser, fetchFriend, fetchMe, loadHTMLPage, fetchFriendChange } from
 import { assembler } from '../../api/assembler.js';
 import { displayUserCard } from '../../components/userCard/userCard.js';
 import { displayMatchHistory } from '../../components/matchHistory/matchHistory.js';
-import { displayUser, updateFriendRequest } from './leftColumn.js';
+import { displayUser, updateSocial } from './leftColumn.js';
 import { World } from '../game/src/World.js';
 import { loadFonts } from '../game/src/systems/Fonts.js';
 import { loadModel } from '../game/src/systems/Loader.js';
@@ -37,6 +37,7 @@ export async function showHome() {
 
         document.getElementById('addFriendBtn').addEventListener('click', handleFriendAction);
         document.getElementById('deleteFriendBtn').addEventListener('click', handleFriendAction);
+        
         responsiveLeftColumn()
     } catch (error) {
         console.error('Error fetching home.html:', error);
@@ -79,7 +80,7 @@ async function initPage() {
     displayUserCard(userAssembled);
     displayMatchHistory(userAssembled);
     displayEveryone();
-    updateFriendRequest()
+    updateSocial()
 
 }
 

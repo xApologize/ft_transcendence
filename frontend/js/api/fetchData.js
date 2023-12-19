@@ -152,8 +152,8 @@ export const fetchUpload = async (method, data = null) => {
 }
 
 
-export const fetchFriendChange = async (method, parameters = null) => {
-    const path = 'friend/';
+export const fetchFriendChange = async (method, parameters = null, apiPath = '') => {
+    const path = 'friend/' + apiPath;
     const params = buildParams(parameters);
     const url = buildApiUrl(path, params);
     let result = await performFetch(url, method);
