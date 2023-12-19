@@ -87,7 +87,7 @@ def get_avatar_data(user):
 
 def validate_image(image_field):
     # Check file extension
-    valid_extensions = ['.jpg', '.jpeg', '.png']
+    valid_extensions = ['.jpg', '.jpeg', '.png', '.gif']
     extension = os.path.splitext(image_field.name)[1]
     if extension.lower() not in valid_extensions:
         raise ValidationError(f"Unsupported file extension. Allowed extensions: {', '.join(valid_extensions)}")

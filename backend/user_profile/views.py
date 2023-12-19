@@ -262,9 +262,9 @@ class Upload(View):
 
                 # Validate the new avatar first
                 try:
-                    validate_image(file)  # Assuming validate_image is your validation function
+                    validate_image(file)
                 except ValidationError as e:
-                    return HttpResponseBadRequest(f"{str(e.message)}")  # Return the validation error
+                    return HttpResponseBadRequest(f"{str(e.message)}")
 
                 # Delete the old avatar if validation is successful
                 avatar_dir = os.path.join(settings.MEDIA_ROOT, 'avatars')
@@ -274,7 +274,8 @@ class Upload(View):
 
                 # Save the new avatar
                 user.avatar.save(new_file_name, file)
-                return HttpResponse('Avatar updated successfully.', status=200)
+                avatar_url = get_avatar_data(user)
+                return JsonResponse({'message': 'Avatar updated successfully.', 'avatar_url': avatar_url}, status=200)
             else:
                 return HttpResponseBadRequest('No avatar provided.')  # 400
         except Exception as e:

@@ -13,9 +13,13 @@ export async function displayAlertStatus(response, type) {
     } else if (response.status == 200) {
         if (response.headers.get("Content-Type").includes("application/json")) {
             const dataSuccess = await response.json();
-            sessionStorage.setItem('nickname', dataSuccess.user.nickname);
-            sessionStorage.setItem('email', dataSuccess.user.email);
-            document.getElementById('nickname').innerText = dataSuccess.user.nickname;
+            if (dataSuccess && dataSuccess.user) {
+                sessionStorage.setItem('nickname', dataSuccess.user.nickname);
+                sessionStorage.setItem('email', dataSuccess.user.email);
+                document.getElementById('nickname').innerText = dataSuccess.user.nickname;
+            } else if (dataSuccess && dataSuccess.avatar_url) {
+                document.getElementById('avatar-img').src = dataSuccess.avatar_url
+            }
         }
         alert.classList.add('alert-success');
         message = "Your " + type + " has been updated"
@@ -26,7 +30,6 @@ export async function displayAlertStatus(response, type) {
 
     alert.classList.remove('hide');
     alert.classList.add('show');
-
     displayAlertMsg(message, alert);
 }
 
@@ -37,6 +40,7 @@ export async function saveAvatar() {
         formData.append('avatar', avatarInput);
     }
     if (formData.has('avatar')) {
+        document.getElementById('avatarInput').value = "";
         const response = await fetchUpload('POST', formData);
         if (!response) { return }
         displayAlertStatus(response, 'Avatar')
@@ -52,7 +56,6 @@ export async function saveInfo() {
     removeAllAlerts(alert);
     closeAlertInfo()
 
-    /// FETCH DATA AT THE OPENING OF SETTINGS AND PUT NICKNAME IN SESSION STORAGE ?
     const nicknameInput = document.getElementById('nicknameInput').value;
     const userNickname = sessionStorage.getItem('nickname');
     if (userNickname != nicknameInput) {

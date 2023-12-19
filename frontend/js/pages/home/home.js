@@ -2,7 +2,8 @@ import { fetchUser, fetchFriend, fetchMe, loadHTMLPage, fetchFriendChange } from
 import { assembler } from '../../api/assembler.js';
 import { displayUserCard } from '../../components/userCard/userCard.js';
 import { displayMatchHistory } from '../../components/matchHistory/matchHistory.js';
-import { displayUser, updateSocial } from './leftColumn.js';
+import { displayUser } from './leftColumn.js';
+import { updateSocial } from './social.js';
 import { World } from '../game/src/World.js';
 import { loadFonts } from '../game/src/systems/Fonts.js';
 import { loadModel } from '../game/src/systems/Loader.js';
@@ -33,10 +34,6 @@ export async function showHome() {
         everyoneBtn.addEventListener('click', () => {
             everyoneBtnFunc(friendsBtn, everyoneBtn);
         });
-
-        document.getElementById('addFriendBtn').addEventListener('click', handleFriendAction);
-        document.getElementById('deleteFriendBtn').addEventListener('click', handleFriendAction);
-        
         responsiveLeftColumn()
 		
 		
@@ -63,17 +60,19 @@ export async function showHome() {
 
 async function displayFriend() {
     const allFriends = await fetchFriend('GET');
-    if (!allFriends || !allFriends.ok)
+    if (!allFriends || !allFriends.ok) {
         // if !allFriends, c'est que le status == 401 et si !allFriends.ok == Aucun Ami
         return;
+    }
     await displayUser(allFriends);
 }
 
 export async function displayEveryone() {
     const onlineUsers = await fetchUser('GET', { status: ['ONL', 'ING'] });
-    if (!onlineUsers || !onlineUsers.ok)
+    if (!onlineUsers || !onlineUsers.ok) {
         // if !onlineUsers, c'est que le status == 401 et si !onlineUsers.ok == Aucun user Online
         return;
+    }
 
     await displayUser(onlineUsers);
 }
@@ -118,44 +117,6 @@ function friendsBtnFunc(friendsBtn, everyoneBtn) {
     }
 }
 
-async function handleFriendAction(event) {
-    const actionToMethod = {
-        'add': 'POST',
-        'cancel': 'DELETE',
-        'accept': 'POST',
-        'refuse': 'DELETE',
-        'unfriend': 'DELETE',
-    };
-
-    const button = event.target.dataset;
-    const action = button.action;
-
-    if (!action || !actionToMethod.hasOwnProperty(action)) {
-        console.error('Unknown action:', action);
-        return;
-    }
-
-    const otherUserID = getOtherUserID();
-    if (!otherUserID) {
-        console.error('Other user ID not found');
-        return;
-    }
-
-    const apiParam = { id: otherUserID, action: action };
-    const method = actionToMethod[action];
-    const response = await fetchFriendChange(method, apiParam);
-    if (!response) {
-        return;
-    }
-    const assemble = await assembler(response);
-    console.log(assemble);
-}
-
-function getOtherUserID() {
-    const otherUserModal = document.getElementById('otherUserInfo');
-    const otherUserContentElement = otherUserModal.querySelector('.modal-content');
-    return otherUserContentElement.id;
-}
 /////
 
 function responsiveLeftColumn() {
