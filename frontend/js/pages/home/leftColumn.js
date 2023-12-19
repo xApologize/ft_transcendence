@@ -54,7 +54,12 @@ async function loopDisplayUser(objectAllUsers, currentUser, userContainer) {
 
         const seeProfileBtn =
             clonedUserTemplate.querySelector('#seeProfileBtn');
+        const inviteGameBtn =
+            clonedUserTemplate.querySelector('#inviteGameBtn');
         seeProfileBtn.addEventListener('click', displayOtherUserProfile);
+        inviteGameBtn.addEventListener('click', () => {
+            console.log('invite user to a game');
+        });
 
         const otherUserID = clonedUserTemplate.querySelector('#otherUserID');
         otherUserID.id = user.id;
@@ -64,6 +69,9 @@ async function loopDisplayUser(objectAllUsers, currentUser, userContainer) {
         const statusBadge = clonedUserTemplate.querySelector('#badge');
         statusBadge.style.backgroundColor = setStatus(user.status);
         avatarElement.src = user.avatar;
+        // if (user.nickname.length > 10 && window.innerWidth < 1000) console.log('greater than 10');
+        console.log(userContainer.offsetWidth);
+        console.log(clonedUserTemplate.querySelector('#user-name').offsetWidth);
         nameElement.textContent = user.nickname;
 
         userContainer.appendChild(clonedUserTemplate);
