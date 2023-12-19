@@ -19,8 +19,13 @@
                 </div>
             </div>
             <div class="row text-center border border-2">
-                <button type="button" id="friendRequestBtn" class="btn btn-light btn-block w-100 rounded-0 border shadow-none" data-bs-toggle="modal" data-bs-target="#friendRequestModal">
-                    Friend Requests
+                <button type="button" id="friendRequestBtn" class="btn btn-light btn-block w-100 rounded-0 border shadow-none position-relative" data-bs-toggle="modal" data-bs-target="#friendRequestModal">
+                    Social
+                    <!-- Badge in the corner -->
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="socialBadge">
+                        0 <!-- Number of social events -->
+                        <span class="visually-hidden">unread messages</span>
+                    </span>
                 </button>
             </div>
             <div class="row row-center" id="userDisplay"></div>
@@ -121,22 +126,71 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header text-center">
-                <h5 class="modal-title w-100" id="friendRequestModalLabel">Friend Requests</h5>
+                <h5 class="modal-title w-100" id="friendRequestModalLabel">Social</h5>
             </div>
             <div class="modal-body">
-                <!-- Friend Requests Sent -->
+                <!-- Invite Game Receive -->
+                <div class="invite-game-received lign-items-center">
+                    <h6 class="text-center"> Invite Game Received</h6>
+                    <div id="inviteReceived" class="list-group">
+                        <!-- List of sent friend requests will go here -->
+                        <div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <!-- User Avatar and Nickname -->
+                                <div class="d-flex align-items-center">
+                                    <img src="https://m.media-amazon.com/images/M/MV5BY2ZiMTA3OGYtNjc4ZC00YmQ4LWI1YmYtOTJmMTRiZjM2MDE0XkEyXkFqcGdeQXVyNjA0MTgwOQ@@._V1_.jpg" alt="User Avatar" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+                                    <strong class="ms-3">Nickname</strong>
+                                </div>
+                                <div>
+                                    <button class="btn btn-success btn-sm me-2" type="button">Accept</button>
+                                    <button class="btn btn-danger btn-sm" type="button">Refuse</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr> <!-- Separator -->
                 <div class="friend-requests-sent align-items-center">
                     <h6 class="text-center">Friend Requests Sent</h6>
-                    <div class="list-group">
+                    <div id="SentRequest" class="list-group">
                         <!-- List of sent friend requests will go here -->
+                        <div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <!-- User Avatar and Nickname -->
+                                <div class="d-flex align-items-center">
+                                    <img src="https://m.media-amazon.com/images/M/MV5BY2ZiMTA3OGYtNjc4ZC00YmQ4LWI1YmYtOTJmMTRiZjM2MDE0XkEyXkFqcGdeQXVyNjA0MTgwOQ@@._V1_.jpg" alt="User Avatar" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+                                    <strong class="ms-3">Nickname</strong>
+                                </div>
+                            
+                                <!-- Accept/Refuse Buttons -->
+                                <div>
+                                    <button class="btn btn-danger btn-sm" type="button">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <hr> <!-- Separator -->
                 <!-- Friend Requests Received -->
                 <div class="friend-requests-received">
                     <h6 class="text-center">Friend Requests Received</h6>
-                    <div class="list-group">
+                    <div id="ReceivedRequest" class="list-group">
                         <!-- List of received friend requests will go here -->
+                        <div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <!-- User Avatar and Nickname -->
+                                <div class="d-flex align-items-center">
+                                    <img src="https://m.media-amazon.com/images/M/MV5BY2ZiMTA3OGYtNjc4ZC00YmQ4LWI1YmYtOTJmMTRiZjM2MDE0XkEyXkFqcGdeQXVyNjA0MTgwOQ@@._V1_.jpg" alt="User Avatar" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+                                    <strong class="ms-3">Nickname</strong>
+                                </div>
+                            
+                                <!-- Accept/Refuse Buttons -->
+                                <div>
+                                    <button class="btn btn-success btn-sm me-2" type="button">Accept</button>
+                                    <button class="btn btn-danger btn-sm" type="button">Refuse</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

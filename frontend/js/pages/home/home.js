@@ -2,7 +2,7 @@ import { fetchUser, fetchFriend, fetchMe, loadHTMLPage, fetchFriendChange } from
 import { assembler } from '../../api/assembler.js';
 import { displayUserCard } from '../../components/userCard/userCard.js';
 import { displayMatchHistory } from '../../components/matchHistory/matchHistory.js';
-import { displayUser } from './leftColumn.js';
+import { displayUser, updateFriendRequest } from './leftColumn.js';
 import { World } from '../game/src/World.js';
 import { loadFonts } from '../game/src/systems/Fonts.js';
 import { loadModel } from '../game/src/systems/Loader.js';
@@ -77,8 +77,9 @@ async function initPage() {
         return;
     }
     displayUserCard(userAssembled);
-    displayEveryone();
     displayMatchHistory(userAssembled);
+    displayEveryone();
+    updateFriendRequest()
 
 }
 

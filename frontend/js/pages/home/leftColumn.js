@@ -220,3 +220,6 @@ async function displayOtherMatchHistory(currentUserInfo) {
 }
 
 
+export function updateFriendRequest() {
+    
+}

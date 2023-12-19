@@ -67,7 +67,7 @@ class Create2FA(View):
             'qr_code': f"data:image/png;base64,{qr_code_base64}",
             'secret_key': secret_key,
             'confirm': device.confirmed,
-            'info': device_info  # Include information about the device's status
+            'info': device_info
         })
 
     @token_validation
@@ -143,11 +143,13 @@ class Login(View):
 
         if check_password(password, user.password) is False:
             return JsonResponse(errorMessage, status=400)
-        if user.two_factor_auth == True:
+        elif user.two_factor_auth == True:
             response = JsonResponse({'2fa_required': True})
             temp_token = generate_2fa_token(user.id)
             response.set_cookie('2fa_token', temp_token, httponly=True, secure=True, max_age=300)
             return response
+        elif user.status == "ONL":
+            return JsonResponse({'error': 'This account is already logged in.'}, status=409)
         else:
             user.status = "ONL"
             user.save()
@@ -195,6 +197,8 @@ class Login2FA(View):
         
         if not device.verify_token(otp_token):
             return JsonResponse(errorCode, status=400)
+        elif user.status == "ONL":
+            return JsonResponse({'error': 'This account is already logged in.'}, status=409)
         else:
             user.status = "ONL"
             user.save()

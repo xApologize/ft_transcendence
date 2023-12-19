@@ -13,8 +13,9 @@ export async function displayAlertStatus(response, type) {
     } else if (response.status == 200) {
         if (response.headers.get("Content-Type").includes("application/json")) {
             const dataSuccess = await response.json();
+            sessionStorage.setItem('nickname', dataSuccess.user.nickname);
+            sessionStorage.setItem('email', dataSuccess.user.email);
             document.getElementById('nickname').innerText = dataSuccess.user.nickname;
-            document.getElementById('email').innerText = dataSuccess.user.email;
         }
         alert.classList.add('alert-success');
         message = "Your " + type + " has been updated"
