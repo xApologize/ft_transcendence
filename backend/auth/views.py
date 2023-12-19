@@ -202,7 +202,6 @@ class Login2FA(View):
             primary_key = User.objects.get(nickname=user.nickname).pk
             return first_token(response, primary_key)
             
-        
 class Logout(View):
     @token_validation
     def post(self, request):

@@ -6,12 +6,13 @@ const updatables = [];
 let t1 = 0;
 
 class Loop {
-	constructor(camera, scene, renderer) {
+	constructor( camera, scene, renderer, composer ) {
 		this.start = function() {
 			clock.start();
 			renderer.setAnimationLoop(() => {
 				this.tick();
-				renderer.render(scene, camera);
+				// renderer.render(scene, camera);
+				composer.render(1);
 			});
 		}
 		this.stop = function() {

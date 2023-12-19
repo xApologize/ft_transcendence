@@ -11,7 +11,12 @@ class Opponent extends Paddle {
 
 		this.isOpponent = true;
 
-		this.material.color = new Color( 0xff0000 );
+		//DEBUG COLOR
+		// this.material.color = new Color( 0xff0000 );
+	}
+
+	networkUpdate( data ) {
+
 	}
 }
 

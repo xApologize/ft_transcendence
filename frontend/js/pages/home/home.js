@@ -27,9 +27,8 @@ export async function showHome() {
 
         const friendsBtn = document.getElementById('friendsBtn');
         const everyoneBtn = document.getElementById('everyoneBtn');
-
         friendsBtn.addEventListener('click', () => {
-            friendsBtnFunc(friendsBtn, everyoneBtn);
+			friendsBtnFunc(friendsBtn, everyoneBtn);
         });
         everyoneBtn.addEventListener('click', () => {
             everyoneBtnFunc(friendsBtn, everyoneBtn);
@@ -39,6 +38,20 @@ export async function showHome() {
         document.getElementById('deleteFriendBtn').addEventListener('click', handleFriendAction);
         
         responsiveLeftColumn()
+		
+		
+		await loadFonts();
+		await loadModel();
+		const world = new World( document.querySelector('#sceneContainer') );
+		
+		const findGameBtn = document.getElementById('findGame');
+        findGameBtn.addEventListener('click', () => {
+            document.getElementById('ui').classList.add("d-none");
+			world.currentGameState = "lookingForPlayer";
+			document.getElementById('lfp').classList.remove("d-none");
+			interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Find Match"}));
+        });
+
     } catch (error) {
         console.error('Error fetching home.html:', error);
     }
