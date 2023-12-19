@@ -2,6 +2,9 @@
 
 <div id="lfp" class="d-none centered position-absolute">Looking for player...</div>
 
+<div id="left-player-name" class="d-none position-absolute bottom-0 start-0 p-4 nickname">Left Player</div>
+<div id="right-player-name" class="d-none position-absolute bottom-0 end-0 p-4 nickname">Right Player</div>
+
 <div id="ui" class="container-fluid position-absolute">
     <div class="row vh-100">
         <div class="buttonResponsive">
@@ -126,5 +129,10 @@
 		transform: translate(-50%, -50%);
 		top: 50%;
 		left: 50%;
-	}	
+	}
+
+	.nickname {
+		font-size: 2rem;
+		color: white;
+	}
 </style>

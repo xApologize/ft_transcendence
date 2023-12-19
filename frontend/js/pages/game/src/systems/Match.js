@@ -5,6 +5,8 @@ import { Opponent } from '../components/Opponent.js';
 
 let world;
 
+const divNicknames = [ 'left-player-name', 'right-player-name' ];
+
 class Match {
 	constructor( path, myId ) {
 		world = World._instance;
@@ -19,12 +21,15 @@ class Match {
 			if ( i == myId ) {
 				this.participants.push( new Player( new CapsuleGeometry( 0.2, 2.4 ), new MeshStandardMaterial(), new Vector3( -7.2 + 14.4 * i, 0, 0 ), i ) );
 				this.participants[i].nickname = "Me";
+
 			} else {
 				this.participants.push( new Opponent( new CapsuleGeometry( 0.2, 2.4 ), new MeshStandardMaterial(), new Vector3( -7.2 + 14.4 * i, 0, 0 ), i ) );
 				this.participants[i].nickname = "Opponent";
 			}
 			this.participants[i].participantId = i;
 			this.participants[i].position.setZ( -1 );
+			document.getElementById(divNicknames[i]).classList.remove("d-none");
+			document.getElementById(divNicknames[i]).innerHTML = this.participants[i].nickname;
 		}
 		world.terrain.leftGoalZone.paddle = this.participants[0];
 		world.terrain.rightGoalZone.paddle = this.participants[1];
@@ -53,7 +58,7 @@ class Match {
 	
 		this.onWebsocketReceivedEvent = (event) => this.onWebsocketReceived( event );
 		this.socket.addEventListener( "message", this.onWebsocketReceivedEvent );
-		
+
 		// TBD via backend
 		this.onDisconnectionEvent = (event) => this.onDisconnection( event );
 		window.addEventListener( "beforeunload", this.onDisconnectionEvent );
@@ -94,8 +99,12 @@ class Match {
 		} );
 		this.participants.forEach(element => {
 			element.delete();
-			this.participants.pop( element );
 		});
+		this.participants = [];
+		divNicknames.forEach(element => {
+			document.getElementById(element).classList.add("d-none");
+		});
+
 		world.balls.updatable.setEnabled(false);
 		world.balls.renderer.setEnabled(false);
 	
