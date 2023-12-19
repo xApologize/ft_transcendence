@@ -16,6 +16,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             await self.channel_layer.group_add(
                 "interactive", self.channel_name)
             self.waiting: bool = False
+            await self.set_user_status("ONL")
             await self.send_refresh()
 
     async def disconnect(self, close_code: any):
@@ -29,7 +30,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             "interactive",
             self.channel_name
         )
-        await self.set_offline()
+        await self.set_user_status("OFF")
         await send_refresh()
 
     async def receive(self, text_data: any):
@@ -162,9 +163,9 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
     async def error_handler(self, error: str):
         self.send(text_data=json.dumps({"type": "Invalid", "error": error}))
     
-    async def set_offline(self):
+    async def set_user_status(self, status: str):
         user: User = await sync_to_async(User.objects.get)(pk=self.user_id)
-        user.status = "OFF"
+        user.status = status
         await sync_to_async(user.save)()
 
 
