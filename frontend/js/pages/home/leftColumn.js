@@ -53,8 +53,7 @@ async function loopDisplayUser(objectAllUsers, currentUser, userContainer) {
 }
 
 function fillOtherUserInfo(clonedUserTemplate, user) {
-    const otherUserID = clonedUserTemplate.querySelector('#otherUserID')
-    otherUserID.id = user.id
+    clonedUserTemplate.id = user.id
 
     const avatarElement = clonedUserTemplate.querySelector('#user-avatar');
     const nameElement = clonedUserTemplate.querySelector('#user-name');

@@ -30,6 +30,8 @@ class Users(View):
             return HttpResponseBadRequest('No parameter.')
 
         if id:
+            if not id.isdigit():
+                return HttpResponseBadRequest('Invalid id.')
             try:
                 user = User.objects.get(id=id)
                 users = [user]  # Single user in a list for consistent processing

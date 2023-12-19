@@ -5,9 +5,12 @@ import { handleFriendAction } from './utils.js';
 
 // TO DO: ERROR HANDLING
 export async function displayOtherUserProfile(event) {
-    const button = event.currentTarget
-    const iconElement = button.querySelector('i');
-    const userID = iconElement ? iconElement.id : NULL;
+
+    let ancestor = event.currentTarget;
+    while (ancestor && !ancestor.hasAttribute('data-userid-flag')) {
+        ancestor = ancestor.parentNode;
+    }
+    const userID = ancestor.id;
 
     const modalElement = document.getElementById('otherUserInfo')
     const otherUserModal = bootstrap.Modal.getInstance(modalElement);
@@ -68,7 +71,7 @@ async function updateFriendButton(currentUserInfo) {
             updateButtons('', '', 'Unfriend', 'unfriend', false, true);
             break;
         case 'receivedRequest':
-            updateButtons('', 'accept', 'Refuse', 'refuse', true, true);
+            updateButtons('accept', 'accept', 'Refuse', 'refuse', true, true);
             break;
         case 'sentRequest':
             updateButtons('', '', 'Cancel Request', 'cancel', false, true);
