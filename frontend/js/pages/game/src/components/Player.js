@@ -13,8 +13,8 @@ const initialSpeed = 5;
 const initialBoostSpeed = 10;
 
 class Player extends Paddle {
-	constructor( geometry, material, position ) {
-		super( geometry, material, position );
+	constructor( geometry, material, position, id, nickname ) {
+		super( geometry, material, position, id, nickname );
 
 		this.isPlayer = true;
 
@@ -25,6 +25,7 @@ class Player extends Paddle {
 		this.ray.layers.set( Layers.Solid );
 
 		this.wsData = {
+			id: this.participantId,
 			pos: this.position,
 			ballInst: undefined
 		};

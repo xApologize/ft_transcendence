@@ -7,13 +7,15 @@ import {
 } from 'three';
 
 class Paddle extends Mesh {
-	constructor( geometry, material, position ) {
+	constructor( geometry, material, position, id, nickname ) {
 		super( geometry, material );
 
 		this.renderer = new Renderer( this );
 
 		this.position.copy( position );
 		this.length = geometry.parameters.length;
+		this.participantId = id;
+		this.participantNickname = nickname;
 
 		const from = new Vector2( this.position.x, this.position.y );
 		this.rotation.set( 0, 0, from.angle() );
