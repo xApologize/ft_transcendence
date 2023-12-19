@@ -16,10 +16,10 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             await self.channel_layer.group_add(
                 "interactive", self.channel_name)
             self.waiting: bool = False
-            await self.handle_refresh()
+            await self.send_refresh()
 
     async def disconnect(self, close_code: any):
-        print("Disconected interactive socket code:", close_code)
+        print("Disconected interactive socket code:", close_code) 
         if self.waiting is True:
             print("REMOVED ENTRY FROM DB")
             match_entry = await sync_to_async(
@@ -29,7 +29,8 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             "interactive",
             self.channel_name
         )
-        await self.handle_refresh()
+        await self.set_offline()
+        await send_refresh()
 
     async def receive(self, text_data: any):
         try:
@@ -43,7 +44,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             case "Send Invite":
                 await self.send_invite(data)
             case "Refresh":
-                await self.handle_refresh(data)
+                await self.send_refresh(data)
             case _:
                 await self.error_handler("argument")
 
@@ -117,7 +118,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             "opponent": opponent
         }
         return handle
-    
+
     async def get_user_nickname(self, user_id: int) -> str:
         user = await sync_to_async(User.objects.get)(pk=user_id)
         return user.nickname
@@ -151,7 +152,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
                 }
             )
 
-    async def handle_refresh(self):
+    async def send_refresh(self):
         await self.channel_layer.group_send(
             "interactive",
             create_layer_dict(
@@ -160,6 +161,11 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
 
     async def error_handler(self, error: str):
         self.send(text_data=json.dumps({"type": "Invalid", "error": error}))
+    
+    async def set_offline(self):
+        user: User = await sync_to_async(User.objects.get)(pk=self.user_id)
+        user.status = "OFF"
+        await sync_to_async(user.save)()
 
 
 def create_layer_dict(type: str, message: str, sender: str) -> dict:

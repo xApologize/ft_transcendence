@@ -211,8 +211,8 @@ class Logout(View):
         except Http404 as e:
             return HttpResponse(str(e), status=404)
         # Check if status is not OFF ?
-        user.status = "OFF"
-        user.save()
+        # user.status = "OFF"
+        # user.save()
         response : HttpResponse = HttpResponse('Logout Sucessful', status=200)
         response.delete_cookie('refresh_jwt')
         return response
