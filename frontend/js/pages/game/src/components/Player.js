@@ -4,85 +4,85 @@ import { Layers } from '../systems/Layers.js';
 import { InputMap } from '../systems/InputManager.js';
 import { Paddle } from './Paddle.js';
 import {
-	Color,
 	Raycaster,
 	Vector3
 } from 'three';
 import { World } from '../World.js';
 
+const initialSpeed = 5;
+const initialBoostSpeed = 10;
+
 class Player extends Paddle {
-	constructor( geometry, material, position, socket ) {
+	constructor( geometry, material, position ) {
 		super( geometry, material, position );
 
 		this.isPlayer = true;
 
-		this.speed = 5;
+		this.speed = initialSpeed;
+		this.movement = new Vector3( 0, 0, 0 );
 
 		this.ray = new Raycaster();
 		this.ray.layers.set( Layers.Solid );
 
-		this.msg = {
+		this.wsData = {
 			pos: this.position,
-			ballInst: undefined,
-			scored: false,
-			goalScoredId: undefined
+			ballInst: undefined
 		};
 
-		this.socket = socket;
+		// this.socket = World._instance.socket;
 
 		this.collider = new Collider( this );
 		this.updatable = new Updatable( this );
 
-		//TEMP WARNING NOT DESTROYED
-		document.addEventListener("boostButtonPressed", (e) => {
-			this.speed = 10;
-		});
-		document.addEventListener("boostButtonReleased", (e) => {
-			this.speed = 5;
-		});
+		this.boostButtonPressedEvent = (e) => {
+			this.speed = initialBoostSpeed;
+		};
+		this.boostButtonReleasedEvent = (e) => {
+			this.speed = initialSpeed;
+		};
+		document.addEventListener( "boostButtonPressed", this.boostButtonPressedEvent );
+		document.addEventListener( "boostButtonReleased", this.boostButtonReleasedEvent );
 	}
 
 	fixedUpdate ( dt ) {
-		if ( InputMap.movementAxis.value === 0 )
+		if ( this.movement.y === 0 )
 			return;
 		
-		if ( this.socket != undefined && this.socket.readyState === WebSocket.OPEN) {
-			this.socket.send( JSON.stringify( this.msg ) );
+		if ( World._instance.socket != undefined && World._instance.socket.readyState === WebSocket.OPEN) {
+			World._instance.socket.send( JSON.stringify( this.wsData ) );
 		}
 	}
 
 	update( dt ) {
-		if ( InputMap.movementAxis.value === 0 )
-			return;
-		// if ( InputMap.boostButton.value === true )
-		// 	this.speed = 10;
-		// else
-		// 	this.speed = 5;
+		this.movement = new Vector3( 0, InputMap.movementAxis.value, 0 );
 
-		let movement = new Vector3( 0, InputMap.movementAxis.value, 0 );
+		if ( this.movement.y === 0 )
+			return;
 		
-		this.ray.set( this.position, movement );
-		this.ray.far = 1.4 + this.speed * dt;
+		this.ray.set( this.position, this.movement );
+		this.ray.far = this.length / 2 + this.speed * dt;
 		const hits = this.ray.intersectObjects( Collider.getSolids() );
 		if ( hits.length > 0 ) {
-			this.position.add(movement.multiplyScalar( hits[0].distance - 1.4 ));
+			this.position.add( this.movement.clone().multiplyScalar( hits[0].distance - this.length / 2 ) );
 		} else {
-			this.position.add(movement.multiplyScalar( this.speed * dt ));
+			this.position.add( this.movement.clone().multiplyScalar( this.speed * dt ) );
 		}
 	}
 
 	onCollision( hit ) {
-		if ( this.socket != undefined && this.socket.readyState === WebSocket.OPEN) {
-			this.msg.ballInst = hit;
-			this.socket.send( JSON.stringify( this.msg ) );
+		if ( World._instance.socket != undefined && World._instance.socket.readyState === WebSocket.OPEN) {
+			this.wsData.ballInst = hit;
+			World._instance.socket.send( JSON.stringify( this.wsData ) );
 		}
-		this.msg.ballInst = undefined;
+		this.wsData.ballInst = undefined;
 	}
 
 	delete() {
 		super.delete();
 		this.updatable.delete();
 		this.collider.delete();
+		document.removeEventListener( "boostButtonPressed", this.boostButtonPressedEvent );
+		document.removeEventListener( "boostButtonReleased", this.boostButtonReleasedEvent );
 	}
 }
 

@@ -52,6 +52,7 @@ class GoalZone extends Mesh {
 		parameters.position.copy( hit.pos );
 		this.particles = new ParticleSystem( bg, blue, 100, parameters );
 
+		World._instance.camera.screeShake( new Vector3( 0.2, 0, 0 ), 0.2, 3000 );
 		World._instance.score.increment( this.position.x < 0 ? 2 : 1 );
 		World._instance.balls.initInst( World._instance.balls.ballInst[ hit.id ] );
 	}

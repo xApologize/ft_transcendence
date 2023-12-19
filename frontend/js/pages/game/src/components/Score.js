@@ -54,11 +54,11 @@ class Score extends Object3D {
 
 		this.setText( "0" + scoreTab[0],  "0" + scoreTab[1] );
 		if (scoreTab[0] >= maxScore) {
-			World._instance.endMatch();
+			World._instance.match.endMatch();
 			this.setText( "00", "--" );
 		}
 		if (scoreTab[1] >= maxScore) {
-			World._instance.endMatch();
+			World._instance.match.endMatch();
 			this.setText( "--", "00" );
 		}
 	}

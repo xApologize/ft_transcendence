@@ -13,6 +13,7 @@ class Paddle extends Mesh {
 		this.renderer = new Renderer( this );
 
 		this.position.copy( position );
+		this.length = geometry.parameters.length;
 
 		const from = new Vector2( this.position.x, this.position.y );
 		this.rotation.set( 0, 0, from.angle() );

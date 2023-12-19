@@ -1,3 +1,4 @@
+import { World } from '../World.js';
 import { Collider } from '../modules/Collider.js';
 import { Renderer } from '../modules/Renderer.js';
 import { Updatable } from '../modules/Updatable.js';
@@ -23,7 +24,7 @@ class Ball extends InstancedMesh {
 		this.ballInst = [];
 		for (let i = 0; i < this.count; i++) {
 			this.ballInst[i] = { id: i, pos: new Vector3(), dir: new Vector3(), speed: 0, colliding: undefined };
-			this.reset( this.ballInst[i] );
+			this.hideInst( this.ballInst[i] );
 		}
 		
 		
@@ -63,9 +64,9 @@ class Ball extends InstancedMesh {
 					ballInst.speed = 0;
 					return;
 				}
-				if ( typeof closerHit.object.onCollision === "function" )
-					closerHit.object.onCollision( ballInst );
-				// this.initInst( ballInst );
+				if ( typeof closerHit.object.onCollision !== "function" )
+					console.error( "Missing onCollision method on Goal object" );
+				closerHit.object.onCollision( ballInst );
 				return;
 			}
 			closerHit.normal.setZ( 0 );
@@ -74,7 +75,13 @@ class Ball extends InstancedMesh {
 			if ( closerHit.object.layers.isEnabled( Layers.Player ) ) {
 				if ( ballInst.dir.dot( closerHit.object.dir ) < 0 ) {
 					ballInst.speed *= 1.2;
-					ballInst.dir.y += closerHit.point.y - closerHit.object.position.y;
+					ballInst.dir.y += ( closerHit.point.y - closerHit.object.position.y ) / ( closerHit.object.length / 2 );
+					ballInst.dir.normalize();
+					ballInst.dir.y /= 2;
+
+					const dot = ballInst.dir.dot( closerHit.object.movement );
+					if ( ballInst.speed < dot * closerHit.object.speed )
+						ballInst.speed = dot * closerHit.object.speed;
 				}
 			}
 			ballInst.dir.normalize();
@@ -121,16 +128,14 @@ class Ball extends InstancedMesh {
 		this.lastFixedUpdate = new Date().getTime();
 	}
 
-	resetAll() {
+	hide() {
 		for (let i = 0; i < this.count; i++) {
-			this.reset(this.ballInst[i]);
+			this.hideInst(this.ballInst[i]);
 		}
 	}
 
-	reset( ballInst ) {
+	hideInst( ballInst ) {
 		ballInst.pos.set( 0, 0, -1 );
-		ballInst.dir.set( 1, 1, 0 );
-		ballInst.dir.normalize();
 		ballInst.speed = 0;
 		ballInst.colliding = undefined;
 	}
@@ -156,12 +161,13 @@ class Ball extends InstancedMesh {
 		this.setMatrixAt( ballInst.id, this.matrix );
 		this.instanceMatrix.needsUpdate = true;
 
-		let promise = new Promise( resolve => {
+		new Promise( resolve => {
 			setTimeout(() => resolve(this), 1000);
 		})
-		promise.then(
-			function(result) {
-				ballInst.speed = 5;
+		.then(
+			function() {
+				if ( World._instance.currentGameState == "inMatch" )
+					ballInst.speed = 5;
 			}
 		)
 	}

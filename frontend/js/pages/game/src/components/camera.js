@@ -1,27 +1,14 @@
 import { Updatable } from "../modules/Updatable.js";
-import { PerspectiveCamera, MathUtils, Vector3 } from "three";
 import { Tween } from "../systems/Tween.js";
-
-let delay = 1;
+import { PerspectiveCamera, MathUtils, Vector3 } from "three";
 
 class MainCamera extends PerspectiveCamera {
 	constructor() {
 		super( 35, 1, 0.1, 1000 );
 		this.updatable = new Updatable( this );
 
-		this.position.set( 0, -35, 10 );
-		this.rotation.set( MathUtils.degToRad( 70 ), 0, 0 );
-		
-		// this.viewTable( 0 );
-
-		document.addEventListener('keydown', (event) => {
-			if ( event.code == "KeyT" ) {
-				this.viewTable( 1 );
-			}
-			if ( event.code == "KeyY" ) {
-				this.viewLarge( 1 );
-			}
-		}, false);
+		// this.position.set( 0, -35, 10 );
+		// this.rotation.set( MathUtils.degToRad( 70 ), 0, 0 );
 	}
 
 	viewLarge( duration, callback ) {
@@ -35,7 +22,29 @@ class MainCamera extends PerspectiveCamera {
 	}
 
 	update( dt ) {
+		if ( this.screenShakeOrigin !== undefined ) {
+			this.screenShakeTime -= dt;
+			if ( this.screenShakeTime <= 0 ) {
+				this.position.copy( this.screenShakeOrigin );
+				this.screenShakeOrigin = undefined;
+				return;
+			}
+			this.position.copy(
+				this.screenShakeOrigin.clone().add(
+					this.screenShakeAngle.clone().multiplyScalar(
+						Math.cos( this.screenShakeTime * this.screenShakeStrength )
+					)
+				)
+			);
+		}
+	}
 
+	screeShake( angle, duration, strength ) {
+		if ( this.screenShakeOrigin == undefined )
+			this.screenShakeOrigin = this.position.clone();
+		this.screenShakeAngle = angle ;
+		this.screenShakeTime = duration;
+		this.screenShakeStrength = strength;
 	}
 }
 
