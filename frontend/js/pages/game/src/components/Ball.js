@@ -16,6 +16,9 @@ class Ball extends InstancedMesh {
 	constructor( geometry, material, count ) {
 		super( geometry, material, count );
 
+		this.castShadow = true;
+		this.receiveShadow = true;
+
 		this.renderer = new Renderer( this );
 		this.renderer.setLayers( Layers.Default, Layers.Ball );
 		this.updatable = new Updatable( this );

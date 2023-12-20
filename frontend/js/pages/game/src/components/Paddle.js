@@ -9,6 +9,8 @@ import {
 class Paddle extends Mesh {
 	constructor( geometry, material, position, id, nickname ) {
 		super( geometry, material );
+		this.castShadow = true;
+		this.receiveShadow = true;
 
 		this.renderer = new Renderer( this );
 

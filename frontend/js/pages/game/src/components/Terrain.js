@@ -8,6 +8,7 @@ import {
 	MeshBasicMaterial,
 	MeshStandardMaterial,
 	Object3D,
+	PlaneGeometry,
 	Vector3
 } from 'three';
 
@@ -32,16 +33,27 @@ class Terrain extends Object3D {
 		this.rightGoalZone.position.set(size.x / 2 - margin - lineWidth / 2, 0, 0);
 
 		const m_grey = new MeshStandardMaterial({ color: 'grey' });
-		const g_floor = new BoxGeometry(100, 100, 2);
-		this.Floor = new Mesh(g_floor, m_grey);
-		this.Floor.position.set(0, 0, -10);
-		this.add( this.Floor );
+		const g_floor = new PlaneGeometry( 100, 100 );
+		this.floor = new Mesh(g_floor, m_grey);
+		this.floor.position.set(0, 0, -6);
+		this.floor.castShadow = true;
+		this.floor.receiveShadow = true;
+		this.add( this.floor );
 
 		this.add( airHockeyTable.scene );
-		airHockeyTable.scene.scale.set( 0.07, 0.07, 0.07 );
 		airHockeyTable.scene.rotation.set( Math.PI / 2, 0, 0 );
-		airHockeyTable.scene.position.set( 3, 26, -5.5 );
+		airHockeyTable.scene.position.set( 0, 0, -6 );
 
+		airHockeyTable.scene.traverse(function(child) {
+			if ( child.type == "Mesh" ) {
+				child.castShadow = true;
+				child.receiveShadow = true;
+			}
+		});
+
+		// this.box = new Mesh( new BoxGeometry( 1, 1, 10 ) );
+		// this.box.castShadow = true;
+		// this.add( this.box );
 	}
 
 	delete() {

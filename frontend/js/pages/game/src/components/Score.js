@@ -7,7 +7,7 @@ let scoreTab = [0, 0];
 const maxScore = 6;
 
 class Score extends Object3D {
-	constructor( font ) {
+	constructor() {
 		super();
 
 		const mat = new MeshStandardMaterial( { color: 'Orange' } );
@@ -18,7 +18,9 @@ class Score extends Object3D {
 		this.leftScore = new Mesh( geo, mat );
 		this.rightScore = new Mesh( geo, mat );
 		this.leftScoreShadow = new Mesh( geo, mat_shade );
+		this.leftScoreShadow.receiveShadow = true;
 		this.rightScoreShadow = new Mesh( geo, mat_shade );
+		this.rightScoreShadow.receiveShadow = true;
 		this.add( this.leftScore, this.rightScore );
 		this.add( this.leftScoreShadow, this.rightScoreShadow );
 		
