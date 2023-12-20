@@ -30,8 +30,6 @@ class Player extends Paddle {
 			ballInst: undefined
 		};
 
-		// this.socket = World._instance.socket;
-
 		this.collider = new Collider( this );
 		this.updatable = new Updatable( this );
 

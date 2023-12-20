@@ -38,7 +38,6 @@ class GoalZone extends Mesh {
 			const msg = {
 				ballInst: hit,
 				scored: true,
-				goalScoredId: this.position.x < 0 ? 2 : 1
 			};
 
 			World._instance.socket.send( JSON.stringify( msg ) );
@@ -54,7 +53,7 @@ class GoalZone extends Mesh {
 
 		World._instance.camera.screeShake( new Vector3( 0.2, 0, 0 ), 0.2, 3000 );
 		World._instance.score.increment( this.position.x < 0 ? 2 : 1 );
-		World._instance.balls.initInst( World._instance.balls.ballInst[ hit.id ] );
+		World._instance.balls.initInst( World._instance.balls.ballInst[ hit.id ], this.position.x < 0 ? -1 : 1 );
 	}
 
 	delete() {

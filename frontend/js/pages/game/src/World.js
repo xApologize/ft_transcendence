@@ -20,6 +20,15 @@ import {
 	Vector2
 } from 'three';
 
+const _ballCount = 1;
+const _ballSize = 0.2;
+
+// Wall Collider position
+const _terrainSize = new Vector2(18, 11);
+// Dynamic Terrain Line and Margin (depreciated)
+const _terrainLine = 0.5;
+const _terrainMargin = 0.4;
+
 class World {
 	constructor( container ) {
 		if (World._instance) {
@@ -69,12 +78,12 @@ class World {
 
 		this.currentGameState = GameState.InMenu;
 	
-		this.terrain = new Terrain( new Vector2(18, 11), 0.5, 0.4 );
+		this.terrain = new Terrain( _terrainSize, _terrainLine, _terrainMargin );
 	
-		this.g_sphere = new SphereGeometry( 0.2 );
+		this.g_sphere = new SphereGeometry( _ballSize );
 		this.m_white = new MeshStandardMaterial({ color: 'white' });
 	
-		this.balls = new Ball( this.g_sphere, this.m_white, 2 );
+		this.balls = new Ball( this.g_sphere, this.m_white, _ballCount );
 		
 		this.camera.viewLarge( 0 );
 		this.loop.start();
