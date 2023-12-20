@@ -26,7 +26,8 @@ export async function showHome() {
     try {
         await loadHTMLPage('./js/pages/home/home.html');
         initPage();
-        new bootstrap.Modal(document.getElementById('otherUserInfo'))
+        new bootstrap.Modal(document.getElementById('otherUserInfo'));
+        new bootstrap.Modal(document.getElementById('inviteGameModal'));
 
         const friendsBtn = document.getElementById('friendsBtn');
         const everyoneBtn = document.getElementById('everyoneBtn');

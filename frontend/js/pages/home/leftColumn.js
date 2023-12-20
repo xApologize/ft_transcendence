@@ -1,6 +1,7 @@
 import { userTemplateComponent } from '../../components/userTemplate/userTemplate.js';
 import { assembler } from '../../api/assembler.js';
 import { displayOtherUserProfile } from './otherUserProfile.js';
+import { fetchUser } from '../../api/fetchData.js';
 
 export async function displayUser(allUsers) {
     let userContainer = document.getElementById('userDisplay');
@@ -55,18 +56,15 @@ async function loopDisplayUser(objectAllUsers, currentUser, userContainer) {
 
         const seeProfileBtn = clonedUserTemplate.querySelector('.card');
         seeProfileBtn.addEventListener('click', displayOtherUserProfile)
-
-        const filledTemplate = fillOtherUserInfo(clonedUserTemplate, user)
-        userContainer.appendChild(filledTemplate);
-
-
+        
         const inviteGameBtn = clonedUserTemplate.querySelector('#inviteGameBtn');
-        inviteGameBtn.addEventListener('click', () => {
-            console.log('invite ', user.nickname, 'to a game');
-        });
+        inviteGameBtn.addEventListener('click', displayInviteModal);
         if (user.status === 'ING' || user.status === 'OFF')
             inviteGameBtn.classList.add("disabled", "border-0");
 
+
+        const filledTemplate = fillOtherUserInfo(clonedUserTemplate, user)
+        userContainer.appendChild(filledTemplate);
 
         //this is for potential patch to prevent the text box to push the button out of the div
         // if (user.nickname.length > 10 && window.innerWidth < 1000) console.log('greater than 10');
@@ -99,4 +97,32 @@ function fillOtherUserInfo(clonedUserTemplate, user) {
         }
     }
     return clonedUserTemplate
+}
+
+async function displayInviteModal(event) {
+    event.stopPropagation(); // Empêche le otherUserModal d'open pcq le listener est sur la div.
+    let ancestor = event.currentTarget;
+    while (ancestor && !ancestor.hasAttribute('data-userid-flag')) {
+        ancestor = ancestor.parentNode;
+    }
+    if (!ancestor || !ancestor.dataset.id) {
+        console.error('User ID not found');
+        return;
+    }
+    const userID = ancestor.dataset.id;
+    
+    const response = await fetchUser('GET', { id: userID })
+    const userResponse = await assembler(response)
+    const user = userResponse[0]
+    console.log('invite ', user.nickname, 'to a game'); // Need to fetch the user
+
+
+    const modalElement = document.getElementById('inviteGameModal')
+    const inviteModal = bootstrap.Modal.getInstance(modalElement);
+    if (!inviteModal) {
+        console.error('Other user modal instance not found')
+        return
+    }
+
+    inviteModal.show()
 }
