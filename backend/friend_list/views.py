@@ -10,9 +10,6 @@ from .utils import changeState, handle_add_friend, handle_accept_friend
 import json
 from user_profile.utils import get_avatar_data
 
-# !!! DOIT HANDLE FRIEND REQUESTS A SOIT MÊME
-
-# Envoyer friend request, Cancel ou supprimer.
 class FriendHandling(View):
     # Friend Request
     @token_validation
