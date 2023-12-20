@@ -85,6 +85,18 @@
     border-color: var(--bg-accent) !important;
 }
 
+.modal-header {
+    background-color: var(--bg-accent);
+}
+
+.modal-body {
+    background-color: var(--bg-accent);
+}
+
+.modal-footer {
+    background-color: var(--bg-accent) !important;
+}
+
 #lfp {
     font-size: 2rem;
     color: white;
