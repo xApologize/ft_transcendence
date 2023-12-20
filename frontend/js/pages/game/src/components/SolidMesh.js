@@ -7,7 +7,7 @@ class SolidMesh extends Mesh {
 		super( geometry, material );
 		this.collider = new Collider( this );
 		this.layers.enable( Layers.Solid );
-		if ( invisible)
+		if ( invisible )
 			this.layers.disable( Layers.Default );
 	}
 

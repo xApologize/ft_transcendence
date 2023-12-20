@@ -13,7 +13,7 @@ class Paddle extends Mesh {
 		this.renderer = new Renderer( this );
 
 		this.position.copy( position );
-		this.length = geometry.parameters.length;
+		this.length = geometry.parameters.length + geometry.parameters.radius * 2;
 		this.participantId = id;
 		this.participantNickname = nickname;
 

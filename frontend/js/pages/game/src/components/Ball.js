@@ -149,7 +149,7 @@ class Ball extends InstancedMesh {
 
 	initInst( ballInst, side = 1 ) {
 		ballInst.pos.set( 0, 0, 0 );
-		ballInst.dir.set( side, 1, 0 );
+		ballInst.dir.set( side, Math.cos( ballInst.id ), 0 );
 		ballInst.dir.normalize();
 		ballInst.speed = 0;
 		ballInst.colliding = undefined;
