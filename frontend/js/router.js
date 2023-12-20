@@ -72,7 +72,7 @@ async function loadPage() {
     const header = await headerComponent();
     const template = await templateComponent();
 
-    body.append(header);
+    // body.append(header);
     body.append(template);
     const path = window.location.pathname;
     navigateTo(path);
@@ -86,15 +86,15 @@ window.addEventListener('beforeunload', () => {
 document.addEventListener('DOMContentLoaded', async () => {
     await loadPage();
 
-    const navContainer = document.getElementById('navbar');
-    navContainer.addEventListener('click', (event) => {
-        const target = event.target;
-        if (target.classList.contains('nav-link')) {
-            event.preventDefault();
-            const route = target.getAttribute('data-route');
-            navigateTo(route);
-        }
-    });
+    // const navContainer = document.getElementById('navbar');
+    // navContainer.addEventListener('click', (event) => {
+    //     const target = event.target;
+    //     if (target.classList.contains('nav-link')) {
+    //         event.preventDefault();
+    //         const route = target.getAttribute('data-route');
+    //         navigateTo(route);
+    //     }
+    // });
 
     window.addEventListener('popstate', handlePopState);
 });

@@ -1,71 +1,124 @@
-<div id="sceneContainer" class="vw-100 vh-100"> </div>
+<div class="container-fluid">
+    <div class="row fill">
+        <div id="sceneContainer" class="vw-100 vh-100 p-0"></div>
 
-<div id="lfp" class="d-none centered position-absolute">Looking for player...</div>
-
-<div id="ui" class="container-fluid position-absolute">
-    <div class="row vh-100">
-        <div class="buttonResponsive">
-            <button class="btn shadow-none btn-primary textWhite" id="userBtn">
-                <i id="icon" class="fa fa-user" style="font-size: 1.5em"></i>
-            </button>
+        <div id="lfp" class="d-none centered position-absolute">
+            Looking for player...
         </div>
-        <div class="text-center userList bg-main-second col-md-4 col-lg-4 col-xl-3 col-xxl-3" id="left-column">
-            <div class="row">
-                <div class="col p-0">
-                    <button type="button" id="everyoneBtn" class="active-dark btn btn-light btn-block w-100 rounded-0 border shadow-none">
-                        Everyone
+
+        <div id="ui" class="container-fluid position-absolute">
+            <div class="row vh-100">
+                <div class="buttonResponsive">
+                    <button
+                        class="btn shadow-none btn-primary textWhite"
+                        id="userBtn"
+                    >
+                        <i
+                            id="icon"
+                            class="fa fa-user"
+                            style="font-size: 1.5em"
+                        ></i>
                     </button>
                 </div>
-                <div class="col p-0">
-                    <button type="button" id="friendsBtn" class="active btn btn-light btn-block w-100 rounded-0 border">
-                        Friends
-                    </button>
-                </div>
-            </div>
-            <div class="row text-center border border-2">
-                <button type="button" id="socialModalBtn" class="btn btn-light btn-block w-100 rounded-0 border shadow-none position-relative" data-bs-toggle="modal" data-bs-target="#friendRequestModal">
-                    Social
-                    <!-- Badge in the corner -->
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="socialBadge">
-                        0 <!-- Number of social events -->
-                    </span>
-                </button>
-            </div>
-            <div class="row row-center" id="userDisplay"></div>
-        </div>
-        <div
-            class="col-sm-12 col-md-8 col-lg-8 col-xl-9 col-xxl-9"
-            id="right-column"
-        >
-            <div id="rightPart" class="row m-3 rightPartCol">
                 <div
-                    id="divGame"
-                    class="col-12 col-md-3 col-xl-3 text-center textWhite p-2"
+                    class="text-center userList pb-3 bg-main-second col-md-4 col-lg-4 col-xl-3 col-xxl-3"
+                    id="left-column"
                 >
-                    <div>
-                        <h1 class="m-3 text-center">Find game</h1>
-                        <button
-                            id="findGame"
-                            class="btn shadow-none btn-primary textWhite"
-                        >
-                            Find game
+                    <div class="row">
+                        <div class="col p-0">
+                            <button
+                                type="button"
+                                id="everyoneBtn"
+                                class="active-dark btn btn-light btn-block w-100 rounded-0 border shadow-none"
+                            >
+                                Everyone
+                            </button>
+                        </div>
+                        <div class="col p-0">
+                            <button
+                                type="button"
+                                id="friendsBtn"
+                                class="active btn btn-light btn-block w-100 rounded-0 border shadow-none"
+                            >
+                                Friends
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row text-center border border-2">
+                        <button type="button" id="socialModalBtn" class="btn btn-light btn-block w-100 rounded-0 border shadow-none position-relative" data-bs-toggle="modal" data-bs-target="#friendRequestModal">
+                            Social
+                            <!-- Badge in the corner -->
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="socialBadge">
+                                0 <!-- Number of social events -->
+                            </span>
                         </button>
                     </div>
+                    <div class="divFill">
+                        <div class="row row-center" id="userDisplay"></div>
+                    </div>
                 </div>
-                <div id="userCol" class="col-12 col-md-9 col-xl-9">
-                    <div class="rightCol text-center">
-                        <div class="upperRow">
-                            <div
-                                id="own-user-card"
-                                class="user-card bg-main-second text-light p-3"
-                            ></div>
+                <div
+                    class="col-sm-12 col-md-8 col-lg-8 col-xl-9 col-xxl-9"
+                    id="right-column"
+                >
+                    <div id="rightPart" class="row rightPartCol">
+                        <div
+                            id="divGame"
+                            class="col-12 col-md-3 col-xl-3 text-center textWhite p-2"
+                        >
+                            <div>
+                                <h1 class="m-3 text-center">Find game</h1>
+                                <button
+                                    id="findGame"
+                                    class="btn shadow-none btn-primary textWhite"
+                                >
+                                    Find game
+                                </button>
+                            </div>
                         </div>
-                        <div class="lowerRow bg-main-second">
-                            <h1 class="m-3 text-center">Match history</h1>
-                            <div id="matchHistory"></div>
+                        <div id="userCol" class="col-12 col-md-9 col-xl-9">
+                            <div class="rightCol text-center">
+                                <div class="upperRow">
+                                    <div
+                                        id="own-user-card"
+                                        class="user-card bg-main-second text-light mt-3 p-3"
+                                    ></div>
+                                </div>
+                                <div class="lowerRow bg-main-second">
+                                    <h1 class="m-3 text-center">
+                                        Match history
+                                    </h1>
+                                    <div id="matchHistory"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Invite Game Modal -->
+<div
+    class="modal fade"
+    id="inviteGameModal"
+    tabindex="-1"
+    aria-labelledby="inviteGameModalLabel"
+    aria-hidden="true"
+>
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title" id="waitingGameModal">
+                    <!-- Can I set the user to the name of the user? -->
+                    Waiting for user...
+                </h5>
+            </div>
+            <div class="modal-footer border-0">
+                <button class="btn btn-danger" data-bs-dismiss="modal">
+                    Cancel
+                </button>
             </div>
         </div>
     </div>
@@ -117,7 +170,6 @@
                             </div>
                         </div>
                         <div id="matchHistoryContainer">
-                            
                         </div>
                     </div>
                 </div>
@@ -169,13 +221,3 @@
 </div>
 
 
-
-<style>
-	#lfp {
-		font-size: 2rem;
-		color: white;
-		transform: translate(-50%, -50%);
-		top: 50%;
-		left: 50%;
-	}	
-</style>

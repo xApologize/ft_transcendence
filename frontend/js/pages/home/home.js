@@ -1,4 +1,9 @@
-import { fetchUser, fetchFriend, fetchMe, loadHTMLPage, fetchFriendChange } from '../../api/fetchData.js';
+import {
+    fetchUser,
+    fetchFriend,
+    fetchMe,
+    loadHTMLPage,
+} from '../../api/fetchData.js';
 import { assembler } from '../../api/assembler.js';
 import { displayUserCard } from '../../components/userCard/userCard.js';
 import { displayMatchHistory } from '../../components/matchHistory/matchHistory.js';
@@ -26,7 +31,7 @@ export async function showHome() {
         const friendsBtn = document.getElementById('friendsBtn');
         const everyoneBtn = document.getElementById('everyoneBtn');
         friendsBtn.addEventListener('click', () => {
-			friendsBtnFunc(friendsBtn, everyoneBtn);
+            friendsBtnFunc(friendsBtn, everyoneBtn);
         });
         everyoneBtn.addEventListener('click', () => {
             everyoneBtnFunc(friendsBtn, everyoneBtn);
@@ -34,21 +39,27 @@ export async function showHome() {
         document.getElementById('otherUserInfo').addEventListener('hide.bs.modal', () => {
             document.getElementById('responseFriendQuery').textContent = '';
         });
-        responsiveLeftColumn()
-		
-		
-		await loadFonts();
-		await loadModel();
-		const world = new World( document.querySelector('#sceneContainer') );
-		
-		const findGameBtn = document.getElementById('findGame');
+        responsiveLeftColumn();
+
+        await loadFonts();
+        await loadModel();
+        const world = new World(document.querySelector('#sceneContainer'));
+
+        const findGameBtn = document.getElementById('findGame');
         findGameBtn.addEventListener('click', () => {
-            document.getElementById('ui').classList.add("d-none");
-			world.currentGameState = "lookingForPlayer";
-			document.getElementById('lfp').classList.remove("d-none");
-			interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Find Match"}));
+            document.getElementById('ui').classList.add('d-none');
+            world.currentGameState = 'lookingForPlayer';
+            document.getElementById('lfp').classList.remove('d-none');
+            interactiveSocket.sendMessageSocket(
+                JSON.stringify({ type: 'Find Match' })
+            );
         });
 
+        document
+            .getElementById('inviteGameModal')
+            .addEventListener('hide.bs.modal', () => {
+                console.log('modal game invite closed');
+            });
     } catch (error) {
         console.error('Error fetching home.html:', error);
     }
@@ -73,7 +84,6 @@ export async function displayEveryone() {
         // if !onlineUsers, c'est que le status == 401 et si !onlineUsers.ok == Aucun user Online
         return;
     }
-
     await displayUser(onlineUsers);
 }
 
@@ -100,7 +110,6 @@ async function initPage() {
 //  Event Listener function  //
 ///////////////////////////////
 
-
 function everyoneBtnFunc(friendsBtn, everyoneBtn) {
     if (friendsBtn.classList.contains('active-dark')) {
         friendsBtn.classList.remove('active-dark');
@@ -113,7 +122,7 @@ function friendsBtnFunc(friendsBtn, everyoneBtn) {
     if (everyoneBtn.classList.contains('active-dark')) {
         everyoneBtn.classList.remove('active-dark');
         friendsBtn.classList.add('active-dark');
-        displayFriend()
+        displayFriend();
     }
 }
 
