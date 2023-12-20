@@ -14,28 +14,43 @@ class Tween {
 		this.easing = easing;
 		this.time = 0;
 		this.updatable = new Updatable( this );
+
+		this.lastFixedUpdate = new Date().getTime();
 	}
 
 	then ( callback ) {
 		this.callback = callback;
 	}
 
-	update( dt ) {
+	setValue( progress ) {
+		this.from.x = this.origin.x + ( this.to.x - this.origin.x ) * progress;
+		this.from.y = this.origin.y + ( this.to.y - this.origin.y ) * progress;
+		this.from.z = this.origin.z + ( this.to.z - this.origin.z ) * progress;
+	}
+
+	update() {
+		const lag = (new Date().getTime() - this.lastFixedUpdate) / 1000;
+
+		const updatedTime = this.time + lag;
+		if ( this.duration <= 0 || this.duration < updatedTime )
+			this.setValue( 1 );
+		else
+			this.setValue( updatedTime / this.duration );
+	}
+
+	fixedUpdate( dt ) {
 		this.time += dt;
 		if ( this.time > this.duration ) {
 			this.time = this.duration;
 		}
 
-		const ratio = this.duration > 0 ? this.time / this.duration : 1;
-
-		this.from.x = this.origin.x + ( this.to.x - this.origin.x ) * ratio;
-		this.from.y = this.origin.y + ( this.to.y - this.origin.y ) * ratio;
-		this.from.z = this.origin.z + ( this.to.z - this.origin.z ) * ratio;
-
 		if ( this.time >= this.duration ) {
 			this.updatable.delete();
+			this.setValue( 1 );
 			this.onCompleted();
 		}
+
+		this.lastFixedUpdate = new Date().getTime();
 	}
 
 	onCompleted() {

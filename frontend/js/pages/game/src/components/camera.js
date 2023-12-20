@@ -7,8 +7,9 @@ class MainCamera extends PerspectiveCamera {
 		super( 35, 1, 0.1, 1000 );
 		this.updatable = new Updatable( this );
 
-		// this.position.set( 0, -35, 10 );
-		// this.rotation.set( MathUtils.degToRad( 70 ), 0, 0 );
+		// this.viewLarge( 0 );
+		this.position.set( 0, -35, 10 );
+		this.rotation.set( MathUtils.degToRad( 70 ), 0, 0 );
 	}
 
 	viewLarge( duration, callback ) {
