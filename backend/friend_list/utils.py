@@ -25,16 +25,16 @@ def handle_add_friend(sender, receiver):
     if existing_relationship:
         if existing_relationship.status == "PENDING" and existing_relationship.friend1 == sender:
             return JsonResponse({
-                'error': 'Friend request already sent.',
+                'message': f'Friend request already sent to {receiver.nickname}.',
                 'status': 'sentRequest'
-                }, status=400)
+            }, status=400)
         elif existing_relationship.status == "PENDING" and existing_relationship.friend2 == sender:
             return handle_accept_friend(sender, receiver)
         elif existing_relationship.status == "ACCEPTED":
             return JsonResponse({
-                'error': 'Already friends.',
+                'message': f'You are already friends with {receiver.nickname}.',
                 'status': 'friend'
-                }, status=400)
+            }, status=400)
 
     spam_check = check_spamming(existing_relationship, sender)
     if spam_check:
@@ -43,11 +43,12 @@ def handle_add_friend(sender, receiver):
     try:
         FriendList.objects.create(friend1=sender, friend2=receiver, status="PENDING", last_action_by=sender)
         return JsonResponse({
-            'message': 'Friend request sent.',
+            'message': f'Friend request sent to {receiver.nickname}.',
             'status': 'sentRequest'
-            }, status=201)
+        }, status=201)
     except IntegrityError:
         return JsonResponse({'message': 'Error creating friend request.'}, status=400)
+
 
 def handle_accept_friend(sender, receiver):
     existing_relationship = FriendList.objects.filter(
@@ -60,15 +61,15 @@ def handle_accept_friend(sender, receiver):
 
     if not existing_relationship:
         return JsonResponse({
-            'message': 'No pending friend request found.',
+            'message': f'No pending friend request from {sender.nickname} found.',
             'status': 'none'
-            }, status=404)
+        }, status=404)
 
     changeState(existing_relationship, "ACCEPTED", sender)
     return JsonResponse({
-        'message': 'Friend request accepted.',
+        'message': f'You are now friends with {sender.nickname}.',
         'status': 'friend'
-        }, status=200)
+    }, status=200)
 
 def changeState(relationShip, state, user):
     relationShip.status = state

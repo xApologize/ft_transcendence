@@ -106,38 +106,50 @@ function getSocialUserID(event) {
     handleFriendAction(actionObj);
 }
 
+function updateContainerClasses(container, isSuccess) {
+    if (isSuccess) {
+        container.classList.add('text-success');
+        container.classList.remove('text-danger');
+    } else {
+        container.classList.add('text-danger');
+        container.classList.remove('text-success');
+    }
+}
+
+function getResponseContainer(action) {
+    if (action === 'accept' || action === 'refuse') {
+        return document.getElementById('response-requests-received-info');
+    } else if (action === 'cancel') {
+        return document.getElementById('response-requests-sent-info');
+    } else {
+        console.error('Unknown action');
+        return null;
+    }
+}
+
+let messageTimer;
 export function updateSocialFriendCard(userID, action, responseStatus, assemble) {
-    const socialDiv = document.getElementById('friendRequestModal')
+    const socialDiv = document.getElementById('friendRequestModal');
     const userToRemove = socialDiv.querySelector(`div[data-id="${userID}"]`);
 
     if (!userToRemove) {
-        console.error('cannot find user to remove')
-        return
-    }
-    
-    console.log(userToRemove)
-    console.log(responseStatus)
-
-    let container = null
-    if (action === 'accept' || action == 'refuse') {
-        container = document.getElementById('response-requests-received-info')
-    } else if (action == 'cancel') {
-        container = document.getElementById('response-requests-sent-info')
+        console.error('Cannot find user to remove');
+        return;
     }
 
+    const container = getResponseContainer(action);
     if (!container) {
-        console.error('cannot find container for response')
-        return
+        console.error('Cannot find container for response');
+        return;
     }
 
-    if (responseStatus >= 200 && responseStatus < 300) {
-        container.classList.add('text-success')
-        container.classList.remove('text-success')
-    } else {
-        container.classList.add('text-danger')
-        container.classList.remove('text-success')
-    }
+    const isSuccess = responseStatus >= 200 && responseStatus < 300;
+    updateContainerClasses(container, isSuccess);
 
-    container.textContent = assemble.message
-    userToRemove.remove()
+    container.textContent = assemble.message;
+    userToRemove.remove();
+    updateSocialBadge();
+
+    clearTimeout(messageTimer);
+    messageTimer = setTimeout(() => container.textContent = '', 5000);
 }

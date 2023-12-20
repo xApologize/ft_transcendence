@@ -79,7 +79,7 @@ export async function updateOtherFriendButton(state) {
             updateButtons('', '', 'Unfriend', 'unfriend', false, true);
             break;
         case 'receivedRequest':
-            updateButtons('Add Friend', 'add', '', '', true, false);
+            updateButtons('Accept', 'accept', 'Refuse', 'refuse', true, true);
             break;
         case 'sentRequest':
             updateButtons('', '', 'Cancel Request', 'cancel', false, true);

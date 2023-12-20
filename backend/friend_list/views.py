@@ -107,36 +107,43 @@ class FriendHandling(View):
 
         if not existing_relationship:
             return JsonResponse({
-                'message': 'No existing relationship.',
+                'message': f'No existing relationship with {other_user.nickname}.',
                 'status': 'none'
-                }, status=404)
+            }, status=404)
 
         if action == 'cancel' and existing_relationship.status == "PENDING" and existing_relationship.friend1 == current_user:
             changeState(existing_relationship, "CANCEL", current_user)
+            return JsonResponse({
+                'message': f'Friend request to {other_user.nickname} canceled successfully.',
+                'status': 'cancel'
+            }, status=200)
         elif action == 'refuse' and existing_relationship.status == "PENDING" and existing_relationship.friend2 == current_user:
             changeState(existing_relationship, "REFUSED", current_user)
+            return JsonResponse({
+                'message': f'Friend request from {other_user.nickname} refused.',
+                'status': 'refuse'
+            }, status=200)
         elif action == 'unfriend' and existing_relationship.status == "ACCEPTED":
             changeState(existing_relationship, "UNFRIEND", current_user)
+            return JsonResponse({
+                'message': f'{other_user.nickname} removed successfully from your friends.',
+                'status': 'none'
+            }, status=200)
         else:
             status = 'none'
             if existing_relationship.status != "PENDING" and action in ['cancel', 'refuse']:
                 status = 'friend' if existing_relationship.status == "ACCEPTED" else "none"
-                error_detail = "Friend request has already been answered. Can't Cancel." if existing_relationship.status == "ACCEPTED" else "No pending request."
+                error_detail = f"Friend request to {other_user.nickname} has already been answered. Can't cancel." if existing_relationship.status == "ACCEPTED" else f"No pending request with {other_user.nickname}."
             elif existing_relationship.status != "ACCEPTED" and action == 'unfriend':
-                error_detail = "Can't unfriend. Not friends yet."
+                error_detail = f"You are not friends with {other_user.nickname}."
             elif action not in ['cancel', 'refuse', 'unfriend']:
                 error_detail = f"Unknown action: '{action}'."
             else:
-                error_detail = "Action not applicable. Please check and try again."
+                error_detail = "Error. Please try again."
             return JsonResponse({
                 "message": error_detail,
                 'status': status
             }, status=403)
-
-        return JsonResponse({
-            'message': f'Action {action.title()} completed successfully.',
-            'status': 'none'
-            }, status=200)
 
 class FriendGetAll(View):
     @token_validation
