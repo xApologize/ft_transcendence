@@ -20,6 +20,10 @@
     }
 }
 
+.fill {
+    height: 100%;
+}
+
 .userList {
     height: 100%;
 }
@@ -40,13 +44,20 @@
     justify-content: center;
 }
 
+.divFill {
+    height: calc(100% - 38px);
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
 .hide {
     display: none;
 }
 
 .active-dark {
-    background-color: black !important;
-    color: #ffffff  !important;
+    background-color: var(--bg-accent) !important;
+    color: #ffffff !important;
 }
 .show {
     display: block !important;
@@ -72,4 +83,24 @@
 .btn-primary:hover {
     background-color: var(--bg-accent) !important;
     border-color: var(--bg-accent) !important;
+}
+
+.modal-header {
+    background-color: var(--bg-accent);
+}
+
+.modal-body {
+    background-color: var(--bg-accent);
+}
+
+.modal-footer {
+    background-color: var(--bg-accent) !important;
+}
+
+#lfp {
+    font-size: 2rem;
+    color: white;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
 }

@@ -30,7 +30,12 @@
                 </div>
                 <div class="d-flex flex-column align-items-end">
                     <div class="d-flex">
-                        <button class="btn">
+                        <button
+                            id="inviteGameBtn"
+                            class="btn"
+                            data-bs-toggle="modal"
+                            data-bs-target="#inviteGameModal"
+                        >
                             <i
                                 class="fa fa-gamepad"
                                 style="font-size: 1.5em"
@@ -38,7 +43,7 @@
                         </button>
                         <button id="seeProfileBtn" class="btn">
                             <i
-                                id ="otherUserID"
+                                id="otherUserID"
                                 class="fa fa-address-card-o"
                                 style="font-size: 1.5em"
                             ></i>
