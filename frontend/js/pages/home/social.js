@@ -42,10 +42,13 @@ function updateSocialFriendBtn(userNode, request) {
     const button2 = userNode.querySelector('#button2');
 
     if (request.role === 'sender') {
+        button1.dataset.action = 'accept'
+        button2.dataset.action = 'refuse'
         setupButton(button1, 'Accept', request, 'accept');
         setupButton(button2, 'Refuse', request, 'refuse');
     } else if (request.role === 'receiver') {
         button1?.remove();
+        button2.dataset.action = 'cancel'
         setupButton(button2, 'Cancel Request', request, 'cancel');
     }
 }
@@ -55,12 +58,13 @@ function setupButton(button, text, request, action) {
         button.textContent = text;
         button.dataset.id = request.id;
         button.dataset.action = action;
-        button.addEventListener('click', handleFriendAction);
+        button.addEventListener('click', getSocialUserID);
         button.removeAttribute('id');
     }
 }
 
 function fillRequestTemplate(requestNode, request) {
+    requestNode.dataset.id = request.id;
     const img = requestNode.querySelector('#userRequestCardImg');
     img.src = request.avatar || '';
     img.alt = request.nickname + "'s avatar";
@@ -80,4 +84,60 @@ function updateSocialBadge() {
 
     const socialBadge = document.getElementById('socialBadge');
     socialBadge.textContent = receivedRequestCount + sentRequestCount + inviteGameCount;
+}
+
+function getSocialUserID(event) {
+    let ancestor = event.currentTarget;
+    while (ancestor && !ancestor.hasAttribute('data-userid-flag')) {
+        ancestor = ancestor.parentNode;
+    }
+    if (!ancestor || !ancestor.dataset.id) {
+        console.error('User ID not found');
+        return;
+    }
+    const userID = ancestor.dataset.id;
+    const action = event.currentTarget.dataset.action;
+
+    const actionObj = {
+        'action': action,
+        'id': userID,
+        'modal': 'social',
+    }
+    handleFriendAction(actionObj);
+}
+
+export function updateSocialFriendCard(userID, action, responseStatus, assemble) {
+    const socialDiv = document.getElementById('friendRequestModal')
+    const userToRemove = socialDiv.querySelector(`div[data-id="${userID}"]`);
+
+    if (!userToRemove) {
+        console.error('cannot find user to remove')
+        return
+    }
+    
+    console.log(userToRemove)
+    console.log(responseStatus)
+
+    let container = null
+    if (action === 'accept' || action == 'refuse') {
+        container = document.getElementById('response-requests-received-info')
+    } else if (action == 'cancel') {
+        container = document.getElementById('response-requests-sent-info')
+    }
+
+    if (!container) {
+        console.error('cannot find container for response')
+        return
+    }
+
+    if (responseStatus >= 200 && responseStatus < 300) {
+        container.classList.add('text-success')
+        container.classList.remove('text-success')
+    } else {
+        container.classList.add('text-danger')
+        container.classList.remove('text-success')
+    }
+
+    container.textContent = assemble.message
+    userToRemove.remove()
 }

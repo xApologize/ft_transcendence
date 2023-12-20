@@ -10,16 +10,16 @@ export async function displayOtherUserProfile(event) {
     while (ancestor && !ancestor.hasAttribute('data-userid-flag')) {
         ancestor = ancestor.parentNode;
     }
-    if (!ancestor || !ancestor.id) {
+    if (!ancestor || !ancestor.dataset.id) {
         console.error('User ID not found');
         return;
     }
-    const userID = ancestor.id;
+    const userID = ancestor.dataset.id;
 
     const modalElement = document.getElementById('otherUserInfo')
     const otherUserModal = bootstrap.Modal.getInstance(modalElement);
     if (!otherUserModal) {
-        console.log("no modal")
+        console.error('Other user modal instance not found')
         return
     }
 
@@ -56,11 +56,11 @@ export async function updateOtherFriendButton(state) {
     const addFriendBtn = document.getElementById('addFriendBtn');
     const deleteFriendBtn = document.getElementById('deleteFriendBtn');
 
-    addFriendBtn.removeEventListener('click', otherProfileAction);
-    deleteFriendBtn.removeEventListener('click', otherProfileAction);
+    addFriendBtn.removeEventListener('click', updateProfileAction);
+    deleteFriendBtn.removeEventListener('click', updateProfileAction);
 
-    addFriendBtn.addEventListener('click', otherProfileAction);
-    deleteFriendBtn.addEventListener('click', otherProfileAction);
+    addFriendBtn.addEventListener('click', updateProfileAction);
+    deleteFriendBtn.addEventListener('click', updateProfileAction);
 
     function updateButtons(addText, addAction, deleteText, deleteAction, showAdd, showDelete) {
         addFriendBtn.textContent = addText;
@@ -103,7 +103,7 @@ function updateWinrateAndClass(currentUserInfo) {
         ratio.classList.add('d-none')
         document.getElementById('otherMatchHistory').classList.add('d-none')
     }
-    modalContent.id = currentUserInfo.id
+    modalContent.dataset.id = currentUserInfo.id
 }
 
 function displayBasicInfo(currentUserInfo) {
@@ -159,11 +159,11 @@ async function displayOtherMatchHistory(currentUserInfo) {
     });
 }
 
-export function otherProfileAction(event) {
+function updateProfileAction(event) {
     function getOtherUserID() {
         const otherUserModal = document.getElementById('otherUserInfo');
         const otherUserContentElement = otherUserModal.querySelector('.modal-content');
-        return otherUserContentElement.id;
+        return otherUserContentElement.dataset.id;
     }
     const otherUserID = getOtherUserID();
     if (!otherUserID) {

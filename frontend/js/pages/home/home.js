@@ -13,16 +13,15 @@ import interactiveSocket from './socket.js';
 // - Gérer demande ami
 // - Faire tout fonctionner avec socket interactif
 ////////
-// To update w socket when friend update (unfriend, cancel,  accepted, refused):
-// Friends column -> Faire fonction pour update/fetch 1 user au lieu de tout fetch
+// Quand user Update son profil (avatar/nickname) -> Socket call function: not done (update only 1 user)
+// Quand trigger un événement relier aux amis -> Socket call function: 
 // Other user modal
 //
-let otherUserModal;
 export async function showHome() {
     try {
         await loadHTMLPage('./js/pages/home/home.html');
         initPage();
-        otherUserModal = new bootstrap.Modal(document.getElementById('otherUserInfo'))
+        new bootstrap.Modal(document.getElementById('otherUserInfo'))
 
         const friendsBtn = document.getElementById('friendsBtn');
         const everyoneBtn = document.getElementById('everyoneBtn');

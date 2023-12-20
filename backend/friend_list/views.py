@@ -33,6 +33,9 @@ class FriendHandling(View):
         except PermissionDenied as e:
             return HttpResponse(str(e), status=401)
 
+        if sender == receiver:
+            return JsonResponse({'message': 'You cannot send a friend request to yourself.'}, status=400)
+
         # Handling different actions
         if action == 'add':
             # Handle adding a friend

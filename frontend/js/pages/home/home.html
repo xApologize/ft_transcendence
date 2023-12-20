@@ -72,7 +72,7 @@
 </div>
 
 <!-- Other User Profile Modal -->
-<div class="modal fade" id="otherUserInfo" tabindex="-1" data-bs-keyboard="false" aria-labelledby="otherUserInfoLabel" aria-hidden="true">
+<div class="modal fade" id="otherUserInfo" tabindex="-1" aria-labelledby="otherUserInfoLabel" aria-hidden="true">
     <div id="otherUserInfoDialog" class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -136,7 +136,7 @@
             </div>
             <div class="modal-body">
                 <!-- Invite Game Receive -->
-                <div class="invite-game-received lign-items-center">
+                <div class="invite-game-received align-items-center">
                     <h6 class="text-center"> Invite Game Received</h6>
                     <div id="inviteGameReceived" class="list-group">
                         <!-- List of sent friend requests will go here -->
@@ -144,16 +144,18 @@
                     </div>
                 </div>
                 <hr> <!-- Separator -->
-                <div class="friend-requests-sent align-items-center">
+                <div id="friend-requests-sent" class="align-items-center">
                     <h6 class="text-center">Friend Requests Sent</h6>
+                    <p class="text-center" id="response-requests-sent-info"></p>
                     <div id="sentRequest" class="list-group">
                         <!-- List of sent friend requests will go here -->
                     </div>
                 </div>
                 <hr> <!-- Separator -->
                 <!-- Friend Requests Received -->
-                <div class="friend-requests-received">
+                <div id="friend-requests-received" class="align-items-center">
                     <h6 class="text-center">Friend Requests Received</h6>
+                    <p class="text-center" id="response-requests-received-info"></p>
                     <div id="receivedRequest" class="list-group">
                         <!-- List of received friend requests will go here -->
                     </div>

@@ -1,6 +1,7 @@
 import { fetchFriendChange } from '../../api/fetchData.js';
 import { assembler } from '../../api/assembler.js';
 import { updateOtherFriendButton, updateStatusMsg } from './otherUserProfile.js';
+import { updateSocialFriendCard } from './social.js';
 
 export async function handleFriendAction(actionObj) {
     const actionToMethod = {
@@ -35,12 +36,15 @@ export async function handleFriendAction(actionObj) {
         return;
     }
 
-
+    const responseStatus = response.status;
     if (actionObj.modal == 'otherProfile') {
-        updateStatusMsg(assemble, response.status);
+        updateStatusMsg(assemble, responseStatus);
         if (assemble.status) {
             updateOtherFriendButton(assemble.status);
         }
+    } else if (actionObj.modal == 'social') {
+
+        updateSocialFriendCard(userID, action, responseStatus, assemble);
     }
 
 }

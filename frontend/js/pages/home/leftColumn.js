@@ -43,7 +43,7 @@ async function loopDisplayUser(objectAllUsers, currentUser, userContainer) {
 
         const clonedUserTemplate = templateUser.cloneNode(true);
 
-        const seeProfileBtn = clonedUserTemplate.querySelector('#seeProfileBtn');
+        const seeProfileBtn = clonedUserTemplate.querySelector('.card');
         seeProfileBtn.addEventListener('click', displayOtherUserProfile)
 
         const filledTemplate = fillOtherUserInfo(clonedUserTemplate, user)
@@ -53,7 +53,7 @@ async function loopDisplayUser(objectAllUsers, currentUser, userContainer) {
 }
 
 function fillOtherUserInfo(clonedUserTemplate, user) {
-    clonedUserTemplate.id = user.id
+    clonedUserTemplate.dataset.id = user.id
 
     const avatarElement = clonedUserTemplate.querySelector('#user-avatar');
     const nameElement = clonedUserTemplate.querySelector('#user-name');
