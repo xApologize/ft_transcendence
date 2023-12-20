@@ -56,8 +56,8 @@ class World {
 		}
 	}
 
-	joinMatch( wsPath, side ) {
-		this.match = new Match( '/' + wsPath, side == "A" ? 0 : 1 );
+	joinMatch( wsPath, side, myNickname, opponentNickname ) {
+		this.match = new Match( '/' + wsPath, side == "A" ? 0 : 1, myNickname, opponentNickname );
 	}
 
 	createInstance() {

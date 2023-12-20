@@ -72,9 +72,11 @@ class Ball extends InstancedMesh {
 			}
 			closerHit.normal.setZ( 0 );
 			
-			ballInst.dir.reflect( closerHit.normal );
+			// ballInst.dir.reflect( closerHit.normal );
 			if ( closerHit.object.layers.isEnabled( Layers.Player ) ) {
-				if ( ballInst.dir.dot( closerHit.object.dir ) < 0 ) {
+				if ( ballInst.dir.dot( closerHit.object.dir ) > 0 ) {
+					ballInst.dir.reflect( closerHit.point.x < 0 ? new Vector3( 1, 0, 0 ) : new Vector3( -1, 0, 0 ) );
+
 					ballInst.speed *= 1.2;
 					ballInst.dir.y += ( closerHit.point.y - closerHit.object.position.y ) / ( closerHit.object.length / 2 );
 					ballInst.dir.normalize();
@@ -85,6 +87,9 @@ class Ball extends InstancedMesh {
 						ballInst.speed = dot * closerHit.object.speed;
 				}
 			}
+			else
+				ballInst.dir.reflect( closerHit.normal );
+
 			ballInst.dir.normalize();
 			ballInst.pos.copy( closerHit.point.clone().sub(offset) );
 

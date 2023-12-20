@@ -9,7 +9,7 @@ let world;
 const divNicknames = [ 'left-player-name', 'right-player-name' ];
 
 class Match {
-	constructor( path, myId ) {
+	constructor( path, myId, myNickname, opponentNickname ) {
 		world = World._instance;
 
 		world.currentGameState = GameState.Connecting;
@@ -21,11 +21,11 @@ class Match {
 		for (let i = 0; i < 2; i++) {
 			if ( i == myId ) {
 				this.participants.push( new Player( new CapsuleGeometry( 0.2, 2.4 ), new MeshStandardMaterial(), new Vector3( -7.2 + 14.4 * i, 0, 0 ), i ) );
-				this.participants[i].nickname = "Me";
+				this.participants[i].nickname = myNickname;
 
 			} else {
 				this.participants.push( new Opponent( new CapsuleGeometry( 0.2, 2.4 ), new MeshStandardMaterial(), new Vector3( -7.2 + 14.4 * i, 0, 0 ), i ) );
-				this.participants[i].nickname = "Opponent";
+				this.participants[i].nickname = opponentNickname;
 			}
 			this.participants[i].participantId = i;
 			this.participants[i].position.setZ( -1 );

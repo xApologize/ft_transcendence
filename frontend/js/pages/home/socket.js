@@ -37,7 +37,7 @@ const interactiveSocket = {
         }
         switch (data.type) {
             case "Found Match":
-                World._instance.joinMatch(data.handle, data.paddle);
+                World._instance.joinMatch( data.handle, data.paddle, data.me, data.opponent );
                 break;
             case "Refresh":
                 this.refresh_handler();
