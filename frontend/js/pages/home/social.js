@@ -12,7 +12,6 @@ export async function updateSocial() {
     if (!response) { return }
     const data = await assembler(response)
     const allPendingRequests = data.friend_requests;
-    console.log(allPendingRequests)
     updateSocialFriend(userRequestTemplate, allPendingRequests);
     // updateSocialInvite(clonedNode);
     updateSocialBadge();
@@ -20,48 +19,44 @@ export async function updateSocial() {
 }
 
 async function updateSocialFriend(userRequestTemplate, allPendingRequests) {
+    function clearContainer(container) {
+        container.innerHTML = '';
+    }
     const sentRequestContainer = document.getElementById('sentRequest');
     const receiveRequestContainer = document.getElementById('receivedRequest');
-    sentRequestContainer.innerHTML = '';
-    receiveRequestContainer.innerHTML = '';
+    clearContainer(sentRequestContainer);
+    clearContainer(receiveRequestContainer);
 
     allPendingRequests.forEach(request => {
         const requestNode = userRequestTemplate.cloneNode(true);
-        const userNode = fillRequestTemplate(requestNode, request)
-        handleSocialFriendBtn(userNode, request);
-        if (request.role === 'receiver') {
-            sentRequestContainer.appendChild(requestNode);
-        } else if (request.role === 'sender') {
-            receiveRequestContainer.appendChild(requestNode);
-        }
+        const userNode = fillRequestTemplate(requestNode, request);
+        updateSocialFriendBtn(userNode, request);
+
+        const container = request.role === 'receiver' ? sentRequestContainer : receiveRequestContainer;
+        container.appendChild(requestNode);
     });
 }
 
-
-function handleSocialFriendBtn(userNode, request) {
+function updateSocialFriendBtn(userNode, request) {
     const button1 = userNode.querySelector('#button1');
     const button2 = userNode.querySelector('#button2');
-    if (request.role == 'sender') {
-        button1.textContent = 'Accept';
-        button1.dataset.id = request.id
-        button1.dataset.action = 'accept'
-        button1.addEventListener('click', handleFriendAction);
-        button1.id = '';
 
-        button2.textContent = 'Refuse';
-        button2.dataset.id = request.id
-        button2.dataset.action = 'refuse'
-        button2.addEventListener('click', handleFriendAction);
-        button2.id = '';
-    } else if (request.role == 'receiver') {
-        if (button1) {
-            button1.remove();
-        }
-        button2.addEventListener('click', handleFriendAction);
-        button2.textContent = 'Cancel Request';
-        button2.dataset.id = request.id;
-        button2.dataset.action = 'cancel'
-        button2.id = '';
+    if (request.role === 'sender') {
+        setupButton(button1, 'Accept', request, 'accept');
+        setupButton(button2, 'Refuse', request, 'refuse');
+    } else if (request.role === 'receiver') {
+        button1?.remove();
+        setupButton(button2, 'Cancel Request', request, 'cancel');
+    }
+}
+
+function setupButton(button, text, request, action) {
+    if (button) {
+        button.textContent = text;
+        button.dataset.id = request.id;
+        button.dataset.action = action;
+        button.addEventListener('click', handleFriendAction);
+        button.removeAttribute('id');
     }
 }
 

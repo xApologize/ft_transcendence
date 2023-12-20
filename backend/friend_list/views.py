@@ -103,9 +103,11 @@ class FriendHandling(View):
         ).first()
 
         if not existing_relationship:
-            return JsonResponse({'message': 'No existing relationship.'}, status=404)
+            return JsonResponse({
+                'message': 'No existing relationship.',
+                'status': 'none'
+                }, status=404)
 
-        # Determine and handle the action
         if action == 'cancel' and existing_relationship.status == "PENDING" and existing_relationship.friend1 == current_user:
             changeState(existing_relationship, "CANCEL", current_user)
         elif action == 'refuse' and existing_relationship.status == "PENDING" and existing_relationship.friend2 == current_user:
@@ -113,11 +115,25 @@ class FriendHandling(View):
         elif action == 'unfriend' and existing_relationship.status == "ACCEPTED":
             changeState(existing_relationship, "UNFRIEND", current_user)
         else:
-            return JsonResponse({"message": f"Can't {action} request. It has probably already been {action}ed."}, status=403)
+            status = 'none'
+            if existing_relationship.status != "PENDING" and action in ['cancel', 'refuse']:
+                status = 'friend' if existing_relationship.status == "ACCEPTED" else "none"
+                error_detail = "Friend request has already been answered. Can't Cancel." if existing_relationship.status == "ACCEPTED" else "No pending request."
+            elif existing_relationship.status != "ACCEPTED" and action == 'unfriend':
+                error_detail = "Can't unfriend. Not friends yet."
+            elif action not in ['cancel', 'refuse', 'unfriend']:
+                error_detail = f"Unknown action: '{action}'."
+            else:
+                error_detail = "Action not applicable. Please check and try again."
+            return JsonResponse({
+                "message": error_detail,
+                'status': status
+            }, status=403)
 
-                
-
-        return JsonResponse({'message': f'Action {action.title()} completed successfully.'}, status=200)
+        return JsonResponse({
+            'message': f'Action {action.title()} completed successfully.',
+            'status': 'none'
+            }, status=200)
 
 class FriendGetAll(View):
     @token_validation

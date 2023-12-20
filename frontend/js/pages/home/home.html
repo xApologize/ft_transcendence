@@ -76,8 +76,11 @@
     <div id="otherUserInfoDialog" class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <button id="addFriendBtn" class="btn btn-success d-none">Add Friend</button>
-                <button id="deleteFriendBtn" class="btn btn-danger d-none">Delete Friend</button>
+                <div class="d-flex align-items-center flex-grow-1">
+                    <button id="addFriendBtn" class="btn btn-success d-none me-2 flex-shrink-0">Add Friend</button>
+                    <button id="deleteFriendBtn" class="btn btn-danger d-none me-2 flex-shrink-0">Delete Friend</button>
+                    <p class="mb-0 flex-grow-1 text-break" id="responseFriendQuery"></p>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -124,7 +127,7 @@
 </div>
 
 
-<!-- Friend Request Modal --> 
+<!-- Social Modal --> 
 <div class="modal fade" id="friendRequestModal" tabindex="-1" aria-labelledby="friendRequestModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">

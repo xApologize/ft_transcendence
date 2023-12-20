@@ -12,11 +12,9 @@ import interactiveSocket from './socket.js';
 // [TO DO]
 // - Gérer demande ami
 // - Faire tout fonctionner avec socket interactif
-// - Gérer les status (off when socket close, on when socket open, ing when in game)
-// - Ne pas pouvoir avoir 2 connections en même temps sur le même compte
 ////////
 // To update w socket when friend update (unfriend, cancel,  accepted, refused):
-// Friends column
+// Friends column -> Faire fonction pour update/fetch 1 user au lieu de tout fetch
 // Other user modal
 //
 let otherUserModal;
@@ -33,6 +31,9 @@ export async function showHome() {
         });
         everyoneBtn.addEventListener('click', () => {
             everyoneBtnFunc(friendsBtn, everyoneBtn);
+        });
+        document.getElementById('otherUserInfo').addEventListener('hide.bs.modal', () => {
+            document.getElementById('responseFriendQuery').textContent = '';
         });
         responsiveLeftColumn()
 		

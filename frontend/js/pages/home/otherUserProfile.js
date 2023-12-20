@@ -10,6 +10,10 @@ export async function displayOtherUserProfile(event) {
     while (ancestor && !ancestor.hasAttribute('data-userid-flag')) {
         ancestor = ancestor.parentNode;
     }
+    if (!ancestor || !ancestor.id) {
+        console.error('User ID not found');
+        return;
+    }
     const userID = ancestor.id;
 
     const modalElement = document.getElementById('otherUserInfo')
@@ -32,9 +36,14 @@ export async function displayOtherUserProfile(event) {
     otherUserModal.show()
 }
 
-function updateOtherModal(currentUserInfo) {
+async function updateOtherModal(currentUserInfo) {
     updateWinrateAndClass(currentUserInfo)
-    updateFriendButton(currentUserInfo)
+
+    const response = await fetchFriendChange('GET', { id: currentUserInfo.id });
+    if (!response || response.status !== 200) return;
+
+    const friendState = await response.json();
+    updateOtherFriendButton(friendState.state)
 }
 
 function displayInfo(currentUserInfo) {
@@ -43,13 +52,12 @@ function displayInfo(currentUserInfo) {
 }
 
 // TO DO: ERROR HANDLING FOR RESPONSE
-async function updateFriendButton(currentUserInfo) {
-    const response = await fetchFriendChange('GET', { id: currentUserInfo.id });
-    if (!response || response.status !== 200) return;
-
-    const friendState = await response.json();
+export async function updateOtherFriendButton(state) {
     const addFriendBtn = document.getElementById('addFriendBtn');
     const deleteFriendBtn = document.getElementById('deleteFriendBtn');
+
+    addFriendBtn.removeEventListener('click', otherProfileAction);
+    deleteFriendBtn.removeEventListener('click', otherProfileAction);
 
     addFriendBtn.addEventListener('click', otherProfileAction);
     deleteFriendBtn.addEventListener('click', otherProfileAction);
@@ -63,7 +71,7 @@ async function updateFriendButton(currentUserInfo) {
         deleteFriendBtn.classList.toggle('d-none', !showDelete);
     }
 
-    switch (friendState.state) {
+    switch (state) {
         case 'none':
             updateButtons('Add Friend', 'add', '', '', true, false);
             break;
@@ -71,10 +79,13 @@ async function updateFriendButton(currentUserInfo) {
             updateButtons('', '', 'Unfriend', 'unfriend', false, true);
             break;
         case 'receivedRequest':
-            updateButtons('accept', 'accept', 'Refuse', 'refuse', true, true);
+            updateButtons('Add Friend', 'add', '', '', true, false);
             break;
         case 'sentRequest':
             updateButtons('', '', 'Cancel Request', 'cancel', false, true);
+            break;
+        default:
+            console.error('Unknown friend state:', state);
             break;
     }
 }
@@ -162,5 +173,29 @@ export function otherProfileAction(event) {
 
     const button = event.target.dataset;
     const action = button.action;
-    handleFriendAction(action, otherUserID)
+
+    const actionObj = {
+        'action': action,
+        'id': otherUserID,
+        'modal': 'otherProfile',
+    }
+    handleFriendAction(actionObj)
+}
+
+let timer;
+export function updateStatusMsg(assemble, status) {
+    const msgElement = document.getElementById('responseFriendQuery');
+    if (status >= 400) {
+        msgElement.classList.add('text-danger');
+        msgElement.classList.remove('text-success');
+    } else {
+        msgElement.classList.add('text-success');
+        msgElement.classList.remove('text-danger');
+    }
+    msgElement.textContent = assemble.message;
+
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+        msgElement.textContent = '';
+    }, 5000);
 }
