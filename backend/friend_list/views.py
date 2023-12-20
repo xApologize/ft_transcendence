@@ -2,11 +2,11 @@ from django.shortcuts import render
 from .models import FriendList
 from django.db.utils import IntegrityError
 from django.http import JsonResponse, HttpResponseForbidden, HttpResponse, Http404, HttpResponseNotFound, HttpResponseBadRequest, HttpRequest
-from django.utils.decorators import method_decorator
 from django.views import View
 from django.db.models import Q
 import json
 from django.core import serializers
+from interactive.consumers import send_refresh
 
 # Need to check if the user that he's looking for exist ?
 # Add timestamp to friend model ?

@@ -1,126 +1,153 @@
-<div id="sceneContainer" class="vw-100 vh-100"> </div>
+<div class="container-fluid">
+    <div class="row fill">
+        <div id="sceneContainer" class="vw-100 vh-100 p-0"></div>
 
 <div id="lfp" class="d-none centered position-absolute">Looking for player...</div>
 
 <div id="left-player-name" class="d-none position-absolute bottom-0 start-0 p-4 nickname">Left Player</div>
 <div id="right-player-name" class="d-none position-absolute bottom-0 end-0 p-4 nickname">Right Player</div>
 
-<div id="ui" class="container-fluid position-absolute">
-    <div class="row vh-100">
-        <div class="buttonResponsive">
-            <button class="btn shadow-none btn-primary textWhite" id="userBtn">
-                <i id="icon" class="fa fa-user" style="font-size: 1.5em"></i>
-            </button>
-        </div>
-        <div
-            class="text-center userList bg-main-second col-md-4 col-lg-4 col-xl-3 col-xxl-3"
-            id="left-column"
-        >
-            <div class="row">
-                <div class="col p-0">
+        <div id="ui" class="container-fluid position-absolute">
+            <div class="row vh-100">
+                <div class="buttonResponsive">
                     <button
-                        type="button"
-                        id="everyoneBtn"
-                        class="active-dark btn btn-light btn-block w-100 rounded-0 border shadow-none"
+                        class="btn shadow-none btn-primary textWhite"
+                        id="userBtn"
                     >
-                        Everyone
+                        <i
+                            id="icon"
+                            class="fa fa-user"
+                            style="font-size: 1.5em"
+                        ></i>
                     </button>
                 </div>
-                <div class="col p-0">
-                    <button
-                        type="button"
-                        id="friendsBtn"
-                        class="active btn btn-light btn-block w-100 rounded-0 border"
-                    >
-                        Friends
-                    </button>
+                <div
+                    class="text-center userList pb-3 bg-main-second col-md-4 col-lg-4 col-xl-3 col-xxl-3"
+                    id="left-column"
+                >
+                    <div class="row">
+                        <div class="col p-0">
+                            <button
+                                type="button"
+                                id="everyoneBtn"
+                                class="active-dark btn btn-light btn-block w-100 rounded-0 border shadow-none"
+                            >
+                                Everyone
+                            </button>
+                        </div>
+                        <div class="col p-0">
+                            <button
+                                type="button"
+                                id="friendsBtn"
+                                class="active btn btn-light btn-block w-100 rounded-0 border shadow-none"
+                            >
+                                Friends
+                            </button>
+                        </div>
+                    </div>
+                    <div class="divFill">
+                        <div class="row row-center" id="userDisplay"></div>
+                    </div>
+                </div>
+                <div
+                    class="col-sm-12 col-md-8 col-lg-8 col-xl-9 col-xxl-9"
+                    id="right-column"
+                >
+                    <div id="rightPart" class="row rightPartCol">
+                        <div
+                            id="divGame"
+                            class="col-12 col-md-3 col-xl-3 text-center textWhite p-2"
+                        >
+                            <div>
+                                <h1 class="m-3 text-center">Find game</h1>
+                                <button
+                                    id="findGame"
+                                    class="btn shadow-none btn-primary textWhite"
+                                >
+                                    Find game
+                                </button>
+                            </div>
+                        </div>
+                        <div id="userCol" class="col-12 col-md-9 col-xl-9">
+                            <div class="rightCol text-center">
+                                <div class="upperRow">
+                                    <div
+                                        id="own-user-card"
+                                        class="user-card bg-main-second text-light mt-3 p-3"
+                                    ></div>
+                                </div>
+                                <div class="lowerRow bg-main-second">
+                                    <h1 class="m-3 text-center">
+                                        Match history
+                                    </h1>
+                                    <div id="matchHistory"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="row row-center" id="userDisplay"></div>
         </div>
+
+        <!-- Other User Profile Modal -->
         <div
-            class="col-sm-12 col-md-8 col-lg-8 col-xl-9 col-xxl-9"
-            id="right-column"
+            class="modal fade"
+            id="otherUserInfo"
+            tabindex="-1"
+            aria-labelledby="otherUserInfoLabel"
+            aria-hidden="true"
         >
-            <div id="rightPart" class="row m-3 rightPartCol">
-                <div
-                    id="divGame"
-                    class="col-12 col-md-3 col-xl-3 text-center textWhite p-2"
-                >
-                    <div>
-                        <h1 class="m-3 text-center">Find game</h1>
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="otherUserInfoLabel">
+                            User Information
+                        </h5>
                         <button
-                            id="findGame"
-                            class="btn shadow-none btn-primary textWhite"
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"
+                        ></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="text-center mb-3">
+                            <img
+                                id="userAvatar"
+                                src=""
+                                alt="User Avatar"
+                                class="rounded-circle"
+                                width="100"
+                                height="100"
+                            />
+                        </div>
+                        <h4 id="userNickname" class="text-center mb-3">
+                            Nickname
+                        </h4>
+                        <div class="text-center">
+                            <p id="userWins">
+                                Wins: <span class="fw-bold">0</span>
+                            </p>
+                            <p id="userLosses">
+                                Losses: <span class="fw-bold">0</span>
+                            </p>
+                            <p id="userMatchesPlayed">
+                                Matches Played: <span class="fw-bold">0</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button
+                            type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal"
                         >
-                            Find game
+                            Close
                         </button>
                     </div>
                 </div>
-                <div id="userCol" class="col-12 col-md-9 col-xl-9">
-                    <div class="rightCol text-center">
-                        <div class="upperRow">
-                            <div
-                                id="own-user-card"
-                                class="user-card bg-main-second text-light p-3"
-                            ></div>
-                        </div>
-                        <div class="lowerRow bg-main-second">
-                            <h1 class="m-3 text-center">Match history</h1>
-                            <div id="matchHistory"></div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
-    </div>
-</div>
-
-<!-- Other User Profile Modal -->
-<div class="modal fade" id="otherUserInfo" tabindex="-1" aria-labelledby="otherUserInfoLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="otherUserInfoLabel">User Information</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="text-center mb-3">
-                    <img id="userAvatar" src="" alt="User Avatar" class="rounded-circle" width="100" height="100">
-                </div>
-                <h4 id="userNickname" class="text-center mb-3">Nickname</h4>
-                <div class="text-center">
-                    <p id="userWins">Wins: <span class="fw-bold">0</span></p>
-                    <p id="userLosses">Losses: <span class="fw-bold">0</span></p>
-                    <p id="userMatchesPlayed">Matches Played: <span class="fw-bold">0</span></p>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Game Modal -->
-<div class="modal" id="gameDisplayModal" tabindex="-1" aria-labelledby="gameDisplayModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-fullscreen">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="gameDisplayModalLabel">Game Display</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <!-- Div for Game Display -->
-                <div id="gameDisplayContainer">
-                    <!-- Game content will be dynamically inserted here -->
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-
 
 <style>
 	#lfp {

@@ -1,6 +1,6 @@
 import { logoutUser } from '../../components/userCard/userCard.js'
 import { World } from '../game/src/World.js';
-import { displayEveryone } from './home.js'
+import { displayEveryone, displayFriend } from './home.js'
 
 const interactiveSocket = {
     interactive_socket: null,
@@ -40,7 +40,7 @@ const interactiveSocket = {
                 World._instance.joinMatch(data.handle, data.paddle);
                 break;
             case "Refresh":
-                displayEveryone();
+                this.refresh_handler();
                 break;
             case "Invalid":
                 this.interactive_error_handler(data);
@@ -72,6 +72,16 @@ const interactiveSocket = {
         if (this.interactive_socket) {
             this.interactive_socket.close();
             this.interactive_socket = null;
+        }
+    },
+
+    refresh_handler: function() {
+        console.log("HI")
+        const test = document.getElementsByClassName('active-dark')[0].id;
+        if (test === "everyoneBtn"){
+            displayEveryone();
+        } else {
+            displayFriend();
         }
     }
 };

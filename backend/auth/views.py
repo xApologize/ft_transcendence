@@ -147,8 +147,6 @@ class Login(View):
             response.set_cookie('2fa_token', temp_token, httponly=True, secure=True, max_age=300)
             return response
         else:
-            user.status = "ONL"
-            user.save()
             response: HttpResponse = JsonResponse({'success': 'Login successful.'})
             primary_key = User.objects.get(nickname=nickname).pk
             return first_token(response, primary_key)
@@ -193,8 +191,6 @@ class Login2FA(View):
         if not device.verify_token(otp_token):
             return JsonResponse(errorCode, status=400)
         else:
-            user.status = "ONL"
-            user.save()
             response: HttpResponse = JsonResponse({'success': 'Login successful.'})
             response.delete_cookie('2fa_token')
             primary_key = User.objects.get(nickname=user.nickname).pk
@@ -211,8 +207,8 @@ class Logout(View):
         except Http404 as e:
             return HttpResponse(str(e), status=404)
         # Check if status is not OFF ?
-        user.status = "OFF"
-        user.save()
+        # user.status = "OFF"
+        # user.save()
         response : HttpResponse = HttpResponse('Logout Sucessful', status=200)
         response.delete_cookie('refresh_jwt')
         return response
