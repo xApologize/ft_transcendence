@@ -8,6 +8,7 @@ import { Resizer } from './systems/Resizer.js';
 import { Loop } from './systems/Loop.js';
 import { InputManager } from './systems/InputManager.js';
 import { Match } from './systems/Match.js';
+import { GameState } from './systems/GameStates.js';
 
 import { Terrain } from './components/Terrain.js';
 import { Ball } from './components/Ball.js';
@@ -19,14 +20,6 @@ import {
 	Vector2
 } from 'three';
 
-const GameState = {
-	InMenu: "inMenu",
-	InMatch: "inGame",
-	MatchEnding: "matchEnding",
-	LookingForPlayer: "lookingForPlayer",
-	Connecting: "connecting"
-}
-
 class World {
 	constructor( container ) {
 		if (World._instance) {
@@ -35,6 +28,23 @@ class World {
 		}
 		this.createInstance();
 		this.appendCanvas( container );
+
+
+		// TBD via backend ?
+		this.onDisconnectionEvent = (event) => this.onDisconnection( event );
+		window.addEventListener( "beforeunload", this.onDisconnectionEvent );
+		window.addEventListener( "popstate", this.onDisconnectionEvent );
+	}
+
+	onDisconnection() {
+		console.log("onDisconnection called");
+		console.log(this.currentGameState);
+		this.resizer.delete();
+		if ( this.currentGameState == GameState.InMatch ) {
+			console.log("bah");
+			this.socket.send("Closing");
+			this.match.endMatch();
+		}
 	}
 
 	joinMatch( wsPath, side ) {

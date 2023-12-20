@@ -7,6 +7,7 @@ import { World } from '../game/src/World.js';
 import { loadFonts } from '../game/src/systems/Fonts.js';
 import { loadModel } from '../game/src/systems/Loader.js';
 import interactiveSocket from './socket.js';
+import { GameState } from '../game/src/systems/GameStates.js';
 ////////
 // [TO DO]
 // - Ne pas pouvoir avoir 2 connections en même temps sur le même compte
@@ -47,7 +48,7 @@ export async function showHome() {
        		if ( interactiveSocket.interactive_socket == undefined )
 				return;
             document.getElementById('ui').classList.add("d-none");
-			world.currentGameState = "lookingForPlayer";
+			world.currentGameState = GameState.LookingForPlayer;
 			document.getElementById('lfp').classList.remove("d-none");
 			interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Find Match"}));
         });

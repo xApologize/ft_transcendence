@@ -2,6 +2,7 @@ import { CapsuleGeometry, MeshStandardMaterial, Vector3, WebGLRenderer } from 't
 import { World } from '../World.js';
 import { Player } from '../components/Player.js';
 import { Opponent } from '../components/Opponent.js';
+import { GameState } from './GameStates.js';
 
 let world;
 
@@ -11,7 +12,7 @@ class Match {
 	constructor( path, myId ) {
 		world = World._instance;
 
-		world.currentGameState = "connecting";
+		world.currentGameState = GameState.Connecting;
 		
 		this.socket = new WebSocket('wss://' + window.location.host + path);
 
@@ -41,7 +42,7 @@ class Match {
 
 	initMatch() {
 		// console.log("-- Starting Match --");
-		world.currentGameState = "inMatch";
+		world.currentGameState = GameState.InMatch;
 
 		world.balls.hide();
 		world.score.reset();
@@ -51,18 +52,13 @@ class Match {
 		world.balls.renderer.setEnabled(true);
 		world.balls.updatable.setEnabled(true);
 		world.camera.viewTable( 1, function() {
-			if ( world.currentGameState === "inMatch" ) {
+			if ( world.currentGameState === GameState.InMatch ) {
 				world.balls.init();
 			}
 		});
 	
 		this.onWebsocketReceivedEvent = (event) => this.onWebsocketReceived( event );
 		this.socket.addEventListener( "message", this.onWebsocketReceivedEvent );
-
-		// TBD via backend
-		this.onDisconnectionEvent = (event) => this.onDisconnection( event );
-		window.addEventListener( "beforeunload", this.onDisconnectionEvent );
-		window.addEventListener( "popstate", this.onDisconnectionEvent );
 	}
 
 	onWebsocketReceived( event ) {
@@ -86,13 +82,8 @@ class Match {
 		}
 	}
 
-	onDisconnection() {
-		this.socket.send("Closing");
-		this.endMatch();
-	}
-
 	endMatch() {
-		world.currentGameState = "inMenu";
+		world.currentGameState = GameState.InMenu;
 
 		world.camera.viewLarge( 1 , function() {
 			document.getElementById('ui').classList.remove("d-none");
@@ -112,8 +103,6 @@ class Match {
 			this.socket.close();
 
 		this.socket.removeEventListener( "message", this.onWebsocketReceivedEvent );
-		document.removeEventListener( "beforeunload", this.onDisconnectionEvent );
-		document.removeEventListener( "popstate", this.onDisconnectionEvent );
 	}
 }
 

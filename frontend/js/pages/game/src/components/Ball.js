@@ -2,6 +2,7 @@ import { World } from '../World.js';
 import { Collider } from '../modules/Collider.js';
 import { Renderer } from '../modules/Renderer.js';
 import { Updatable } from '../modules/Updatable.js';
+import { GameState } from '../systems/GameStates.js';
 import { Layers } from '../systems/Layers.js';
 import {
 	InstancedMesh,
@@ -166,7 +167,7 @@ class Ball extends InstancedMesh {
 		})
 		.then(
 			function() {
-				if ( World._instance.currentGameState == "inMatch" )
+				if ( World._instance.currentGameState == GameState.InMatch )
 					ballInst.speed = 5;
 			}
 		)
