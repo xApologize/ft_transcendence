@@ -128,6 +128,22 @@ function checkAllModal() {
             modalInstance.dispose();
         }
     }
+
+    const inviteModal = document.getElementById('inviteGameModal');
+    if (inviteModal) {
+        const modalInstance = bootstrap.Modal.getInstance(inviteModal);
+        if (modalInstance) {
+            modalInstance.dispose();
+        }
+    }
+
+    const socialModal = document.getElementById('socialModal');
+    if (socialModal) {
+        const modalInstance = bootstrap.Modal.getInstance(socialModal);
+        if (modalInstance) {
+            modalInstance.dispose();
+        }
+    }
     // Close all other modals, one by one, id by id...
 
 }

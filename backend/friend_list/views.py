@@ -112,7 +112,7 @@ class FriendHandling(View):
             changeState(existing_relationship, "CANCEL", current_user)
             return JsonResponse({
                 'message': f'Friend request to {other_user.nickname} canceled successfully.',
-                'status': 'cancel'
+                'status': 'none'
             }, status=200)
         elif action == 'refuse' and existing_relationship.status == "PENDING" and existing_relationship.friend2 == current_user:
             changeState(existing_relationship, "REFUSED", current_user)

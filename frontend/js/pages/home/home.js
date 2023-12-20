@@ -14,14 +14,7 @@ import { loadFonts } from '../game/src/systems/Fonts.js';
 import { loadModel } from '../game/src/systems/Loader.js';
 import interactiveSocket from './socket.js';
 ////////
-// [TO DO]
-// - Gérer demande ami
-// - Faire tout fonctionner avec socket interactif
-////////
 // Quand user Update son profil (avatar/nickname) -> Socket call function: not done (update only 1 user)
-// Quand trigger un événement relier aux amis -> Socket call function: 
-// Other user modal
-//
 export async function showHome() {
     try {
         await loadHTMLPage('./js/pages/home/home.html');

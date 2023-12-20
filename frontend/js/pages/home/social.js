@@ -129,7 +129,7 @@ function getResponseContainer(action) {
 
 let messageTimer;
 export function updateSocialFriendCard(userID, action, responseStatus, assemble) {
-    const socialDiv = document.getElementById('friendRequestModal');
+    const socialDiv = document.getElementById('socialModal');
     const userToRemove = socialDiv.querySelector(`div[data-id="${userID}"]`);
 
     if (!userToRemove) {
