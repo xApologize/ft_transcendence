@@ -174,7 +174,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         await self.channel_layer.group_send(
             "interactive",
             create_layer_dict(
-                "send_message_echo", {"type": "Social"}, self.channel_name)
+                "send_message_echo", {"type": "Social", "id": self.user_id}, self.channel_name)
             )
 
 
