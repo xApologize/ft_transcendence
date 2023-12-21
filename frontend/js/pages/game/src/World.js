@@ -19,6 +19,7 @@ import {
 	SphereGeometry,
 	Vector2
 } from 'three';
+import interactiveSocket from '../../home/socket.js';
 
 const _ballCount = 1;
 const _ballSize = 0.2;
@@ -38,22 +39,20 @@ class World {
 		this.createInstance();
 		this.appendCanvas( container );
 
-
 		// TBD via backend ?
-		this.onDisconnectionEvent = (event) => this.onDisconnection( event );
+		this.onDisconnectionEvent = (event) => this.forceQuit( event );
 		window.addEventListener( "beforeunload", this.onDisconnectionEvent );
 		window.addEventListener( "popstate", this.onDisconnectionEvent );
 	}
 
-	onDisconnection() {
-		console.log("onDisconnection called");
-		console.log(this.currentGameState);
+	forceQuit() {
 		this.resizer.delete();
 		if ( this.currentGameState == GameState.InMatch ) {
-			console.log("bah");
 			this.socket.send("Closing");
 			this.match.endMatch();
-		}
+		} 
+		interactiveSocket.closeSocket();
+		this.currentGameState == GameState.Disconnected;
 	}
 
 	joinMatch( wsPath, side, myNickname, opponentNickname ) {

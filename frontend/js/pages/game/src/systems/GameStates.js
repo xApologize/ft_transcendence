@@ -4,7 +4,8 @@ const GameState = {
 	InMatch: "inMatch",
 	MatchEnding: "matchEnding",
 	LookingForPlayer: "lookingForPlayer",
-	Connecting: "connecting"
+	Connecting: "connecting",
+	Disconnected: "disconnected"
 }
 
 export { GameState };

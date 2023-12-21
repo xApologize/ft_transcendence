@@ -4,7 +4,7 @@ import { World } from '../World.js';
 import { Color, Mesh, MeshStandardMaterial, Object3D, ShapeGeometry } from 'three';
 
 let scoreTab = [0, 0];
-const maxScore = 6;
+const maxScore = 1;
 
 class Score extends Object3D {
 	constructor() {

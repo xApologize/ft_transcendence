@@ -40,13 +40,10 @@ class Tween {
 
 	fixedUpdate( dt ) {
 		this.time += dt;
-		if ( this.time > this.duration ) {
-			this.time = this.duration;
-		}
 
 		if ( this.time >= this.duration ) {
-			this.updatable.delete();
 			this.setValue( 1 );
+			this.updatable.delete();
 			this.onCompleted();
 		}
 

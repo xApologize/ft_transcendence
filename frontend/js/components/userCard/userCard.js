@@ -4,6 +4,7 @@ import { closeAlertAvatar, closeAlertInfo, setupSettings, closeAlert2FA, clearSe
 import { disable2FA, enable2FA, updateMenu2FA, checkConfirmationCode } from "./menu2FA.js";
 import { saveAvatar, saveInfo } from "./menuInfo.js";
 import interactiveSocket from '../../pages/home/socket.js'
+import { World } from "../../pages/game/src/World.js";
 
 
 export async function userCardComponent() {
@@ -54,6 +55,7 @@ export async function logoutUser() {
     const logoutResponse = await fetchAuth('POST', 'logout/')
     if (!logoutResponse) { return }
     if (logoutResponse.status == 200) {
+		World._instance.forceQuit();
         sessionStorage.clear()
         navigateTo('/')
     }
