@@ -2,10 +2,10 @@ import { userTemplateComponent } from '../../components/userTemplate/userTemplat
 import { assembler } from '../../api/assembler.js';
 import { displayOtherUserProfile } from './otherUserProfile.js';
 import { fetchUser } from '../../api/fetchData.js';
+import { setStatus } from './utils.js';
 
-export async function displayUser(allUsers) {
-    let userContainer = document.getElementById('userDisplay');
-    userContainer.innerHTML = '';
+export async function displayUser(allUsers, container) {
+    container.innerHTML = '';
     let currentUser;
     const objectAllUsers = await assembler(allUsers);
     if (typeof objectAllUsers !== 'object' && objectAllUsers !== null) {
@@ -28,16 +28,12 @@ export async function displayUser(allUsers) {
         }
     });
 
-    try {
-        currentUser = document.getElementById('nickname').innerText;
-    } catch {
-        currentUser = null;
-    }
-
+    
+    currentUser = document.getElementById('nickname').innerText;
     if (!objectAllUsers) {
         return;
     }
-    await loopDisplayUser(objectAllUsers, currentUser, userContainer);
+    await loopDisplayUser(objectAllUsers, currentUser, container);
 }
 
 async function loopDisplayUser(objectAllUsers, currentUser, userContainer) {
@@ -75,7 +71,7 @@ async function loopDisplayUser(objectAllUsers, currentUser, userContainer) {
     });
 }
 
-function fillOtherUserInfo(clonedUserTemplate, user) {
+export function fillOtherUserInfo(clonedUserTemplate, user) {
     clonedUserTemplate.dataset.id = user.id
 
     const avatarElement = clonedUserTemplate.querySelector('#user-avatar');
@@ -84,18 +80,6 @@ function fillOtherUserInfo(clonedUserTemplate, user) {
     statusBadge.style.backgroundColor = setStatus(user.status);
     avatarElement.src = user.avatar;
     nameElement.textContent = user.nickname;
-    function setStatus(user) {
-        switch (user) {
-            case 'ONL':
-                return 'green';
-            case 'BUS':
-                return 'red';
-            case 'ING':
-                return 'yellow';
-            case 'OFF':
-                return 'gray';
-        }
-    }
     return clonedUserTemplate
 }
 

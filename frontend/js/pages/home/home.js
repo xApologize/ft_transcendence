@@ -13,12 +13,20 @@ import { World } from '../game/src/World.js';
 import { loadFonts } from '../game/src/systems/Fonts.js';
 import { loadModel } from '../game/src/systems/Loader.js';
 import interactiveSocket from './socket.js';
+import { navigateTo } from '../../router.js';
 ////////
 // Quand user Update son profil (avatar/nickname) -> Socket call function: not done (update only 1 user)
 export async function showHome() {
     try {
         await loadHTMLPage('./js/pages/home/home.html');
-        initPage();
+        // await initPage()
+        const result = await initPage()
+        if (result === false) {
+            console.error("Error loading home page")
+            navigateTo('/')
+            return;
+        }
+        console.log("continue !")
         new bootstrap.Modal(document.getElementById('otherUserInfo'));
         new bootstrap.Modal(document.getElementById('inviteGameModal'));
 
@@ -37,7 +45,12 @@ export async function showHome() {
 
         await loadFonts();
         await loadModel();
-        const world = new World(document.querySelector('#sceneContainer'));
+        const gameContainer = document.querySelector('#sceneContainer')
+        if (!gameContainer) {
+            console.error('No game container, please refresh page.');
+            return
+        }
+        const world = new World(gameContainer);
 
         const findGameBtn = document.getElementById('findGame');
         findGameBtn.addEventListener('click', () => {
@@ -67,30 +80,33 @@ export async function displayFriend() {
     const allFriends = await fetchFriend('GET');
     if (!allFriends || !allFriends.ok) {
         // if !allFriends, c'est que le status == 401 et si !allFriends.ok == Aucun Ami
-        return;
+        return false;
     }
-    await displayUser(allFriends);
+    const container = document.getElementById('friendDisplay')
+    await displayUser(allFriends, container);
 }
 
 export async function displayEveryone() {
     const onlineUsers = await fetchUser('GET', { status: ['ONL', 'ING'] });
+    console.log(onlineUsers)
     if (!onlineUsers || !onlineUsers.ok) {
         // if !onlineUsers, c'est que le status == 401 et si !onlineUsers.ok == Aucun user Online
-        return;
+        return false;
     }
-    await displayUser(onlineUsers);
+    const container = document.getElementById('userDisplay')
+    await displayUser(onlineUsers, container);
 }
 
 async function initPage() {
     const user = await fetchMe('GET');
     if (!user) {
         console.log('Error fetching users');
-        return;
+        return false;
     }
     const userAssembled = await assembler(user);
     if (!userAssembled || typeof userAssembled !== 'object') {
         console.log('Error assembling user');
-        return;
+        return false;
     }
     displayUserCard(userAssembled);
     displayMatchHistory(userAssembled);
@@ -105,17 +121,23 @@ async function initPage() {
 
 function everyoneBtnFunc(friendsBtn, everyoneBtn) {
     if (friendsBtn.classList.contains('active-dark')) {
+        document.getElementById('userDisplay').classList.remove('d-none');
+        document.getElementById('friendDisplay').classList.add('d-none');
+
         friendsBtn.classList.remove('active-dark');
         everyoneBtn.classList.add('active-dark');
-        displayEveryone();
+        // displayEveryone();
     }
 }
 
 function friendsBtnFunc(friendsBtn, everyoneBtn) {
     if (everyoneBtn.classList.contains('active-dark')) {
+        document.getElementById('friendDisplay').classList.remove('d-none');
+        document.getElementById('userDisplay').classList.add('d-none');
+
         everyoneBtn.classList.remove('active-dark');
         friendsBtn.classList.add('active-dark');
-        displayFriend();
+        // displayFriend();
     }
 }
 
@@ -138,3 +160,4 @@ function responsiveLeftColumn() {
         gameCol.classList.toggle('hide');
     });
 }
+// 

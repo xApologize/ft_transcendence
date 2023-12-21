@@ -9,7 +9,8 @@ export async function updateSocial() {
     if (!userRequestTemplate) { return }
 
     const response = await fetchFriendChange('GET', {}, 'get/');
-    if (!response) { return }
+    if (!response)
+        return false
     const data = await assembler(response)
     const allPendingRequests = data.friend_requests;
     updateSocialFriend(userRequestTemplate, allPendingRequests);
