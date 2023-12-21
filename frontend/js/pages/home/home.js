@@ -37,7 +37,12 @@ export async function showHome() {
 
         await loadFonts();
         await loadModel();
-        const world = new World(document.querySelector('#sceneContainer'));
+        const gameContainer = document.querySelector('#sceneContainer')
+        if (!gameContainer) {
+            console.error('No game container, please refresh page.');
+            return
+        }
+        const world = new World(gameContainer);
 
         const findGameBtn = document.getElementById('findGame');
         findGameBtn.addEventListener('click', () => {
@@ -114,7 +119,7 @@ function everyoneBtnFunc(friendsBtn, everyoneBtn) {
 
         friendsBtn.classList.remove('active-dark');
         everyoneBtn.classList.add('active-dark');
-        displayEveryone();
+        // displayEveryone();
     }
 }
 

@@ -70,7 +70,7 @@ async function loopDisplayUser(objectAllUsers, currentUser, userContainer) {
     });
 }
 
-function fillOtherUserInfo(clonedUserTemplate, user) {
+export function fillOtherUserInfo(clonedUserTemplate, user) {
     clonedUserTemplate.dataset.id = user.id
 
     const avatarElement = clonedUserTemplate.querySelector('#user-avatar');
