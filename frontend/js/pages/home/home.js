@@ -69,7 +69,8 @@ async function displayFriend() {
         // if !allFriends, c'est que le status == 401 et si !allFriends.ok == Aucun Ami
         return;
     }
-    await displayUser(allFriends);
+    const container = document.getElementById('friendDisplay')
+    await displayUser(allFriends, container);
 }
 
 export async function displayEveryone() {
@@ -78,7 +79,8 @@ export async function displayEveryone() {
         // if !onlineUsers, c'est que le status == 401 et si !onlineUsers.ok == Aucun user Online
         return;
     }
-    await displayUser(onlineUsers);
+    const container = document.getElementById('userDisplay')
+    await displayUser(onlineUsers, container);
 }
 
 async function initPage() {
@@ -96,6 +98,7 @@ async function initPage() {
     displayUserCard(userAssembled);
     displayMatchHistory(userAssembled);
     displayEveryone();
+    displayFriend();
     updateSocial()
 
 }
@@ -106,6 +109,9 @@ async function initPage() {
 
 function everyoneBtnFunc(friendsBtn, everyoneBtn) {
     if (friendsBtn.classList.contains('active-dark')) {
+        document.getElementById('userDisplay').classList.remove('d-none');
+        document.getElementById('friendDisplay').classList.add('d-none');
+
         friendsBtn.classList.remove('active-dark');
         everyoneBtn.classList.add('active-dark');
         displayEveryone();
@@ -114,9 +120,12 @@ function everyoneBtnFunc(friendsBtn, everyoneBtn) {
 
 function friendsBtnFunc(friendsBtn, everyoneBtn) {
     if (everyoneBtn.classList.contains('active-dark')) {
+        document.getElementById('friendDisplay').classList.remove('d-none');
+        document.getElementById('userDisplay').classList.add('d-none');
+
         everyoneBtn.classList.remove('active-dark');
         friendsBtn.classList.add('active-dark');
-        displayFriend();
+        // displayFriend();
     }
 }
 

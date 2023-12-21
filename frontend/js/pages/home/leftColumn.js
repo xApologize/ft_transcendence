@@ -3,9 +3,8 @@ import { assembler } from '../../api/assembler.js';
 import { displayOtherUserProfile } from './otherUserProfile.js';
 import { fetchUser } from '../../api/fetchData.js';
 
-export async function displayUser(allUsers) {
-    let userContainer = document.getElementById('userDisplay');
-    userContainer.innerHTML = '';
+export async function displayUser(allUsers, container) {
+    container.innerHTML = '';
     let currentUser;
     const objectAllUsers = await assembler(allUsers);
     if (typeof objectAllUsers !== 'object' && objectAllUsers !== null) {
@@ -28,16 +27,12 @@ export async function displayUser(allUsers) {
         }
     });
 
-    try {
-        currentUser = document.getElementById('nickname').innerText;
-    } catch {
-        currentUser = null;
-    }
-
+    
+    currentUser = document.getElementById('nickname').innerText;
     if (!objectAllUsers) {
         return;
     }
-    await loopDisplayUser(objectAllUsers, currentUser, userContainer);
+    await loopDisplayUser(objectAllUsers, currentUser, container);
 }
 
 async function loopDisplayUser(objectAllUsers, currentUser, userContainer) {

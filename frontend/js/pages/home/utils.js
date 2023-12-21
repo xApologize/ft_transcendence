@@ -46,3 +46,15 @@ export async function handleFriendAction(actionObj) {
             console.error(`Unknown modal type: ${modal}`);
     }
 }
+
+export async function changeSpecificUser(userID) {
+
+}
+
+export async function newUserLogin() {
+
+}
+
+export async function newUserLogout() {
+
+}
