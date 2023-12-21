@@ -24,25 +24,57 @@ class Users(View):
     def get(self, request: HttpRequest):
         status = request.GET.getlist('status')
         nicknames = request.GET.getlist('nickname')
-        if not nicknames and not status:
+        id = request.GET.get('id')
+
+        if not nicknames and not status and not id:
             return HttpResponseBadRequest('No parameter.')
-        if nicknames:
+
+        if id:
+            if not id.isdigit():
+                return HttpResponseBadRequest('Invalid id.')
+            try:
+                user = User.objects.get(id=id)
+                users = [user]  # Single user in a list for consistent processing
+            except User.DoesNotExist:
+                return HttpResponseNotFound('User not found')
+        elif nicknames:
             users = User.objects.filter(nickname__in=nicknames)
         elif status:
             users = User.objects.filter(status__in=status)
-        user_data = [
-            {
+
+        user_data = []
+        for user in users:
+            data = {
                 'id': user.id,
                 'nickname': user.nickname,
                 'email': user.email,
                 'avatar': get_avatar_data(user),
-                'status': user.status,
+                'status': user.status
             }
-            for user in users
-        ]
-        if user_data:
-            return JsonResponse({'users': user_data}, status=200)
-        return HttpResponseNotFound('User not found') # 404
+
+            if id:  # Process recent matches only when a specific user is requested
+                recent_played_matches = MatchHistory.objects.filter(
+                    Q(winner=user) | Q(loser=user)
+                ).order_by('-date_of_match')[:10]
+
+                data['won_matches'] = [
+                    {'winner_score': match.winner_score, 'loser_score': match.loser_score, 'date_of_match': match.date_of_match} 
+                    for match in recent_played_matches if match.winner == user
+                ]
+
+                data['lost_matches'] = [
+                    {'winner_score': match.winner_score, 'loser_score': match.loser_score, 'date_of_match': match.date_of_match} 
+                    for match in recent_played_matches if match.loser == user
+                ]
+
+                data['played_matches'] = [
+                    {'winner_score': match.winner_score, 'winner_username': match.winner.nickname, 'loser_score': match.loser_score, 'loser_username': match.loser.nickname, 'date_of_match': match.date_of_match} 
+                    for match in recent_played_matches
+                ]
+
+            user_data.append(data)
+
+        return JsonResponse({'users': user_data}, status=200)
 
 
     # Create a user
@@ -101,7 +133,7 @@ class Users(View):
         except Http404 as e:
             return HttpResponse(str(e), status=404)
         
-        allowed_fields = {'nickname', 'email'}
+        allowed_fields = {'nickname', 'email', 'status'}
         try:
             data = json.loads(request.body)
             checkup = check_info_update(data, allowed_fields)
@@ -111,8 +143,7 @@ class Users(View):
             for field in allowed_fields:
                 if field in data:
                     if not data[field] == getattr(user, field):
-                        if getattr(user, field) != data[field]:
-                            setattr(user, field, data[field])
+                        setattr(user, field, data[field])
                     else:
                         return HttpResponseBadRequest(f'Your {field} is already {getattr(user, field)}')
 
@@ -142,9 +173,12 @@ class Me(View):
             return HttpResponse(str(e), status=401)
         except Http404 as e:
             return HttpResponse(str(e), status=404)
-        won_matches = user.winner.all()
-        lost_matches = user.loser.all()
-        played_matches = MatchHistory.objects.filter(Q(winner=user) | Q(loser=user))
+        
+        recent_played_matches = MatchHistory.objects.filter(
+            Q(winner=user) | Q(loser=user)
+        ).order_by('-date_of_match')[:10]
+        recent_won_matches = [match for match in recent_played_matches if match.winner == user]
+        recent_lost_matches = [match for match in recent_played_matches if match.loser == user]
 
         avatar_data = get_avatar_data(user)
         user_data = {
@@ -153,9 +187,18 @@ class Me(View):
             'avatar': avatar_data,
             'status': user.status,
             'admin': user.admin,
-            'won_matches': [{'winner_score': match.winner_score, 'loser_score': match.loser_score, 'date_of_match': match.date_of_match} for match in won_matches],
-            'lost_matches': [{'winner_score': match.winner_score, 'loser_score': match.loser_score, 'date_of_match': match.date_of_match} for match in lost_matches],
-            'played_matches': [{'winner_score': match.winner_score, 'winner_username': match.winner.nickname, 'loser_score': match.loser_score, 'loser_username': match.loser.nickname , 'date_of_match': match.date_of_match} for match in played_matches],
+            'won_matches': [
+                {'winner_score': match.winner_score, 'loser_score': match.loser_score, 'date_of_match': match.date_of_match} 
+                for match in recent_won_matches
+            ],
+            'lost_matches': [
+                {'winner_score': match.winner_score, 'loser_score': match.loser_score, 'date_of_match': match.date_of_match} 
+                for match in recent_lost_matches
+            ],
+            'played_matches': [
+                {'winner_score': match.winner_score, 'winner_username': match.winner.nickname, 'loser_score': match.loser_score, 'loser_username': match.loser.nickname, 'date_of_match': match.date_of_match} 
+                for match in recent_played_matches
+            ],
         }
         # Determine the 2FA status
         two_factor_status = None  # Default to no auth
@@ -221,9 +264,9 @@ class Upload(View):
 
                 # Validate the new avatar first
                 try:
-                    validate_image(file)  # Assuming validate_image is your validation function
+                    validate_image(file)
                 except ValidationError as e:
-                    return HttpResponseBadRequest(f"{str(e.message)}")  # Return the validation error
+                    return HttpResponseBadRequest(f"{str(e.message)}")
 
                 # Delete the old avatar if validation is successful
                 avatar_dir = os.path.join(settings.MEDIA_ROOT, 'avatars')
@@ -233,7 +276,8 @@ class Upload(View):
 
                 # Save the new avatar
                 user.avatar.save(new_file_name, file)
-                return HttpResponse('Avatar updated successfully.', status=200)
+                avatar_url = get_avatar_data(user)
+                return JsonResponse({'message': 'Avatar updated successfully.', 'avatar_url': avatar_url}, status=200)
             else:
                 return HttpResponseBadRequest('No avatar provided.')  # 400
         except Exception as e:

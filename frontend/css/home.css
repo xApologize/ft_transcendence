@@ -45,7 +45,7 @@
 }
 
 .divFill {
-    height: calc(100% - 38px);
+    height: calc(100% - 82px);
     width: 100%;
     overflow-y: auto;
     overflow-x: hidden;
@@ -85,7 +85,15 @@
     border-color: var(--bg-accent) !important;
 }
 
-.modal-header {
+.hover-row:hover {
+    background-color: #e9ecef;
+    cursor: default
+    /* cursor: pointer; */
+}
+
+/* Illisible avec des couleurs la*/
+
+/* .modal-header {
     background-color: var(--bg-accent);
 }
 
@@ -95,7 +103,7 @@
 
 .modal-footer {
     background-color: var(--bg-accent) !important;
-}
+} */
 
 #lfp {
     font-size: 2rem;

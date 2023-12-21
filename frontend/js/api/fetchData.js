@@ -1,5 +1,6 @@
 import { navigateTo } from "../router.js";
 import { closeAllModals } from "../utils/utilityFunctions.js";
+import interactiveSocket from '../pages/home/socket.js'
 
 // Load frontend page.
 export const loadHTMLPage = async (filePath) => {
@@ -31,6 +32,7 @@ export const loadHTMLComponent = async (filePath) => {
 
 const redirectToHome = () => {
     closeAllModals();
+    interactiveSocket.closeSocket()
     sessionStorage.clear();
     navigateTo('/');
     return null
@@ -133,7 +135,7 @@ export const fetchMe = async(method, data = null) => {
     return result;
 }
 
-// Get friend, remove and add friend,
+// Get friend list.
 export const fetchFriend = async (method, apiPath = '', data = null) => {
     const path = 'user/friends/' + apiPath
     const url = buildApiUrl(path)
@@ -148,3 +150,16 @@ export const fetchUpload = async (method, data = null) => {
     let result = await performFetch(url, method, data)
     return result;
 }
+
+export const fetchFriendChange = async (method, parameters = null, apiPath = '') => {
+    const path = 'friend/' + apiPath;
+    const params = buildParams(parameters);
+    const url = buildApiUrl(path, params);
+    let result = await performFetch(url, method);
+    return result;
+}
+
+// const objectData = new Object();
+// objectData.status = "ING"
+// const response = await fetchUser('PATCH', null, objectData);
+// if (!response) { return }

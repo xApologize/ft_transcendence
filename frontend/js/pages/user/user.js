@@ -1,6 +1,6 @@
 import { fetchUser } from '../../api/fetchData.js';
 import { loadHTMLPage } from '../../api/fetchData.js';
-import { assembleUser } from '../../api/assembler.js';
+import { assembler } from '../../api/assembler.js';
 
 export async function showUser() {
     try {
@@ -68,32 +68,32 @@ async function getUser() {
         return;
     }
 
-  let userResponse = await fetchUser('GET', { 'nickname': nicknameInput})
-  if (userResponse.ok) {
-    const user = await assembleUser(userResponse);
-    displayUsers(user);
-    displaySuccessMessage('User Found !', 'successUser')
-  } else {
-    const textResponse = await userResponse.text()
-    displayErrorMessage(textResponse);
-  }
+    let userResponse = await fetchUser('GET', { 'nickname': nicknameInput })
+    if (userResponse.ok) {
+        const user = await assembler(userResponse);
+        displayUsers(user);
+        displaySuccessMessage('User Found !', 'successUser')
+    } else {
+        const textResponse = await userResponse.text()
+        displayErrorMessage(textResponse);
+    }
 }
 
 ///////
 
 async function deleteUser() {
-  const nicknameInput = document.getElementById('deleteInput').value;
-  if (!nicknameInput) {
-    alert("Fill in the nickname");
-    return;
-  }
-  let userResponse = await fetchUser('DELETE', { 'nickname': nicknameInput})
-  if (userResponse.ok) {
-    displaySuccessMessage(`User ${nicknameInput} deleted successfully!`, 'deleteUserMsg')
-  } else {
-    const textResponse = await userResponse.text()
-    displayErrorMessage(textResponse)
-  }
+    const nicknameInput = document.getElementById('deleteInput').value;
+    if (!nicknameInput) {
+        alert("Fill in the nickname");
+        return;
+    }
+    let userResponse = await fetchUser('DELETE', { 'nickname': nicknameInput })
+    if (userResponse.ok) {
+        displaySuccessMessage(`User ${nicknameInput} deleted successfully!`, 'deleteUserMsg')
+    } else {
+        const textResponse = await userResponse.text()
+        displayErrorMessage(textResponse)
+    }
 }
 
 ///////
@@ -147,9 +147,8 @@ function displayUsers(users) {
         newUser.querySelector(
             '.user-status'
         ).textContent = `Status: ${user.status}`;
-        newUser.querySelector('.user-admin').textContent = `Admin: ${
-            user.admin ? 'Yes' : 'No'
-        }`;
+        newUser.querySelector('.user-admin').textContent = `Admin: ${user.admin ? 'Yes' : 'No'
+            }`;
 
         usersContainer.appendChild(newUser);
     });
