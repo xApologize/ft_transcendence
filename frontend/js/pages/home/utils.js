@@ -99,6 +99,18 @@ function updateOtherUsers(user) {
     });
 }
 
+export function setStatus(user) {
+    switch (user) {
+        case 'ONL':
+            return 'green';
+        case 'BUS':
+            return 'red';
+        case 'ING':
+            return 'yellow';
+        case 'OFF':
+            return 'gray';
+    }
+}
 
 //////////////////////////// SOCKET FUNCTIONS ////////////////////////////
 // Les login/logout ne sont pas parfait.
@@ -148,16 +160,8 @@ export async function newUserLogout(userID) {
             statusBadge.style.backgroundColor = setStatus(user.status);
         }
     });
-    function setStatus(user) {
-        switch (user) {
-            case 'ONL':
-                return 'green';
-            case 'BUS':
-                return 'red';
-            case 'ING':
-                return 'yellow';
-            case 'OFF':
-                return 'gray';
-        }
-    }
+}
+
+export async function updateSocialModal() {
+    
 }

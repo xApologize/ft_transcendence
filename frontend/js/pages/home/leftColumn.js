@@ -2,6 +2,7 @@ import { userTemplateComponent } from '../../components/userTemplate/userTemplat
 import { assembler } from '../../api/assembler.js';
 import { displayOtherUserProfile } from './otherUserProfile.js';
 import { fetchUser } from '../../api/fetchData.js';
+import { setStatus } from './utils.js';
 
 export async function displayUser(allUsers, container) {
     container.innerHTML = '';
@@ -79,18 +80,6 @@ export function fillOtherUserInfo(clonedUserTemplate, user) {
     statusBadge.style.backgroundColor = setStatus(user.status);
     avatarElement.src = user.avatar;
     nameElement.textContent = user.nickname;
-    function setStatus(user) {
-        switch (user) {
-            case 'ONL':
-                return 'green';
-            case 'BUS':
-                return 'red';
-            case 'ING':
-                return 'yellow';
-            case 'OFF':
-                return 'gray';
-        }
-    }
     return clonedUserTemplate
 }
 

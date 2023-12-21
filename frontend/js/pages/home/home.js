@@ -19,7 +19,10 @@ import { navigateTo } from '../../router.js';
 export async function showHome() {
     try {
         await loadHTMLPage('./js/pages/home/home.html');
-        if (!await initPage()) {
+        // await initPage()
+        const result = await initPage()
+        if (result === false) {
+            console.error("Error loading home page")
             navigateTo('/')
             return;
         }
@@ -85,6 +88,7 @@ async function displayFriend() {
 
 export async function displayEveryone() {
     const onlineUsers = await fetchUser('GET', { status: ['ONL', 'ING'] });
+    console.log(onlineUsers)
     if (!onlineUsers || !onlineUsers.ok) {
         // if !onlineUsers, c'est que le status == 401 et si !onlineUsers.ok == Aucun user Online
         return false;
@@ -105,15 +109,12 @@ async function initPage() {
         console.log('Error assembling user');
         return false;
     }
-    displayUserCard(userAssembled);
-    displayMatchHistory(userAssembled);
+   displayUserCard(userAssembled);
+   displayMatchHistory(userAssembled);
 
-    if (!displayEveryone())
-        return false
-    if (!displayFriend())
-        return false
-    updateSocial()
-
+   displayEveryone()
+   displayFriend()
+   updateSocial()
 }
 
 ///////////////////////////////
@@ -161,3 +162,4 @@ function responsiveLeftColumn() {
         gameCol.classList.toggle('hide');
     });
 }
+// 
