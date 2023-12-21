@@ -13,12 +13,17 @@ import { World } from '../game/src/World.js';
 import { loadFonts } from '../game/src/systems/Fonts.js';
 import { loadModel } from '../game/src/systems/Loader.js';
 import interactiveSocket from './socket.js';
+import { navigateTo } from '../../router.js';
 ////////
 // Quand user Update son profil (avatar/nickname) -> Socket call function: not done (update only 1 user)
 export async function showHome() {
     try {
         await loadHTMLPage('./js/pages/home/home.html');
-        initPage();
+        if (!await initPage()) {
+            navigateTo('/')
+            return;
+        }
+        console.log("continue !")
         new bootstrap.Modal(document.getElementById('otherUserInfo'));
         new bootstrap.Modal(document.getElementById('inviteGameModal'));
 
@@ -72,7 +77,7 @@ async function displayFriend() {
     const allFriends = await fetchFriend('GET');
     if (!allFriends || !allFriends.ok) {
         // if !allFriends, c'est que le status == 401 et si !allFriends.ok == Aucun Ami
-        return;
+        return false;
     }
     const container = document.getElementById('friendDisplay')
     await displayUser(allFriends, container);
@@ -82,7 +87,7 @@ export async function displayEveryone() {
     const onlineUsers = await fetchUser('GET', { status: ['ONL', 'ING'] });
     if (!onlineUsers || !onlineUsers.ok) {
         // if !onlineUsers, c'est que le status == 401 et si !onlineUsers.ok == Aucun user Online
-        return;
+        return false;
     }
     const container = document.getElementById('userDisplay')
     await displayUser(onlineUsers, container);
@@ -92,18 +97,21 @@ async function initPage() {
     const user = await fetchMe('GET');
     if (!user) {
         console.log('Error fetching users');
-        return;
+        return false;
     }
     interactiveSocket.initSocket()
     const userAssembled = await assembler(user);
     if (!userAssembled || typeof userAssembled !== 'object') {
         console.log('Error assembling user');
-        return;
+        return false;
     }
     displayUserCard(userAssembled);
     displayMatchHistory(userAssembled);
-    displayEveryone();
-    displayFriend();
+
+    if (!displayEveryone())
+        return false
+    if (!displayFriend())
+        return false
     updateSocial()
 
 }
