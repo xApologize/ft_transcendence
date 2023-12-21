@@ -161,7 +161,3 @@ export async function newUserLogout(userID) {
         }
     });
 }
-
-export async function updateSocialModal() {
-    
-}
