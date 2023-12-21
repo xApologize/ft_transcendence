@@ -1,3 +1,5 @@
+import { assembler } from "../../api/assembler.js";
+import { fetchMe } from "../../api/fetchData.js";
 
 export function closeAlertInfo() {
     const alert = document.getElementById('alertErrorInfo');
@@ -24,7 +26,7 @@ export function closeSettings() {
         if (modalInstance) {
             modalInstance.hide();
         }
-    }  
+    }
 }
 
 export function removeAllAlerts(alertElement) {
@@ -34,15 +36,24 @@ export function removeAllAlerts(alertElement) {
 }
 
 
-export function setupSettings(event) {
-    const userNickname = document.getElementById('nickname').textContent;
+export async function setupSettings(event) {
+    const response = await fetchMe('GET');
+    if (!response) { return }
+    const userInfo = await assembler(response);
+
+    const nickname = userInfo.nickname
+    const email = userInfo.email;
+
     const nicknameInput = document.getElementById('nicknameInput');
-    nicknameInput.value = userNickname
+    nicknameInput.value = nickname
 
 
-    const userEmail = document.getElementById('email').textContent;
     const emailInput = document.getElementById('emailInput');
-    emailInput.value = userEmail;
+    emailInput.value = email
+
+    sessionStorage.setItem('nickname', nickname)
+    sessionStorage.setItem('email', email)
+
 }
 
 export function clearSettings(event) {
@@ -50,5 +61,7 @@ export function clearSettings(event) {
     closeAlert2FA();
     closeAlertAvatar();
     closeAlertInfo();
+    sessionStorage.removeItem('nickname');
+    sessionStorage.removeItem('email');
 }
 

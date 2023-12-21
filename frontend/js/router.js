@@ -33,7 +33,7 @@ export function navigateTo(route) {
     handleRoute();
 }
 
-async function checkIfCookie() {
+export async function checkIfCookie() {
     var accessTokenLive = sessionStorage.getItem('jwt');
     var options = {
         method: 'GET',
@@ -79,6 +79,11 @@ async function loadPage() {
     navigateTo(path);
 }
 
+window.addEventListener('beforeunload', () => {
+    sessionStorage.clear();
+    localStorage.clear();
+})
+
 document.addEventListener('DOMContentLoaded', async () => {
     await loadPage();
 
@@ -112,6 +117,30 @@ function checkAllModal() {
     const twoAuthModal = document.getElementById('twoFAModal');
     if (twoAuthModal) {
         const modalInstance = bootstrap.Modal.getInstance(twoAuthModal);
+        if (modalInstance) {
+            modalInstance.dispose();
+        }
+    }
+
+    const otherUsersModal = document.getElementById('otherUserInfo');
+    if (otherUsersModal) {
+        const modalInstance = bootstrap.Modal.getInstance(otherUsersModal);
+        if (modalInstance) {
+            modalInstance.dispose();
+        }
+    }
+
+    const inviteModal = document.getElementById('inviteGameModal');
+    if (inviteModal) {
+        const modalInstance = bootstrap.Modal.getInstance(inviteModal);
+        if (modalInstance) {
+            modalInstance.dispose();
+        }
+    }
+
+    const socialModal = document.getElementById('socialModal');
+    if (socialModal) {
+        const modalInstance = bootstrap.Modal.getInstance(socialModal);
         if (modalInstance) {
             modalInstance.dispose();
         }

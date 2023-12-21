@@ -45,7 +45,7 @@
 }
 
 .divFill {
-    height: calc(100% - 38px);
+    height: calc(100% - 82px);
     width: 100%;
     overflow-y: auto;
     overflow-x: hidden;
@@ -83,4 +83,32 @@
 .btn-primary:hover {
     background-color: var(--bg-accent) !important;
     border-color: var(--bg-accent) !important;
+}
+
+.hover-row:hover {
+    background-color: #e9ecef;
+    cursor: default
+    /* cursor: pointer; */
+}
+
+/* Illisible avec des couleurs la*/
+
+/* .modal-header {
+    background-color: var(--bg-accent);
+}
+
+.modal-body {
+    background-color: var(--bg-accent);
+}
+
+.modal-footer {
+    background-color: var(--bg-accent) !important;
+} */
+
+#lfp {
+    font-size: 2rem;
+    color: white;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
 }

@@ -81,9 +81,12 @@ async function submit2FACode(result) {
         navigateTo('/home');
     } else if (response.status == 400) {
         document.getElementById("2FAErrorMsg").textContent = data.error; 
-    } else if (response.status == 404) {
+    } else if (response.status == 404 || response.status == 409) {
         modal2FA.hide()
         displayLoginError(data)
+    } else {
+        modal2FA.hide()
+        displayLoginError({'error': "An error occured. Please try again."})
     }
 
 }

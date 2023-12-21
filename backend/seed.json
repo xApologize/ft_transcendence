@@ -73,7 +73,9 @@
         "fields": {
             "friend1": 4,
             "friend2": 5,
-            "status": "ACCEPTED"
+            "status": "ACCEPTED",
+            "timeLastUpdate": "2023-01-01T12:00:00Z"
+
         }
     },
     {
@@ -82,7 +84,8 @@
         "fields": {
             "friend1": 5,
             "friend2": 1,
-            "status": "ACCEPTED"
+            "status": "ACCEPTED",
+            "timeLastUpdate": "2023-01-01T12:00:00Z"
         }
     },
     {
@@ -91,7 +94,8 @@
         "fields":{
             "friend1": 4,
             "friend2": 3,
-            "status": "ACCEPTED"
+            "status": "ACCEPTED",
+            "timeLastUpdate": "2023-01-01T12:00:00Z"
         }
     },
     {
@@ -100,7 +104,9 @@
         "fields":{
             "friend1": 5,
             "friend2": 2,
-            "status": "ACCEPTED"
+            "status": "ACCEPTED",
+            "timeLastUpdate": "2023-01-01T12:00:00Z"
+
         }
     },
     {
