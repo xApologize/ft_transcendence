@@ -2,6 +2,7 @@ import { fetchFriendChange } from '../../api/fetchData.js';
 import { assembler } from '../../api/assembler.js';
 import { updateOtherFriendButton, updateStatusMsg } from './otherUserProfile.js';
 import { updateSocialFriendCard } from './social.js';
+import interactiveSocket from './socket.js';
 
 export async function handleFriendAction(actionObj) {
     const actionToMethod = {
@@ -26,6 +27,7 @@ export async function handleFriendAction(actionObj) {
     const apiParam = { id: userID, action };
     const method = actionToMethod[action];
     const response = await fetchFriendChange(method, apiParam);
+    interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Social"}));
     if (!response) {
         return;
     }

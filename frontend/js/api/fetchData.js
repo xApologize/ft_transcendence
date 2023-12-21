@@ -62,7 +62,7 @@ export const setNewToken = (response) => {
     return null
 }
 
-const performFetch = async (url, method, data = null) => {
+export const performFetch = async (url, method, data = null) => {
     const options = createOptions(method, data)
     try {
         console.log(url)

@@ -87,7 +87,6 @@ async function initPage() {
         console.log('Error fetching users');
         return;
     }
-    interactiveSocket.initSocket()
     const userAssembled = await assembler(user);
     if (!userAssembled || typeof userAssembled !== 'object') {
         console.log('Error assembling user');
@@ -95,7 +94,7 @@ async function initPage() {
     }
     displayUserCard(userAssembled);
     displayMatchHistory(userAssembled);
-    displayEveryone();
+    interactiveSocket.initSocket()
     updateSocial()
 
 }

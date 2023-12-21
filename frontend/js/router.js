@@ -33,7 +33,7 @@ export function navigateTo(route) {
     handleRoute();
 }
 
-async function checkIfCookie() {
+export async function checkIfCookie() {
     var accessTokenLive = sessionStorage.getItem('jwt');
     var options = {
         method: 'GET',

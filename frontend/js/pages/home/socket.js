@@ -1,6 +1,7 @@
 import { logoutUser } from '../../components/userCard/userCard.js'
 import { World } from '../game/src/World.js';
 import { displayEveryone, displayFriend } from './home.js'
+import { updateSocial } from './social.js'
 
 const interactiveSocket = {
     interactive_socket: null,
@@ -56,6 +57,9 @@ const interactiveSocket = {
             case "Invalid":
                 this.interactive_error_handler(data);
                 break;
+            case "Social":
+                this.refresh_social();
+                break;
             default:
                 console.error("Invalid type sent to interactive socket");
         }
@@ -87,13 +91,16 @@ const interactiveSocket = {
     },
 
     refresh_handler: function() {
-        console.log("HI")
         const test = document.getElementsByClassName('active-dark')[0].id;
         if (test === "everyoneBtn"){
             displayEveryone();
         } else {
             displayFriend();
         }
+    },
+
+    refresh_social: function() {
+        updateSocial();
     }
 };
 

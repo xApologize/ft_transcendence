@@ -45,7 +45,9 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             case "Send Invite":
                 await self.send_invite(data)
             case "Refresh":
-                await self.send_refresh(data)
+                await self.send_refresh()
+            case "Social":
+                await self.send_social()
             case _:
                 await self.error_handler("argument")
 
@@ -157,7 +159,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         await self.channel_layer.group_send(
             "interactive",
             create_layer_dict(
-                "send_message_no_echo", {"type": "Refresh"}, self.channel_name)
+                "send_message_echo", {"type": "Refresh"}, self.channel_name)
             )
 
     async def error_handler(self, error: str):
@@ -167,6 +169,13 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         user: User = await sync_to_async(User.objects.get)(pk=self.user_id)
         user.status = status
         await sync_to_async(user.save)()
+    
+    async def send_social(self):
+        await self.channel_layer.group_send(
+            "interactive",
+            create_layer_dict(
+                "send_message_echo", {"type": "Social"}, self.channel_name)
+            )
 
 
 def create_layer_dict(type: str, message: str, sender: str) -> dict:
