@@ -280,6 +280,7 @@ class Upload(View):
                 # Save the new avatar
                 user.avatar.save(new_file_name, file)
                 avatar_url = get_avatar_data(user)
+                async_to_sync(send_refresh)()
                 return JsonResponse({'message': 'Avatar updated successfully.', 'avatar_url': avatar_url}, status=200)
             else:
                 return HttpResponseBadRequest('No avatar provided.')  # 400
