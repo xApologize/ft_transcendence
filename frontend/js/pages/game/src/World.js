@@ -19,7 +19,10 @@ import {
 	SphereGeometry,
 	Vector2
 } from 'three';
+
 import interactiveSocket from '../../home/socket.js';
+import { fetchUser } from '../../../api/fetchData.js';
+import { assembler } from '../../../api/assembler.js';
 
 const _ballCount = 1;
 const _ballSize = 0.2;
@@ -29,6 +32,7 @@ const _terrainSize = new Vector2(18, 11);
 // Dynamic Terrain Line and Margin (depreciated)
 const _terrainLine = 0.5;
 const _terrainMargin = 0.4;
+
 
 class World {
 	constructor( container ) {
@@ -57,6 +61,7 @@ class World {
 
 	joinMatch( wsPath, side, myNickname, opponentNickname ) {
 		this.match = new Match( '/' + wsPath, side == "A" ? 0 : 1, myNickname, opponentNickname );
+		this.changeStatus( "ING" );
 	}
 
 	createInstance() {
@@ -91,6 +96,12 @@ class World {
 	appendCanvas( container ) {
 		container.append( this.renderer.domElement );
 		this.resizer = new Resizer( container, this.camera, this.renderer, this.composer );
+	}
+
+	changeStatus( status ) {
+		const objectData = new Object();
+		objectData.status = status
+		fetchUser('PATCH', null, objectData);
 	}
 
 	get socket() {

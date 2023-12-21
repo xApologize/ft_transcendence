@@ -3,10 +3,12 @@ import { World } from '../World.js';
 import { Player } from '../components/Player.js';
 import { Opponent } from '../components/Opponent.js';
 import { GameState } from './GameStates.js';
+import { fetchUser } from '../../../../api/fetchData.js';
 
 let world;
 
 const divNicknames = [ 'left-player-name', 'right-player-name' ];
+
 
 class Match {
 	constructor( path, myId, myNickname, opponentNickname ) {
@@ -86,14 +88,16 @@ class Match {
 		world.currentGameState = GameState.InMenu;
 
 		world.camera.viewLarge( 1 , function() {
-			document.getElementById('ui').classList.remove("d-none");
+			if ( document.getElementById('ui') )
+				document.getElementById('ui').classList.remove("d-none");
 		} );
 		this.participants.forEach(element => {
 			element.delete();
 		});
 		this.participants = [];
 		divNicknames.forEach(element => {
-			document.getElementById(element).classList.add("d-none");
+			if (document.getElementById(element))
+				document.getElementById(element).classList.add("d-none");
 		});
 
 		world.balls.updatable.setEnabled(false);
@@ -103,6 +107,8 @@ class Match {
 			this.socket.close();
 
 		this.socket.removeEventListener( "message", this.onWebsocketReceivedEvent );
+
+		world.changeStatus( "ONL" );
 	}
 }
 
