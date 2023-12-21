@@ -22,6 +22,7 @@
 
 .card {
     transition: 0.25s;
+    cursor: pointer;
 }
 .left-column-settings i {
     margin-bottom: 10px; /* Adjust the margin to your preference */

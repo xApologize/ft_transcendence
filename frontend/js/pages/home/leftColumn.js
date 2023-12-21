@@ -1,11 +1,13 @@
 import { userTemplateComponent } from '../../components/userTemplate/userTemplate.js';
-import { assembleUser } from '../../api/assembler.js';
+import { assembler } from '../../api/assembler.js';
+import { displayOtherUserProfile } from './otherUserProfile.js';
+import { fetchUser } from '../../api/fetchData.js';
 
 export async function displayUser(allUsers) {
-    let currentUser;
     let userContainer = document.getElementById('userDisplay');
     userContainer.innerHTML = '';
-    const objectAllUsers = await assembleUser(allUsers);
+    let currentUser;
+    const objectAllUsers = await assembler(allUsers);
     if (typeof objectAllUsers !== 'object' && objectAllUsers !== null) {
         return;
     }
@@ -52,23 +54,36 @@ async function loopDisplayUser(objectAllUsers, currentUser, userContainer) {
 
         const clonedUserTemplate = templateUser.cloneNode(true);
 
-        const seeProfileBtn =
-            clonedUserTemplate.querySelector('#seeProfileBtn');
-        seeProfileBtn.addEventListener('click', displayOtherUserProfile);
+        const seeProfileBtn = clonedUserTemplate.querySelector('.card');
+        seeProfileBtn.addEventListener('click', displayOtherUserProfile)
+        
+        const inviteGameBtn = clonedUserTemplate.querySelector('#inviteGameBtn');
+        inviteGameBtn.addEventListener('click', displayInviteModal);
+        if (user.status === 'ING' || user.status === 'OFF')
+            inviteGameBtn.classList.add("disabled", "border-0");
 
-        const otherUserID = clonedUserTemplate.querySelector('#otherUserID');
-        otherUserID.id = user.id;
 
-        const avatarElement = clonedUserTemplate.querySelector('#user-avatar');
-        const nameElement = clonedUserTemplate.querySelector('#user-name');
-        const statusBadge = clonedUserTemplate.querySelector('#badge');
-        statusBadge.style.backgroundColor = setStatus(user.status);
-        avatarElement.src = user.avatar;
-        nameElement.textContent = user.nickname;
+        const filledTemplate = fillOtherUserInfo(clonedUserTemplate, user)
+        userContainer.appendChild(filledTemplate);
+
+        //this is for potential patch to prevent the text box to push the button out of the div
+        // if (user.nickname.length > 10 && window.innerWidth < 1000) console.log('greater than 10');
+        // console.log(userContainer.offsetWidth);
+        // console.log(clonedUserTemplate.querySelector('#user-name').offsetWidth);
 
         userContainer.appendChild(clonedUserTemplate);
     });
+}
 
+function fillOtherUserInfo(clonedUserTemplate, user) {
+    clonedUserTemplate.dataset.id = user.id
+
+    const avatarElement = clonedUserTemplate.querySelector('#user-avatar');
+    const nameElement = clonedUserTemplate.querySelector('#user-name');
+    const statusBadge = clonedUserTemplate.querySelector('#badge');
+    statusBadge.style.backgroundColor = setStatus(user.status);
+    avatarElement.src = user.avatar;
+    nameElement.textContent = user.nickname;
     function setStatus(user) {
         switch (user) {
             case 'ONL':
@@ -81,12 +96,33 @@ async function loopDisplayUser(objectAllUsers, currentUser, userContainer) {
                 return 'gray';
         }
     }
+    return clonedUserTemplate
 }
 
-async function displayOtherUserProfile(event) {
-    const button = event.currentTarget;
-    const iconElement = button.querySelector('i');
-    const id = iconElement ? iconElement.id : NULL;
+async function displayInviteModal(event) {
+    event.stopPropagation(); // Empêche le otherUserModal d'open pcq le listener est sur la div.
+    let ancestor = event.currentTarget;
+    while (ancestor && !ancestor.hasAttribute('data-userid-flag')) {
+        ancestor = ancestor.parentNode;
+    }
+    if (!ancestor || !ancestor.dataset.id) {
+        console.error('User ID not found');
+        return;
+    }
+    const userID = ancestor.dataset.id;
+    
+    const response = await fetchUser('GET', { id: userID })
+    const userResponse = await assembler(response)
+    const user = userResponse[0]
+    console.log('invite ', user.nickname, 'to a game'); // Need to fetch the user
 
-    console.log(id);
+
+    const modalElement = document.getElementById('inviteGameModal')
+    const inviteModal = bootstrap.Modal.getInstance(modalElement);
+    if (!inviteModal) {
+        console.error('Other user modal instance not found')
+        return
+    }
+
+    inviteModal.show()
 }

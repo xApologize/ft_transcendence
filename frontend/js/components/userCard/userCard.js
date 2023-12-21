@@ -50,14 +50,13 @@ function settingsListener() {
 }
 
 export async function logoutUser() {
-    console.log('logout!')
     const logoutResponse = await fetchAuth('POST', 'logout/')
     if (!logoutResponse) { return }
     if (logoutResponse.status == 200) {
+        interactiveSocket.closeSocket()
         sessionStorage.clear()
         navigateTo('/')
     }
-    interactiveSocket.closeSocket()
     return ;
 }
 
@@ -79,9 +78,6 @@ function updateUserCard(userObject) {
 
     const nicknameElement = document.getElementById('nickname');
     nicknameElement.innerText = userObject.nickname;
-
-    const emailElement = document.getElementById('email');
-    emailElement.innerText = userObject.email;
 
     const winsElement = document.getElementById('wins');
     const lossesElement = document.getElementById('losses');
