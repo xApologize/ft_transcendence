@@ -131,7 +131,7 @@ export async function updateSpecificUser(userID) {
 }
 
 // To use when user login
-export async function newUserLogin(userID) {
+export async function newUser(userID) {
     const apiParam = { id: userID };
     try {
         const response = await fetchUser('GET', apiParam);
@@ -142,12 +142,12 @@ export async function newUserLogin(userID) {
 
         addNewUser(assemble.users[0]);
     } catch (error) {
-        console.error('Error in newUserLogin:', error);
+        console.error('Error in newUser:', error);
     }
 }
 
 // To use when user logout
-export async function newUserLogout(userID) {
+export async function removeUser(userID) {
     const everyoneContainer = document.getElementById('userDisplay');
     const friendContainer = document.getElementById('friendDisplay');
 
