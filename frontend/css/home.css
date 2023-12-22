@@ -95,7 +95,7 @@
     cursor: default;
 }
 
-.matchHistoryBox {
+#matchHistory {
     height: calc(100% - 104px);
     overflow-x: hidden;
     overflow-y: auto;
