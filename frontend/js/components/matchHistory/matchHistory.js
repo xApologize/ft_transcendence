@@ -16,11 +16,23 @@ export async function displayMatchHistory(userStatJson) {
     let matchHistory = await matchHistoryComponent();
     matchHistoryContainer.appendChild(matchHistory);
 
+    let date = document.getElementById('date');
     let matchHistoryWinner = document.getElementById('winnerUsername');
     let matchHistoryLoser = document.getElementById('loserUsername');
     let matchHistoryWinScore = document.getElementById('winnerScore');
     let matchHistoryLoseScore = document.getElementById('loserScore');
 
+    userStatJson.played_matches.forEach((game) => {
+        const listElement = document.createElement('li');
+        listElement.classList.add('bg-main-second');
+        listElement.classList.add('list-group-item');
+        listElement.classList.add('list-group-item-action');
+        listElement.classList.add('bg-transparent');
+        listElement.classList.add('border-0');
+        listElement.classList.add('textWhite');
+        listElement.innerHTML = game.date_of_match;
+        date.appendChild(listElement);
+    });
     userStatJson.played_matches.forEach((game) => {
         const listElement = document.createElement('li');
         listElement.classList.add('bg-main-second');
