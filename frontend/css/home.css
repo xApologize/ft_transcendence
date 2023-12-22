@@ -101,6 +101,12 @@
     overflow-y: auto;
 }
 
+#matchHistoryContainer {
+    max-height: 250px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
 /* Illisible avec des couleurs la*/
 
 /* .modal-header {
