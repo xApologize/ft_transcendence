@@ -101,22 +101,20 @@ export async function displayEveryone() {
 
 async function initPage() {
     const user = await fetchMe('GET');
-    if (!user) {
-        console.log('Error fetching users');
-        return false;
-    }
+    if (!user)
+        return;
     interactiveSocket.initSocket()
     const userAssembled = await assembler(user);
     if (!userAssembled || typeof userAssembled !== 'object') {
         console.log('Error assembling user');
         return false;
     }
-   displayUserCard(userAssembled);
-   displayMatchHistory(userAssembled);
+    displayUserCard(userAssembled);
+    displayMatchHistory(userAssembled);
 
-   displayEveryone()
-   displayFriend()
-   updateSocial()
+    displayEveryone()
+    displayFriend()
+    updateSocial()
 }
 
 ///////////////////////////////
