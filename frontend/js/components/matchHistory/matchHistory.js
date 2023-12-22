@@ -14,6 +14,7 @@ export async function matchHistoryComponent() {
 export async function displayMatchHistory(userStatJson) {
     const matchHistoryContainer = document.getElementById('matchHistory');
     const matchHistory = await matchHistoryComponent();
+    let index = 0;
 
     userStatJson.played_matches.forEach((matches) => {
         const matchEntry = matchHistory.cloneNode(true);
@@ -27,7 +28,9 @@ export async function displayMatchHistory(userStatJson) {
         matchEntry.querySelector('#loserScore').textContent =
             matches.loser_score;
         matchEntry.classList.add('hover-row-accent');
+        matchEntry.id = 'matchEntry' + index;
 
         matchHistoryContainer.appendChild(matchEntry);
+        index++;
     });
 }
