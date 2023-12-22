@@ -85,10 +85,14 @@
     border-color: var(--bg-accent) !important;
 }
 
-.hover-row:hover {
+.hover-row-white:hover {
     background-color: #e9ecef;
-    cursor: default
-    /* cursor: pointer; */
+    cursor: default;
+}
+
+.hover-row-accent:hover {
+    background-color: var(--bg-accent);
+    cursor: default;
 }
 
 /* Illisible avec des couleurs la*/
