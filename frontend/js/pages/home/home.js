@@ -3,6 +3,7 @@ import {
     fetchFriend,
     fetchMe,
     loadHTMLPage,
+    fetchMatchHistory,
 } from '../../api/fetchData.js';
 import { assembler } from '../../api/assembler.js';
 import { displayUserCard } from '../../components/userCard/userCard.js';
@@ -14,6 +15,7 @@ import { loadFonts } from '../game/src/systems/Fonts.js';
 import { loadModel } from '../game/src/systems/Loader.js';
 import interactiveSocket from './socket.js';
 import { navigateTo } from '../../router.js';
+import { Opponent } from '../game/src/components/Opponent.js';
 ////////
 // Quand user Update son profil (avatar/nickname) -> Socket call function: not done (update only 1 user)
 export async function showHome() {
@@ -66,6 +68,7 @@ export async function showHome() {
             .addEventListener('hide.bs.modal', () => {
                 console.log('modal game invite closed');
             });
+
     } catch (error) {
         console.error('Error fetching home.html:', error);
     }
