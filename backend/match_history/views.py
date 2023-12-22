@@ -13,9 +13,16 @@ class MatchHistoryView(View):
     def post(self, request: HttpRequest):
         try:
             gameData = json.loads(request.body)
+            user = get_user_obj(request)
         except json.JSONDecodeError:
             return HttpResponseBadRequest("Invalid JSON.")
+        except PermissionDenied as e:
+            return HttpResponse(str(e), status=401)
+        except Http404 as e:
+            return HttpResponseNotFound(str(e))
 
+        if user.nickname != gameData['winner'] and user.nickname != gameData['loser']:
+            return HttpResponseBadRequest("The user who is sending the request must be the winner or the loser.")
         try:
             winner_nickname = gameData['winner']  # It's the nickname of the winner user
             loser_nickname = gameData['loser']  # It's the nickname of the loser user
