@@ -20,6 +20,18 @@
     }
 }
 
+@media only screen and (max-height: 688px) {
+    .lowerRow {
+        max-height: 300px;
+    }
+}
+
+@media only screen and (max-height: 530px) {
+    .lowerRow {
+        max-height: 200px;
+    }
+}
+
 .fill {
     height: 100%;
 }
@@ -95,9 +107,9 @@
     overflow-y: auto;
 }
 
-#matchHistory::-webkit-scrollbar {
+/* #matchHistory::-webkit-scrollbar {
     display: none;
-}
+} */
 
 #matchHistoryContainer {
     max-height: 250px;
