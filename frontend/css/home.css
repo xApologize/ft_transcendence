@@ -51,6 +51,10 @@
     overflow-x: hidden;
 }
 
+.divFill::-webkit-scrollbar {
+    display: none;
+}
+
 .hide {
     display: none;
 }
@@ -85,26 +89,24 @@
     border-color: var(--bg-accent) !important;
 }
 
-.hover-row-white:hover {
-    background-color: #e9ecef;
-    cursor: default;
-}
-
-.hover-row-accent:hover {
-    background-color: var(--bg-accent);
-    cursor: default;
-}
-
 #matchHistory {
     height: calc(100% - 104px);
     overflow-x: hidden;
     overflow-y: auto;
 }
 
+#matchHistory::-webkit-scrollbar {
+    display: none;
+}
+
 #matchHistoryContainer {
     max-height: 250px;
     overflow-x: hidden;
     overflow-y: auto;
+}
+
+#matchHistoryContainer::-webkit-scrollbar {
+    display: none;
 }
 
 /* Illisible avec des couleurs la*/

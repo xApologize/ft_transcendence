@@ -17,3 +17,13 @@
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
 }
+
+.hover-row-white:hover {
+    background-color: #e9ecef;
+    cursor: default;
+}
+
+.hover-row-accent:hover {
+    background-color: var(--bg-accent);
+    cursor: default;
+}
