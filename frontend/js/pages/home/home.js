@@ -3,7 +3,6 @@ import {
     fetchFriend,
     fetchMe,
     loadHTMLPage,
-    fetchMatchHistory,
 } from '../../api/fetchData.js';
 import { assembler } from '../../api/assembler.js';
 import { displayUserCard } from '../../components/userCard/userCard.js';
