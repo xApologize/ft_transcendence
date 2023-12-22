@@ -85,10 +85,26 @@
     border-color: var(--bg-accent) !important;
 }
 
-.hover-row:hover {
+.hover-row-white:hover {
     background-color: #e9ecef;
-    cursor: default
-    /* cursor: pointer; */
+    cursor: default;
+}
+
+.hover-row-accent:hover {
+    background-color: var(--bg-accent);
+    cursor: default;
+}
+
+#matchHistory {
+    height: calc(100% - 104px);
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+#matchHistoryContainer {
+    max-height: 250px;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 /* Illisible avec des couleurs la*/
