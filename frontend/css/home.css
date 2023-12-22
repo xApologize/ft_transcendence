@@ -95,6 +95,12 @@
     cursor: default;
 }
 
+.matchHistoryBox {
+    height: calc(100% - 104px);
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
 /* Illisible avec des couleurs la*/
 
 /* .modal-header {
