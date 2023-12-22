@@ -26,7 +26,6 @@ export async function showHome() {
             navigateTo('/')
             return;
         }
-        console.log("continue !")
         new bootstrap.Modal(document.getElementById('otherUserInfo'));
         new bootstrap.Modal(document.getElementById('inviteGameModal'));
 

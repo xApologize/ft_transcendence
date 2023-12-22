@@ -124,18 +124,20 @@ class Users(View):
     # update specific user
     @token_validation
     def patch(self, request: HttpRequest):
+        allowed_fields = {'nickname', 'email', 'status'}
         try:
+            data = json.loads(request.body)
             user = get_user_obj(request)
-            if "demo-user" == user.nickname or "demo-user2" == user.nickname:
+            if ("demo-user" == user.nickname or "demo-user2" == user.nickname) and "status" not in data:
                 return HttpResponseBadRequest('Demo user cannot be updated.') # 400
         except PermissionDenied as e:
             return HttpResponse(str(e), status=401)
         except Http404 as e:
             return HttpResponse(str(e), status=404)
+        except json.JSONDecodeError:
+            return HttpResponseBadRequest('Invalid JSON data in the request body.') # 400
         
-        allowed_fields = {'nickname', 'email', 'status'}
         try:
-            data = json.loads(request.body)
             checkup = check_info_update(data, allowed_fields)
             if checkup is not None:
                 return checkup
@@ -146,7 +148,6 @@ class Users(View):
                         setattr(user, field, data[field])
                     else:
                         return HttpResponseBadRequest(f'Your {field} is already {getattr(user, field)}')
-
                     
             user.save()
             return JsonResponse({
@@ -157,8 +158,6 @@ class Users(View):
                 }
             }, status=200)
 
-        except json.JSONDecodeError:
-            return HttpResponseBadRequest('Invalid JSON data in the request body.') # 400
         except IntegrityError:
             return HttpResponseBadRequest(f'Nickname is already in use.') # 400
         except Exception as e:

@@ -1,23 +1,97 @@
-from .models import MatchHistory
-from django.http import JsonResponse, HttpResponse, Http404, HttpResponseBadRequest, HttpRequest
-from django.views import View
-from utils.decorators import token_validation
+from django.http import JsonResponse, Http404,HttpRequest, HttpResponseNotFound,HttpResponseBadRequest, HttpResponse
 from django.core.exceptions import PermissionDenied
+from django.views import View
+from .models import User, MatchHistory
 import json
-from django.contrib.auth.hashers import check_password
-from user_profile.models import User
-from utils.functions import first_token
-from utils.functions import get_user_obj, generate_2fa_token, decrypt_user_id
-from django_otp.plugins.otp_totp.models import TOTPDevice
-from django.http import JsonResponse
-import base64, qrcode
-from io import BytesIO
-from base64 import b64encode
+from utils.decorators import token_validation
+from utils.functions import get_user_obj
+from django.db.models import Q
 
-# Create your views here.
+
 class MatchHistoryView(View):
     @token_validation
     def post(self, request: HttpRequest):
-        pass
+        try:
+            gameData = json.loads(request.body)
+        except json.JSONDecodeError:
+            return HttpResponseBadRequest("Invalid JSON.")
+
+        try:
+            winner_nickname = gameData['winner']  # It's the nickname of the winner user
+            loser_nickname = gameData['loser']  # It's the nickname of the loser user
+            winner_score = int(gameData['winner_score'])
+            loser_score = int(gameData['loser_score'])
+            
+            if winner_nickname == loser_nickname:
+                return HttpResponseBadRequest("Winner and loser can't be the same user.")
+        
+            winner = User.objects.get(nickname=winner_nickname)
+            loser = User.objects.get(nickname=loser_nickname)
+
+            # Create and save the match history
+            match = MatchHistory(
+                winner=winner,
+                loser=loser,
+                winner_score=winner_score,
+                loser_score=loser_score
+            )
+            match.save()
+
+            return JsonResponse({'message': 'Match history added successfully!'})
+
+        except User.DoesNotExist:
+            return HttpResponseBadRequest("One of the users does not exist.")
+        except ValueError:
+            return HttpResponseBadRequest("Scores must be integers.")
+        except Exception as e:
+            return HttpResponse(str(e), status=500)
+
+    @token_validation
     def get(self, request: HttpRequest):
-        pass
+        try:
+            user = get_user_obj(request)
+        except PermissionDenied as e:
+            return HttpResponse(str(e), status=401)
+        except Http404 as e:
+            return HttpResponseNotFound(str(e))
+
+        try:
+            recent_played_matches = MatchHistory.objects.filter(
+                Q(winner=user) | Q(loser=user)
+            ).order_by('-date_of_match')[:10]
+
+            data = {
+                'won_matches': [
+                    {
+                        'winner_score': match.winner_score,
+                        'loser_score': match.loser_score,
+                        'date_of_match': match.date_of_match.strftime("%Y-%m-%d %H:%M:%S")
+                    }
+                    for match in recent_played_matches if match.winner == user
+                ],
+                'lost_matches': [
+                    {
+                        'winner_score': match.winner_score,
+                        'loser_score': match.loser_score,
+                        'date_of_match': match.date_of_match.strftime("%Y-%m-%d %H:%M:%S")
+                    }
+                    for match in recent_played_matches if match.loser == user
+                ],
+                'played_matches': [
+                    {
+                        'winner_score': match.winner_score,
+                        'winner_username': match.winner.nickname,
+                        'loser_score': match.loser_score,
+                        'loser_username': match.loser.nickname,
+                        'date_of_match': match.date_of_match.strftime("%Y-%m-%d %H:%M:%S")
+                    }
+                    for match in recent_played_matches
+                ]
+            }
+
+            return JsonResponse(data)
+
+        except Exception as e:
+            return HttpResponseBadRequest(str(e))
+        
+        
