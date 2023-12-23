@@ -91,7 +91,6 @@ async function displayFriend() {
 
 export async function displayEveryone() {
     const onlineUsers = await fetchUser('GET', { status: ['ONL', 'ING'] });
-    console.log(onlineUsers)
     if (!onlineUsers || !onlineUsers.ok) {
         // if !onlineUsers, c'est que le status == 401 et si !onlineUsers.ok == Aucun user Online
         return false;

@@ -33,8 +33,7 @@ class Users(View):
             if not id.isdigit():
                 return HttpResponseBadRequest('Invalid id.')
             try:
-                user = User.objects.get(id=id)
-                users = [user]  # Single user in a list for consistent processing
+                users = User.objects.filter(id__in=id)
             except User.DoesNotExist:
                 return HttpResponseNotFound('User not found')
         elif nicknames:

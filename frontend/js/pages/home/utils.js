@@ -55,6 +55,7 @@ async function addNewUser(user) {
     const templateUser = await getTemplateUser(user);
     if (!templateUser) return;
     
+    console.log(templateUser)
     appendUserToContainer(everyoneContainer, templateUser);
     if (await checkIfFriend(user)) {
         appendUserToContainer(friendContainer, templateUser.cloneNode(true)); // Clone for friend container
@@ -135,12 +136,16 @@ export async function newUser(userID) {
     const apiParam = { id: userID };
     try {
         const response = await fetchUser('GET', apiParam);
-        if (!response) throw new Error('Failed to fetch user.');
+        if (!response)
+            return;
 
         const assemble = await assembler(response);
-        if (!assemble.users || assemble.users.length === 0) throw new Error('No users found.');
+        if (typeof assemble !== 'object' || assemble === null) {
+            console.log(assemble);
+            return;
+        }
 
-        addNewUser(assemble.users[0]);
+        addNewUser(assemble[0]);
     } catch (error) {
         console.error('Error in newUser:', error);
     }
@@ -151,13 +156,16 @@ export async function removeUser(userID) {
     const everyoneContainer = document.getElementById('userDisplay');
     const friendContainer = document.getElementById('friendDisplay');
 
-    const userCards = document.querySelectorAll(`div.card[data-id="${userID}"]`);
+    const userCards = document.querySelectorAll(`div[data-id="${userID}"]`);
+    console.log(userCards)
     userCards.forEach(card => {
         if (everyoneContainer.contains(card)) {
+            console.log("Remove from everyone!")
             everyoneContainer.removeChild(card);
         } else if (friendContainer.contains(card)) {
+            console.log('Change in friend!')
             const statusBadge = card.querySelector('#badge');
-            statusBadge.style.backgroundColor = setStatus(user.status);
+            statusBadge.style.backgroundColor = setStatus('OFF');
         }
     });
 }
