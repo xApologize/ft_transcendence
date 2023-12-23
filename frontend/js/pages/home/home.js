@@ -14,8 +14,7 @@ import { loadFonts } from '../game/src/systems/Fonts.js';
 import { loadModel } from '../game/src/systems/Loader.js';
 import interactiveSocket from './socket.js';
 import { navigateTo } from '../../router.js';
-import { Opponent } from '../game/src/components/Opponent.js';
-import { toastComponent } from '../../components/toast/toast.js';
+import { displayToast } from './toastNotif.js';
 ////////
 // Quand user Update son profil (avatar/nickname) -> Socket call function: not done (update only 1 user)
 export async function showHome() {
@@ -166,24 +165,27 @@ function responsiveLeftColumn() {
 }
 // 
 
-async function displayToast() {
-    const toastNotif = await toastComponent();
-    document.getElementById('toastContainer').append(toastNotif);
-    var toast = new bootstrap.Toast(toastNotif);
-    toastNotif.addEventListener('shown.bs.toast', () => {
-        const startTime = Date.now();
-        const timeSinceToastElement = toastNotif.querySelector('#timeSinceToast');
+// async function displayToast() {
+//     console.log('display TOoast !')
+//     const toastNotif = await toastComponent();
+//     document.getElementById('toastContainer').append(toastNotif);
+//     var toast = new bootstrap.Toast(toastNotif);
+//     toastNotif.addEventListener('shown.bs.toast', () => {
+//         const startTime = Date.now();
+//         const timeSinceToastElement = toastNotif.querySelector('#timeSinceToast');
 
-        // Update the time every second
-        const intervalId = setInterval(() => {
-            const secondsPassed = Math.floor((Date.now() - startTime) / 1000);
-            timeSinceToastElement.textContent = `${secondsPassed} seconds ago`;
-        }, 1000);
+//         // Update the time every second
+//         const intervalId = setInterval(() => {
+//             const secondsPassed = Math.floor((Date.now() - startTime) / 1000);
+//             timeSinceToastElement.textContent = `${secondsPassed} seconds ago`;
+//         }, 1000);
 
-        // When the toast is hidden, clear the interval
-        toastNotif.addEventListener('hidden.bs.toast', () => {
-            toastNotif.remove();
-        });
-    });
-    toast.show();
-}
+//         // When the toast is hidden, clear the interval
+//         toastNotif.addEventListener('hidden.bs.toast', () => {
+//             console.log("hide toast")
+//             toastNotif.remove();
+//         });
+//     });
+//     toast.show();
+// }
+
