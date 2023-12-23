@@ -32,6 +32,12 @@
     }
 }
 
+@media only screen and (max-height: 750px) {
+    .lowerRow {
+        max-height: 200px;
+    }
+}
+
 .fill {
     height: 100%;
 }
