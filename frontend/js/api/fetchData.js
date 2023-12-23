@@ -145,7 +145,3 @@ export const fetchMatchHistory = async (method, data = null) => {
     return fetchApi(method, 'match/', null, data);
 };
 
-// const objectData = new Object();
-// objectData.status = "ING"
-// const response = await fetchUser('PATCH', null, objectData);
-// if (!response) { return }
