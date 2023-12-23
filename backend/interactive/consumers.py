@@ -37,8 +37,10 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         try:
             data = json.loads(text_data)
             message_type: str = data["type"]
-            if message_type == "Refresh":
+            if message_type in ["Refresh", "Social"]:
                 rType: str = data["rType"]
+                if message_type == "Social":
+                    other_user_id: int = data["other_user_id"]
         except Exception:
             await self.error_handler("JSON")
             return
@@ -50,7 +52,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             case "Refresh":
                 await self.send_specific_refresh(self.user_id, "Refresh", rType)
             case "Social":
-                await self.send_social()
+                await self.send_specific_social(self.user_id, "Social", rType, other_user_id)
             case _:
                 await self.error_handler("argument")
 
@@ -163,6 +165,13 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             "interactive",
             create_layer_dict(
                 "send_message_echo", {"type": type, "id": user_id, "rType": rType}, self.channel_name)
+            )
+    
+    async def send_specific_social(self, user_id: int, type: str, rType: str, other_user_id: int):
+        await self.channel_layer.group_send(
+            "interactive",
+            create_layer_dict(
+                "send_message_echo", {"type": "Refresh", "id": user_id, "rType": rType, "other_user_id": other_user_id}, self.channel_name)
             )
 
     async def error_handler(self, error: str):

@@ -1,7 +1,8 @@
-import { fetchFriendChange } from '../../api/fetchData.js';
+import { fetchFriend, fetchFriendChange } from '../../api/fetchData.js';
 import { userRequestCardComponent } from '../../components/userRequestCard/userRequestCard.js';
 import { assembler } from '../../api/assembler.js';
 import { handleFriendAction } from './utils.js';
+import { displayFriend } from './home.js';
 
 export async function updateSocial() {
 
@@ -17,7 +18,7 @@ export async function updateSocial() {
     updateSocialFriend(userRequestTemplate, allPendingRequests);
     // updateSocialInvite(clonedNode);
     updateSocialBadge();
-
+    displayFriend();
 }
 
 async function updateSocialFriend(userRequestTemplate, allPendingRequests) {

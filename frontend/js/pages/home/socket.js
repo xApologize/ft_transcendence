@@ -80,6 +80,7 @@ const interactiveSocket = {
     refresh_handler: function(data) {
         const id = data.id;
         const refresh_type = data.rType;
+        const other_user_id = data.other_user_id;
         if (!id || !refresh_type){
             console.error("Refresh Handler error");
             return;
@@ -95,7 +96,9 @@ const interactiveSocket = {
                 console.log("id", id)
                 updateSpecificUser(id);
                 break;
-            case "Social":
+            case "UpdateSocial":
+                console.log("id:", id)
+                console.log("other_user_id:", other_user_id)
                 updateSocial();
                 break;
             default:

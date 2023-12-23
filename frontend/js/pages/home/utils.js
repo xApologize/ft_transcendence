@@ -30,10 +30,10 @@ export async function handleFriendAction(actionObj) {
     const apiParam = { id: userID, action };
     const method = actionToMethod[action];
     const response = await fetchFriendChange(method, apiParam);
-    interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Refresh", "rType": "Social"}));
     if (!response) {
         return;
     }
+    interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Social", "rType": "UpdateSocial", 'other_user_id': userID}));
     
     const assemble = await assembler(response);
     const responseStatus = response.status;
@@ -148,8 +148,6 @@ export function setStatus(user) {
 }
 
 //////////////////////////// SOCKET FUNCTIONS ////////////////////////////
-// Les login/logout ne sont pas parfait.
-// Les users ne seront plus en ordre online/offline dans les friends.
 
 // To use when user update his profile (avatar/nickname)
 export async function updateSpecificUser(userID) {
@@ -205,3 +203,19 @@ export async function removeUser(userID) {
         }
     });
 }
+
+// export async function receiveFriendRequest() {
+
+// }
+
+// export async function sendFriendRequest() {
+
+// }
+
+// export async function cancelFriendRequest() {
+
+// }
+
+// export async function acceptFriendRequest() {
+
+// }
