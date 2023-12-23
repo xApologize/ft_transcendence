@@ -53,13 +53,46 @@ async function addNewUser(user) {
     const everyoneContainer = document.getElementById('userDisplay');
     const friendContainer = document.getElementById('friendDisplay');
     const templateUser = await getTemplateUser(user);
+
     if (!templateUser) return;
-    
-    console.log(templateUser)
-    appendUserToContainer(everyoneContainer, templateUser);
+
+    appendToContainer(everyoneContainer, templateUser, user.id);
     if (await checkIfFriend(user)) {
-        appendUserToContainer(friendContainer, templateUser.cloneNode(true)); // Clone for friend container
+        await changeFriendStatus(user.id, friendContainer, templateUser);
     }
+}
+
+async function changeFriendStatus(userID, container, templateUser) {
+    const friendCard = container.querySelector(`div[data-id="${userID}"]`);
+
+    if (friendCard) {
+        updateBadgeColor(friendCard, container);
+    } else {
+        prependToContainer(container, templateUser.cloneNode(true), userID);
+    }
+}
+
+function updateBadgeColor(friendCard, container) {
+    const statusBadge = friendCard.querySelector('#badge');
+    if (statusBadge) {
+        statusBadge.style.backgroundColor = setStatus('ONL');
+        container.removeChild(friendCard);
+        container.insertBefore(friendCard, container.firstChild);
+    }
+}
+
+function appendToContainer(container, element, userID) {
+    if (!container.querySelector(`div[data-id="${userID}"]`)) {
+        element.setAttribute('data-id', userID); // Set the unique data-id attribute
+        container.appendChild(element);
+    } else {
+        console.log(`User with ID ${userID} already exists in the container.`);
+    }
+}
+
+function prependToContainer(container, element, userID) {
+    element.setAttribute('data-id', userID); // Ensure each element has a unique data-id
+    container.insertBefore(element, container.firstChild);
 }
 
 async function getTemplateUser(user) {
@@ -74,14 +107,9 @@ async function getTemplateUser(user) {
 async function checkIfFriend(user) {
     const response = await fetchFriendChange('GET', { id: user.id });
     if (!response) return false;
-
+    
     const friendStatus = await assembler(response);
     return friendStatus && friendStatus.state === 'friend';
-}
-
-function appendUserToContainer(container, userElement) {
-    container.appendChild(document.createElement('hr'));
-    container.appendChild(userElement);
 }
 
 function updateOtherUsers(user) {
@@ -157,13 +185,16 @@ export async function removeUser(userID) {
     const friendContainer = document.getElementById('friendDisplay');
 
     const userCards = document.querySelectorAll(`div[data-id="${userID}"]`);
-    console.log(userCards)
     userCards.forEach(card => {
         if (everyoneContainer.contains(card)) {
             everyoneContainer.removeChild(card);
         } else if (friendContainer.contains(card)) {
             const statusBadge = card.querySelector('#badge');
-            statusBadge.style.backgroundColor = setStatus('OFF');
+            if (statusBadge) {
+                statusBadge.style.backgroundColor = setStatus('OFF');
+                friendContainer.removeChild(card);
+                friendContainer.appendChild(card);
+            }
         }
     });
 }

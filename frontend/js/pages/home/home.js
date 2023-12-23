@@ -15,6 +15,7 @@ import { loadModel } from '../game/src/systems/Loader.js';
 import interactiveSocket from './socket.js';
 import { navigateTo } from '../../router.js';
 import { displayToast } from './toastNotif.js';
+import { newUser } from './utils.js';
 ////////
 // Quand user Update son profil (avatar/nickname) -> Socket call function: not done (update only 1 user)
 export async function showHome() {
@@ -27,7 +28,8 @@ export async function showHome() {
             navigateTo('/')
             return;
         }
-        document.getElementById('displayNotification').addEventListener('click', displayToast);
+
+        // document.getElementById('displayNotification').addEventListener('click', displayToast);
         new bootstrap.Modal(document.getElementById('otherUserInfo'));
         new bootstrap.Modal(document.getElementById('inviteGameModal'));
 

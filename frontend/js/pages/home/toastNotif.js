@@ -3,7 +3,6 @@ import { removeUser } from './utils.js';
 
 let toastQueue = [];
 export function displayToast() {
-    removeUser(5);
     if (document.querySelectorAll('#toastContainer .toast.show').length >= 5) {
         toastQueue.push(prepToastInfo());
     } else {
