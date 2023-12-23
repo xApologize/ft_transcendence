@@ -2,6 +2,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from interactive.models import LookingForMatch, MatchInvite
 from asgiref.sync import sync_to_async
 from user_profile.models import User
+from channels.layers import get_channel_layer
 import json
 
 
@@ -15,9 +16,11 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             await self.channel_layer.group_add(
                 "interactive", self.channel_name)
             self.waiting: bool = False
+            await self.set_user_status("ONL")
+            await self.send_specific_refresh(self.user_id, "Refresh", "Login")
 
     async def disconnect(self, close_code: any):
-        print("Disconected interactive socket code:", close_code)
+        print("Disconected interactive socket code:", close_code) 
         if self.waiting is True:
             print("REMOVED ENTRY FROM DB")
             match_entry = await sync_to_async(
@@ -27,25 +30,27 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             "interactive",
             self.channel_name
         )
-        # await self.channel_layer.group_send(
-        #         "interactive",
-        #         create_layer_dict(
-        #             "send_message_echo", {"type": "Refresh"}, self.channel_name)
-        #         )
+        await self.set_user_status("OFF")
+        await self.send_specific_refresh(self.user_id, "Refresh", "Logout")
 
     async def receive(self, text_data: any):
         try:
             data = json.loads(text_data)
-            message_type = data["type"]
+            message_type: str = data["type"]
+            if message_type == "Refresh":
+                rType: str = data["rType"]
         except Exception:
             await self.error_handler("JSON")
+            return
         match message_type:
             case "Find Match":
                 await self.find_match()
             case "Send Invite":
                 await self.send_invite(data)
             case "Refresh":
-                await self.handle_refresh(data)
+                await self.send_specific_refresh(self.user_id, "Refresh", rType)
+            case "Social":
+                await self.send_social()
             case _:
                 await self.error_handler("argument")
 
@@ -93,8 +98,10 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         match.paddleB = self.user_id
         try:
             await sync_to_async(match.save)()
-            handle_a: dict = await self.create_math_handle(match.paddleA, match.paddleB, "A")
-            handle_b: dict = await self.create_math_handle(match.paddleA, match.paddleB, "B")
+            player_a_nick = await self.get_user_nickname(match.paddleA)
+            player_b_nick = await self.get_user_nickname(match.paddleB)
+            handle_a: dict = await self.create_math_handle(match.paddleA, match.paddleB, "A", player_a_nick, player_b_nick)
+            handle_b: dict = await self.create_math_handle(match.paddleA, match.paddleB, "B", player_b_nick, player_a_nick)
             await self.channel_layer.group_send(
                 "interactive",
                 create_layer_dict(
@@ -108,13 +115,19 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             print("Setup match exception caught:", e)
             await self.error_handler("lfm")
 
-    async def create_math_handle(self, first_id: int, second_id: int, paddle: str) -> dict:
+    async def create_math_handle(self, first_id: int, second_id: int, paddle: str, me: str, opponent: str) -> dict:
         handle = {
             "type": "Found Match",
             "handle": f"ws/pong/{first_id}{second_id}/{paddle}",
-            "paddle": paddle
+            "paddle": paddle,
+            "me": me,
+            "opponent": opponent
         }
         return handle
+
+    async def get_user_nickname(self, user_id: int) -> str:
+        user = await sync_to_async(User.objects.get)(pk=user_id)
+        return user.nickname
 
     async def create_invite_request(self, sender: id, recipient: id) -> dict:
         handle = {
@@ -134,7 +147,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
                 recipient=recipient_id
             )
         except Exception:
-            print("Error")  # TODO add handling error
+            print("No match invite could be created")
             return
         request: dict = await self.create_invite_request(self.user_id, recipient_id)
         await self.channel_layer.group_send(
@@ -145,16 +158,40 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
                 }
             )
 
-    async def handle_refresh(self, data: any):
+    async def send_specific_refresh(self, user_id: int, type: str, rType: str):
         await self.channel_layer.group_send(
             "interactive",
             create_layer_dict(
-                "send_message_echo", {"type": "refresh"}, self.channel_name)
+                "send_message_echo", {"type": type, "id": user_id, "rType": rType}, self.channel_name)
             )
 
     async def error_handler(self, error: str):
-        self.send(text_data=json.dumps({"type": "Invalid", "error": error}))
+        await self.send(text_data=json.dumps({"type": "Invalid", "error": error}))
+    
+    async def set_user_status(self, status: str):
+        user: User = await sync_to_async(User.objects.get)(pk=self.user_id)
+        user.status = status
+        await sync_to_async(user.save)()
+    
+    async def send_social(self):
+        await self.channel_layer.group_send(
+            "interactive",
+            create_layer_dict(
+                "send_message_echo", {"type": "Social", "id": self.user_id}, self.channel_name)
+            )
 
 
 def create_layer_dict(type: str, message: str, sender: str) -> dict:
     return {"type": type, "message": message, "sender": sender}
+
+async def send_refresh(user_id: int) -> None:
+    if user_id is None:
+        return
+    channel_layer = get_channel_layer()
+    if channel_layer is not None:
+        await channel_layer.group_send(
+            "interactive", {
+                "type": "send_message_echo", 
+                "message": {"type": "Refresh", "id": user_id, "rType": "User"}
+                }
+            )

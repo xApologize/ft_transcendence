@@ -147,8 +147,6 @@ class Login(View):
         elif user.status == "ONL":
             return JsonResponse({'error': 'This account is already logged in.'}, status=409)
         else:
-            user.status = "ONL"
-            user.save()
             response: HttpResponse = JsonResponse({'success': 'Login successful.'})
             primary_key = User.objects.get(nickname=nickname).pk
             return first_token(response, primary_key)
@@ -195,8 +193,6 @@ class Login2FA(View):
         elif user.status == "ONL":
             return JsonResponse({'error': 'This account is already logged in.'}, status=409)
         else:
-            user.status = "ONL"
-            user.save()
             response: HttpResponse = JsonResponse({'success': 'Login successful.'})
             response.delete_cookie('2fa_token')
             primary_key = User.objects.get(nickname=user.nickname).pk
@@ -212,8 +208,8 @@ class Logout(View):
         except Http404 as e:
             return HttpResponse(str(e), status=404)
         # Check if status is not OFF ?
-        user.status = "OFF"
-        user.save()
+        # user.status = "OFF"
+        # user.save()
         response : HttpResponse = HttpResponse('Logout Sucessful', status=200)
         response.delete_cookie('refresh_jwt')
         return response

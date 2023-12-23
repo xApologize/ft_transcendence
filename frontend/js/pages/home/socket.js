@@ -1,6 +1,8 @@
 import { logoutUser } from '../../components/userCard/userCard.js'
 import { World } from '../game/src/World.js';
-import { displayEveryone } from './home.js'
+import { displayEveryone, displayFriend } from './home.js'
+import { updateSocial } from './social.js'
+import { newUser, removeUser, updateSpecificUser } from './utils.js'
 
 const interactiveSocket = {
     interactive_socket: null,
@@ -28,18 +30,6 @@ const interactiveSocket = {
     },
 
     parseMessage: function(message) {
-        const data = JSON.parse(message.data);
-        if ( data.type == "Found Match" ) {
-			World._instance.joinMatch( data.handle, data.paddle );
-        } else if (type == "Refresh"){
-            displayEveryone();
-        } else {
-            console.error("Weird data received from WS")
-        }
-    },
-
-
-    parseMessage: function(message) {
         let data;
         try{
             data = JSON.parse(message.data);
@@ -52,7 +42,7 @@ const interactiveSocket = {
                 World._instance.joinMatch(data.handle, data.paddle);
                 break;
             case "Refresh":
-                displayEveryone();
+                this.refresh_handler(data);
                 break;
             case "Invalid":
                 this.interactive_error_handler(data);
@@ -73,17 +63,43 @@ const interactiveSocket = {
 
     interactive_error_handler: function(message) {
         const error_type = message.error;
-        if (error_type){
-            console.log("AH");
+        if (!error_type){
+            console.error("No error message provided");
             return;
         }
-        console.log("Error", error_type);
+        console.error("Error", error_type);
     },
 
     closeSocket: function() {
         if (this.interactive_socket) {
             this.interactive_socket.close();
             this.interactive_socket = null;
+        }
+    },
+
+    refresh_handler: function(data) {
+        const id = data.id;
+        const refresh_type = data.rType;
+        if (!id || !refresh_type){
+            console.error("Refresh Handler error");
+            return;
+        }
+        switch (data.rType) {
+            case "Login":
+                newUser(id);
+                break;
+            case "Logout":
+                removeUser(id);
+                break;
+            case "User":
+                console.log("id", id)
+                updateSpecificUser(id);
+                break;
+            case "Social":
+                updateSocial();
+                break;
+            default:
+                console.error("Rtype error");
         }
     }
 };

@@ -81,7 +81,7 @@ export async function showHome() {
 // Init Page function  //
 /////////////////////////
 
-async function displayFriend() {
+export async function displayFriend() {
     const allFriends = await fetchFriend('GET');
     if (!allFriends || !allFriends.ok) {
         // if !allFriends, c'est que le status == 401 et si !allFriends.ok == Aucun Ami
@@ -113,10 +113,9 @@ async function initPage() {
     }
     displayUserCard(userAssembled);
     displayMatchHistory(userAssembled);
-
-    displayEveryone()
-    displayFriend()
-    updateSocial()
+    displayEveryone();
+    displayFriend();
+    updateSocial();
 }
 
 ///////////////////////////////

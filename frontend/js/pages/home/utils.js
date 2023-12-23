@@ -2,6 +2,7 @@ import { fetchFriendChange, fetchUser } from '../../api/fetchData.js';
 import { assembler } from '../../api/assembler.js';
 import { updateOtherFriendButton, updateStatusMsg } from './otherUserProfile.js';
 import { updateSocialFriendCard } from './social.js';
+import interactiveSocket from './socket.js';
 import { userTemplateComponent } from '../../components/userTemplate/userTemplate.js';
 import { fillOtherUserInfo } from './leftColumn.js';
 import { displayOtherUserProfile } from './otherUserProfile.js';
@@ -29,6 +30,7 @@ export async function handleFriendAction(actionObj) {
     const apiParam = { id: userID, action };
     const method = actionToMethod[action];
     const response = await fetchFriendChange(method, apiParam);
+    interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Refresh", "rType": "Social"}));
     if (!response) {
         return;
     }
