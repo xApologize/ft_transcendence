@@ -160,10 +160,8 @@ export async function removeUser(userID) {
     console.log(userCards)
     userCards.forEach(card => {
         if (everyoneContainer.contains(card)) {
-            console.log("Remove from everyone!")
             everyoneContainer.removeChild(card);
         } else if (friendContainer.contains(card)) {
-            console.log('Change in friend!')
             const statusBadge = card.querySelector('#badge');
             statusBadge.style.backgroundColor = setStatus('OFF');
         }
