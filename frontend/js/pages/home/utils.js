@@ -29,7 +29,7 @@ export async function handleFriendAction(actionObj) {
     const apiParam = { id: userID, action };
     const method = actionToMethod[action];
     const response = await fetchFriendChange(method, apiParam);
-    interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Social"}));
+    interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Refresh", "aa": "Social"}));
     if (!response) {
         return;
     }

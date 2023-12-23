@@ -17,7 +17,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
                 "interactive", self.channel_name)
             self.waiting: bool = False
             await self.set_user_status("ONL")
-            await self.send_refresh()
+            await self.send_specific_refresh(self.user_id, "Refresh", "Login")
 
     async def disconnect(self, close_code: any):
         print("Disconected interactive socket code:", close_code) 
@@ -31,21 +31,24 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             self.channel_name
         )
         await self.set_user_status("OFF")
-        await send_refresh()
+        await self.send_specific_refresh(self.user_id, "Refresh", "Logout")
 
     async def receive(self, text_data: any):
         try:
             data = json.loads(text_data)
-            message_type = data["type"]
+            message_type: str = data["type"]
+            if message_type == "Refresh":
+                rType: str = data["rType"]
         except Exception:
             await self.error_handler("JSON")
+            return
         match message_type:
             case "Find Match":
                 await self.find_match()
             case "Send Invite":
                 await self.send_invite(data)
             case "Refresh":
-                await self.send_refresh()
+                await self.send_specific_refresh(self.user_id, "Refresh", rType)
             case "Social":
                 await self.send_social()
             case _:
@@ -144,7 +147,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
                 recipient=recipient_id
             )
         except Exception:
-            print("Error")  # TODO add handling error
+            print("No match invite could be created")
             return
         request: dict = await self.create_invite_request(self.user_id, recipient_id)
         await self.channel_layer.group_send(
@@ -155,15 +158,15 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
                 }
             )
 
-    async def send_refresh(self):
+    async def send_specific_refresh(self, user_id: int, type: str, rType: str):
         await self.channel_layer.group_send(
             "interactive",
             create_layer_dict(
-                "send_message_echo", {"type": "Refresh"}, self.channel_name)
+                "send_message_echo", {"type": type, "id": user_id, "rType": rType}, self.channel_name)
             )
 
     async def error_handler(self, error: str):
-        self.send(text_data=json.dumps({"type": "Invalid", "error": error}))
+        await self.send(text_data=json.dumps({"type": "Invalid", "error": error}))
     
     async def set_user_status(self, status: str):
         user: User = await sync_to_async(User.objects.get)(pk=self.user_id)
@@ -181,12 +184,14 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
 def create_layer_dict(type: str, message: str, sender: str) -> dict:
     return {"type": type, "message": message, "sender": sender}
 
-async def send_refresh() -> None:
+async def send_refresh(user_id: int) -> None:
+    if user_id is None:
+        return
     channel_layer = get_channel_layer()
     if channel_layer is not None:
         await channel_layer.group_send(
             "interactive", {
                 "type": "send_message_echo", 
-                "message": {"type": "Refresh"}
+                "message": {"type": "Refresh", "id": user_id, "rType": "User"}
                 }
             )
