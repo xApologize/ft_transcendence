@@ -115,8 +115,9 @@ async function checkIfFriend(user) {
     return friendStatus && friendStatus.state === 'friend';
 }
 
+
 function updateOtherUsers(user) {
-    const userCards = document.querySelectorAll(`div.card[data-id="${user.id}"]`);
+    const userCards = document.querySelectorAll(`div[data-id="${user.id}"]`);
     userCards.forEach(card => {
         const avatarElement = card.querySelector('#user-avatar');
         const nameElement = card.querySelector('#user-name');
@@ -155,10 +156,11 @@ export async function updateSpecificUser(userID) {
     if (!response)
         return;
     const assemble = await assembler(response);
-    if (assemble.users) {
-        updateOtherUsers(assemble.users[0]);
+    if (typeof assemble !== 'object' || assemble === null) {
+        console.log(assemble);
+        return;
     } else {
-        console.error('Cannot find user to update with Socket');
+        updateOtherUsers(assemble[0]);
     }
 }
 
