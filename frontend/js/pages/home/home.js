@@ -15,6 +15,7 @@ import { loadModel } from '../game/src/systems/Loader.js';
 import interactiveSocket from './socket.js';
 import { navigateTo } from '../../router.js';
 import { Opponent } from '../game/src/components/Opponent.js';
+import { toastComponent } from '../../components/toast/toast.js';
 ////////
 // Quand user Update son profil (avatar/nickname) -> Socket call function: not done (update only 1 user)
 export async function showHome() {
@@ -27,6 +28,7 @@ export async function showHome() {
             navigateTo('/')
             return;
         }
+        document.getElementById('displayNotification').addEventListener('click', displayToast);
         new bootstrap.Modal(document.getElementById('otherUserInfo'));
         new bootstrap.Modal(document.getElementById('inviteGameModal'));
 
@@ -54,6 +56,7 @@ export async function showHome() {
 
         const findGameBtn = document.getElementById('findGame');
         findGameBtn.addEventListener('click', () => {
+            document.getElementById('toastContainer').classList.add('d-none')
             document.getElementById('ui').classList.add('d-none');
             world.currentGameState = 'lookingForPlayer';
             document.getElementById('lfp').classList.remove('d-none');
@@ -162,3 +165,25 @@ function responsiveLeftColumn() {
     });
 }
 // 
+
+async function displayToast() {
+    const toastNotif = await toastComponent();
+    document.getElementById('toastContainer').append(toastNotif);
+    var toast = new bootstrap.Toast(toastNotif);
+    toastNotif.addEventListener('shown.bs.toast', () => {
+        const startTime = Date.now();
+        const timeSinceToastElement = toastNotif.querySelector('#timeSinceToast');
+
+        // Update the time every second
+        const intervalId = setInterval(() => {
+            const secondsPassed = Math.floor((Date.now() - startTime) / 1000);
+            timeSinceToastElement.textContent = `${secondsPassed} seconds ago`;
+        }, 1000);
+
+        // When the toast is hidden, clear the interval
+        toastNotif.addEventListener('hidden.bs.toast', () => {
+            toastNotif.remove();
+        });
+    });
+    toast.show();
+}
