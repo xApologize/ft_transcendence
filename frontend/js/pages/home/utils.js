@@ -4,6 +4,7 @@ import { updateOtherFriendButton, updateStatusMsg } from './otherUserProfile.js'
 import { updateSocialFriendCard } from './social.js';
 import { userTemplateComponent } from '../../components/userTemplate/userTemplate.js';
 import { fillOtherUserInfo } from './leftColumn.js';
+import { displayOtherUserProfile } from './otherUserProfile.js';
 
 export async function handleFriendAction(actionObj) {
     const actionToMethod = {
@@ -56,6 +57,8 @@ async function addNewUser(user) {
 
     if (!templateUser) return;
 
+    const seeProfileBtn = templateUser.querySelector('.card');
+    seeProfileBtn.addEventListener('click', displayOtherUserProfile)
     appendToContainer(everyoneContainer, templateUser, user.id);
     if (await checkIfFriend(user)) {
         await changeFriendStatus(user.id, friendContainer, templateUser);
