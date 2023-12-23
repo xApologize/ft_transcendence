@@ -2,11 +2,9 @@ import { toastComponent } from '../../components/toast/toast.js';
 
 let toastQueue = [];
 export function displayToast() {
-    // If there are already 5 toasts displayed, queue the request
     if (document.querySelectorAll('#toastContainer .toast.show').length >= 5) {
         toastQueue.push(prepToastInfo());
     } else {
-        // Less than 5 toasts are displayed, so create and show this one immediately
         const toastInfo = prepToastInfo();
         createToast(toastInfo);
     }
