@@ -6,7 +6,8 @@ import { handleFriendAction } from './utils.js';
 export async function updateSocial() {
 
     const userRequestTemplate = await userRequestCardComponent();
-    if (!userRequestTemplate) { return }
+    if (!userRequestTemplate) 
+        return
 
     const response = await fetchFriendChange('GET', {}, 'get/');
     if (!response)

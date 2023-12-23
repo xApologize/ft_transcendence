@@ -207,6 +207,7 @@ class World {
 	endMatch() {
 		this.camera.viewLarge( 1 , function() {
 			document.getElementById('ui').classList.remove("d-none");
+			document.getElementById('toastContainer').classList.remove("d-none");
 		} );
 		this.player.delete();
 		this.player = undefined;

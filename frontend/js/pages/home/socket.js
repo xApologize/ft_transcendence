@@ -2,7 +2,7 @@ import { logoutUser } from '../../components/userCard/userCard.js'
 import { World } from '../game/src/World.js';
 import { displayEveryone, displayFriend } from './home.js'
 import { updateSocial } from './social.js'
-import { newUserLogin, newUserLogout, updateSpecificUser} from './utils.js'
+import { newUser, removeUser, updateSpecificUser } from './utils.js'
 
 const interactiveSocket = {
     interactive_socket: null,
@@ -84,35 +84,22 @@ const interactiveSocket = {
             console.error("Refresh Handler error");
             return;
         }
-        console.log("Deserialized data", id, refresh_type);
         switch (data.rType) {
             case "Login":
-                console.log("LOGIN NOW");
-                this.display();
+                newUser(id);
                 break;
             case "Logout":
-                console.log("LOGUT NOW LMAO");
-                this.display();
+                removeUser(id);
                 break;
             case "User":
-                console.log("USER HERE");
-                this.display();
+                console.log("id", id)
+                updateSpecificUser(id);
                 break;
             case "Social":
-                console.log("SOCIAL NOW");
                 updateSocial();
                 break;
             default:
                 console.error("Rtype error");
-        }
-    },
-
-    display: function() {
-        const test = document.getElementsByClassName('active-dark')[0].id;
-        if (test === "everyoneBtn"){
-            displayEveryone();
-        } else {
-            displayFriend();
         }
     }
 };

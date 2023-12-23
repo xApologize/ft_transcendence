@@ -2,7 +2,7 @@
     <div class="row fill">
         <div id="sceneContainer" class="vw-100 vh-100 p-0"></div>
 
-        <div id="lfp" class="d-none centered position-absolute">
+        <div id="lfp" class="d-none text-center position-absolute">
             Looking for player...
         </div>
 
@@ -75,6 +75,12 @@
                                 >
                                     Find game
                                 </button>
+                                <!-- <button
+                                    id="displayNotification"
+                                    class="btn shadow-none btn-primary textWhite"
+                                >
+                                    displayNotif
+                                </button> -->
                             </div>
                         </div>
                         <div id="userCol" class="col-12 col-md-9 col-xl-9">
@@ -88,14 +94,34 @@
                                 <div class="lowerRow bg-main-second">
                                     <h1 class="m-3 text-center">
                                         Match history
-                                    </h1>
-                                    <div id="matchHistory"></div>
+                                    </h1>    
+                                    <div class="row">
+                                        <div class="col text-center p-0">
+                                            <p>Date</p>
+                                        </div>
+                                        <div class="col text-center p-0">
+                                            <p>Winner</p>
+                                        </div>
+                                        <div class="col text-center p-0">
+                                            <p>Score</p>
+                                        </div>
+                                        <div class="col text-center p-0">
+                                            <p>Loser</p>
+                                        </div>
+                                        <div class="col text-center p-0">
+                                            <p>Score</p>
+                                        </div>
+                                    </div>
+                                    <div id="matchHistory" class="matchHistoryBox"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+        <!-- Notification Container -->
+        <div id="toastContainer" class="toast-container end-0 top-0">
         </div>
         <!-- Invite Game Modal -->
         <div

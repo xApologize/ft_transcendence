@@ -12,53 +12,25 @@ export async function matchHistoryComponent() {
 }
 
 export async function displayMatchHistory(userStatJson) {
-    let matchHistoryContainer = document.getElementById('matchHistory');
-    let matchHistory = await matchHistoryComponent();
-    matchHistoryContainer.appendChild(matchHistory);
+    const matchHistoryContainer = document.getElementById('matchHistory');
+    const matchHistory = await matchHistoryComponent();
+    let index = 0;
 
-    let matchHistoryWinner = document.getElementById('winnerUsername');
-    let matchHistoryLoser = document.getElementById('loserUsername');
-    let matchHistoryWinScore = document.getElementById('winnerScore');
-    let matchHistoryLoseScore = document.getElementById('loserScore');
+    userStatJson.played_matches.forEach((matches) => {
+        const matchEntry = matchHistory.cloneNode(true);
 
-    userStatJson.played_matches.forEach((game) => {
-        const listElement = document.createElement('li');
-        listElement.classList.add('bg-main-second');
-        listElement.classList.add('list-group-item');
-        listElement.classList.add('bg-transparent');
-        listElement.classList.add('border-0');
-        listElement.classList.add('textWhite');
-        listElement.innerHTML = game.winner_username;
-        matchHistoryWinner.appendChild(listElement);
-    });
-    userStatJson.played_matches.forEach((game) => {
-        const listElement = document.createElement('li');
-        listElement.classList.add('bg-main-second');
-        listElement.classList.add('list-group-item');
-        listElement.classList.add('bg-transparent');
-        listElement.classList.add('border-0');
-        listElement.classList.add('textWhite');
-        listElement.innerHTML = game.winner_score;
-        matchHistoryWinScore.appendChild(listElement);
-    });
-    userStatJson.played_matches.forEach((game) => {
-        const listElement = document.createElement('li');
-        listElement.classList.add('bg-main-second');
-        listElement.classList.add('list-group-item');
-        listElement.classList.add('bg-transparent');
-        listElement.classList.add('border-0');
-        listElement.classList.add('textWhite');
-        listElement.innerHTML = game.loser_username;
-        matchHistoryLoser.appendChild(listElement);
-    });
-    userStatJson.played_matches.forEach((game) => {
-        const listElement = document.createElement('li');
-        listElement.classList.add('bg-main-second');
-        listElement.classList.add('list-group-item');
-        listElement.classList.add('bg-transparent');
-        listElement.classList.add('border-0');
-        listElement.classList.add('textWhite');
-        listElement.innerHTML = game.loser_score;
-        matchHistoryLoseScore.appendChild(listElement);
+        matchEntry.querySelector('#date').textContent = matches.date_of_match;
+        matchEntry.querySelector('#winner').textContent =
+            matches.winner_username;
+        matchEntry.querySelector('#winnerScore').textContent =
+            matches.winner_score;
+        matchEntry.querySelector('#loser').textContent = matches.loser_username;
+        matchEntry.querySelector('#loserScore').textContent =
+            matches.loser_score;
+        matchEntry.classList.add('hover-row-accent');
+        matchEntry.id = 'matchEntry' + index;
+
+        matchHistoryContainer.appendChild(matchEntry);
+        index++;
     });
 }
