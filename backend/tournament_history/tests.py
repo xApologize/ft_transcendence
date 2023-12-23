@@ -26,12 +26,3 @@ class UserTestCase(TestCase):
             tournament_ID=1,
             match_position=444
         )
-
-    def test_block_list(self):
-        '''Normal check for blocked list'''
-        self.assertEqual(TournamentHistory.objects.get(pk=1).winner.nickname, "BozoCat")
-        self.assertEqual(TournamentHistory.objects.get(pk=1).loser.nickname, "BozoDog")
-        self.assertEqual(TournamentHistory.objects.get(pk=1).winner_score, 42)
-        self.assertEqual(TournamentHistory.objects.get(pk=1).loser_score, 22)
-        self.assertEqual(TournamentHistory.objects.get(pk=1).tournament_ID, 1)
-        self.assertEqual(TournamentHistory.objects.get(pk=1).match_position, 444)

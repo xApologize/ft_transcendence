@@ -60,14 +60,6 @@
         }
     },
     {
-        "model": "block_list.BlockList",
-        "pk": 1,
-        "fields": {
-            "blocker": 1,
-            "blocked_user": 2
-        }
-    },
-    {
         "model": "friend_list.FriendList",
         "pk": 1,
         "fields": {
