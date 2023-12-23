@@ -1,6 +1,6 @@
 import { logoutUser } from '../../components/userCard/userCard.js'
 import { World } from '../game/src/World.js';
-import { displayEveryone, displayFriend } from './home.js'
+import { displayEveryone} from './home.js'
 import { updateSocial } from './social.js'
 import { newUser, removeUser, updateSpecificUser } from './utils.js'
 
@@ -29,6 +29,22 @@ const interactiveSocket = {
         }
     },
 
+    closeSocket: function() {
+        if (this.interactive_socket) {
+            this.interactive_socket.close();
+            this.interactive_socket = null;
+        }
+    },
+
+    sendMessageSocket: function(message) {
+        if (this.interactive_socket) {
+            this.interactive_socket.send(message);
+        }
+        else {
+            console.error("CRITICAL ERROR SOCKET WAS NOT SETUP, you should never see this, if you do let me know. Dave");
+        }
+    },
+
     parseMessage: function(message) {
         let data;
         try{
@@ -52,31 +68,6 @@ const interactiveSocket = {
         }
     },
 
-    sendMessageSocket: function(message) {
-        if (this.interactive_socket) {
-            this.interactive_socket.send(message);
-        }
-        else {
-            console.error("CRITICAL ERROR SOCKET WAS NOT SETUP, you should never see this, if you do let me know. Dave");
-        }
-    },
-
-    interactive_error_handler: function(message) {
-        const error_type = message.error;
-        if (!error_type){
-            console.error("No error message provided");
-            return;
-        }
-        console.error("Error", error_type);
-    },
-
-    closeSocket: function() {
-        if (this.interactive_socket) {
-            this.interactive_socket.close();
-            this.interactive_socket = null;
-        }
-    },
-
     refresh_handler: function(data) {
         const id = data.id;
         const refresh_type = data.rType;
@@ -92,7 +83,6 @@ const interactiveSocket = {
                 removeUser(id);
                 break;
             case "User":
-                console.log("id", id)
                 updateSpecificUser(id);
                 break;
             case "Social":
@@ -101,6 +91,15 @@ const interactiveSocket = {
             default:
                 console.error("Rtype error");
         }
+    },
+
+    interactive_error_handler: function(message) {
+        const error_type = message.error;
+        if (!error_type){
+            console.error("No error message provided");
+            return;
+        }
+        console.error("Error", error_type);
     }
 };
 
