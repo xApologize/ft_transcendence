@@ -18,16 +18,26 @@ White='\033[0;37m'        # White
 MIGRATION_FLAG="/usr/src/app/.flag"
 
 while true; do
+    if nc -z -w 2 redis 6379; then
+    echo -e "${Green}Redis is up!"
+    sleep 2
+    break
+    else
+        echo -e "${Red}Redis isn't up...waiting...😡"
+        sleep 2
+    fi
+done
+
+while true; do
     if nc -z -w 2 $POSTGRES_HOST $POSTGRES_PORT; then
-        echo -e "${Green}Database is up! Migrating..."
+        echo -e "${Green}Postgres is up! Migrating..."
         python manage.py makemigrations # temp fix
         python manage.py migrate # temp fix
-        python manage.py migrate channels_postgres
         echo -e "${Purple}Seeding data now..."
         python manage.py loaddata seed.json # temp fix
         break
     else
-        echo -e "${Red}Server isn't up...waiting..."
+        echo -e "${Red}Postgres isn't up...waiting..."
         sleep 2
     fi
 done
