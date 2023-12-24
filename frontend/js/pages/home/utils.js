@@ -1,7 +1,7 @@
 import { fetchFriendChange, fetchUser } from '../../api/fetchData.js';
 import { assembler } from '../../api/assembler.js';
 import { updateOtherFriendButton, updateStatusMsg } from './otherUserProfile.js';
-import { updateSocialFriendCard } from './social.js';
+import { updateSocial, updateSocialFriendCard } from './social.js';
 import interactiveSocket from './socket.js';
 import { userTemplateComponent } from '../../components/userTemplate/userTemplate.js';
 import { fillOtherUserInfo } from './leftColumn.js';
@@ -88,7 +88,7 @@ function updateBadgeColor(friendCard, container) {
 
 function appendToContainer(container, element, userID) {
     if (!container.querySelector(`div[data-id="${userID}"]`)) {
-        element.setAttribute('data-id', userID); // Set the unique data-id attribute
+        element.setAttribute('data-id', userID);
         container.appendChild(element);
     } else {
         console.log(`User with ID ${userID} already exists in the container.`);
@@ -96,7 +96,7 @@ function appendToContainer(container, element, userID) {
 }
 
 function prependToContainer(container, element, userID) {
-    element.setAttribute('data-id', userID); // Ensure each element has a unique data-id
+    element.setAttribute('data-id', userID);
     container.insertBefore(element, container.firstChild);
 }
 
@@ -147,64 +147,6 @@ export function setStatus(user) {
     }
 }
 
-//////////////////////////// SOCKET FUNCTIONS ////////////////////////////
-
-// To use when user update his profile (avatar/nickname)
-export async function updateSpecificUser(userID) {
-    const apiParam = { id: userID };
-    const response = await fetchUser('GET', apiParam);
-    if (!response)
-        return;
-    const assemble = await assembler(response);
-    if (typeof assemble !== 'object' || assemble === null) {
-        console.log(assemble);
-        return;
-    } else {
-        updateOtherUsers(assemble[0]);
-    }
-}
-
-// To use when user login
-export async function newUser(userID) {
-    const apiParam = { id: userID };
-    try {
-        const response = await fetchUser('GET', apiParam);
-        if (!response)
-            return;
-
-        const assemble = await assembler(response);
-        if (typeof assemble !== 'object' || assemble === null) {
-            console.log(assemble);
-            return;
-        }
-
-        addNewUser(assemble[0]);
-    } catch (error) {
-        console.error('Error in newUser:', error);
-    }
-}
-
-// To use when user logout
-export async function removeUser(userID) {
-    const everyoneContainer = document.getElementById('userDisplay');
-    const friendContainer = document.getElementById('friendDisplay');
-
-    const userCards = document.querySelectorAll(`div[data-id="${userID}"]`);
-    userCards.forEach(card => {
-        if (everyoneContainer.contains(card)) {
-            everyoneContainer.removeChild(card);
-        } else if (friendContainer.contains(card)) {
-            const statusBadge = card.querySelector('#badge');
-            if (statusBadge) {
-                statusBadge.style.backgroundColor = setStatus('OFF');
-                friendContainer.removeChild(card);
-                friendContainer.appendChild(card);
-            }
-        }
-    });
-}
-
-
 function getMyID() {
     let userID = sessionStorage.getItem('user_id');
     if (!userID) {
@@ -225,11 +167,95 @@ function getMyID() {
     return userID;
 }
 
+//////////////////////////// SOCKET FUNCTIONS ////////////////////////////
+
+// To use when user update his profile (avatar/nickname)
+export async function updateSpecificUser(userID) {
+    console.log("UPDATE USER")
+    const apiParam = { id: userID };
+    const response = await fetchUser('GET', apiParam);
+    if (!response)
+        return;
+    const assemble = await assembler(response);
+    if (typeof assemble !== 'object' || assemble === null) {
+        console.log(assemble);
+        return;
+    } else {
+        updateOtherUsers(assemble[0]);
+    }
+}
+
+// To use when user login
+export async function newUser(userID) {
+    console.log("NEW USER")
+    const apiParam = { id: userID };
+    if (getMyID() == userID) 
+        return;
+    try {
+        const response = await fetchUser('GET', apiParam);
+        if (!response)
+            return;
+        
+        const assemble = await assembler(response);
+        if (typeof assemble !== 'object' || assemble === null) {
+            console.log(assemble);
+            return;
+        }
+        addNewUser(assemble[0]);
+    } catch (error) {
+        console.error('Error in newUser:', error);
+    }
+    console.log("END NEW USER")
+}
+
+// To use when user logout
+export async function removeUser(userID) {
+    console.log("REMOVE USER")
+    const everyoneContainer = document.getElementById('userDisplay');
+    const friendContainer = document.getElementById('friendDisplay');
+
+    const userCards = document.querySelectorAll(`div[data-id="${userID}"]`);
+    userCards.forEach(card => {
+        if (everyoneContainer.contains(card)) {
+            everyoneContainer.removeChild(card);
+        } else if (friendContainer.contains(card)) {
+            const statusBadge = card.querySelector('#badge');
+            if (statusBadge) {
+                statusBadge.style.backgroundColor = setStatus('OFF');
+                friendContainer.removeChild(card);
+                friendContainer.appendChild(card);
+            }
+        }
+    });
+    console.log("END REMOVE USER")
+}
+
 export function handleSocialUpdate(rType, current_user, other_user_id) {
     const userID = getMyID();
-    if (!userID || current_user == userID) {
-        
+    console.log("SOCIAL UPDATE")
+    if (!userID || current_user == userID || other_user_id == userID) {
+        updateSocial();
+        // switch (rType) {
+        //     case "add":
+        //         addFriendSocket();
+        //         break;
+        //     case "cancel":
+        //         cancelFriendSocket();
+        //         break;
+        //     case "accept":
+        //         acceptFriendSocket();
+        //         break;
+        //     case "refuse":
+        //         refuseFriendSocket();
+        //         break;
+        //     case "unfriend":
+        //         unFriendSocket();
+        //         break;
+        //     default:
+        //         console.error("Rtype error in Social Update");
+        // }
     }
+    console.log("END SOCIAL UPDATE")
 }
 
 async function addFriendSocket() {

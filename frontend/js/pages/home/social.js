@@ -82,7 +82,8 @@ function fillRequestTemplate(requestNode, request) {
 
 function updateSocialBadge() {
     const receivedRequestCount = document.getElementById('receivedRequest').childElementCount;
-    const sentRequestCount = document.getElementById('sentRequest').childElementCount;
+    // const sentRequestCount = document.getElementById('sentRequest').childElementCount;
+    const sentRequestCount = 0;
     const inviteGameCount = document.getElementById('inviteGameReceived').childElementCount;
 
     const socialBadge = document.getElementById('socialBadge');
