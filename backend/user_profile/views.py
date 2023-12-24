@@ -26,16 +26,16 @@ class Users(View):
     def get(self, request: HttpRequest):
         status = request.GET.getlist('status')
         nicknames = request.GET.getlist('nickname')
-        id = request.GET.get('id')
+        userID = request.GET.get('id')
 
-        if not nicknames and not status and not id:
+        if not nicknames and not status and not userID:
             return HttpResponseBadRequest('No parameter.')
 
-        if id:
-            if not id.isdigit():
+        if userID:
+            if not userID.isdigit():
                 return HttpResponseBadRequest('Invalid id.')
             try:
-                users = User.objects.filter(id__in=id)
+                users = User.objects.filter(id__in=[int(userID)])
             except User.DoesNotExist:
                 return HttpResponseNotFound('User not found')
         elif nicknames:
