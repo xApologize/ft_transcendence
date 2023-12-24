@@ -60,7 +60,6 @@ const interactiveSocket = {
                 this.refresh_handler(data);
                 break;
             case "Init":
-                console.log("HEY");
                 displayEveryone();
                 break;
             case "Invalid":
