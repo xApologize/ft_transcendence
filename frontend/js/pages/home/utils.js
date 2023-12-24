@@ -33,8 +33,7 @@ export async function handleFriendAction(actionObj) {
     if (!response) {
         return;
     }
-    interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Social", "rType": action, 'other_user_id': userID}));
-    
+    interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Social", "rType": action, "other_user_id": userID}));
     const assemble = await assembler(response);
     const responseStatus = response.status;
     switch (modal) {
@@ -233,6 +232,7 @@ export async function removeUser(userID) {
 export function handleSocialUpdate(rType, current_user, other_user_id) {
     const userID = getMyID();
     console.log("SOCIAL UPDATE")
+    console.log(rType)
     if (!userID || current_user == userID || other_user_id == userID) {
         updateSocial();
         // switch (rType) {
