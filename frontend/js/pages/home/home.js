@@ -105,7 +105,6 @@ async function initPage() {
     const user = await fetchMe('GET');
     if (!user)
         return;
-    interactiveSocket.initSocket()
     const userAssembled = await assembler(user);
     if (!userAssembled || typeof userAssembled !== 'object') {
         console.log('Error assembling user');
@@ -113,7 +112,8 @@ async function initPage() {
     }
     displayUserCard(userAssembled);
     displayMatchHistory(userAssembled);
-    displayEveryone();
+    interactiveSocket.initSocket()
+    //displayEveryone();
     displayFriend();
     updateSocial();
 }

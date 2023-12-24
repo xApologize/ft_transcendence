@@ -7,6 +7,9 @@ import json
 
 
 class UserInteractiveSocket(AsyncWebsocketConsumer):
+    ECHO = "send_message_echo"
+    NO_ECHO = "send_message_no_echo"
+
     async def connect(self):
         self.user_id: int = self.scope.get("user_id")
         if self.user_id < 0:
@@ -18,6 +21,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             self.waiting: bool = False
             await self.set_user_status("ONL")
             await self.send_specific_refresh(self.user_id, "Refresh", "Login")
+            await self.send(text_data=json.dumps({"type": "Init"}))
 
     async def disconnect(self, close_code: any):
         print("Disconected interactive socket code:", close_code) 

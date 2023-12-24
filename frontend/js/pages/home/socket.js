@@ -1,6 +1,6 @@
 import { logoutUser } from '../../components/userCard/userCard.js'
 import { World } from '../game/src/World.js';
-import { displayEveryone} from './home.js'
+import { displayEveryone } from './home.js'
 import { updateSocial } from './social.js'
 import { newUser, removeUser, updateSpecificUser } from './utils.js'
 
@@ -39,8 +39,7 @@ const interactiveSocket = {
     sendMessageSocket: function(message) {
         if (this.interactive_socket) {
             this.interactive_socket.send(message);
-        }
-        else {
+        } else {
             console.error("CRITICAL ERROR SOCKET WAS NOT SETUP, you should never see this, if you do let me know. Dave");
         }
     },
@@ -59,6 +58,10 @@ const interactiveSocket = {
                 break;
             case "Refresh":
                 this.refresh_handler(data);
+                break;
+            case "Init":
+                console.log("HEY");
+                displayEveryone();
                 break;
             case "Invalid":
                 this.interactive_error_handler(data);
