@@ -33,7 +33,7 @@ export async function handleFriendAction(actionObj) {
     if (!response) {
         return;
     }
-    interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Social", "rType": "UpdateSocial", 'other_user_id': userID}));
+    interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Social", "rType": action, 'other_user_id': userID}));
     
     const assemble = await assembler(response);
     const responseStatus = response.status;
@@ -204,18 +204,50 @@ export async function removeUser(userID) {
     });
 }
 
-// export async function receiveFriendRequest() {
 
-// }
+function getMyID() {
+    let userID = sessionStorage.getItem('user_id');
+    if (!userID) {
+        const token = sessionStorage.getItem('jwt');
+        if (token) {
+            const parts = token.split('.');
+            if (parts.length === 3) {
+                try {
+                    const decodedPayload = JSON.parse(atob(parts[1]));
+                    userID = decodedPayload.sub;
+                    sessionStorage.setItem('user_id', userID);
+                } catch (e) {
+                    console.error('Failed to decode JWT:', e);
+                }
+            }
+        }
+    }
+    return userID;
+}
 
-// export async function sendFriendRequest() {
+export function handleSocialUpdate(rType, current_user, other_user_id) {
+    const userID = getMyID();
+    if (!userID || current_user == userID) {
+        
+    }
+}
 
-// }
+async function addFriendSocket() {
 
-// export async function cancelFriendRequest() {
+}
 
-// }
+async function acceptFriendSocket() {
+    
+}
 
-// export async function acceptFriendRequest() {
+async function cancelFriendSocket() {
 
-// }
+}
+
+async function refuseFriendSocket() {
+
+}
+
+async function unFriendSocket() {
+
+}

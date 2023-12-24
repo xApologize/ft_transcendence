@@ -1,8 +1,7 @@
 import { logoutUser } from '../../components/userCard/userCard.js'
 import { World } from '../game/src/World.js';
-import { displayEveryone, displayFriend } from './home.js'
-import { updateSocial } from './social.js'
 import { newUser, removeUser, updateSpecificUser } from './utils.js'
+import { handleSocialUpdate } from './utils.js';
 
 const interactiveSocket = {
     interactive_socket: null,
@@ -96,10 +95,12 @@ const interactiveSocket = {
                 console.log("id", id)
                 updateSpecificUser(id);
                 break;
-            case "UpdateSocial":
-                console.log("id:", id)
-                console.log("other_user_id:", other_user_id)
-                updateSocial();
+            case "add":
+            case "cancel":
+            case "accept":
+            case "refuse":
+            case "unfriend":
+                handleSocialUpdate(refresh_type, id, other_user_id);
                 break;
             default:
                 console.error("Rtype error");
