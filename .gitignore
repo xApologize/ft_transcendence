@@ -209,7 +209,8 @@ sketch
 !.vscode/launch.json
 !.vscode/extensions.json
 !.vscode/*.code-snippets
-/database-data
+/database-postgres
+/database-redis
 
 # Local History for Visual Studio Code
 .history/
