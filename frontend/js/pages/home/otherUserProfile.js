@@ -13,7 +13,11 @@ export async function displayOtherUserProfile(event) {
         return;
     }
     const userID = ancestor.dataset.id;
+    getUserAndDisplay(userID);
 
+}
+
+export async function getUserAndDisplay(userID) {
     const modalElement = document.getElementById('otherUserInfo');
     const otherUserModal = bootstrap.Modal.getInstance(modalElement);
     if (!otherUserModal) {

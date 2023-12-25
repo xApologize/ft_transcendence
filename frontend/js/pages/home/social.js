@@ -18,7 +18,6 @@ export async function updateSocial() {
     updateSocialFriend(userRequestTemplate, allPendingRequests);
     // updateSocialInvite(clonedNode);
     updateSocialBadge();
-    displayFriend();
 }
 
 async function updateSocialFriend(userRequestTemplate, allPendingRequests) {

@@ -1,6 +1,6 @@
 import { fetchFriendChange, fetchUser } from '../../api/fetchData.js';
 import { assembler } from '../../api/assembler.js';
-import { updateOtherFriendButton, updateStatusMsg } from './otherUserProfile.js';
+import { getUserAndDisplay, updateOtherFriendButton, updateStatusMsg } from './otherUserProfile.js';
 import { updateSocial, updateSocialFriendCard } from './social.js';
 import interactiveSocket from './socket.js';
 import { userTemplateComponent } from '../../components/userTemplate/userTemplate.js';
@@ -8,6 +8,7 @@ import { fillOtherUserInfo } from './leftColumn.js';
 import { displayOtherUserProfile } from './otherUserProfile.js';
 import { displayToast } from './toastNotif.js';
 import { displayAlertMsg } from '../../utils/utilityFunctions.js';
+import { displayFriend } from './home.js';
 
 export async function handleFriendAction(actionObj) {
     const actionToMethod = {
@@ -233,12 +234,25 @@ export async function removeUser(userID) {
     console.log("END REMOVE USER")
 }
 
+function updateModalIfOpen() {
+    const otherUserModal = document.getElementById('otherUserInfo')
+    console.log(otherUserModal)
+    if (otherUserModal.classList.contains('show'))  { // ERROR HERE
+        const content = otherUserModal.querySelector('.modal-content');
+        if (content.dataset.id)
+            getUserAndDisplay(content.dataset.id);
+    }
+}
+
 export function handleSocialUpdate(rType, currentUser, otherUserId) {
     const userId = getMyID();
     console.log("START SOCIAL UPDATE")
     if (!userId || userId == currentUser || userId == otherUserId) {
         console.log("IN IF")
         updateSocial();
+        if (userId == otherUserId)
+            updateModalIfOpen()
+        displayFriend();
         createNotifications(rType, userId, currentUser, otherUserId);
     }
 
@@ -250,44 +264,29 @@ function createNotifications(rType, userId, otherUserId, currentUser) {
     let toastTitle = "";
     let imgUrl = "https://www.shutterstock.com/image-vector/friends-request-icon-isolated-sign-260nw-1591730662.jpg";
 
-    console.log("ID GOT: ", userId)
-    console.log("user sent request: ", currentUser)
-    console.log("user concern by request: ", otherUserId)
-    console.log("rType: ", rType)
-    switch (rType) {
-        case "add":
-            if (userId == currentUser) {
-                // For the sender of the friend request
+    if (userId == currentUser) {
+        switch (rType) {
+            case "add":
                 toastMsg = "You have received a friend request!";
                 toastTitle = "Friend Request";
-            } else {
-                return
-            }
-            break;
-        case "accept":
-            if (userId == currentUser) {
+                break;
+            case "accept":
                 toastMsg = "Your friend request was accepted!";
                 toastTitle = "Request Accepted";
-            } else
-                return
-            break;
-        case "refuse":
-            if (userId == currentUser) {
+                break;
+            case "refuse":
                 toastMsg = "Your friend request has been refused.";
                 toastTitle = "Request Refused";
-            } else
-                return;
-            break;
-        case "unfriend":
-            if (userId == currentUser) {
+                break;
+            case "unfriend":
                 toastMsg = "You have been unfriended.";
                 toastTitle = "Unfriended";
-            } else {
-                return
-            }
-            break;
-        default:
-            return; // Exit the function if rType is not recognized
+                break;
+            default:
+                return;
+        }
+
+        if (toastMsg)
+            displayToast(toastMsg, toastTitle, imgUrl);
     }
-    displayToast(toastMsg, toastTitle, imgUrl);
 }

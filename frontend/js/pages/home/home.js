@@ -87,6 +87,7 @@ export async function displayFriend() {
         // if !allFriends, c'est que le status == 401 et si !allFriends.ok == Aucun Ami
         return false;
     }
+    console.log("DISPLAY FRIEND")
     const container = document.getElementById('friendDisplay')
     await displayUser(allFriends, container);
 }
