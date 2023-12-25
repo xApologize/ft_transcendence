@@ -6,6 +6,8 @@ import interactiveSocket from './socket.js';
 import { userTemplateComponent } from '../../components/userTemplate/userTemplate.js';
 import { fillOtherUserInfo } from './leftColumn.js';
 import { displayOtherUserProfile } from './otherUserProfile.js';
+import { displayToast } from './toastNotif.js';
+import { displayAlertMsg } from '../../utils/utilityFunctions.js';
 
 export async function handleFriendAction(actionObj) {
     const actionToMethod = {
@@ -33,7 +35,9 @@ export async function handleFriendAction(actionObj) {
     if (!response) {
         return;
     }
-    interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Social", "rType": action, "other_user_id": userID}));
+    if (response.status >= 200 && response.status < 300) {
+        interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Social", "rType": action, "other_user_id": userID}));
+    }
     const assemble = await assembler(response);
     const responseStatus = response.status;
     switch (modal) {
@@ -146,7 +150,7 @@ export function setStatus(user) {
     }
 }
 
-function getMyID() {
+export function getMyID() {
     let userID = sessionStorage.getItem('user_id');
     if (!userID) {
         const token = sessionStorage.getItem('jwt');
@@ -229,51 +233,51 @@ export async function removeUser(userID) {
     console.log("END REMOVE USER")
 }
 
-export function handleSocialUpdate(rType, current_user, other_user_id) {
-    const userID = getMyID();
-    console.log("SOCIAL UPDATE")
-    console.log(rType)
-    if (!userID || current_user == userID || other_user_id == userID) {
+export function handleSocialUpdate(rType, currentUser, otherUserId) {
+    const userId = getMyID();
+    console.log("START SOCIAL UPDATE")
+    if (!userId || userId == currentUser || userId == otherUserId) {
+        console.log("IN IF")
         updateSocial();
-        // switch (rType) {
-        //     case "add":
-        //         addFriendSocket();
-        //         break;
-        //     case "cancel":
-        //         cancelFriendSocket();
-        //         break;
-        //     case "accept":
-        //         acceptFriendSocket();
-        //         break;
-        //     case "refuse":
-        //         refuseFriendSocket();
-        //         break;
-        //     case "unfriend":
-        //         unFriendSocket();
-        //         break;
-        //     default:
-        //         console.error("Rtype error in Social Update");
-        // }
+        if (isUserReceiver(userId, otherUserId)) {
+            console.log("IN IF 2")
+            createNotifications(rType, userId, currentUser, otherUserId);
+        }
     }
-    console.log("END SOCIAL UPDATE")
+
+    console.log("END SOCIAL UPDATE");
 }
 
-async function addFriendSocket() {
-
+function isUserReceiver(userId, otherUserId) {
+    return userId == otherUserId;
 }
 
-async function acceptFriendSocket() {
-    
-}
-
-async function cancelFriendSocket() {
-
-}
-
-async function refuseFriendSocket() {
-
-}
-
-async function unFriendSocket() {
-
+function createNotifications(rType, userId, otherUserId, currentUser) {
+    let toastMsg = "";
+    let toastTitle = "";
+    let imgUrl = null;
+    switch (rType) {
+        case "add":
+            toastMsg = "You have received a friend request!";
+            toastTitle = "Friend Request";
+            imgUrl = "https://www.shutterstock.com/image-vector/friends-request-icon-isolated-sign-260nw-1591730662.jpg"
+            break;
+        case "accept":
+            toastMsg = "Your friend request has been accepted!";
+            toastTitle = "Request Accepted";
+            break;
+        case "refuse":
+            toastMsg = "Your friend request has been refused.";
+            toastTitle = "Request Refused";
+            break;
+        case "unfriend":
+            toastMsg = "You have been unfriended.";
+            toastTitle = "Unfriended";
+            break;
+        default:
+            // console.error("Rtype error in Social Update: " + rType);
+            return; // Exit the function if rType is not recognized
+    }
+    if (imgUrl)
+        displayToast(toastMsg, toastTitle, imgUrl);
 }

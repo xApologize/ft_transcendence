@@ -142,7 +142,7 @@ class FriendHandling(View):
                 'status': status
             }, status=403)
 
-class FriendGetAll(View):
+class GetPendingRequest(View):
     @token_validation
     def get(self, request: HttpRequest):
         try:
@@ -170,3 +170,38 @@ class FriendGetAll(View):
             friend_requests.append(friend_info)
 
         return JsonResponse({"friend_requests": friend_requests})
+
+class GetFriendState(View):
+    @token_validation
+    def get(self, request: HttpRequest):
+        try:
+            user = get_user_obj(request)
+            friend_id = int(request.GET.get('id'))
+        except (TypeError, ValueError):
+            return HttpResponseBadRequest('Invalid ID provided.')
+        except User.DoesNotExist:
+            return HttpResponseNotFound('User not found.')
+        except PermissionDenied as e:
+            return HttpResponse(str(e), status=401)
+
+        try:
+            friend = User.objects.get(pk=friend_id)
+        except User.DoesNotExist:
+            return HttpResponseNotFound('Friend not found.')
+
+        existing_relationship = FriendList.objects.filter(
+            Q(friend1=user, friend2=friend) | Q(friend1=friend, friend2=user)
+        ).first()
+
+        if not existing_relationship:
+            return HttpResponseNotFound('none')
+
+        if existing_relationship.status == "PENDING":
+            if existing_relationship.friend1 == user:
+                return JsonResponse({'state': 'sentRequest'})
+            else:
+                return JsonResponse({'state': 'receivedRequest'})
+        elif existing_relationship.status == "ACCEPTED":
+            return JsonResponse({'state': 'friend'})
+        else:
+            return JsonResponse({'state': 'none'})
