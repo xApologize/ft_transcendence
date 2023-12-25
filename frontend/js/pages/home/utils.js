@@ -239,45 +239,55 @@ export function handleSocialUpdate(rType, currentUser, otherUserId) {
     if (!userId || userId == currentUser || userId == otherUserId) {
         console.log("IN IF")
         updateSocial();
-        if (isUserReceiver(userId, otherUserId)) {
-            console.log("IN IF 2")
-            createNotifications(rType, userId, currentUser, otherUserId);
-        }
+        createNotifications(rType, userId, currentUser, otherUserId);
     }
 
     console.log("END SOCIAL UPDATE");
 }
 
-function isUserReceiver(userId, otherUserId) {
-    return userId == otherUserId;
-}
-
 function createNotifications(rType, userId, otherUserId, currentUser) {
     let toastMsg = "";
     let toastTitle = "";
-    let imgUrl = null;
+    let imgUrl = "https://www.shutterstock.com/image-vector/friends-request-icon-isolated-sign-260nw-1591730662.jpg";
+
+    console.log("ID GOT: ", userId)
+    console.log("user sent request: ", currentUser)
+    console.log("user concern by request: ", otherUserId)
+    console.log("rType: ", rType)
     switch (rType) {
         case "add":
-            toastMsg = "You have received a friend request!";
-            toastTitle = "Friend Request";
-            imgUrl = "https://www.shutterstock.com/image-vector/friends-request-icon-isolated-sign-260nw-1591730662.jpg"
+            if (userId == currentUser) {
+                // For the sender of the friend request
+                toastMsg = "You have received a friend request!";
+                toastTitle = "Friend Request";
+            } else {
+                return
+            }
             break;
         case "accept":
-            toastMsg = "Your friend request has been accepted!";
-            toastTitle = "Request Accepted";
+            if (userId == currentUser) {
+                toastMsg = "Your friend request was accepted!";
+                toastTitle = "Request Accepted";
+            } else
+                return
             break;
         case "refuse":
-            toastMsg = "Your friend request has been refused.";
-            toastTitle = "Request Refused";
+            if (userId == currentUser) {
+                toastMsg = "Your friend request has been refused.";
+                toastTitle = "Request Refused";
+            } else
+                return;
             break;
         case "unfriend":
-            toastMsg = "You have been unfriended.";
-            toastTitle = "Unfriended";
+            if (userId == currentUser) {
+                toastMsg = "You have been unfriended.";
+                toastTitle = "Unfriended";
+            } else {
+                return
+            }
             break;
         default:
-            // console.error("Rtype error in Social Update: " + rType);
             return; // Exit the function if rType is not recognized
     }
-    if (imgUrl)
-        displayToast(toastMsg, toastTitle, imgUrl);
+    displayToast(toastMsg, toastTitle, imgUrl);
 }
