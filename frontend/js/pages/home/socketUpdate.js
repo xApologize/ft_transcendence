@@ -100,7 +100,7 @@ async function createNotifications(rType, userId, otherUserId, currentUser) {
     let toastTitle = "";
     
     if (userId === currentUser) {
-        const user = await fetchUserById(currentUser);
+        const user = await fetchUserById(otherUserId);
         let imgUrl = user ? user.avatar : "https://www.shutterstock.com/image-vector/friends-request-icon-isolated-sign-260nw-1591730662.jpg";
         let userNickname = user ? user.nickname : "someone";
     
