@@ -83,6 +83,7 @@ export async function updateOtherFriendButton(state) {
         deleteFriendBtn.classList.toggle('d-none', !showDelete);
     }
 
+    console.log("STATE: ", state)
     switch (state) {
         case 'none':
             updateButtons('Add Friend', 'add', '', '', true, false);

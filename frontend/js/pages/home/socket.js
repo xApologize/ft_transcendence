@@ -1,9 +1,7 @@
 import { logoutUser } from '../../components/userCard/userCard.js'
 import { World } from '../game/src/World.js';
 import { displayEveryone } from './home.js'
-import { updateSocial } from './social.js'
-import { newUser, removeUser, updateSpecificUser } from './utils.js'
-import { handleSocialUpdate } from './utils.js';
+import { newUser, removeUser, updateSpecificUser, handleSocialUpdate } from './socketUpdate.js'
 
 const interactiveSocket = {
     interactive_socket: null,

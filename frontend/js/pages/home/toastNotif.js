@@ -1,5 +1,4 @@
 import { toastComponent } from '../../components/toast/toast.js';
-import { getMyID, removeUser } from './utils.js';
 
 let toastQueue = [];
 export function displayToast(toastMsg, toastTitle, imgUrl) {
