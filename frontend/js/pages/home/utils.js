@@ -83,7 +83,6 @@ export function getMyID() {
             }
         }
     }
-    console.log("userID FOUND:", userID)
     return userID;
 }
 
