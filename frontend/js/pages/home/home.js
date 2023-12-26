@@ -15,6 +15,8 @@ import { loadModel } from '../game/src/systems/Loader.js';
 import interactiveSocket from './socket.js';
 import { navigateTo } from '../../router.js';
 import { GameState } from '../game/src/systems/GameStates.js';
+import { displayToast } from './toastNotif.js';
+import { newUser } from './utils.js';
 ////////
 // Quand user Update son profil (avatar/nickname) -> Socket call function: not done (update only 1 user)
 export async function showHome() {
@@ -29,7 +31,8 @@ export async function showHome() {
             navigateTo('/')
             return;
         }
-        console.log("continue !")
+
+        // document.getElementById('displayNotification').addEventListener('click', displayToast);
         new bootstrap.Modal(document.getElementById('otherUserInfo'));
         new bootstrap.Modal(document.getElementById('inviteGameModal'));
 
@@ -57,6 +60,7 @@ export async function showHome() {
 
         const findGameBtn = document.getElementById('findGame');
         findGameBtn.addEventListener('click', () => {
+            document.getElementById('toastContainer').classList.add('d-none')
             document.getElementById('ui').classList.add('d-none');
             world.currentGameState = GameState.LookingForPlayer;
             document.getElementById('lfp').classList.remove('d-none');
@@ -70,6 +74,7 @@ export async function showHome() {
             .addEventListener('hide.bs.modal', () => {
                 console.log('modal game invite closed');
             });
+
     } catch (error) {
         console.error('Error fetching home.html:', error);
     }
@@ -91,7 +96,6 @@ export async function displayFriend() {
 
 export async function displayEveryone() {
     const onlineUsers = await fetchUser('GET', { status: ['ONL', 'ING'] });
-    console.log(onlineUsers)
     if (!onlineUsers || !onlineUsers.ok) {
         // if !onlineUsers, c'est que le status == 401 et si !onlineUsers.ok == Aucun user Online
         return false;
@@ -102,10 +106,8 @@ export async function displayEveryone() {
 
 async function initPage() {
     const user = await fetchMe('GET');
-    if (!user) {
-        console.log('Error fetching users');
-        return false;
-    }
+    if (!user)
+        return;
     const userAssembled = await assembler(user);
     if (!userAssembled || typeof userAssembled !== 'object') {
         console.log('Error assembling user');
@@ -114,8 +116,9 @@ async function initPage() {
     displayUserCard(userAssembled);
     displayMatchHistory(userAssembled);
     interactiveSocket.initSocket()
-    updateSocial()
-
+    //displayEveryone();
+    displayFriend();
+    updateSocial();
 }
 
 ///////////////////////////////
@@ -164,3 +167,28 @@ function responsiveLeftColumn() {
     });
 }
 // 
+
+// async function displayToast() {
+//     console.log('display TOoast !')
+//     const toastNotif = await toastComponent();
+//     document.getElementById('toastContainer').append(toastNotif);
+//     var toast = new bootstrap.Toast(toastNotif);
+//     toastNotif.addEventListener('shown.bs.toast', () => {
+//         const startTime = Date.now();
+//         const timeSinceToastElement = toastNotif.querySelector('#timeSinceToast');
+
+//         // Update the time every second
+//         const intervalId = setInterval(() => {
+//             const secondsPassed = Math.floor((Date.now() - startTime) / 1000);
+//             timeSinceToastElement.textContent = `${secondsPassed} seconds ago`;
+//         }, 1000);
+
+//         // When the toast is hidden, clear the interval
+//         toastNotif.addEventListener('hidden.bs.toast', () => {
+//             console.log("hide toast")
+//             toastNotif.remove();
+//         });
+//     });
+//     toast.show();
+// }
+

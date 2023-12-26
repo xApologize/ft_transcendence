@@ -60,14 +60,6 @@
         }
     },
     {
-        "model": "block_list.BlockList",
-        "pk": 1,
-        "fields": {
-            "blocker": 1,
-            "blocked_user": 2
-        }
-    },
-    {
         "model": "friend_list.FriendList",
         "pk": 1,
         "fields": {
@@ -115,7 +107,7 @@
         "fields": {
             "winner_score": 50,
             "loser_score": 69,
-            "date_of_match": "12:00:00.000000",
+            "date_of_match": "2023-01-01T12:00:00Z",
             "winner": 1,
             "loser": 2
         }
@@ -126,7 +118,7 @@
         "fields":{
             "winner_score": 50,
             "loser_score": 69,
-            "date_of_match": "12:00:00.000000",
+            "date_of_match": "2023-01-01T12:00:00Z",
             "winner": 4,
             "loser": 2
         }
@@ -137,7 +129,7 @@
         "fields":{
             "winner_score": 50,
             "loser_score": 69,
-            "date_of_match": "12:00:00.000000",
+            "date_of_match": "2023-01-01T12:00:00Z",
             "winner": 4,
             "loser": 2
         }
@@ -148,7 +140,7 @@
         "fields":{
             "winner_score": 50,
             "loser_score": 69,
-            "date_of_match": "12:00:00.000000",
+            "date_of_match": "2023-01-01T12:00:00Z",
             "winner": 1,
             "loser": 4
         }
@@ -163,7 +155,7 @@
             "loser_score": 420,
             "tournament_ID": 1,
             "match_position": 2,
-            "time_of_match": "12:00:00.000000"
+            "time_of_match": "2023-01-01T12:00:00Z"
         }
     }
 ]

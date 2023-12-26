@@ -62,35 +62,24 @@ export const setNewToken = (response) => {
     return null
 }
 
-export const performFetch = async (url, method, data = null) => {
-    const options = createOptions(method, data)
+const performFetch = async (url, method, data = null) => {
+    console.log(url)
+    const options = createOptions(method, data);
     try {
-        console.log(url)
-        // var bc breaking without it
-        var response = await fetch(url, options);
-        if (response.status == 401) {
-            return redirectToHome()
+        let response = await fetch(url, options);
+        if (response.status === 401) {
+            return redirectToHome();
         }
-        const jwt_token = setNewToken(response)
-        if (jwt_token) {
-            const isFirstToken = response.headers.get('new')
-            if (!isFirstToken) {
-                const access_token = response.headers.get('jwt')
-                options.headers.jwt = access_token;
-                response = await fetch(url, options)
-            }
+        const jwt_token = setNewToken(response);
+        if (jwt_token && !response.headers.get('new')) {
+            options.headers.jwt = response.headers.get('jwt');
+            response = await fetch(url, options);
         }
         return response;
     } catch (error) {
-        console.log("Error fetching: " + url);
+        console.error("Error fetching: " + url, error);
+        return null;
     }
-    return null
-};
-
-const buildApiUrl = (path, parameter = null) => {
-    const baseUrl = "/api/";
-    const queryString = parameter ? `?${parameter.toString()}` : '';
-    return `${baseUrl}${path}${queryString}`;
 };
 
 const buildParams = (parameters) => {
@@ -110,56 +99,49 @@ const buildParams = (parameters) => {
     return params.toString() ? params : null;
 };
 
-// Fetch other user by nickname or by status/Create user/update user by nickanme/.
-export const fetchUser = async (method, parameters = null, data = null) => {
-    const path = 'user/';
-    const params = buildParams(parameters);
-    const url = buildApiUrl(path, params);
-    let result = await performFetch(url, method, data);
-    return result;
+const buildApiUrl = (path, parameters = null) => {
+    const baseUrl = "/api/";
+    const queryString = parameters ? `?${buildParams(parameters)}` : '';
+    return `${baseUrl}${path}${queryString}`;
 };
 
-// fetch login/logout/check if token
+export const fetchApi = async (method, path, parameters = null, data = null) => {
+    const url = buildApiUrl(path, parameters);
+    return await performFetch(url, method, data);
+};
+
+// Fetch other user by nickname or by status/Create user/update user by nickname.
+export const fetchUser = async (method, parameters = null, data = null) => {
+    return fetchApi(method, 'user/', parameters, data);
+};
+
+// Fetch login/logout/check if token
 export const fetchAuth = async (method, apiPath, data = null) => {
-    const path = 'auth/' + apiPath
-    const url = buildApiUrl(path)
-    let result = await performFetch(url, method, data);
-    return result;
+    return fetchApi(method, `auth/${apiPath}`, null, data);
 };
 
 // Fetch own information (username, email, avatar, status, match history)
 export const fetchMe = async(method, data = null) => {
-    const path = 'user/me/'
-    const url = buildApiUrl(path);
-    let result = await performFetch(url, method, data);
-    return result;
-}
+    return fetchApi(method, 'user/me/', null, data);
+};
 
 // Get friend list.
 export const fetchFriend = async (method, apiPath = '', data = null) => {
-    const path = 'user/friends/' + apiPath
-    const url = buildApiUrl(path)
-    let result = await performFetch(url, method, data)
-    return result;
-}
+    return fetchApi(method, `user/friends/${apiPath}`, null, data);
+};
 
 // Upload avatar
 export const fetchUpload = async (method, data = null) => {
-    const path = 'user/upload/'
-    const url = buildApiUrl(path)
-    let result = await performFetch(url, method, data)
-    return result;
-}
+    return fetchApi(method, 'user/upload/', null, data);
+};
 
+// Change friend status (add, remove, etc.)
 export const fetchFriendChange = async (method, parameters = null, apiPath = '') => {
-    const path = 'friend/' + apiPath;
-    const params = buildParams(parameters);
-    const url = buildApiUrl(path, params);
-    let result = await performFetch(url, method);
-    return result;
-}
+    return fetchApi(method, `friend/${apiPath}`, parameters);
+};
 
-// const objectData = new Object();
-// objectData.status = "ING"
-// const response = await fetchUser('PATCH', null, objectData);
-// if (!response) { return }
+// Fetch match history
+export const fetchMatchHistory = async (method, data = null) => {
+    return fetchApi(method, 'match/', null, data);
+};
+

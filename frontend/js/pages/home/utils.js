@@ -5,6 +5,7 @@ import { updateSocialFriendCard } from './social.js';
 import interactiveSocket from './socket.js';
 import { userTemplateComponent } from '../../components/userTemplate/userTemplate.js';
 import { fillOtherUserInfo } from './leftColumn.js';
+import { displayOtherUserProfile } from './otherUserProfile.js';
 
 export async function handleFriendAction(actionObj) {
     const actionToMethod = {
@@ -29,11 +30,10 @@ export async function handleFriendAction(actionObj) {
     const apiParam = { id: userID, action };
     const method = actionToMethod[action];
     const response = await fetchFriendChange(method, apiParam);
-    interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Social"}));
     if (!response) {
         return;
     }
-    
+    interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Refresh", "rType": "Social"}));
     const assemble = await assembler(response);
     const responseStatus = response.status;
     switch (modal) {
@@ -55,12 +55,48 @@ async function addNewUser(user) {
     const everyoneContainer = document.getElementById('userDisplay');
     const friendContainer = document.getElementById('friendDisplay');
     const templateUser = await getTemplateUser(user);
+
     if (!templateUser) return;
-    
-    appendUserToContainer(everyoneContainer, templateUser);
+
+    const seeProfileBtn = templateUser.querySelector('.card');
+    seeProfileBtn.addEventListener('click', displayOtherUserProfile)
+    appendToContainer(everyoneContainer, templateUser, user.id);
     if (await checkIfFriend(user)) {
-        appendUserToContainer(friendContainer, templateUser.cloneNode(true)); // Clone for friend container
+        await changeFriendStatus(user.id, friendContainer, templateUser);
     }
+}
+
+async function changeFriendStatus(userID, container, templateUser) {
+    const friendCard = container.querySelector(`div[data-id="${userID}"]`);
+
+    if (friendCard) {
+        updateBadgeColor(friendCard, container);
+    } else {
+        prependToContainer(container, templateUser.cloneNode(true), userID);
+    }
+}
+
+function updateBadgeColor(friendCard, container) {
+    const statusBadge = friendCard.querySelector('#badge');
+    if (statusBadge) {
+        statusBadge.style.backgroundColor = setStatus('ONL');
+        container.removeChild(friendCard);
+        container.insertBefore(friendCard, container.firstChild);
+    }
+}
+
+function appendToContainer(container, element, userID) {
+    if (!container.querySelector(`div[data-id="${userID}"]`)) {
+        element.setAttribute('data-id', userID); // Set the unique data-id attribute
+        container.appendChild(element);
+    } else {
+        console.log(`User with ID ${userID} already exists in the container.`);
+    }
+}
+
+function prependToContainer(container, element, userID) {
+    element.setAttribute('data-id', userID); // Ensure each element has a unique data-id
+    container.insertBefore(element, container.firstChild);
 }
 
 async function getTemplateUser(user) {
@@ -75,18 +111,14 @@ async function getTemplateUser(user) {
 async function checkIfFriend(user) {
     const response = await fetchFriendChange('GET', { id: user.id });
     if (!response) return false;
-
+    
     const friendStatus = await assembler(response);
     return friendStatus && friendStatus.state === 'friend';
 }
 
-function appendUserToContainer(container, userElement) {
-    container.appendChild(document.createElement('hr'));
-    container.appendChild(userElement);
-}
 
 function updateOtherUsers(user) {
-    const userCards = document.querySelectorAll(`div.card[data-id="${user.id}"]`);
+    const userCards = document.querySelectorAll(`div[data-id="${user.id}"]`);
     userCards.forEach(card => {
         const avatarElement = card.querySelector('#user-avatar');
         const nameElement = card.querySelector('#user-name');
@@ -125,41 +157,50 @@ export async function updateSpecificUser(userID) {
     if (!response)
         return;
     const assemble = await assembler(response);
-    if (assemble.users) {
-        updateOtherUsers(assemble.users[0]);
+    if (typeof assemble !== 'object' || assemble === null) {
+        console.log(assemble);
+        return;
     } else {
-        console.error('Cannot find user to update with Socket');
+        updateOtherUsers(assemble[0]);
     }
 }
 
 // To use when user login
-export async function newUserLogin(userID) {
+export async function newUser(userID) {
     const apiParam = { id: userID };
     try {
         const response = await fetchUser('GET', apiParam);
-        if (!response) throw new Error('Failed to fetch user.');
+        if (!response)
+            return;
 
         const assemble = await assembler(response);
-        if (!assemble.users || assemble.users.length === 0) throw new Error('No users found.');
+        if (typeof assemble !== 'object' || assemble === null) {
+            console.log(assemble);
+            return;
+        }
 
-        addNewUser(assemble.users[0]);
+        addNewUser(assemble[0]);
     } catch (error) {
-        console.error('Error in newUserLogin:', error);
+        console.error('Error in newUser:', error);
     }
 }
 
 // To use when user logout
-export async function newUserLogout(userID) {
+export async function removeUser(userID) {
     const everyoneContainer = document.getElementById('userDisplay');
     const friendContainer = document.getElementById('friendDisplay');
 
-    const userCards = document.querySelectorAll(`div.card[data-id="${userID}"]`);
+    const userCards = document.querySelectorAll(`div[data-id="${userID}"]`);
     userCards.forEach(card => {
         if (everyoneContainer.contains(card)) {
             everyoneContainer.removeChild(card);
         } else if (friendContainer.contains(card)) {
             const statusBadge = card.querySelector('#badge');
-            statusBadge.style.backgroundColor = setStatus(user.status);
+            if (statusBadge) {
+                statusBadge.style.backgroundColor = setStatus('OFF');
+                friendContainer.removeChild(card);
+                friendContainer.appendChild(card);
+            }
         }
     });
 }

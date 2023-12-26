@@ -26,14 +26,6 @@ class UserTestCase(TestCase):
             status="ACCEPTED"
         )
 
-    def test_block_list(self):
-        '''Normal check for blocked list'''
-        self.assertEqual(
-            FriendList.objects.get(friend1__nickname="BozoCat").friend1.nickname, "BozoCat")
-        self.assertEqual(
-            FriendList.objects.get(friend2__nickname="BozoDog").friend2.nickname, "BozoDog")
-        self.assertEqual(
-            FriendList.objects.get(friend2__nickname="BozoDog").status, "ACCEPTED")
 
     def test_self_friend(self):
         '''Check if constraints doesn't let you friend yourself'''

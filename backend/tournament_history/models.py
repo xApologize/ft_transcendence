@@ -10,4 +10,4 @@ class TournamentHistory(models.Model):
     loser_score = models.IntegerField()
     tournament_ID = models.IntegerField()
     match_position = models.IntegerField()
-    time_of_match = models.TimeField(auto_now=True)
+    time_of_match = models.DateTimeField(auto_now=True)

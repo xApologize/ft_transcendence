@@ -70,13 +70,11 @@ export async function handleRoute() {
 // !! Do not change the order in which it's append !!
 async function loadPage() {
     const body = document.getElementById('content');
-    const header = await headerComponent();
     const template = await templateComponent();
 
     // body.append(header);
     body.append(template);
-    const path = window.location.pathname;
-    navigateTo(path);
+    handleRoute();
 }
 
 window.addEventListener('beforeunload', () => {
@@ -85,18 +83,7 @@ window.addEventListener('beforeunload', () => {
 })
 
 document.addEventListener('DOMContentLoaded', async () => {
-    await loadPage();
-
-    // const navContainer = document.getElementById('navbar');
-    // navContainer.addEventListener('click', (event) => {
-    //     const target = event.target;
-    //     if (target.classList.contains('nav-link')) {
-    //         event.preventDefault();
-    //         const route = target.getAttribute('data-route');
-    //         navigateTo(route);
-    //     }
-    // });
-
+    loadPage();
     window.addEventListener('popstate', handlePopState);
 });
 

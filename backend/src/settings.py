@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     "channels_postgres",
     "user_profile",
     "friend_list",
-    "block_list",
     "match_history",
     "tournament_history",
     "interactive"

@@ -46,8 +46,6 @@ async function loopDisplayUser(objectAllUsers, currentUser, userContainer) {
         objectAllUsers.unshift(currentUserObject);
     }
     objectAllUsers.forEach((user) => {
-        userContainer.appendChild(document.createElement('hr'));
-
         const clonedUserTemplate = templateUser.cloneNode(true);
 
         const seeProfileBtn = clonedUserTemplate.querySelector('.card');
