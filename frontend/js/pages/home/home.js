@@ -85,7 +85,6 @@ export async function displayFriend() {
         // if !allFriends, c'est que le status == 401 et si !allFriends.ok == Aucun Ami
         return false;
     }
-    console.log("DISPLAY FRIEND")
     const container = document.getElementById('friendDisplay')
     await displayUser(allFriends, container);
 }
@@ -128,7 +127,6 @@ function everyoneBtnFunc(friendsBtn, everyoneBtn) {
 
         friendsBtn.classList.remove('active-dark');
         everyoneBtn.classList.add('active-dark');
-        // displayEveryone();
     }
 }
 
@@ -139,7 +137,6 @@ function friendsBtnFunc(friendsBtn, everyoneBtn) {
 
         everyoneBtn.classList.remove('active-dark');
         friendsBtn.classList.add('active-dark');
-        // displayFriend();
     }
 }
 
@@ -163,28 +160,4 @@ function responsiveLeftColumn() {
     });
 }
 // 
-
-// async function displayToast() {
-//     console.log('display TOoast !')
-//     const toastNotif = await toastComponent();
-//     document.getElementById('toastContainer').append(toastNotif);
-//     var toast = new bootstrap.Toast(toastNotif);
-//     toastNotif.addEventListener('shown.bs.toast', () => {
-//         const startTime = Date.now();
-//         const timeSinceToastElement = toastNotif.querySelector('#timeSinceToast');
-
-//         // Update the time every second
-//         const intervalId = setInterval(() => {
-//             const secondsPassed = Math.floor((Date.now() - startTime) / 1000);
-//             timeSinceToastElement.textContent = `${secondsPassed} seconds ago`;
-//         }, 1000);
-
-//         // When the toast is hidden, clear the interval
-//         toastNotif.addEventListener('hidden.bs.toast', () => {
-//             console.log("hide toast")
-//             toastNotif.remove();
-//         });
-//     });
-//     toast.show();
-// }
 

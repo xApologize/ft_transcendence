@@ -77,17 +77,15 @@ export function handleSocialUpdate(rType, currentUser, otherUserId) {
         console.log("IN IF")
         updateSocial();
         if (userId == otherUserId)
-        updateModalIfOpen()
-    displayFriend();
-    createNotifications(rType, userId, currentUser, otherUserId);
-}
-
-console.log("END SOCIAL UPDATE");
+            updateModalIfOpen()
+        displayFriend();
+        createNotifications(rType, userId, currentUser, otherUserId);
+    }
+    console.log("END SOCIAL UPDATE");
 }
 
 function updateModalIfOpen() {
     const otherUserModal = document.getElementById('otherUserInfo')
-    console.log(otherUserModal)
     if (otherUserModal.classList.contains('show'))  { // ERROR HERE
         const content = otherUserModal.querySelector('.modal-content');
         if (content.dataset.id)
@@ -101,7 +99,7 @@ async function createNotifications(rType, userId, otherUserId, currentUser) {
     
     if (userId === currentUser) {
         const user = await fetchUserById(otherUserId);
-        let imgUrl = user ? user.avatar : "https://www.shutterstock.com/image-vector/friends-request-icon-isolated-sign-260nw-1591730662.jpg";
+        let imgUrl = user ? user.avatar : "https://png.pngtree.com/png-clipart/20190904/ourmid/pngtree-80-3d-text-png-image_18456.jpg";
         let userNickname = user ? user.nickname : "someone";
     
         switch (rType) {
