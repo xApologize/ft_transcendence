@@ -17,6 +17,13 @@ class PongRoom(AsyncWebsocketConsumer):
             self.channel_name
         )
         print("Pong socket disconnect code:", close_code)
+        await self.channel_layer.group_send(
+            self.match_id,{
+                'type': 'send_input',
+                'message': "Closing",
+                'sender': self.channel_name
+            }
+        )
 
     async def receive(self, text_data):
         await self.channel_layer.group_send(
