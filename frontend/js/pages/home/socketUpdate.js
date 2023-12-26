@@ -91,7 +91,8 @@ async function createNotifications(rType, userId, otherUserId, currentUser) {
     let toastMsg = "";
     let toastTitle = "";
     
-    if (userId === currentUser) {
+    console.log("CREATE NOTIF")
+    if (userId == currentUser || !userId) {
         const user = await fetchUserById(otherUserId);
         let imgUrl = user ? user.avatar : "https://png.pngtree.com/png-clipart/20190904/ourmid/pngtree-80-3d-text-png-image_18456.jpg";
         let userNickname = user ? user.nickname : "someone";
@@ -117,6 +118,7 @@ async function createNotifications(rType, userId, otherUserId, currentUser) {
                 return;
         }
 
+        console.log("toastMsg: ", toastMsg)
         if (toastMsg)
             displayToast(toastMsg, toastTitle, imgUrl);
     }
