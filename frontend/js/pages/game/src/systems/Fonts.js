@@ -1,4 +1,4 @@
-import { FontLoader } from '/node_modules/three/examples/jsm/loaders/FontLoader.js';
+import { FontLoader } from '/public/three/examples/jsm/loaders/FontLoader.js';
 
 let DigitalFont;
 const loader = new FontLoader();

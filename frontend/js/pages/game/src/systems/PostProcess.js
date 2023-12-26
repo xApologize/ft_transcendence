@@ -1,12 +1,12 @@
-import { EffectComposer } from '/node_modules/three/examples/jsm/postprocessing/EffectComposer.js';
-import { RenderPass } from '/node_modules/three/examples/jsm/postprocessing/RenderPass.js';
-import { RenderPixelatedPass } from '/node_modules/three/examples/jsm/postprocessing/RenderPixelatedPass.js';
-import { BloomPass } from '/node_modules/three/examples/jsm/postprocessing/BloomPass.js';
-import { UnrealBloomPass } from '/node_modules/three/examples/jsm/postprocessing/UnrealBloomPass.js';
-import { FilmPass } from '/node_modules/three/examples/jsm/postprocessing/FilmPass.js';
-import { OutputPass } from '/node_modules/three/examples/jsm/postprocessing/OutputPass.js';
-import { GlitchPass } from '/node_modules/three/examples/jsm/postprocessing/GlitchPass.js';
-import { SSAOPass } from '/node_modules/three/examples/jsm/postprocessing/SSAOPass.js';
+import { EffectComposer } from '/public/three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from '/public/three/examples/jsm/postprocessing/RenderPass.js';
+import { RenderPixelatedPass } from '/public/three/examples/jsm/postprocessing/RenderPixelatedPass.js';
+import { BloomPass } from '/public/three/examples/jsm/postprocessing/BloomPass.js';
+import { UnrealBloomPass } from '/public/three/examples/jsm/postprocessing/UnrealBloomPass.js';
+import { FilmPass } from '/public/three/examples/jsm/postprocessing/FilmPass.js';
+import { OutputPass } from '/public/three/examples/jsm/postprocessing/OutputPass.js';
+import { GlitchPass } from '/public/three/examples/jsm/postprocessing/GlitchPass.js';
+import { SSAOPass } from '/public/three/examples/jsm/postprocessing/SSAOPass.js';
 
 function createComposer( renderer, scene, camera ) {
 	const composer = new EffectComposer( renderer);

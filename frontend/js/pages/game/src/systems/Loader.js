@@ -1,4 +1,4 @@
-import { GLTFLoader } from '/node_modules/three/examples/jsm/loaders/GLTFLoader.js';
+import { GLTFLoader } from '/public/three/examples/jsm/loaders/GLTFLoader.js';
 
 let airHockeyTable;
 const loader = new GLTFLoader();
