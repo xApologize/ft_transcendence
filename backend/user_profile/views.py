@@ -189,15 +189,15 @@ class Me(View):
             'status': user.status,
             'admin': user.admin,
             'won_matches': [
-                {'winner_score': match.winner_score, 'loser_score': match.loser_score, 'date_of_match': match.date_of_match} 
+                {'winner_score': match.winner_score, 'loser_score': match.loser_score, 'date_of_match': match.date_of_match.strftime("%Y/%m/%d")} 
                 for match in recent_won_matches
             ],
             'lost_matches': [
-                {'winner_score': match.winner_score, 'loser_score': match.loser_score, 'date_of_match': match.date_of_match} 
+                {'winner_score': match.winner_score, 'loser_score': match.loser_score, 'date_of_match': match.date_of_match.strftime("%Y/%m/%d")} 
                 for match in recent_lost_matches
             ],
             'played_matches': [
-                {'winner_score': match.winner_score, 'winner_username': match.winner.nickname, 'loser_score': match.loser_score, 'loser_username': match.loser.nickname, 'date_of_match': match.date_of_match} 
+                {'winner_score': match.winner_score, 'winner_username': match.winner.nickname, 'loser_score': match.loser_score, 'loser_username': match.loser.nickname, 'date_of_match': match.date_of_match.strftime("%Y/%m/%d")} 
                 for match in recent_played_matches
             ],
         }
