@@ -228,10 +228,17 @@ class Token(View):
 class RemoteAuthToken(View):
     def post(self, request):
         code = request.GET.get('code')
-
         if not code:
             return JsonResponse({'error': 'Missing authorization code'}, status=400)
 
+        access_token = self.get_access_token(code)
+        if access_token:
+            user_info = self.get_user_info(access_token)
+            if user_info:
+                return self.handle_user(user_info)
+        return JsonResponse({'error': 'Invalid authorization code'}, status=400)
+
+    def get_access_token(self, code):
         token_url = 'https://api.intra.42.fr/oauth/token'
         data = {
             'grant_type': 'authorization_code',
@@ -240,49 +247,55 @@ class RemoteAuthToken(View):
             'code': code,
             'redirect_uri': 'https://localhost/callback',
         }
-
-        data = urllib.parse.urlencode(data)
-        data = data.encode('ascii')
+        data = urllib.parse.urlencode(data).encode('ascii')
         req = urllib.request.Request(token_url, data)
         try:
             with urllib.request.urlopen(req) as response:
                 response_data = json.loads(response.read())
-                access_token = response_data.get('access_token')
-
-                if access_token:
-                    user_info_url = 'https://api.intra.42.fr/v2/me'
-                    headers = {'Authorization': f'Bearer {access_token}'}
-                    req = urllib.request.Request(user_info_url, headers=headers)
-
-                    with urllib.request.urlopen(req) as response:
-                        user_info = json.loads(response.read())
-                        intra_id = user_info.get('id')
-
-                        try:
-                            user = User.objects.get(intra_id=intra_id)
-                            response: HttpResponse = JsonResponse({'success': 'Login successful.'})
-                            if user.two_factor_auth == True:
-                                return handle_2fa_login(user)
-                            return first_token(response, user.pk)
-                        except User.DoesNotExist:
-                            avatar_url = user_info.get('image', {}).get('versions', {}).get('large', '')
-                            try:
-                                avatar_response = urllib.request.urlopen(avatar_url)
-                                avatar_data = avatar_response.read()
-                            except Exception as e:
-                                return HttpResponseBadRequest('Error downloading avatar: ' + str(e))
-                            user = User.objects.create(
-                                intra_id=intra_id,
-                                nickname=user_info.get('login'),
-                                email=user_info.get('email'),
-                                account_creation_method='intra'
-                            )
-                            new_file_name = f"user_{user.pk}.jpg"
-                            user.avatar.save(new_file_name, ContentFile(avatar_data))
-                            response: HttpResponse = JsonResponse({'success': 'Login successful.'})
-                            return first_token(response, user.pk)
-
-
+                return response_data.get('access_token')
         except urllib.error.URLError as e:
-            return JsonResponse({'error': str(e.reason)}, status=400)
-        return JsonResponse({'error': 'Invalid authorization code'}, status=400)
+            print('Error fetching access token:', e)
+        return None
+
+    def get_user_info(self, access_token):
+        user_info_url = 'https://api.intra.42.fr/v2/me'
+        headers = {'Authorization': f'Bearer {access_token}'}
+        req = urllib.request.Request(user_info_url, headers=headers)
+        try:
+            with urllib.request.urlopen(req) as response:
+                return json.loads(response.read())
+        except urllib.error.URLError as e:
+            print('Error fetching user info:', e)
+        return None
+
+    def handle_user(self, user_info):
+        intra_id = user_info.get('id')
+        try:
+            user = User.objects.get(intra_id=intra_id)
+            return self.authenticate_user(user)
+        except User.DoesNotExist:
+            return self.create_user(user_info)
+
+    def authenticate_user(self, user):
+        response = JsonResponse({'success': 'Login successful.'})
+        if user.two_factor_auth:
+            return handle_2fa_login(user)
+        return first_token(response, user.pk)
+
+    def create_user(self, user_info):
+        avatar_url = user_info.get('image', {}).get('versions', {}).get('large', '')
+        try:
+            avatar_data = urllib.request.urlopen(avatar_url).read()
+        except Exception as e:
+            return HttpResponseBadRequest('Error downloading avatar: ' + str(e))
+
+        user = User.objects.create(
+            intra_id=user_info.get('id'),
+            nickname=user_info.get('login'),
+            email=user_info.get('email'),
+            account_creation_method='intra'
+        )
+        new_file_name = f"user_{user.pk}.jpg"
+        user.avatar.save(new_file_name, ContentFile(avatar_data))
+        response = JsonResponse({'success': 'Login successful.'})
+        return first_token(response, user.pk)
