@@ -13,7 +13,9 @@ import base64, qrcode
 from io import BytesIO
 from base64 import b64encode
 from django.conf import settings
-
+from django.core.files.base import ContentFile
+import urllib.parse
+import urllib.request
 
 class Create2FA(View):
     @token_validation
@@ -222,12 +224,64 @@ class Token(View):
         return HttpResponse("Checkup if token valid")
     
 
+# GÉRER LE 2FA AVEC L'API 42
+# Utiliser pip install request ou garder lib dégueulasse ?
 class RemoteAuthToken(View):
     def post(self, request):
         code = request.GET.get('code')
-        print(settings.AUTH42_CLIENT)
-        print(settings.AUTH42_SECRET)
-        print(code)
-        
-        
-        return HttpResponse("Remote Auth Token")
+
+        if not code:
+            return JsonResponse({'error': 'Missing authorization code'}, status=400)
+
+        token_url = 'https://api.intra.42.fr/oauth/token'
+        data = {
+            'grant_type': 'authorization_code',
+            'client_id': settings.AUTH42_CLIENT,
+            'client_secret': settings.AUTH42_SECRET,
+            'code': code,
+            'redirect_uri': 'https://localhost/callback',
+        }
+
+        data = urllib.parse.urlencode(data)
+        data = data.encode('ascii')
+        req = urllib.request.Request(token_url, data)
+        try:
+            with urllib.request.urlopen(req) as response:
+                response_data = json.loads(response.read())
+                access_token = response_data.get('access_token')
+
+                if access_token:
+                    user_info_url = 'https://api.intra.42.fr/v2/me'
+                    headers = {'Authorization': f'Bearer {access_token}'}
+                    req = urllib.request.Request(user_info_url, headers=headers)
+
+                    with urllib.request.urlopen(req) as response:
+                        user_info = json.loads(response.read())
+                        intra_id = user_info.get('id')
+
+                        try:
+                            user = User.objects.get(intra_id=intra_id)
+                            response: HttpResponse = JsonResponse({'success': 'Login successful.'})
+                            return first_token(response, user.pk)
+                        except User.DoesNotExist:
+                            avatar_url = user_info.get('image', {}).get('versions', {}).get('large', '')
+                            try:
+                                avatar_response = urllib.request.urlopen(avatar_url)
+                                avatar_data = avatar_response.read()
+                            except Exception as e:
+                                return HttpResponseBadRequest('Error downloading avatar: ' + str(e))
+                            user = User.objects.create(
+                                intra_id=intra_id,
+                                nickname=user_info.get('login'),
+                                email=user_info.get('email'),
+                                account_creation_method='intra'
+                            )
+                            new_file_name = f"user_{user.id}.jpg"
+                            user.avatar.save(new_file_name, ContentFile(avatar_data))
+                            response: HttpResponse = JsonResponse({'success': 'Login successful.'})
+                            return first_token(response, user.pk)
+
+
+        except urllib.error.URLError as e:
+            return JsonResponse({'error': str(e.reason)}, status=400)
+        return JsonResponse({'error': 'Invalid authorization code'}, status=400)

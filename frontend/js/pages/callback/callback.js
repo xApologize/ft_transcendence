@@ -1,4 +1,5 @@
 import { fetchAuth, loadHTMLPage } from "../../api/fetchData.js";
+import { navigateTo } from "../../router.js";
 
 export async function showCallback() {
     try {
@@ -8,7 +9,13 @@ export async function showCallback() {
         const code = urlParams.get('code');
     
         const response = await fetchAuth('POST', 'api-auth/', null, { code: code })
-        console.log(await response.text())
+        if (response.status >= 200 && response.status < 300) {
+            navigateTo('/home')
+        } else {
+            navigateTo('/')
+        }
+        const assembleResponse = await response.json()
+        console.log(assembleResponse)
     } catch (error) {
         console.error('Error fetching callback.html:', error);
     }
