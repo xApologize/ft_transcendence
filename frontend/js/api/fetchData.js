@@ -116,8 +116,8 @@ export const fetchUser = async (method, parameters = null, data = null) => {
 };
 
 // Fetch login/logout/check if token
-export const fetchAuth = async (method, apiPath, data = null) => {
-    return fetchApi(method, `auth/${apiPath}`, null, data);
+export const fetchAuth = async (method, apiPath, data = null, parameters = null) => {
+    return fetchApi(method, `auth/${apiPath}`, parameters, data);
 };
 
 // Fetch own information (username, email, avatar, status, match history)

@@ -5,9 +5,9 @@ import { showAbout } from './pages/about/about.js';
 import { showSignUp } from './pages/signUp/signUp.js';
 import { show404 } from './pages/404/404.js';
 import { showLogin } from './pages/login/login.js';
-import { headerComponent } from './components/header/header.js';
 import { templateComponent } from './components/template/template.js';
 import { showSocket } from './pages/socket/debug_socket.js';
+import { showCallback } from './pages/callback/callback.js';
 
 var currentRoute = '';
 const routes = {
@@ -19,6 +19,7 @@ const routes = {
     '/login': showLogin,
     '/signUp': showSignUp,
     '/socket': showSocket,
+    '/callback': showCallback,
 };
 
 function showPage(pageFunction) {

@@ -2,6 +2,8 @@ import { loadHTMLPage } from '../../api/fetchData.js';
 import { navigateTo } from '../../router.js'
 import { fetchAuth } from '../../api/fetchData.js';
 import { displayAlertMsg } from '../../utils/utilityFunctions.js';
+import { remoteAuth42 } from "./auth42.js";
+
 
 let modal2FA
 export async function showLogin() {
@@ -25,6 +27,7 @@ export async function showLogin() {
         document.getElementById('demo-user-btn2').addEventListener('click', () => {
             login("demo-user2", "demo-user2");
         });
+        document.getElementById('connect-intra-btn').addEventListener('click', remoteAuth42)
 
         document.getElementById('submit2FACode').addEventListener('click', submit2FACode);
         document.getElementById('close2FAModal').addEventListener('click', close2FAModal)

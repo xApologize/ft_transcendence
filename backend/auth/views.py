@@ -12,6 +12,8 @@ from django.http import JsonResponse
 import base64, qrcode
 from io import BytesIO
 from base64 import b64encode
+from django.conf import settings
+
 
 class Create2FA(View):
     @token_validation
@@ -218,3 +220,14 @@ class Token(View):
     @token_validation
     def get(self, request):
         return HttpResponse("Checkup if token valid")
+    
+
+class RemoteAuthToken(View):
+    def post(self, request):
+        code = request.GET.get('code')
+        print(settings.AUTH42_CLIENT)
+        print(settings.AUTH42_SECRET)
+        print(code)
+        
+        
+        return HttpResponse("Remote Auth Token")
