@@ -28,7 +28,6 @@ function updateOtherUsers(user) {
 
 // To use when user update his profile (avatar/nickname)
 export async function updateSpecificUser(userID) {
-    console.log("UPDATE USER")
     const apiParam = { id: userID };
     const response = await fetchUser('GET', apiParam);
     if (!response)
@@ -47,7 +46,6 @@ export async function updateSpecificUser(userID) {
 
 // To use when user logout
 export async function removeUser(userID) {
-    console.log("REMOVE USER")
     const everyoneContainer = document.getElementById('userDisplay');
     const friendContainer = document.getElementById('friendDisplay');
 
@@ -64,7 +62,6 @@ export async function removeUser(userID) {
             }
         }
     });
-    console.log("END REMOVE USER")
 }
 
 
@@ -72,16 +69,13 @@ export async function removeUser(userID) {
 
 export function handleSocialUpdate(rType, currentUser, otherUserId) {
     const userId = getMyID();
-    console.log("START SOCIAL UPDATE")
     if (!userId || userId == currentUser || userId == otherUserId) {
-        console.log("IN IF")
         updateSocial();
         if (userId == otherUserId)
             updateModalIfOpen()
         displayFriend();
         createNotifications(rType, userId, currentUser, otherUserId);
     }
-    console.log("END SOCIAL UPDATE");
 }
 
 function updateModalIfOpen() {
@@ -132,7 +126,6 @@ async function createNotifications(rType, userId, otherUserId, currentUser) {
 
 // To use when user login
 export async function newUser(userID) {
-    console.log("NEW USER")
     const apiParam = { id: userID };
     if (getMyID() == userID) 
         return;
@@ -150,7 +143,6 @@ export async function newUser(userID) {
     } catch (error) {
         console.error('Error in newUser:', error);
     }
-    console.log("END NEW USER")
 }
 
 async function addNewUser(user) {
