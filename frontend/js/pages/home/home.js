@@ -22,8 +22,6 @@ export async function showHome() {
         // await initPage()
         const result = await initPage()
         if (result === false) {
-            console.error("Error loading home page")
-            navigateTo('/')
             return;
         }
 
@@ -102,7 +100,7 @@ export async function displayEveryone() {
 async function initPage() {
     const user = await fetchMe('GET');
     if (!user)
-        return;
+        return false;
     const userAssembled = await assembler(user);
     if (!userAssembled || typeof userAssembled !== 'object') {
         console.log('Error assembling user');
