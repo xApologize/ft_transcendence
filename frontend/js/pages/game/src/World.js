@@ -61,7 +61,6 @@ class World {
 
 	joinMatch( wsPath, side, myNickname, opponentNickname ) {
 		this.match = new Match( '/' + wsPath, side == "A" ? 0 : 1, myNickname, opponentNickname );
-		console.log("bah");
 		this.changeStatus( "ING" );
 	}
 
@@ -102,7 +101,7 @@ class World {
 	changeStatus( status ) {
 		const objectData = new Object();
 		objectData.status = status
-		fetchUser('PATCH', null, objectData);
+		fetchUser( 'PATCH', null, objectData ); // no more auto update for all users after merge
 	}
 
 	get socket() {

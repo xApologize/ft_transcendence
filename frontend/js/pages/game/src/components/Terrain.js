@@ -1,6 +1,6 @@
 import { SolidMesh } from './SolidMesh.js';
 import { GoalZone } from './GoalZone.js';
-import { airHockeyTable } from '../systems/Loader.js';
+import { airHockeyTable, floorDiffuse, floorNormal } from '../systems/Loader.js';
 import { Renderer } from '../modules/Renderer.js';
 import {
 	BoxGeometry,
@@ -32,7 +32,8 @@ class Terrain extends Object3D {
 		this.rightGoalZone = new GoalZone(g_linev, m_white, 2);
 		this.rightGoalZone.position.set(size.x / 2 - margin - lineWidth / 2, 0, 0);
 
-		const m_grey = new MeshStandardMaterial({ color: 'grey' });
+		// const m_grey = new MeshStandardMaterial({ color: 'grey' });
+		const m_grey = new MeshStandardMaterial({ map: floorDiffuse, normalMap : floorNormal });
 		const g_floor = new PlaneGeometry( 100, 100 );
 		this.floor = new Mesh(g_floor, m_grey);
 		this.floor.position.set(0, 0, -6);
