@@ -5,7 +5,7 @@ import { displayToast } from './toastNotif.js';
 import { displayFriend } from './home.js';
 import { getUserAndDisplay} from './otherUserProfile.js';
 import { updateSocial } from './social.js';
-import { getMyID, fetchUserById } from './utils.js';
+import { getMyID, fetchUserById, setStatus } from './utils.js';
 import { fetchUser, fetchFriendChange } from '../../api/fetchData.js';
 import { assembler } from '../../api/assembler.js';
 /////////////////////
