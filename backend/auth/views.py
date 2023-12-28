@@ -278,6 +278,8 @@ class RemoteAuthToken(View):
 
     def authenticate_user(self, user):
         response = JsonResponse({'success': 'Login successful.'})
+        if user.status == "ONL":
+            return JsonResponse({'error': 'This account is already logged in.'}, status=409)
         if user.two_factor_auth:
             return handle_2fa_login(user)
         return first_token(response, user.pk)
@@ -287,7 +289,7 @@ class RemoteAuthToken(View):
         try:
             avatar_data = urllib.request.urlopen(avatar_url).read()
         except Exception as e:
-            return HttpResponseBadRequest('Error downloading avatar: ' + str(e))
+            return JsonResponse({'error': 'downloading avatar: ' + str(e)})
 
         user = User.objects.create(
             intra_id=user_info.get('id'),

@@ -55,9 +55,7 @@ export async function logoutUser() {
     if (logoutResponse.status == 200) {
         interactiveSocket.closeSocket()
         sessionStorage.clear()
-        window.location.pathname = '/'
-        handleRoute()
-        // navigateTo('/')
+        navigateTo('/')
     }
     return ;
 }

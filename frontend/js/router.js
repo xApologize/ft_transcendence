@@ -10,7 +10,6 @@ import { showSocket } from './pages/socket/debug_socket.js';
 import { showCallback } from './pages/callback/callback.js';
 import interactiveSocket from './pages/home/socket.js'
 
-
 const routes = {
     '/': showLogin,
     '/home': showHome,
@@ -45,7 +44,7 @@ export async function checkIfCookie() {
     return tokenResponse;
 }
 
-export async function handleRoute() {
+export function handleRoute() {
     let pageFunction = null;
     let goPath = window.location.pathname;
     // make this work properly with the history
@@ -61,7 +60,6 @@ export async function handleRoute() {
     } else {
         pageFunction = show404;
     }
-    // currentRoute = goPath;
     showPage(pageFunction);
 }
 
@@ -70,7 +68,6 @@ async function loadPage() {
     const body = document.getElementById('content');
     const template = await templateComponent();
 
-    // body.append(header);
     body.append(template);
     handleRoute();
 }

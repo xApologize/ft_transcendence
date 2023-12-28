@@ -35,9 +35,7 @@ const redirectToHome = () => {
     closeAllModals();
     interactiveSocket.closeSocket()
     sessionStorage.clear();
-    window.location.pathname = '/'
-    handleRoute()
-    // navigateTo('/');
+    navigateTo('/')
     return null
 };
 

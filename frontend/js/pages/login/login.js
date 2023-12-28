@@ -116,7 +116,7 @@ function close2FAModal() {
     displayLoginError(error)
 }
 
-async function displayLoginError(message) {
+export async function displayLoginError(message) {
     const alert = document.getElementById('alertErrorLogin');
     const msg = message.error;
     displayAlertMsg(msg, alert);
