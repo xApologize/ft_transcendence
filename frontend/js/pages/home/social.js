@@ -70,11 +70,11 @@ function fillRequestTemplate(requestNode, request) {
     const img = requestNode.querySelector('#userRequestCardImg');
     img.src = request.avatar || '';
     img.alt = request.nickname + "'s avatar";
-    img.id = '';
+    // img.id = '';
 
     const nickname = requestNode.querySelector('#userRequestCardNickname');
     nickname.textContent = request.nickname;
-    nickname.id = '';
+    // nickname.id = '';
 
     return requestNode;
 }

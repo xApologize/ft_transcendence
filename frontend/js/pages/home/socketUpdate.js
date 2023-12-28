@@ -10,7 +10,39 @@ import { fetchUser, fetchFriendChange } from '../../api/fetchData.js';
 import { assembler } from '../../api/assembler.js';
 /////////////////////
 
-function updateOtherUsers(user) {
+function updateSocialSocket(user) {
+    const socialContainer = document.getElementById('socialModal');
+    const socialCards = socialContainer.querySelectorAll(`div[data-id="${user.id}"]`);
+    socialCards.forEach(card => {
+        const avatarElement = card.querySelector('#userRequestCardImg');
+        const nameElement = card.querySelector('#userRequestCardNickname');
+
+        if (avatarElement) {
+            avatarElement.src = user.avatar; // Update avatar image source
+            avatarElement.alt = user.nickname; // Update alt text
+        }
+        if (nameElement) {
+            nameElement.textContent = user.nickname; // Update user's name
+        }
+    });
+}
+
+function updateOtherProfileSocket(user) {
+    const otherUserModal = document.getElementById('otherUserInfo')
+    var modalInstance = bootstrap.Modal.getInstance(otherUserModal);
+    if (modalInstance && modalInstance._isShown) {
+        const id = otherUserModal.querySelector('.modal-content').dataset.id;
+        if (id == user.id) {
+            let nickname = otherUserModal.querySelector('#userNickname');
+            nickname.textContent = user.nickname;
+
+            let avatar = otherUserModal.querySelector('#userAvatar');
+            avatar.src = user.avatar;
+        }
+    }
+}
+
+function updateOtherUsersCard(user) {
     const userCards = document.querySelectorAll(`div[data-id="${user.id}"]`);
     userCards.forEach(card => {
         const avatarElement = card.querySelector('#user-avatar');
@@ -24,8 +56,8 @@ function updateOtherUsers(user) {
             nameElement.textContent = user.nickname; // Update user's name
         }
     });
-
-    
+    updateOtherProfileSocket(user);
+    updateSocialSocket(user);
 }
 
 // To use when user update his profile (avatar/nickname)
@@ -39,7 +71,7 @@ export async function updateSpecificUser(userID) {
         console.log(assemble);
         return;
     } else {
-        updateOtherUsers(assemble[0]);
+        updateOtherUsersCard(assemble[0]);
     }
 }
 
