@@ -2,7 +2,7 @@ from django.http import JsonResponse, HttpResponse, Http404, HttpResponseBadRequ
 from django.views import View
 from utils.decorators import token_validation
 from django.core.exceptions import PermissionDenied
-import json
+import json, random
 from django.contrib.auth.hashers import check_password
 from user_profile.models import User
 from utils.functions import first_token
@@ -291,13 +291,23 @@ class RemoteAuthToken(View):
         except Exception as e:
             return JsonResponse({'error': 'downloading avatar: ' + str(e)})
 
+        nickname = user_info.get('login')
+        email = user_info.get('email')
+        intra_id = user_info.get('id')
+
+        nickname = self.get_unique_nickname(nickname)
         user = User.objects.create(
-            intra_id=user_info.get('id'),
-            nickname=user_info.get('login'),
-            email=user_info.get('email'),
+            intra_id=intra_id,
+            nickname=nickname,
+            email=email,
             account_creation_method='intra'
         )
         new_file_name = f"user_{user.pk}.jpg"
         user.avatar.save(new_file_name, ContentFile(avatar_data))
         response = JsonResponse({'success': 'Login successful.'})
         return first_token(response, user.pk)
+    def get_unique_nickname(self, nickname):
+        unique_nickname = nickname
+        while User.objects.filter(nickname=unique_nickname).exists():
+            unique_nickname = f"{nickname}{random.randint(1, 9999)}"
+        return unique_nickname

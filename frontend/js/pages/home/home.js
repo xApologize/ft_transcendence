@@ -15,7 +15,7 @@ import { loadModel } from '../game/src/systems/Loader.js';
 import interactiveSocket from './socket.js';
 import { navigateTo } from '../../router.js';
 ////////
-// Quand user Update son profil (avatar/nickname) -> Socket call function: not done (update only 1 user)
+
 export async function showHome() {
     try {
         await loadHTMLPage('./js/pages/home/home.html');
