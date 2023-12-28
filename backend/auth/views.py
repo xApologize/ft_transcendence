@@ -245,7 +245,7 @@ class RemoteAuthToken(View):
             'client_id': settings.AUTH42_CLIENT,
             'client_secret': settings.AUTH42_SECRET,
             'code': code,
-            'redirect_uri': 'https://localhost/callback',
+            'redirect_uri': settings.AUTH42_REDIRECT_URI,
         }
         data = urllib.parse.urlencode(data).encode('ascii')
         req = urllib.request.Request(token_url, data)

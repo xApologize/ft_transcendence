@@ -24,6 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("SECRET_KEY")
 AUTH42_CLIENT = os.environ.get("AUTH42_CLIENT")
 AUTH42_SECRET = os.environ.get("AUTH42_SECRET")
+AUTH42_REDIRECT_URI = os.environ.get("AUTH42_REDIRECT_URI")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(os.environ.get("DEBUG", default=0))

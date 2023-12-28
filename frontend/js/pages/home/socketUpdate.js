@@ -24,6 +24,8 @@ function updateOtherUsers(user) {
             nameElement.textContent = user.nickname; // Update user's name
         }
     });
+
+    
 }
 
 // To use when user update his profile (avatar/nickname)

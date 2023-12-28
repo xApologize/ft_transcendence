@@ -8,27 +8,45 @@ let modal2FA
 export async function showLogin() {
     try {
         await loadHTMLPage('./js/pages/login/login.html');
-        // sessionStorage.clear()
+
         modal2FA = new bootstrap.Modal(document.getElementById('twoFAModal'))
-        document.getElementById('login-form').addEventListener('submit', function (event) {
+
+        document
+        .getElementById('login-form')
+        .addEventListener('submit', function (event) {
             event.preventDefault();
             login();
         });
+
         document
         .getElementById('signUpButton')
         .addEventListener('click', () => {
             navigateTo('/signUp');
         });
-        document.getElementById('btnAlertCloseLogin').addEventListener('click', hideLoginAlert)
-        document.getElementById('demo-user-btn').addEventListener('click', () => {
+
+        document
+        .getElementById('btnAlertCloseLogin')
+        .addEventListener('click', hideLoginAlert)
+
+        document
+        .getElementById('demo-user-btn')
+        .addEventListener('click', () => {
             login("demo-user", "demo-user");
         });
-        document.getElementById('demo-user-btn2').addEventListener('click', () => {
+
+        document
+        .getElementById('demo-user-btn2')
+        .addEventListener('click', () => {
             login("demo-user2", "demo-user2");
         });
 
-        document.getElementById('submit2FACode').addEventListener('click', submit2FACode);
-        document.getElementById('close2FAModal').addEventListener('click', close2FAModal)
+        document
+        .getElementById('submit2FACode')
+        .addEventListener('click', submit2FACode);
+
+        document
+        .getElementById('close2FAModal')
+        .addEventListener('click', close2FAModal)
     } catch (error) {
         console.error('Error fetching home.html:', error);
     }
