@@ -8,6 +8,8 @@ import { showLogin } from './pages/login/login.js';
 import { templateComponent } from './components/template/template.js';
 import { showSocket } from './pages/socket/debug_socket.js';
 import { showCallback } from './pages/callback/callback.js';
+import interactiveSocket from './pages/home/socket.js'
+
 
 const routes = {
     '/': showLogin,
@@ -86,6 +88,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 function handlePopState(event) {
     checkAllModal();
     handleRoute();
+    interactiveSocket.closeSocket();
 }
 
 function disposeModal(modalId) {

@@ -13,24 +13,25 @@ export async function showCallback() {
     
         const response = await fetchAuth('POST', 'api-auth/', null, { code: code })
         const assemble = await assembler(response)
+
         if (response.status >= 200 && response.status < 300) {
-            window.location = ''
             if (assemble['2fa_required'] === true) {
-                window.location.pathname = '/'
-                handleRoute()
-                const modal2FA = bootstrap.Modal.getInstance(document.getElementById('twoFAModal'))
+                const newURL = new URL(window.location.origin + '/');
+                window.location.href = newURL;
+                handleRoute();
+                const modal2FA = bootstrap.Modal.getInstance(document.getElementById('twoFAModal'));
                 modal2FA.show();
             } else {
-                window.location.pathname = '/home'
-                handleRoute()
-                // navigateTo('/home')
+                const newURL = new URL(window.location.origin + '/home');
+                window.location.href = newURL;
+                handleRoute();
             }
         } else {
-            window.location.pathname = '/home'
-            handleRoute()
-            // await showLogin('/')
+            const newURL = new URL(window.location.origin + '/');
+            window.location.href = newURL;
+            handleRoute();
         }
     } catch (error) {
         console.error('Error fetching callback.html:', error);
     }
-  }
+}
