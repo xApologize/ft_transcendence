@@ -1,6 +1,7 @@
 import { navigateTo } from "../router.js";
 import { closeAllModals } from "../utils/utilityFunctions.js";
 import interactiveSocket from '../pages/home/socket.js'
+import { handleRoute } from "../router.js";
 
 // Load frontend page.
 export const loadHTMLPage = async (filePath) => {
@@ -34,7 +35,9 @@ const redirectToHome = () => {
     closeAllModals();
     interactiveSocket.closeSocket()
     sessionStorage.clear();
-    navigateTo('/');
+    window.location.pathname = '/'
+    handleRoute()
+    // navigateTo('/');
     return null
 };
 

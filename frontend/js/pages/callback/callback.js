@@ -2,6 +2,7 @@ import { fetchAuth, loadHTMLPage } from "../../api/fetchData.js";
 import { navigateTo } from "../../router.js";
 import { showLogin } from "../login/login.js";
 import { assembler } from "../../api/assembler.js";
+import { handleRoute } from "../../router.js";
 
 export async function showCallback() {
     try {
@@ -12,17 +13,22 @@ export async function showCallback() {
     
         const response = await fetchAuth('POST', 'api-auth/', null, { code: code })
         const assemble = await assembler(response)
-        console.log(assemble)
         if (response.status >= 200 && response.status < 300) {
+            window.location = ''
             if (assemble['2fa_required'] === true) {
-                await showLogin();
+                window.location.pathname = '/'
+                handleRoute()
                 const modal2FA = bootstrap.Modal.getInstance(document.getElementById('twoFAModal'))
                 modal2FA.show();
             } else {
-                navigateTo('/home')
+                window.location.pathname = '/home'
+                handleRoute()
+                // navigateTo('/home')
             }
         } else {
-            await showLogin('/')
+            window.location.pathname = '/home'
+            handleRoute()
+            // await showLogin('/')
         }
     } catch (error) {
         console.error('Error fetching callback.html:', error);
