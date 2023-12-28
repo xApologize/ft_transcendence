@@ -99,9 +99,10 @@ class World {
 	}
 
 	changeStatus( status ) {
-		const objectData = new Object();
-		objectData.status = status
-		fetchUser( 'PATCH', null, objectData ); // no more auto update for all users after merge
+		const data = {
+			status: status
+		};
+		fetchUser( 'PATCH', null, data ); // no more auto update for all users after merge
 	}
 
 	get socket() {

@@ -3,7 +3,6 @@ import { World } from '../World.js';
 import { Player } from '../components/Player.js';
 import { Opponent } from '../components/Opponent.js';
 import { GameState } from './GameStates.js';
-import { fetchUser } from '../../../../api/fetchData.js';
 
 let world;
 

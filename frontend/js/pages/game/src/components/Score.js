@@ -2,6 +2,7 @@ import { digitalFont } from '../systems/Loader.js';
 import { Renderer } from '../modules/Renderer.js';
 import { World } from '../World.js';
 import { Color, Mesh, MeshStandardMaterial, Object3D, ShapeGeometry } from 'three';
+import { fetchMatchHistory } from '../../../../api/fetchData.js';
 
 let scoreTab = [0, 0];
 const maxScore = 1;
@@ -56,13 +57,32 @@ class Score extends Object3D {
 
 		this.setText( "0" + scoreTab[0],  "0" + scoreTab[1] );
 		if (scoreTab[0] >= maxScore) {
+			this.postMatch( 0, 1 );
 			World._instance.match.endMatch();
 			this.setText( "00", "--" );
 		}
 		if (scoreTab[1] >= maxScore) {
+			this.postMatch( 1, 0 );
 			World._instance.match.endMatch();
 			this.setText( "--", "00" );
 		}
+	}
+
+	postMatch( winnerId, loserId ) {
+		const participants = World._instance.match.participants;
+
+		const data = {
+			winner: participants[winnerId],
+			loser: participants[loserId],
+			winner_score: scoreTab[winnerId],
+			loser_score: scoreTab[loserId]
+		}
+		const response = fetchMatchHistory( 'POST', data );
+		if ( !response ) {
+			console.error( "No response from POST MatchHistory" );
+			return;
+		}
+		console.log( response );
 	}
 }
 
