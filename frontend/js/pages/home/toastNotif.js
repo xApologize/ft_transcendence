@@ -29,7 +29,7 @@ async function createToast(toastInfo) {
     toastNotif.querySelector('#toast-title').textContent = toastInfo['toastTitle'];
     toastNotif.querySelector('#toast-content').textContent = toastInfo['toastMsg'];
 
-    document.getElementById('toastContainer').append(toastNotif);
+    document.getElementById('toastContainer').prepend(toastNotif);
     var toast = new bootstrap.Toast(toastNotif);
     toastNotif.addEventListener('shown.bs.toast', () => {
         const timeSinceToastElement = toastNotif.querySelector('#timeSinceToast');
