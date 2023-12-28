@@ -92,46 +92,24 @@ function handlePopState(event) {
     handleRoute();
 }
 
+function disposeModal(modalId) {
+    const modalElement = document.getElementById(modalId);
+    if (modalElement) {
+        const modalInstance = bootstrap.Modal.getInstance(modalElement);
+        if (modalInstance) {
+            modalInstance.dispose();
+        }
+    }
+}
+
 function checkAllModal() {
-    const settingsModal = document.getElementById('userSettingsModal');
-    if (settingsModal) {
-        const modalInstance = bootstrap.Modal.getInstance(settingsModal);
-        if (modalInstance) {
-            modalInstance.dispose();
-        }
-    }
+    const modals = [
+        'userSettingsModal',
+        'twoFAModal',
+        'otherUserInfo',
+        'inviteGameModal',
+        'socialModal'
+    ];
 
-    const twoAuthModal = document.getElementById('twoFAModal');
-    if (twoAuthModal) {
-        const modalInstance = bootstrap.Modal.getInstance(twoAuthModal);
-        if (modalInstance) {
-            modalInstance.dispose();
-        }
-    }
-
-    const otherUsersModal = document.getElementById('otherUserInfo');
-    if (otherUsersModal) {
-        const modalInstance = bootstrap.Modal.getInstance(otherUsersModal);
-        if (modalInstance) {
-            modalInstance.dispose();
-        }
-    }
-
-    const inviteModal = document.getElementById('inviteGameModal');
-    if (inviteModal) {
-        const modalInstance = bootstrap.Modal.getInstance(inviteModal);
-        if (modalInstance) {
-            modalInstance.dispose();
-        }
-    }
-
-    const socialModal = document.getElementById('socialModal');
-    if (socialModal) {
-        const modalInstance = bootstrap.Modal.getInstance(socialModal);
-        if (modalInstance) {
-            modalInstance.dispose();
-        }
-    }
-    // Close all other modals, one by one, id by id...
-
+    modals.forEach(disposeModal);
 }
