@@ -9,7 +9,6 @@ import { templateComponent } from './components/template/template.js';
 import { showSocket } from './pages/socket/debug_socket.js';
 import { showCallback } from './pages/callback/callback.js';
 
-var currentRoute = '';
 const routes = {
     '/': showLogin,
     '/home': showHome,
@@ -35,8 +34,8 @@ export function navigateTo(route) {
 }
 
 export async function checkIfCookie() {
-    var accessTokenLive = sessionStorage.getItem('jwt');
-    var options = {
+    const accessTokenLive = sessionStorage.getItem('jwt');
+    const options = {
         method: 'GET',
         credentials: 'include',
         headers: {
@@ -48,11 +47,11 @@ export async function checkIfCookie() {
 }
 
 export async function handleRoute() {
-    var pageFunction = null;
-    var goPath = window.location.pathname;
+    let pageFunction = null;
+    let goPath = window.location.pathname;
     // make this work properly with the history
     // if (goPath == '/home') {
-    //     var cookieResponse = await checkIfCookie();
+    //     let cookieResponse = await checkIfCookie();
     //     if (cookieResponse.status == 401) {
     //         goPath = '/';
     //     }
