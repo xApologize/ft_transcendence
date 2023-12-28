@@ -55,25 +55,20 @@ class Score extends Object3D {
 			scoreTab.push( 0 );
 		scoreTab[playerId - 1] += 1;
 
-		this.setText( "0" + scoreTab[0],  "0" + scoreTab[1] );
-		if (scoreTab[0] >= maxScore) {
-			this.postMatch( 0, 1 );
+		this.setText( (scoreTab[0] < 10 ? "0" : "") + scoreTab[0],  (scoreTab[1] < 10 ? "0" : "") + scoreTab[1] );
+		if (scoreTab[World._instance.match.self.participantId] >= maxScore) {
+			this.tryPostMatch( World._instance.match.self.participantId );
 			World._instance.match.endMatch();
-			this.setText( "00", "--" );
-		}
-		if (scoreTab[1] >= maxScore) {
-			this.postMatch( 1, 0 );
-			World._instance.match.endMatch();
-			this.setText( "--", "00" );
 		}
 	}
 
-	postMatch( winnerId, loserId ) {
+	tryPostMatch( winnerId, loserId ) {
 		const participants = World._instance.match.participants;
+		loserId = winnerId == 0 ? 1 : 0;
 
 		const data = {
-			winner: participants[winnerId],
-			loser: participants[loserId],
+			winner: participants[winnerId].participantNickname,
+			loser: participants[loserId].participantNickname,
 			winner_score: scoreTab[winnerId],
 			loser_score: scoreTab[loserId]
 		}
@@ -82,7 +77,6 @@ class Score extends Object3D {
 			console.error( "No response from POST MatchHistory" );
 			return;
 		}
-		console.log( response );
 	}
 }
 
