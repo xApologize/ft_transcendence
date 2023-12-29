@@ -20,16 +20,10 @@
     cursor: pointer;
 }
 
-.demoUser {
-    position: absolute;
-    bottom: 1%;
-    left: 0;
-}
-
-.demoUser2 {
-    position: absolute;
-    bottom: 5%;
-    left: 0;
+.fixed-bottom-left {
+    position: fixed; /* Fixed position relative to the viewport */
+    bottom: 1rem; /* Distance from the bottom */
+    left: 1rem; /* Distance from the left */
 }
 
 .textWhite {

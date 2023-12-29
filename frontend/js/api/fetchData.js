@@ -1,6 +1,7 @@
 import { navigateTo } from "../router.js";
 import { closeAllModals } from "../utils/utilityFunctions.js";
 import interactiveSocket from '../pages/home/socket.js'
+import { handleRoute } from "../router.js";
 
 // Load frontend page.
 export const loadHTMLPage = async (filePath) => {
@@ -34,7 +35,7 @@ const redirectToHome = () => {
     closeAllModals();
     interactiveSocket.closeSocket()
     sessionStorage.clear();
-    navigateTo('/');
+    navigateTo('/')
     return null
 };
 
@@ -86,22 +87,22 @@ const buildParams = (parameters) => {
     const params = new URLSearchParams();
     if (parameters) {
         for (const [parameterName, parameterValue] of Object.entries(parameters)) {
-            if (typeof parameterValue === 'object') {
+            if (typeof parameterValue === 'object' && parameterValue !== null) {
                 for (const value of Object.values(parameterValue)) {
-                    params.append(parameterName, value);
+                        params.append(parameterName, value);
                 }
-            }
-            else if (parameterValue) {
+            } else if (parameterValue !== null && parameterValue !== undefined) {
                 params.append(parameterName, parameterValue);
             }
         }
     }
-    return params.toString() ? params : null;
+    return params.toString();
 };
 
 const buildApiUrl = (path, parameters = null) => {
     const baseUrl = "/api/";
-    const queryString = parameters ? `?${buildParams(parameters)}` : '';
+    const paramString = buildParams(parameters);
+    const queryString = paramString ? `?${paramString}` : '';
     return `${baseUrl}${path}${queryString}`;
 };
 
@@ -116,8 +117,8 @@ export const fetchUser = async (method, parameters = null, data = null) => {
 };
 
 // Fetch login/logout/check if token
-export const fetchAuth = async (method, apiPath, data = null) => {
-    return fetchApi(method, `auth/${apiPath}`, null, data);
+export const fetchAuth = async (method, apiPath, data = null, parameters = null) => {
+    return fetchApi(method, `auth/${apiPath}`, parameters, data);
 };
 
 // Fetch own information (username, email, avatar, status, match history)

@@ -1,8 +1,7 @@
 import { logoutUser } from '../../components/userCard/userCard.js'
 import { World } from '../game/src/World.js';
 import { displayEveryone } from './home.js'
-import { updateSocial } from './social.js'
-import { newUser, removeUser, updateSpecificUser } from './utils.js'
+import { newUser, removeUser, updateSpecificUser, handleSocialUpdate } from './socketUpdate.js'
 
 const interactiveSocket = {
     interactive_socket: null,
@@ -10,6 +9,7 @@ const interactiveSocket = {
     initSocket: function() {
         const self = this;
         if (this.interactive_socket === null){
+            console.log("INIT !")
             this.interactive_socket = new WebSocket('wss://' + window.location.host + '/ws/pong/interactive' + "?" + sessionStorage.getItem('jwt'));
             self.interactive_socket.onerror = function(event) {
                 console.error("WebSocket error:", event);
@@ -19,6 +19,7 @@ const interactiveSocket = {
                 console.log("𝕴𝖓𝖙𝖊𝖗𝖆𝖈𝖙𝖎𝖛𝖊 𝖘𝖔𝖈𝖐𝖊𝖙 𝖎𝖘 𝖓𝖔𝖜 𝖔𝖕𝖊𝖓");
             }
             this.interactive_socket.onclose = async function(event) {
+                this.interactive_socket = null
                 console.log("𝕴𝖓𝖙𝖊𝖗𝖆𝖈𝖙𝖎𝖛𝖊 𝖘𝖔𝖈𝖐𝖊𝖙 𝖍𝖆𝖘 𝖇𝖊𝖊𝖓 𝖈𝖑𝖔𝖘𝖊𝖉");
             };
             this.interactive_socket.onmessage = function(event) {
@@ -32,7 +33,7 @@ const interactiveSocket = {
     closeSocket: function() {
         if (this.interactive_socket) {
             this.interactive_socket.close();
-            this.interactive_socket = null;
+            this.interactive_socket = null
         }
     },
 
@@ -73,6 +74,7 @@ const interactiveSocket = {
     refresh_handler: function(data) {
         const id = data.id;
         const refresh_type = data.rType;
+        const other_user_id = data.other_user_id;
         if (!id || !refresh_type){
             console.error("Refresh Handler error");
             return;
@@ -87,8 +89,12 @@ const interactiveSocket = {
             case "User":
                 updateSpecificUser(id);
                 break;
-            case "Social":
-                updateSocial();
+            case "add":
+            case "cancel":
+            case "accept":
+            case "refuse":
+            case "unfriend":
+                handleSocialUpdate(refresh_type, id, other_user_id);
                 break;
             default:
                 console.error("Rtype error");
@@ -102,7 +108,17 @@ const interactiveSocket = {
             return;
         }
         console.error("Error", error_type);
-    }
+    },
+
+    isSocketClosed: function() {
+        if (this.interactive_socket === null || this.interactive_socket.readyState === WebSocket.CLOSED) {
+            if (this.interactive_socket) {
+                this.interactive_socket = null;
+            }
+            return true;
+        }
+        return false
+    },
 };
 
 export default interactiveSocket;

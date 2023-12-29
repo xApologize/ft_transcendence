@@ -1,67 +1,73 @@
-<form id="login-form" class="form-div">
-    <div class="form">
-        <div class="m-3 text-center textWhite">
-            <h1>Login</h1>
+<div class="container">
+    <div class="row align-items-center justify-content-center">
+        <!-- Login Form on the Left -->
+        <div class="col-md-6">
+            <form id="login-form" class="form-div align-items-end">
+                <!-- Form Content Here -->
+                <div class="form">
+                    <div class="m-3 text-center textWhite">
+                        <h1>Login</h1>
+                    </div>
+                    <div class="form-floating m-3">
+                        <input type="text" class="form-control" id="validationDefault01" placeholder=" "
+                            autocomplete="username" required />
+                        <label class="form-label" for="validationDefault01">Username</label>
+                    </div>
+                    <div class="form-floating m-3">
+                        <input type="password" class="form-control" id="passwordInput" placeholder=" "
+                            autocomplete="current-password" required />
+                        <label for="passwordInput">Password</label>
+                    </div>
+                    <div class="m-3 text-center">
+                        <button type="submit" class="btn btn-primary loginButton" id="loginButton">
+                            Login
+                        </button>
+                    </div>
+                    <div class="m-3 text-center textWhite">
+                        <p>
+                            Don't have an account?
+                            <a id="signUpButton"
+                                class="link-secondary link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover linkHover">Sign
+                                up</a>
+                        </p>
+                    </div>
+                </div>
+                <div id="alertErrorLogin" class="alert alert-danger alert-dismissible fade hide" role="alert">
+                    <button id="btnAlertCloseLogin" type="button" class="btn-close" aria-label="Close"></button>
+                </div>
+            </form>
         </div>
-        <div class="form-floating m-3">
-            <input
-                type="text"
-                class="form-control"
-                id="validationDefault01"
-                placeholder=" "
-                autocomplete="username"
-                required
-            />
-            <label class="form-label" for="validationDefault01">Username</label>
+        
+        <div class="col-md-1 text-center">
+            <p>- Or -</p>
         </div>
-        <div class="form-floating m-3">
-            <input
-                type="password"
-                class="form-control"
-                id="passwordInput"
-                placeholder=" "
-                autocomplete="current-password"
-                required
-            />
-            <label for="passwordInput">Password</label>
-        </div>
-        <div class="m-3 text-center">
-            <button
-                type="submit"
-                class="btn btn-primary loginButton"
-                id="loginButton"
-            >
-                Login
+
+        <!-- Connect with Intra Button on the Right -->
+        <div id="connect-intra-btn" class="col-md-4 text-start ps-md-2 m-0">
+            <button class="btn btn-primary mb-2">
+                <a href="https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-ce51aa38f98a5cf50adf30268f90ffd73feda64861206156370cd2b8dc481ea6&redirect_uri=https%3A%2F%2Fc1r8p6.42quebec.com%2Fcallback&response_type=code">
+                    Connect with intra
+                </a>
             </button>
         </div>
-        <div class="m-3 text-center textWhite">
-            <p>
-                Don't have an account?
-                <a
-                id="signUpButton"
-                class="link-secondary link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover linkHover"
-                >Sign up</a
-                >
-            </p>
-        </div>
     </div>
-    <div id="alertErrorLogin" class="alert alert-danger alert-dismissible fade hide" role="alert">
-        <button id="btnAlertCloseLogin" type="button" class="btn-close" aria-label="Close"></button>
+</div>
+<div class="fixed-bottom-left">
+    <div class="row mb-2">
+        <button class="btn btn-primary" id="demo-user-btn">demo-user</button>
     </div>
-</form>
+    <div class="row">
+        <button class="btn btn-primary" id="demo-user-btn2">demo-user2</button>
+    </div>
+</div>
 
-<div class="demoUser m-3">
-    <button class="btn btn-primary" id="demo-user-btn">demo-user</button>
-</div>
-<div class="demoUser2 m-3">
-    <button class="btn btn-primary" id="demo-user-btn2">demo-user2</button>
-</div>
-<div class="modal fade" id="twoFAModal" tabindex="-1"  data-bs-keyboard="false" data-bs-backdrop="static" ria-labelledby="twoFAModalLabel" aria-hidden="true">
+<div class="modal fade" id="twoFAModal" tabindex="-1" data-bs-keyboard="false" data-bs-backdrop="static"
+    ria-labelledby="twoFAModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="twoFAModalLabel">Two-Factor Authentication</h5>
-                <button id="close2FAModal" type="button" class="btn-close"  aria-label="Close"></button>
+                <button id="close2FAModal" type="button" class="btn-close" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <p>Please enter the 2FA code from your authentication app.</p>

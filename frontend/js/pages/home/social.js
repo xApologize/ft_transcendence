@@ -1,7 +1,8 @@
-import { fetchFriendChange } from '../../api/fetchData.js';
+import { fetchFriend, fetchFriendChange } from '../../api/fetchData.js';
 import { userRequestCardComponent } from '../../components/userRequestCard/userRequestCard.js';
 import { assembler } from '../../api/assembler.js';
 import { handleFriendAction } from './utils.js';
+import { displayFriend } from './home.js';
 
 export async function updateSocial() {
 
@@ -17,7 +18,6 @@ export async function updateSocial() {
     updateSocialFriend(userRequestTemplate, allPendingRequests);
     // updateSocialInvite(clonedNode);
     updateSocialBadge();
-
 }
 
 async function updateSocialFriend(userRequestTemplate, allPendingRequests) {
@@ -70,18 +70,17 @@ function fillRequestTemplate(requestNode, request) {
     const img = requestNode.querySelector('#userRequestCardImg');
     img.src = request.avatar || '';
     img.alt = request.nickname + "'s avatar";
-    img.id = '';
 
     const nickname = requestNode.querySelector('#userRequestCardNickname');
     nickname.textContent = request.nickname;
-    nickname.id = '';
 
     return requestNode;
 }
 
 function updateSocialBadge() {
     const receivedRequestCount = document.getElementById('receivedRequest').childElementCount;
-    const sentRequestCount = document.getElementById('sentRequest').childElementCount;
+    // const sentRequestCount = document.getElementById('sentRequest').childElementCount;
+    const sentRequestCount = 0;
     const inviteGameCount = document.getElementById('inviteGameReceived').childElementCount;
 
     const socialBadge = document.getElementById('socialBadge');

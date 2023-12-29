@@ -14,24 +14,21 @@ import { loadFonts } from '../game/src/systems/Fonts.js';
 import { loadModel } from '../game/src/systems/Loader.js';
 import interactiveSocket from './socket.js';
 import { navigateTo } from '../../router.js';
-import { displayToast } from './toastNotif.js';
-import { newUser } from './utils.js';
 ////////
-// Quand user Update son profil (avatar/nickname) -> Socket call function: not done (update only 1 user)
+
 export async function showHome() {
     try {
         await loadHTMLPage('./js/pages/home/home.html');
         // await initPage()
         const result = await initPage()
         if (result === false) {
-            console.error("Error loading home page")
-            navigateTo('/')
             return;
         }
 
         // document.getElementById('displayNotification').addEventListener('click', displayToast);
         new bootstrap.Modal(document.getElementById('otherUserInfo'));
         new bootstrap.Modal(document.getElementById('inviteGameModal'));
+        new bootstrap.Modal(document.getElementById('gameMenuModal'));
 
         const friendsBtn = document.getElementById('friendsBtn');
         const everyoneBtn = document.getElementById('everyoneBtn');
@@ -55,8 +52,10 @@ export async function showHome() {
         }
         const world = new World(gameContainer);
 
-        const findGameBtn = document.getElementById('findGame');
-        findGameBtn.addEventListener('click', () => {
+        const play1vs1 = document.getElementById('play1vs1');
+        play1vs1.addEventListener('click', () => {
+            const modal = bootstrap.Modal.getInstance(document.getElementById('gameMenuModal'));
+            modal.hide()
             document.getElementById('toastContainer').classList.add('d-none')
             document.getElementById('ui').classList.add('d-none');
             world.currentGameState = 'lookingForPlayer';
@@ -104,7 +103,7 @@ export async function displayEveryone() {
 async function initPage() {
     const user = await fetchMe('GET');
     if (!user)
-        return;
+        return false;
     const userAssembled = await assembler(user);
     if (!userAssembled || typeof userAssembled !== 'object') {
         console.log('Error assembling user');
@@ -129,7 +128,6 @@ function everyoneBtnFunc(friendsBtn, everyoneBtn) {
 
         friendsBtn.classList.remove('active-dark');
         everyoneBtn.classList.add('active-dark');
-        // displayEveryone();
     }
 }
 
@@ -140,7 +138,6 @@ function friendsBtnFunc(friendsBtn, everyoneBtn) {
 
         everyoneBtn.classList.remove('active-dark');
         friendsBtn.classList.add('active-dark');
-        // displayFriend();
     }
 }
 
@@ -164,28 +161,4 @@ function responsiveLeftColumn() {
     });
 }
 // 
-
-// async function displayToast() {
-//     console.log('display TOoast !')
-//     const toastNotif = await toastComponent();
-//     document.getElementById('toastContainer').append(toastNotif);
-//     var toast = new bootstrap.Toast(toastNotif);
-//     toastNotif.addEventListener('shown.bs.toast', () => {
-//         const startTime = Date.now();
-//         const timeSinceToastElement = toastNotif.querySelector('#timeSinceToast');
-
-//         // Update the time every second
-//         const intervalId = setInterval(() => {
-//             const secondsPassed = Math.floor((Date.now() - startTime) / 1000);
-//             timeSinceToastElement.textContent = `${secondsPassed} seconds ago`;
-//         }, 1000);
-
-//         // When the toast is hidden, clear the interval
-//         toastNotif.addEventListener('hidden.bs.toast', () => {
-//             console.log("hide toast")
-//             toastNotif.remove();
-//         });
-//     });
-//     toast.show();
-// }
 

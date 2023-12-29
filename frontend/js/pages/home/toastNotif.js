@@ -1,43 +1,44 @@
 import { toastComponent } from '../../components/toast/toast.js';
-import { removeUser } from './utils.js';
 
 let toastQueue = [];
-export function displayToast() {
+export function displayToast(toastMsg, toastTitle, imgUrl) {
+    const toastPrep = prepToastInfo(toastMsg, toastTitle, imgUrl);
     if (document.querySelectorAll('#toastContainer .toast.show').length >= 5) {
-        toastQueue.push(prepToastInfo());
+        toastQueue.push(toastPrep);
     } else {
-        const toastInfo = prepToastInfo();
-        createToast(toastInfo);
+        createToast(toastPrep);
     }
 }
 
-function prepToastInfo() {
+function prepToastInfo(toastMsg, toastTitle, imgUrl) {
     const startTime = Date.now();
-    return ({
-        startTime
-    })
+    const toastInfo = {
+        toastMsg,
+        toastTitle,
+        startTime,
+        imgUrl
+    }
+    return toastInfo;
 
 }
 
 async function createToast(toastInfo) {
-    // Assume toastComponent() is a function that returns a toast HTML element
+    console.log("CREATE TOAST")
     const toastNotif = await toastComponent(); 
-    document.getElementById('toastContainer').append(toastNotif);
+    toastNotif.querySelector('#toast-img').src = toastInfo['imgUrl'];
+    toastNotif.querySelector('#toast-title').textContent = toastInfo['toastTitle'];
+    toastNotif.querySelector('#toast-content').textContent = toastInfo['toastMsg'];
 
-    // Initialize Bootstrap Toast
+    document.getElementById('toastContainer').prepend(toastNotif);
     var toast = new bootstrap.Toast(toastNotif);
-
-    // Set up events and display logic
     toastNotif.addEventListener('shown.bs.toast', () => {
         const timeSinceToastElement = toastNotif.querySelector('#timeSinceToast');
 
-        // Update the time every second
         const intervalId = setInterval(() => {
             const secondsPassed = Math.floor((Date.now() - toastInfo['startTime']) / 1000);
             timeSinceToastElement.textContent = `${secondsPassed} seconds ago`;
         }, 1000);
 
-        // When the toast is hidden, clear the interval and remove the toast from DOM
         toastNotif.addEventListener('hidden.bs.toast', () => {
             clearInterval(intervalId);
             toastNotif.remove();
@@ -45,18 +46,14 @@ async function createToast(toastInfo) {
         });
     });
 
-    // Display the toast
+    console.log("SHOW TOAST")
     toast.show();
 }
 
-// Function to show a toast if less than 5 are displayed
 function showNextToast() {
-    // Get the number of toasts currently displayed
     const displayedToasts = document.querySelectorAll('#toastContainer .toast.show').length;
 
-    // If there are less than 5 toasts displayed and the queue is not empty
     if (displayedToasts < 5 && toastQueue.length > 0) {
-        // Remove the first request from the queue, create the toast, and display it
         const toastInfo = toastQueue.shift();
         createToast(toastInfo);
     }
