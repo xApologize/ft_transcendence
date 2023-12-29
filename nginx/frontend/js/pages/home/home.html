@@ -1,0 +1,248 @@
+<div class="container-fluid">
+    <div class="row fill">
+        <div id="sceneContainer" class="vw-100 vh-100 p-0"></div>
+
+        <div id="lfp" class="d-none text-center position-absolute">
+            Looking for player...
+        </div>
+
+        <div id="ui" class="container-fluid position-absolute">
+            <div class="row vh-100">
+                <div class="buttonResponsive">
+                    <button
+                        class="btn shadow-none btn-primary textWhite"
+                        id="userBtn"
+                    >
+                        <i
+                            id="icon"
+                            class="fa fa-user"
+                            style="font-size: 1.5em"
+                        ></i>
+                    </button>
+                </div>
+                <div
+                    class="text-center userList pb-3 bg-main-second col-md-4 col-lg-4 col-xl-3 col-xxl-3"
+                    id="left-column"
+                >
+                    <div class="row">
+                        <div class="col p-0">
+                            <button
+                                type="button"
+                                id="everyoneBtn"
+                                class="active-dark btn btn-light btn-block w-100 rounded-0 border shadow-none"
+                            >
+                                Everyone
+                            </button>
+                        </div>
+                        <div class="col p-0">
+                            <button
+                                type="button"
+                                id="friendsBtn"
+                                class="active btn btn-light btn-block w-100 rounded-0 border shadow-none"
+                            >
+                                Friends
+                            </button>
+                        </div>
+                        <div class="m-0 row p-0 text-center border border-2">
+                            <button type="button" id="socialModalBtn" class="btn btn-light btn-block w-100 rounded-0 border shadow-none position-relative" data-bs-toggle="modal" data-bs-target="#socialModal">
+                                Social
+                                <!-- Badge in the corner -->
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="socialBadge">
+                                    0 <!-- Number of social events -->
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="divFill">
+                        <div class="row row-center" id="userDisplay"></div>
+                        <div class="row row-center d-none" id="friendDisplay"></div>
+                    </div>
+                </div>
+                <div
+                    class="col-sm-12 col-md-8 col-lg-8 col-xl-9 col-xxl-9"
+                    id="right-column"
+                >
+                    <div id="rightPart" class="row rightPartCol">
+                        <div
+                            id="divGame"
+                            class="col-12 col-md-3 col-xl-3 text-center textWhite p-2"
+                        >
+                            <div>
+                                <h1 class="m-3 text-center">Find game</h1>
+                                <button
+                                    id="findGame"
+                                    class="btn shadow-none btn-primary textWhite"
+                                >
+                                    Find game
+                                </button>
+                                <!-- <button
+                                    id="displayNotification"
+                                    class="btn shadow-none btn-primary textWhite"
+                                >
+                                    displayNotif
+                                </button> -->
+                            </div>
+                        </div>
+                        <div id="userCol" class="col-12 col-md-9 col-xl-9">
+                            <div class="rightCol text-center">
+                                <div class="upperRow">
+                                    <div
+                                        id="own-user-card"
+                                        class="user-card bg-main-second text-light mt-3 p-3"
+                                    ></div>
+                                </div>
+                                <div class="lowerRow bg-main-second">
+                                    <h1 class="m-3 text-center">
+                                        Match history
+                                    </h1>    
+                                    <div class="row">
+                                        <div class="col text-center p-0">
+                                            <p>Date</p>
+                                        </div>
+                                        <div class="col text-center p-0">
+                                            <p>Winner</p>
+                                        </div>
+                                        <div class="col text-center p-0">
+                                            <p>Score</p>
+                                        </div>
+                                        <div class="col text-center p-0">
+                                            <p>Loser</p>
+                                        </div>
+                                        <div class="col text-center p-0">
+                                            <p>Score</p>
+                                        </div>
+                                    </div>
+                                    <div id="matchHistory" class="matchHistoryBox"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Notification Container -->
+        <div id="toastContainer" class="toast-container end-0 top-0">
+        </div>
+        <!-- Invite Game Modal -->
+        <div
+            class="modal fade"
+            id="inviteGameModal"
+            tabindex="-1"
+            aria-labelledby="inviteGameModalLabel"
+            aria-hidden="true"
+        >
+            <div class="modal-dialog modal-dialog-centered modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header border-0">
+                        <h5 class="modal-title" id="waitingGameModal">
+                            <!-- Can I set the user to the name of the user? Jacob: For sure you can -->
+                            Waiting for user...
+                        </h5>
+                    </div>
+                    <div class="modal-footer border-0">
+                        <button class="btn btn-danger" data-bs-dismiss="modal">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Other User Profile Modal -->
+        <div class="modal fade" id="otherUserInfo" tabindex="-1" aria-labelledby="otherUserInfoLabel" aria-hidden="true">
+            <div id="otherUserInfoDialog" class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div class="d-flex align-items-center flex-grow-1">
+                            <button id="addFriendBtn" class="btn btn-success d-none me-2 flex-shrink-0"></button>
+                            <button id="deleteFriendBtn" class="btn btn-danger d-none me-2 flex-shrink-0"></button>
+                            <p class="mb-0 flex-grow-1 text-break" id="responseFriendQuery"></p>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="text-center mb-3">
+                            <img id="userAvatar" src="" alt="User Avatar" class="rounded-circle" width="100" height="100">
+                        </div>
+                        <h1 id="userNickname" class="text-center mb-3">Loading...</h4>
+                        <div class="row text-center">
+                            <p class="col">Wins: <span id="userWins" class="fw-bold">0</span></p>
+                            <p class="col">Losses: <span id="userLosses" class="fw-bold">0</span></p>
+                            <p class="col">Matches Played: <span id="userMatchesPlayed" class="fw-bold">0</span></p>
+                            <p id="winrate" class="col">Winrate: <span id="userWinrate" class="fw-bold">0</span></p>
+                        </div>
+                        <div id="otherMatchHistory" class="d-none">
+                            <div class="col text-center mb-4">
+                                <h3>Match History</h3>
+                            </div>
+                            <div>
+                                <div class="row text-center border-2 border mb-2">
+                                    <div class="col">
+                                        <p class="mt-2 mb-2">Date of Match</p>
+                                    </div>
+                                    <div class="col">
+                                        <p class="mt-2 mb-2">Winner</p>
+                                    </div>
+                                    <div class="col">
+                                        <p class="mt-2 mb-2">Winner Score</p>
+                                    </div>
+                                    <div class="col">
+                                        <p class="mt-2 mb-2">Loser</p>
+                                    </div>
+                                    <div class="col">
+                                        <p class="mt-2 mb-2">Loser Score</p>
+                                    </div>
+                                </div>
+                                <div id="matchHistoryContainer">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Social Modal --> 
+        <div class="modal fade" id="socialModal" tabindex="-1" aria-labelledby="socialModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header text-center">
+                        <h5 class="modal-title w-100" id="socialModalLabel">Social</h5>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Invite Game Receive -->
+                        <div class="invite-game-received align-items-center">
+                            <h6 class="text-center"> Invite Game Received</h6>
+                            <div id="inviteGameReceived" class="list-group">
+                                <!-- List of sent friend requests will go here -->
+        
+                            </div>
+                        </div>
+                        <hr> <!-- Separator -->
+                        <div id="friend-requests-sent" class="align-items-center">
+                            <h6 class="text-center">Friend Requests Sent</h6>
+                            <p class="text-center" id="response-requests-sent-info"></p>
+                            <div id="sentRequest" class="list-group">
+                                <!-- List of sent friend requests will go here -->
+                            </div>
+                        </div>
+                        <hr> <!-- Separator -->
+                        <!-- Friend Requests Received -->
+                        <div id="friend-requests-received" class="align-items-center">
+                            <h6 class="text-center">Friend Requests Received</h6>
+                            <p class="text-center" id="response-requests-received-info"></p>
+                            <div id="receivedRequest" class="list-group">
+                                <!-- List of received friend requests will go here -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
