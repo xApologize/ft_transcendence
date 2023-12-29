@@ -63,25 +63,6 @@ export function handleRoute() {
     showPage(pageFunction);
 }
 
-// !! Do not change the order in which it's append !!
-async function loadPage() {
-    const body = document.getElementById('content');
-    const template = await templateComponent();
-
-    body.append(template);
-    handleRoute();
-}
-
-window.addEventListener('beforeunload', () => {
-    sessionStorage.clear();
-    localStorage.clear();
-})
-
-document.addEventListener('DOMContentLoaded', async () => {
-    loadPage();
-    window.addEventListener('popstate', handlePopState);
-});
-
 function handlePopState(event) {
     checkAllModal();
     handleRoute();
@@ -109,3 +90,28 @@ function checkAllModal() {
 
     modals.forEach(disposeModal);
 }
+
+async function loadPage() {
+    const body = document.getElementById('content');
+    const template = await templateComponent();
+
+    body.append(template);
+    handleRoute();
+}
+
+window.addEventListener('beforeunload', () => {
+    sessionStorage.clear();
+    localStorage.clear();
+})
+
+document.addEventListener('DOMContentLoaded', async () => {
+    loadPage();
+    window.addEventListener('popstate', handlePopState);
+    window.addEventListener("visibilitychange", async function() {
+        if (document.visibilityState === 'visible' && window.location.pathname == '/home') {
+            if (interactiveSocket.isSocketClosed()) {
+                showHome();
+            }
+        }
+    });
+});
