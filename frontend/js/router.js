@@ -111,6 +111,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.addEventListener("visibilitychange", async function() {
         if (document.visibilityState === 'visible' && window.location.pathname == '/home') {
             if (interactiveSocket.isSocketClosed()) {
+                checkAllModal();
                 showHome();
             }
         }
