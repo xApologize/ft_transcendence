@@ -85,7 +85,8 @@ function checkAllModal() {
         'twoFAModal',
         'otherUserInfo',
         'inviteGameModal',
-        'socialModal'
+        'socialModal',
+        'gameMenuModal',
     ];
 
     modals.forEach(disposeModal);
