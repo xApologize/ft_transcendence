@@ -146,3 +146,7 @@ export const fetchMatchHistory = async (method, data = null) => {
     return fetchApi(method, 'match/', null, data);
 };
 
+export const fetchIsToken = async () => {
+    return fetchApi('GET', 'auth/token/');
+}
+
