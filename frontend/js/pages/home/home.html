@@ -72,15 +72,11 @@
                                 <button
                                     id="findGame"
                                     class="btn shadow-none btn-primary textWhite"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#gameMenuModal"
                                 >
                                     Find game
                                 </button>
-                                <!-- <button
-                                    id="displayNotification"
-                                    class="btn shadow-none btn-primary textWhite"
-                                >
-                                    displayNotif
-                                </button> -->
                             </div>
                         </div>
                         <div id="userCol" class="col-12 col-md-9 col-xl-9">
@@ -200,7 +196,6 @@
                 </div>
             </div>
         </div>
-        
         <!-- Social Modal --> 
         <div class="modal fade" id="socialModal" tabindex="-1" aria-labelledby="socialModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -235,6 +230,40 @@
                             </div>
                         </div>
                     </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Game Menu --> 
+        <div class="modal fade" id="gameMenuModal" tabindex="-1" aria-labelledby="gameMenuModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header text-center">
+                        <h5 class="modal-title w-100" id="gameMenuModalLabel">Game Menu</h5>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-6 text-center border-right">
+                                <div class="mb-2"> <!-- mb-2 adds a margin to the bottom of the element -->
+                                    <button  id="play1vs1" class="btn btn-primary">Play 1vs1</button>
+                                </div>
+                                <div>
+                                    <button class="btn btn-primary">Play 2vs2</button>
+                                </div>
+                            </div>
+                            <div class="col-6 text-center">
+                                <div class="mb-2"> <!-- Same as above, for spacing -->
+                                    <button class="btn btn-primary">Create Tournament</button>
+                                </div>
+                                <div>
+                                    <button class="btn btn-primary">Join Tournament</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     </div>

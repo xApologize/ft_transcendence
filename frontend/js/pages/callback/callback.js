@@ -16,7 +16,8 @@ export async function showCallback() {
 
         if (response.status >= 200 && response.status < 300) {
             if (assemble['2fa_required'] === true) {
-                navigateTo('/')
+                // navigateTo('/')
+                await showLogin()
                 const modal2FA = bootstrap.Modal.getInstance(document.getElementById('twoFAModal'));
                 modal2FA.show();
             } else {

@@ -28,6 +28,7 @@ export async function showHome() {
         // document.getElementById('displayNotification').addEventListener('click', displayToast);
         new bootstrap.Modal(document.getElementById('otherUserInfo'));
         new bootstrap.Modal(document.getElementById('inviteGameModal'));
+        new bootstrap.Modal(document.getElementById('gameMenuModal'));
 
         const friendsBtn = document.getElementById('friendsBtn');
         const everyoneBtn = document.getElementById('everyoneBtn');
@@ -51,8 +52,10 @@ export async function showHome() {
         }
         const world = new World(gameContainer);
 
-        const findGameBtn = document.getElementById('findGame');
-        findGameBtn.addEventListener('click', () => {
+        const play1vs1 = document.getElementById('play1vs1');
+        play1vs1.addEventListener('click', () => {
+            const modal = bootstrap.Modal.getInstance(document.getElementById('gameMenuModal'));
+            modal.hide()
             document.getElementById('toastContainer').classList.add('d-none')
             document.getElementById('ui').classList.add('d-none');
             world.currentGameState = 'lookingForPlayer';

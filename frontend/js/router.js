@@ -74,7 +74,8 @@ function checkAllModal() {
         'twoFAModal',
         'otherUserInfo',
         'inviteGameModal',
-        'socialModal'
+        'socialModal',
+        'gameMenuModal',
     ];
 
     modals.forEach(disposeModal);
@@ -99,6 +100,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.addEventListener("visibilitychange", async function() {
         if (document.visibilityState === 'visible' && window.location.pathname == '/home') {
             if (interactiveSocket.isSocketClosed()) {
+                checkAllModal();
                 showHome();
             }
         }
