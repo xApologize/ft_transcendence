@@ -62,10 +62,10 @@ COPY /nginx-conf/nginx.conf /etc/nginx/nginx.conf
 
 COPY /modsec/modsecurity.conf /etc/nginx/modsec/
 
-COPY /modsec/unicode.mapping /etc/nginx/modsec/
+COPY /modsec /etc/nginx/modsec/
 
-COPY /modsec/main.conf /etc/nginx/modsec/
+# COPY /modsec/main.conf /etc/nginx/modsec/
 
-COPY /modsec/error.html /etc/nginx/modsec/
+# COPY /modsec/error.html /etc/nginx/modsec/
 
 EXPOSE 443
