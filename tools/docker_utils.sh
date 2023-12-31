@@ -86,6 +86,15 @@ clean_folder_nuke_school_mac() {
 	rm -rf database-postgres database-redis backend/dist backend/node_modules frontend/node_modules
 }
 
+clean_migration() {
+	rm -rf backend/auth/migrations/*_initial.py
+	rm -rf backend/friend_list/migrations/*_initial.py
+	rm -rf backend/interactive/migrations/*_initial.py
+	rm -rf backend/match_history/migrations/*_initial.py
+	rm -rf backend/tournament_history/migrations/*_initial.py
+	rm -rf backend/user_profile/migrations/*_initial.py
+}
+
 
 if [ $# -eq 1 ]; then
 	input="$1"
@@ -153,9 +162,11 @@ case $input in
 	;;
 	"7")
 	clean_folders_nuke
+	clean_migration
 	;;
 	"9")
 	clean_folder_nuke_school_mac
+	clean_migration
 	;;
 	*)
 	echo -e "${Red}Invalid input provided${Reset}"
