@@ -10,8 +10,8 @@ function loadModel() {
 			
 			function ( gltf ) {
 				airHockeyTable = gltf;
-				console.log( "Model Loaded" );
-				console.log( airHockeyTable );
+				// console.log( "Model Loaded" );
+				// console.log( airHockeyTable );
 				resolve("resolved");
 			},
 

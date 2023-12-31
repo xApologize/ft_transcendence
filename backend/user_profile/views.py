@@ -26,16 +26,16 @@ class Users(View):
     def get(self, request: HttpRequest):
         status = request.GET.getlist('status')
         nicknames = request.GET.getlist('nickname')
-        id = request.GET.get('id')
+        userID = request.GET.get('id')
 
-        if not nicknames and not status and not id:
+        if not nicknames and not status and not userID:
             return HttpResponseBadRequest('No parameter.')
 
-        if id:
-            if not id.isdigit():
+        if userID:
+            if not userID.isdigit():
                 return HttpResponseBadRequest('Invalid id.')
             try:
-                users = User.objects.filter(id__in=id)
+                users = User.objects.filter(id__in=[int(userID)])
             except User.DoesNotExist:
                 return HttpResponseNotFound('User not found')
         elif nicknames:
@@ -59,17 +59,17 @@ class Users(View):
                 ).order_by('-date_of_match')[:10]
 
                 data['won_matches'] = [
-                    {'winner_score': match.winner_score, 'loser_score': match.loser_score, 'date_of_match': match.date_of_match} 
+                    {'winner_score': match.winner_score, 'loser_score': match.loser_score, 'date_of_match': match.date_of_match.strftime("%Y/%m/%d")} 
                     for match in recent_played_matches if match.winner == user
                 ]
 
                 data['lost_matches'] = [
-                    {'winner_score': match.winner_score, 'loser_score': match.loser_score, 'date_of_match': match.date_of_match} 
+                    {'winner_score': match.winner_score, 'loser_score': match.loser_score, 'date_of_match': match.date_of_match.strftime("%Y/%m/%d")} 
                     for match in recent_played_matches if match.loser == user
                 ]
 
                 data['played_matches'] = [
-                    {'winner_score': match.winner_score, 'winner_username': match.winner.nickname, 'loser_score': match.loser_score, 'loser_username': match.loser.nickname, 'date_of_match': match.date_of_match} 
+                    {'winner_score': match.winner_score, 'winner_username': match.winner.nickname, 'loser_score': match.loser_score, 'loser_username': match.loser.nickname, 'date_of_match': match.date_of_match.strftime("%Y/%m/%d")} 
                     for match in recent_played_matches
                 ]
 
@@ -189,15 +189,15 @@ class Me(View):
             'status': user.status,
             'admin': user.admin,
             'won_matches': [
-                {'winner_score': match.winner_score, 'loser_score': match.loser_score, 'date_of_match': match.date_of_match} 
+                {'winner_score': match.winner_score, 'loser_score': match.loser_score, 'date_of_match': match.date_of_match.strftime("%Y/%m/%d")} 
                 for match in recent_won_matches
             ],
             'lost_matches': [
-                {'winner_score': match.winner_score, 'loser_score': match.loser_score, 'date_of_match': match.date_of_match} 
+                {'winner_score': match.winner_score, 'loser_score': match.loser_score, 'date_of_match': match.date_of_match.strftime("%Y/%m/%d")} 
                 for match in recent_lost_matches
             ],
             'played_matches': [
-                {'winner_score': match.winner_score, 'winner_username': match.winner.nickname, 'loser_score': match.loser_score, 'loser_username': match.loser.nickname, 'date_of_match': match.date_of_match} 
+                {'winner_score': match.winner_score, 'winner_username': match.winner.nickname, 'loser_score': match.loser_score, 'loser_username': match.loser.nickname, 'date_of_match': match.date_of_match.strftime("%Y/%m/%d")} 
                 for match in recent_played_matches
             ],
         }
