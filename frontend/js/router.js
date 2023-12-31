@@ -76,6 +76,11 @@ function checkAllModal() {
         'inviteGameModal',
         'socialModal',
         'gameMenuModal',
+        'inviteTournamentModal',
+        'lobbyTournamentModal',
+        'joinTournamentModal',
+        'createTournamentModal',
+
     ];
 
     modals.forEach(disposeModal);
