@@ -3,12 +3,13 @@ import { showUser } from './pages/user/user.js';
 import { showGame } from './pages/game/game.js';
 import { showAbout } from './pages/about/about.js';
 import { showSignUp } from './pages/signUp/signUp.js';
+import { showFirewall } from './pages/firewall/firewall.js';
 import { show404 } from './pages/404/404.js';
 import { showLogin } from './pages/login/login.js';
 import { templateComponent } from './components/template/template.js';
 import { showSocket } from './pages/socket/debug_socket.js';
 import { showCallback } from './pages/callback/callback.js';
-import interactiveSocket from './pages/home/socket.js'
+import interactiveSocket from './pages/home/socket.js';
 
 const routes = {
     '/': showLogin,
@@ -18,6 +19,7 @@ const routes = {
     '/user': showUser,
     '/login': showLogin,
     '/signUp': showSignUp,
+    '/firewall': showFirewall,
     '/socket': showSocket,
     '/callback': showCallback,
 };
@@ -103,13 +105,16 @@ async function loadPage() {
 window.addEventListener('beforeunload', () => {
     sessionStorage.clear();
     localStorage.clear();
-})
+});
 
 document.addEventListener('DOMContentLoaded', async () => {
     loadPage();
     window.addEventListener('popstate', handlePopState);
-    window.addEventListener("visibilitychange", async function() {
-        if (document.visibilityState === 'visible' && window.location.pathname == '/home') {
+    window.addEventListener('visibilitychange', async function () {
+        if (
+            document.visibilityState === 'visible' &&
+            window.location.pathname == '/home'
+        ) {
             if (interactiveSocket.isSocketClosed()) {
                 checkAllModal();
                 showHome();
