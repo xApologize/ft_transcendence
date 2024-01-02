@@ -53,10 +53,16 @@ async function loopDisplayUser(objectAllUsers, currentUser, userContainer) {
         const seeProfileBtn = clonedUserTemplate.querySelector('.card');
         seeProfileBtn.addEventListener('click', displayOtherUserProfile)
         
-        const inviteGameBtn = clonedUserTemplate.querySelector('#inviteGameBtn');
-        inviteGameBtn.addEventListener('click', displayInviteModal);
-        if (user.status === 'ING' || user.status === 'OFF')
-            inviteGameBtn.classList.add("disabled", "border-0");
+        if (userContainer.id == 'friendDisplay') {
+            const inviteGameBtn = clonedUserTemplate.querySelector('#inviteGameBtn');
+            inviteGameBtn.addEventListener('click', displayInviteModal);
+            if (user.status === 'ING' || user.status === 'OFF')
+                inviteGameBtn.classList.add("disabled", "border-0");
+        } else {
+            const inviteGameBtn = clonedUserTemplate.querySelector('#inviteGameBtn');
+            inviteGameBtn.remove();
+        }
+            
 
 
         const filledTemplate = fillOtherUserInfo(clonedUserTemplate, user)
