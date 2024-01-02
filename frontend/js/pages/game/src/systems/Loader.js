@@ -1,27 +1,39 @@
 import { GLTFLoader } from '/public/three/examples/jsm/loaders/GLTFLoader.js';
 import { FontLoader } from '/public/three/examples/jsm/loaders/FontLoader.js';
-import { RepeatWrapping, TextureLoader } from 'three';
+import { CubeTextureLoader, RepeatWrapping, TextureLoader } from 'three';
 
 let airHockeyTable;
 let floorDiffuse;
 let floorNormal;
+let glassNormal;
 let digitalFont;
+let texCube;
 
 const loaderGLTF = new GLTFLoader();
 const loaderTexture = new TextureLoader();
+const loaderCubeTexture = new CubeTextureLoader();
 const loaderFont = new FontLoader();
 
 async function loadAll() {
 	await loadFile( loaderGLTF, '/public/model/model.glb' ).then( (res) => airHockeyTable = res );
-	await loadFile( loaderTexture, '/public/three/examples/textures/floors/FloorsCheckerboard_S_Diffuse.jpg' ).then( (res) => floorDiffuse = res );
+	await loadFile( loaderTexture, '/public/arcade_carpet_512.png' ).then( (res) => floorDiffuse = res );
 	floorDiffuse.wrapS = RepeatWrapping;
 	floorDiffuse.wrapT = RepeatWrapping;
 	floorDiffuse.repeat.set( 16, 16 );
-	await loadFile( loaderTexture, '/public/three/examples/textures/floors/FloorsCheckerboard_S_Normal.jpg' ).then( (res) => floorNormal = res );
+	await loadFile( loaderTexture, '/public/GreenCarpet_N.jpg' ).then( (res) => floorNormal = res );
 	floorNormal.wrapS = RepeatWrapping;
 	floorNormal.wrapT = RepeatWrapping;
 	floorNormal.repeat.set( 16, 16 );
+	await loadFile( loaderTexture, '/public/glassless_normal.jpg' ).then( (res) => glassNormal = res );
+	glassNormal.wrapS = RepeatWrapping;
+	glassNormal.wrapT = RepeatWrapping;
+	glassNormal.repeat.set( 8, 8 );
 	await loadFile( loaderFont, '/public/fonts/DSEG.json' ).then( (res) => digitalFont = res );
+	await loadFile( loaderCubeTexture, [
+		'/public/MilkyWay/dark-s_px.jpg', '/public/MilkyWay/dark-s_nx.jpg', 
+		'/public/MilkyWay/dark-s_py.jpg', '/public/MilkyWay/dark-s_ny.jpg', 
+		'/public/MilkyWay/dark-s_pz.jpg', '/public/MilkyWay/dark-s_nz.jpg', 
+	] ).then( (res) => texCube = res );
 }
 
 function loadFile( loader, filePath ) {
@@ -36,4 +48,4 @@ function loadFile( loader, filePath ) {
 	}, 2000)
 }
 
-export { loadAll, airHockeyTable, floorDiffuse, floorNormal, digitalFont };
+export { loadAll, airHockeyTable, floorDiffuse, floorNormal, glassNormal, digitalFont, texCube };

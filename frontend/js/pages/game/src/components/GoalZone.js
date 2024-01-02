@@ -5,8 +5,8 @@ import { Renderer } from '../modules/Renderer.js';
 import { World } from '../World.js';
 import { ParticleSystem } from './ParticleSystem.js';
 
-const bg = new BoxGeometry( 0.8, 0.8, 0.8 );
-const blue = new MeshStandardMaterial({ color: 'magenta' });
+const particles_geo = new BoxGeometry( 0.8, 0.8, 0.8 );
+const particles_mat = new MeshStandardMaterial({ color: 'grey' });
 const parameters = {
 	duration: 0.6,
 	position: new Vector3( 0, 0, 0 ),
@@ -49,7 +49,7 @@ class GoalZone extends Mesh {
 
 	goal( hit ) {
 		parameters.position.copy( hit.pos );
-		this.particles = new ParticleSystem( bg, blue, 100, parameters );
+		this.particles = new ParticleSystem( particles_geo, particles_mat, 100, parameters );
 
 		World._instance.camera.screeShake( new Vector3( 0.2, 0, 0 ), 0.2, 3000 );
 		World._instance.score.increment( this.position.x < 0 ? 2 : 1 );

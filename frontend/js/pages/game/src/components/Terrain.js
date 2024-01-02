@@ -1,6 +1,6 @@
 import { SolidMesh } from './SolidMesh.js';
 import { GoalZone } from './GoalZone.js';
-import { airHockeyTable, floorDiffuse, floorNormal } from '../systems/Loader.js';
+import { airHockeyTable, floorDiffuse, floorNormal, glassNormal, texCube } from '../systems/Loader.js';
 import { Renderer } from '../modules/Renderer.js';
 import {
 	BoxGeometry,
@@ -9,8 +9,10 @@ import {
 	MeshStandardMaterial,
 	Object3D,
 	PlaneGeometry,
+	Vector2,
 	Vector3
 } from 'three';
+import { ScreenBoard } from './ScreenBoard.js';
 
 class Terrain extends Object3D {
 	constructor(size, lineWidth, margin) {
@@ -32,7 +34,6 @@ class Terrain extends Object3D {
 		this.rightGoalZone = new GoalZone(g_linev, m_white, 2);
 		this.rightGoalZone.position.set(size.x / 2 - margin - lineWidth / 2, 0, 0);
 
-		// const m_grey = new MeshStandardMaterial({ color: 'grey' });
 		const m_grey = new MeshStandardMaterial({ map: floorDiffuse, normalMap : floorNormal });
 		const g_floor = new PlaneGeometry( 100, 100 );
 		this.floor = new Mesh(g_floor, m_grey);
@@ -40,6 +41,9 @@ class Terrain extends Object3D {
 		this.floor.castShadow = true;
 		this.floor.receiveShadow = true;
 		this.add( this.floor );
+		
+		this.panel = new ScreenBoard();
+		this.add( this.panel );
 
 		this.add( airHockeyTable.scene );
 		airHockeyTable.scene.rotation.set( Math.PI / 2, 0, 0 );
@@ -49,12 +53,16 @@ class Terrain extends Object3D {
 			if ( child.type == "Mesh" ) {
 				child.castShadow = true;
 				child.receiveShadow = true;
+				child.material = new MeshStandardMaterial({
+					color: "grey",
+					metalness: 0.9,
+					roughness: 0.0,
+					envMap: texCube,
+					normalMap: glassNormal,
+					normalScale: new Vector2( .1, .1 )
+				});
 			}
 		});
-
-		// this.box = new Mesh( new BoxGeometry( 1, 1, 10 ) );
-		// this.box.castShadow = true;
-		// this.add( this.box );
 	}
 
 	delete() {

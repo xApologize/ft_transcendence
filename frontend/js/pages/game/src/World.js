@@ -82,13 +82,13 @@ class World {
 
 		this.currentGameState = GameState.InMenu;
 	
-		this.terrain = new Terrain( _terrainSize, _terrainLine, _terrainMargin );
-	
 		this.g_sphere = new SphereGeometry( _ballSize );
 		this.m_white = new MeshStandardMaterial({ color: 'white' });
-	
+		
 		this.balls = new Ball( this.g_sphere, this.m_white, _ballCount );
 		
+		this.terrain = new Terrain( _terrainSize, _terrainLine, _terrainMargin );
+	
 		this.camera.viewLarge( 0 );
 		this.loop.start();
 	}

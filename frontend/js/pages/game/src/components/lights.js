@@ -2,8 +2,8 @@ import { CameraHelper, DirectionalLight, HemisphereLight } from 'three';
 
 function createLights() {
 	const ambientLight = new HemisphereLight(
-		'Purple',
-		'Fuchsia',
+		'Cornsilk',
+		'white',
 		1,
 	);
 	ambientLight.position.set( 0, 0, 1 );

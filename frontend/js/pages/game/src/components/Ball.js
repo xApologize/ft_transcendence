@@ -9,8 +9,11 @@ import {
 	Matrix4,
 	Quaternion,
 	Raycaster,
+	Vector2,
 	Vector3
 } from 'three';
+
+const _baseSpeed = 5.0;
 
 class Ball extends InstancedMesh {
 	constructor( geometry, material, count ) {
@@ -122,6 +125,10 @@ class Ball extends InstancedMesh {
 			this.setMatrixAt( i, this.matrix );
 			this.instanceMatrix.needsUpdate = true;
 		}
+		World._instance.terrain.panel.bufferMat.uniforms.refPos.value = new Vector2(
+				this.ballInst[0].pos.x + this.ballInst[0].dir.x * this.ballInst[0].speed * dt,
+				this.ballInst[0].pos.y + this.ballInst[0].dir.y * this.ballInst[0].speed * dt
+			);
 	}
 
 	fixedUpdate( dt ) {
@@ -176,7 +183,7 @@ class Ball extends InstancedMesh {
 		.then(
 			function() {
 				if ( World._instance.currentGameState == GameState.InMatch )
-					ballInst.speed = 5;
+					ballInst.speed = _baseSpeed;
 			}
 		)
 	}
