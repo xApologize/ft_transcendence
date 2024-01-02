@@ -31,7 +31,7 @@ class Match {
 			this.participants[i].participantId = i;
 			this.participants[i].position.setZ( -1 );
 			document.getElementById(divNicknames[i]).classList.remove("d-none");
-			document.getElementById(divNicknames[i]).innerHTML = this.participants[i].nickname;
+			document.getElementById(divNicknames[i]).innerHTML = this.participants[i].participantNickname;
 		}
 		world.terrain.leftGoalZone.paddle = this.participants[0];
 		world.terrain.rightGoalZone.paddle = this.participants[1];

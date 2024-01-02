@@ -1,4 +1,4 @@
-import { Color, Scene } from 'three';
+import { Color, Fog, Scene } from 'three';
 import { texCube } from '../systems/Loader.js';
 
 function createScene() {
@@ -6,6 +6,7 @@ function createScene() {
 
 //   scene.background = new Color('black');
   scene.background = texCube;
+  scene.fog = new Fog( 0x020202, 30, 80 );
 
   return scene;
 }
