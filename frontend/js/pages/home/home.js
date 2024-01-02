@@ -69,7 +69,6 @@ export async function showHome() {
 export async function displayFriend() {
     const allFriends = await fetchFriend('GET');
     if (!allFriends || !allFriends.ok) {
-        // if !allFriends, c'est que le status == 401 et si !allFriends.ok == Aucun Ami
         return false;
     }
     const container = document.getElementById('friendDisplay')
@@ -79,7 +78,6 @@ export async function displayFriend() {
 export async function displayEveryone() {
     const onlineUsers = await fetchUser('GET', { status: ['ONL', 'ING'] });
     if (!onlineUsers || !onlineUsers.ok) {
-        // if !onlineUsers, c'est que le status == 401 et si !onlineUsers.ok == Aucun user Online
         return false;
     }
     const container = document.getElementById('userDisplay')
@@ -97,8 +95,7 @@ async function initPage() {
     }
     displayUserCard(userAssembled);
     displayMatchHistory(userAssembled);
-    interactiveSocket.initSocket()
-    //displayEveryone();
+    interactiveSocket.initSocket() // <- this is calling displayEveryone.
     displayFriend();
     updateSocial();
 }

@@ -4,13 +4,7 @@ import { displayOtherUserProfile } from './otherUserProfile.js';
 import { fetchUser } from '../../api/fetchData.js';
 import { setStatus } from './utils.js';
 
-export async function displayUser(allUsers, container) {
-    container.innerHTML = '';
-    let currentUser;
-    const objectAllUsers = await assembler(allUsers);
-    if (typeof objectAllUsers !== 'object' && objectAllUsers !== null) {
-        return;
-    }
+function sortUser(objectAllUsers) {
     objectAllUsers.sort((a, b) => {
         // Custom sorting logic: Online users come before Offline users.
         if (
@@ -27,13 +21,21 @@ export async function displayUser(allUsers, container) {
             return 0;
         }
     });
+    return (objectAllUsers)
+}
 
-    
-    currentUser = document.getElementById('nickname').innerText;
-    if (!objectAllUsers) {
+
+export async function displayUser(allUsers, container) {
+    container.innerHTML = '';
+    let currentUser;
+    const objectAllUsers = await assembler(allUsers);
+    if (typeof objectAllUsers !== 'object' && objectAllUsers !== null) {
         return;
     }
-    await loopDisplayUser(objectAllUsers, currentUser, container);
+    currentUser = document.getElementById('nickname').innerText;
+
+    const sortAllUser = sortUser(objectAllUsers);
+    await loopDisplayUser(sortAllUser, currentUser, container);
 }
 
 async function loopDisplayUser(objectAllUsers, currentUser, userContainer) {
