@@ -20,7 +20,7 @@
     }
 }
 
-@media only screen and (max-height: 688px) {
+/* @media only screen and (max-height: 688px) {
     .lowerRow {
         max-height: 300px;
     }
@@ -36,7 +36,7 @@
     .lowerRow {
         max-height: 200px;
     }
-}
+} */
 
 .fill {
     height: 100%;
