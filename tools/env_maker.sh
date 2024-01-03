@@ -52,4 +52,4 @@ DJANGO_ALLOWED_HOSTS="DJANGO_ALLOWED_HOSTS=$(hostname) localhost backend 127.0.0
 
 echo -e -n "$POSTGRES_HOST\n$POSTGRES_USER\n$POSTGRES_PASSWORD\n$POSTGRES_DB\n$POSTGRES_PORT\n\n$DEBUG\n$SECRET_KEY\n$DJANGO_ALLOWED_HOSTS" > backend/.env
 
-echo -e -n "VAULT_DB_CONNECTION_URL=postgresql://$dataBaseUserPrompt:$dataBasePasswordPrompt@postgresql:5432/dataBaseNamePrompt" > hashicorp/.env
+echo -e -n "VAULT_DB_CONNECTION_URL=postgresql://$dataBaseUserPrompt:$dataBasePasswordPrompt@postgres_vault:5432/$dataBaseNamePrompt" > hashicorp/.env

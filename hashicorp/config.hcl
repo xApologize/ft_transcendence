@@ -4,10 +4,12 @@ ui            = true
 listener "tcp" {
   address       = "vault:8200"
   tls_cert_file = "/vault/tls/fullchain.pem"
-  tls_key_file  = "/vault/tls/server.pem"
+  tls_key_file  = "/vault/tls/private-key.pem"
 }
 
-storage "postgresql" {
-  connection_url  = "postgresql://gewg:erjej@postgres:5432/postgresql"
-  table           = "vault_table"
+storage "file" {
+  path = "/vault/data"
 }
+
+cluster_addr = "https://127.0.0.1:8201"
+api_addr = "https://127.0.0.1:8200"
