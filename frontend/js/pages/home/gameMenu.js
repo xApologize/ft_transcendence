@@ -1,3 +1,6 @@
+import interactiveSocket from './socket.js';
+
+
 function getFriendsForInvite() {
     
 }
