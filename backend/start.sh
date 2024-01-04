@@ -17,6 +17,7 @@ White='\033[0;37m'        # White
 
 MIGRATION_FLAG="/usr/src/app/.flag"
 
+
 while true; do
     if nc -z -w 2 redis 6379; then
     echo -e "${Green}Redis is up!"
@@ -24,6 +25,17 @@ while true; do
     break
     else
         echo -e "${Red}Redis isn't up...waiting...😡"
+        sleep 2
+    fi
+done
+
+while true; do
+    if nc -z -w 2 vault 8200; then
+    echo -e "${Green}Vault is up!"
+    sleep 2
+    break
+    else
+        echo -e "${Red}Vault isn't up...waiting...😡"
         sleep 2
     fi
 done

@@ -18,6 +18,8 @@ RUN chmod 600 /vault/tls/private-key.pem
 
 WORKDIR /vault
 
+RUN mkdir init
+
 COPY config.hcl /vault/config
 
 COPY start.sh .
