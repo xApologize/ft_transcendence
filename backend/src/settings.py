@@ -26,6 +26,10 @@ AUTH42_CLIENT = os.environ.get("AUTH42_CLIENT")
 AUTH42_SECRET = os.environ.get("AUTH42_SECRET")
 AUTH42_REDIRECT_URI = os.environ.get("AUTH42_REDIRECT_URI")
 
+# SSL
+# SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(os.environ.get("DEBUG", default=0))
 

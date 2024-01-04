@@ -154,7 +154,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
     async def create_math_handle(first_id: int, second_id: int, paddle: str, me: str, opponent: str) -> dict:
         handle = {
             "type": "Found Match",
-            "handle": f"ws/pong/{first_id}{second_id}/{paddle}",
+            "handle": f"wss/pong/{first_id}{second_id}/{paddle}",
             "paddle": paddle,
             "me": me,
             "opponent": opponent
