@@ -69,18 +69,6 @@ services:
     depends_on:
       - postgres
 
-  # vault:
-  #   container_name: vault
-  #   build:
-  #     context: hashicorp
-  #     dockerfile: Dockerfile
-  #   volumes:
-  #     - vault_data:/vault/init
-  #   ports:
-  #     - '8200:8200'
-  #   env_file:
-  #     - ./hashicorp/.env
-
   nginx:
     container_name: nginx
     build:
@@ -93,6 +81,3 @@ services:
     #   - proxy_to_backend_network
     depends_on:
       - frontend
-
-# volumes:
-#   vault_data:

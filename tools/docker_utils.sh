@@ -79,11 +79,11 @@ clean_folders() {
 
 clean_folders_nuke() {
 	echo -e "${Red}SENT THE FOLDERS TO THE SHADOW REALMS${Reset}"
-	sudo rm -rf database-postgres database-postgres-vault database-redis backend/dist backend/node_modules frontend/node_modules
+	sudo rm -rf database-postgres database-redis backend/dist backend/node_modules frontend/node_modules
 }
 
 clean_folder_nuke_school_mac() {
-	rm -rf database-postgres database-postgres-vault database-redis backend/dist backend/node_modules frontend/node_modules
+	rm -rf database-postgres database-redis backend/dist backend/node_modules frontend/node_modules
 }
 
 clean_migration() {

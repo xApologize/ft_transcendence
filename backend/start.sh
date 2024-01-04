@@ -30,17 +30,6 @@ while true; do
 done
 
 while true; do
-    if nc -z -w 2 vault 8200; then
-    echo -e "${Green}Vault is up!"
-    sleep 2
-    break
-    else
-        echo -e "${Red}Vault isn't up...waiting...😡"
-        sleep 2
-    fi
-done
-
-while true; do
     if nc -z -w 2 $POSTGRES_HOST $POSTGRES_PORT; then
         echo -e "${Green}Postgres is up! Migrating..."
         python manage.py makemigrations # temp fix
