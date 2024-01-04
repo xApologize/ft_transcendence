@@ -20,7 +20,7 @@ export async function showHome() {
     try {
         await loadHTMLPage('./js/pages/home/home.html');
         // await initPage()
-        const result = await initPage()
+        const result = await initPage();
         if (result === false) {
             return;
         }
@@ -38,25 +38,30 @@ export async function showHome() {
         everyoneBtn.addEventListener('click', () => {
             everyoneBtnFunc(friendsBtn, everyoneBtn);
         });
-        document.getElementById('otherUserInfo').addEventListener('hide.bs.modal', () => {
-            document.getElementById('responseFriendQuery').textContent = '';
-        });
+        document
+            .getElementById('otherUserInfo')
+            .addEventListener('hide.bs.modal', () => {
+                document.getElementById('responseFriendQuery').textContent = '';
+            });
         responsiveLeftColumn();
 
         await loadFonts();
         await loadModel();
-        const gameContainer = document.querySelector('#sceneContainer')
+        listenerTeamDisplay();
+        const gameContainer = document.querySelector('#sceneContainer');
         if (!gameContainer) {
             console.error('No game container, please refresh page.');
-            return
+            return;
         }
         const world = new World(gameContainer);
 
         const play1vs1 = document.getElementById('play1vs1');
         play1vs1.addEventListener('click', () => {
-            const modal = bootstrap.Modal.getInstance(document.getElementById('gameMenuModal'));
-            modal.hide()
-            document.getElementById('toastContainer').classList.add('d-none')
+            const modal = bootstrap.Modal.getInstance(
+                document.getElementById('gameMenuModal')
+            );
+            modal.hide();
+            document.getElementById('toastContainer').classList.add('d-none');
             document.getElementById('ui').classList.add('d-none');
             world.currentGameState = 'lookingForPlayer';
             document.getElementById('lfp').classList.remove('d-none');
@@ -70,7 +75,6 @@ export async function showHome() {
             .addEventListener('hide.bs.modal', () => {
                 console.log('modal game invite closed');
             });
-
     } catch (error) {
         console.error('Error fetching home.html:', error);
     }
@@ -86,7 +90,7 @@ export async function displayFriend() {
         // if !allFriends, c'est que le status == 401 et si !allFriends.ok == Aucun Ami
         return false;
     }
-    const container = document.getElementById('friendDisplay')
+    const container = document.getElementById('friendDisplay');
     await displayUser(allFriends, container);
 }
 
@@ -96,14 +100,13 @@ export async function displayEveryone() {
         // if !onlineUsers, c'est que le status == 401 et si !onlineUsers.ok == Aucun user Online
         return false;
     }
-    const container = document.getElementById('userDisplay')
+    const container = document.getElementById('userDisplay');
     await displayUser(onlineUsers, container);
 }
 
 async function initPage() {
     const user = await fetchMe('GET');
-    if (!user)
-        return false;
+    if (!user) return false;
     const userAssembled = await assembler(user);
     if (!userAssembled || typeof userAssembled !== 'object') {
         console.log('Error assembling user');
@@ -111,7 +114,7 @@ async function initPage() {
     }
     displayUserCard(userAssembled);
     displayMatchHistory(userAssembled);
-    interactiveSocket.initSocket()
+    interactiveSocket.initSocket();
     //displayEveryone();
     displayFriend();
     updateSocial();
@@ -160,5 +163,64 @@ function responsiveLeftColumn() {
         gameCol.classList.toggle('hide');
     });
 }
-// 
 
+function listenerTeamDisplay() {
+    daveBox();
+    jacobBox();
+    florianBox();
+    jeanbenoitBox();
+}
+
+function daveBox() {
+    const box = document.getElementById('ddemers-box');
+    document.getElementById('ddemers').addEventListener('mouseover', () => {
+        hideOtherBox();
+        box.classList.remove('hide');
+        box.addEventListener('mouseleave', () => {
+            box.classList.add('hide');
+        });
+    });
+}
+
+function jacobBox() {
+    const box = document.getElementById('jalevesq-box');
+    document.getElementById('jalevesq').addEventListener('mouseover', () => {
+        hideOtherBox();
+        box.classList.remove('hide');
+        box.addEventListener('mouseleave', () => {
+            box.classList.add('hide');
+        });
+    });
+}
+
+function florianBox() {
+    const box = document.getElementById('fgeslin-box');
+    document.getElementById('fgeslin').addEventListener('mouseover', () => {
+        hideOtherBox();
+        box.classList.remove('hide');
+        box.addEventListener('mouseleave', () => {
+            box.classList.add('hide');
+        });
+    });
+}
+
+function jeanbenoitBox() {
+    const box = document.getElementById('jrossign-box');
+    document.getElementById('jrossign').addEventListener('mouseover', () => {
+        hideOtherBox();
+        box.classList.remove('hide');
+        box.addEventListener('mouseleave', () => {
+            box.classList.add('hide');
+        });
+    });
+}
+
+function hideOtherBox() {
+    const boxes = document.getElementsByClassName('about-box');
+    Array.prototype.forEach.call(boxes, function (box) {
+        if (!box.classList.contains('hide')) {
+            box.classList.add('hide');
+        }
+    });
+}
+//
