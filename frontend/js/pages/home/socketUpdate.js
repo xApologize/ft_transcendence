@@ -218,6 +218,7 @@ function updateBadgeColor(friendCard, container) {
 function appendToContainer(container, element, userID) {
     if (!container.querySelector(`div[data-id="${userID}"]`)) {
         element.setAttribute('data-id', userID);
+        element.querySelector('#inviteGameBtn').remove()
         container.appendChild(element);
     } else {
         console.log(`User with ID ${userID} already exists in the container.`);

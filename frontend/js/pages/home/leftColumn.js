@@ -59,8 +59,7 @@ async function loopDisplayUser(objectAllUsers, currentUser, userContainer) {
             if (user.status === 'ING' || user.status === 'OFF')
                 inviteGameBtn.classList.add("disabled", "border-0");
         } else {
-            const inviteGameBtn = clonedUserTemplate.querySelector('#inviteGameBtn');
-            inviteGameBtn.remove();
+            clonedUserTemplate.querySelector('#inviteGameBtn').remove();;
         }
             
 
