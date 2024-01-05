@@ -201,14 +201,9 @@ function updateProfileAction(event) {
 
 let timer;
 export function updateStatusMsg(assemble, status) {
+    if (status < 400) return;
+
     const msgElement = document.getElementById('responseFriendQuery');
-    if (status >= 400) {
-        msgElement.classList.add('text-danger');
-        msgElement.classList.remove('text-success');
-    } else {
-        msgElement.classList.add('text-success');
-        msgElement.classList.remove('text-danger');
-    }
     msgElement.textContent = assemble.message;
 
     clearTimeout(timer);
