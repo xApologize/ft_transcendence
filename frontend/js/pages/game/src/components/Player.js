@@ -9,12 +9,12 @@ import {
 } from 'three';
 import { World } from '../World.js';
 
-const initialSpeed = 5;
-const initialBoostSpeed = 10;
+const initialSpeed = 6;
+const initialBoostSpeed = 35;
 
 class Player extends Paddle {
-	constructor( geometry, material, position, id, nickname ) {
-		super( geometry, material, position, id, nickname );
+	constructor( position, id, nickname ) {
+		super( position, id, nickname );
 
 		this.isPlayer = true;
 
@@ -34,13 +34,34 @@ class Player extends Paddle {
 		this.updatable = new Updatable( this );
 
 		this.boostButtonPressedEvent = (e) => {
-			this.speed = initialBoostSpeed;
+			if ( this.speed == initialSpeed )
+				this.speed = initialBoostSpeed;
 		};
 		this.boostButtonReleasedEvent = (e) => {
-			this.speed = initialSpeed;
+			// this.speed = initialSpeed;
 		};
-		document.addEventListener( "boostButtonPressed", this.boostButtonPressedEvent );
-		document.addEventListener( "boostButtonReleased", this.boostButtonReleasedEvent );
+		this.reflectButtonPressedEvent = (e) => {
+			const ball = World._instance.balls.ballInst[0];
+			if ( ball.pos.y < (this.position.y - this.length / 2) || ball.pos.y > (this.position.y + this.length / 2) ) {
+				console.log( "not in y range");
+				return;
+			}
+			if ( Math.abs( ball.pos.x - this.position.x ) > 2 ) {
+				console.log( "not close enough");
+				return;
+			}
+			if ( Math.sign( ball.dir.x ) != Math.sign( position.x ) ) {
+				console.log( "wrong way");
+				return;
+			}
+			console.log( "SMASH! ");
+			ball.speed *= 2;
+		};
+		if ( World._instance.currentGameMode == "Upgraded" ) {
+			document.addEventListener( "boostButtonPressed", this.boostButtonPressedEvent );
+			document.addEventListener( "boostButtonReleased", this.boostButtonReleasedEvent );
+			document.addEventListener( "reflectButtonPressed", this.reflectButtonPressedEvent );
+		}
 	}
 
 	fixedUpdate ( dt ) {
@@ -55,6 +76,11 @@ class Player extends Paddle {
 	update( dt ) {
 		this.movement = new Vector3( 0, InputMap.movementAxis.value, 0 );
 
+		if ( this.speed > initialSpeed ) {
+			this.speed -= initialBoostSpeed * dt * 8;
+			if ( this.speed < initialSpeed )
+				this.speed = initialSpeed;
+		}
 		if ( this.movement.y === 0 )
 			return;
 		
@@ -80,8 +106,11 @@ class Player extends Paddle {
 		super.delete();
 		this.updatable.delete();
 		this.collider.delete();
-		document.removeEventListener( "boostButtonPressed", this.boostButtonPressedEvent );
-		document.removeEventListener( "boostButtonReleased", this.boostButtonReleasedEvent );
+		if ( World._instance.currentGameMode == "Upgraded" ) {
+			document.removeEventListener( "boostButtonPressed", this.boostButtonPressedEvent );
+			document.removeEventListener( "boostButtonReleased", this.boostButtonReleasedEvent );
+			document.removeEventListener( "reflectButtonPressed", this.reflectButtonPressedEvent );
+		}
 	}
 }
 

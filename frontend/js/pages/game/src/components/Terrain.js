@@ -15,7 +15,7 @@ import {
 import { ScreenBoard } from './ScreenBoard.js';
 
 class Terrain extends Object3D {
-	constructor(size, lineWidth, margin) {
+	constructor( size, lineWidth, margin ) {
 		super();
 		this.renderer = new Renderer( this );
 

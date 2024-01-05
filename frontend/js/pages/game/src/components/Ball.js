@@ -5,19 +5,29 @@ import { Updatable } from '../modules/Updatable.js';
 import { GameState } from '../systems/GameStates.js';
 import { Layers } from '../systems/Layers.js';
 import {
+	CylinderGeometry,
 	InstancedMesh,
 	Matrix4,
+	MeshStandardMaterial,
 	Quaternion,
 	Raycaster,
+	SphereGeometry,
 	Vector2,
 	Vector3
 } from 'three';
 
 const _baseSpeed = 5.0;
+const _baseSize = 0.2;
 
 class Ball extends InstancedMesh {
-	constructor( geometry, material, count ) {
-		super( geometry, material, count );
+	constructor( count ) {
+		super(
+			new CylinderGeometry( _baseSize, _baseSize, 0.4 ),
+			// new SphereGeometry( 0.2 ),
+			new MeshStandardMaterial({ color: 'white' }),
+			count
+		);
+		this.geometry.rotateX( Math.PI / 2 );
 
 		this.castShadow = true;
 		this.receiveShadow = true;
@@ -25,8 +35,6 @@ class Ball extends InstancedMesh {
 		this.renderer = new Renderer( this );
 		this.renderer.setLayers( Layers.Default, Layers.Ball );
 		this.updatable = new Updatable( this );
-
-		this.radius = this.geometry.parameters.radius;
 
 		this.ballInst = [];
 		for (let i = 0; i < this.count; i++) {
@@ -49,7 +57,7 @@ class Ball extends InstancedMesh {
 		let closerHit = undefined;
 		let offset = undefined;
 		for (let i = 0; i < 8; i++) {
-			const origin = new Vector3( Math.cos( i * (Math.PI / 4) ) * this.radius, Math.sin( i * (Math.PI / 4) ) * this.radius, 0 );
+			const origin = new Vector3( Math.cos( i * (Math.PI / 4) ) * _baseSize, Math.sin( i * (Math.PI / 4) ) * _baseSize, 0 );
 			origin.add( ballInst.pos );
 			this.ray.set( origin, ballInst.dir );
 			this.ray.far = dist;
@@ -57,7 +65,7 @@ class Ball extends InstancedMesh {
 			if ( hits.length > 0 ) {
 				if (closerHit == undefined || hits[0].distance < closerHit.distance ) {
 					closerHit = hits[0];
-					offset = new Vector3( Math.cos( i * (Math.PI / 4) ) * this.radius, Math.sin( i * (Math.PI / 4) ) * this.radius, 0 );
+					offset = new Vector3( Math.cos( i * (Math.PI / 4) ) * _baseSize, Math.sin( i * (Math.PI / 4) ) * _baseSize, 0 );
 					continue;
 				}
 			}
@@ -136,7 +144,7 @@ class Ball extends InstancedMesh {
 			this.calcCollision( this.ballInst[i], this.ballInst[i].speed * dt, 5 );
 	
 			// Reset if OOB
-			if ( Math.abs( this.ballInst[i].pos.x ) > 8 || Math.abs( this.ballInst[i].pos.y ) > 5 ) {
+			if ( Math.abs( this.ballInst[i].pos.x ) > 12 || Math.abs( this.ballInst[i].pos.y ) > 8 ) {
 				console.error( "OOB" );
 				this.initInst( this.ballInst[i] );
 			}

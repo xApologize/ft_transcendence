@@ -14,24 +14,18 @@ import { Terrain } from './components/Terrain.js';
 import { Ball } from './components/Ball.js';
 import { Score } from './components/Score.js';
 
-import {
-	MeshStandardMaterial,
-	SphereGeometry,
-	Vector2
-} from 'three';
+import { Vector2 } from 'three';
 
 import interactiveSocket from '../../home/socket.js';
 import { fetchUser } from '../../../api/fetchData.js';
-import { assembler } from '../../../api/assembler.js';
 
 const _ballCount = 1;
-const _ballSize = 0.2;
 
 // Wall Collider position
 const _terrainSize = new Vector2(18, 11);
 // Dynamic Terrain Line and Margin (depreciated)
 const _terrainLine = 0.5;
-const _terrainMargin = 0.4;
+const _terrainMargin = 0.2;
 
 
 class World {
@@ -79,11 +73,9 @@ class World {
 		this.lights = new Lights();
 
 		this.currentGameState = GameState.InMenu;
-	
-		this.g_sphere = new SphereGeometry( _ballSize );
-		this.m_white = new MeshStandardMaterial({ color: 'white' });
+		this.currentGameMode = "Classic";
 		
-		this.balls = new Ball( this.g_sphere, this.m_white, _ballCount );
+		this.balls = new Ball( _ballCount );
 		
 		this.terrain = new Terrain( _terrainSize, _terrainLine, _terrainMargin );
 	

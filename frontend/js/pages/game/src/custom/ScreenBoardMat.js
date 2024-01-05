@@ -27,7 +27,7 @@ const fragmentShader = () => {
 		vec2 r = round(fragCoord / space) * space;
 		vec2 pos = refPos * 1.;
 		if ( mod(fragCoord.x + space/2., space) < space * 1. && mod(fragCoord.y + space/2., space) < space * 1. )
-			return clamp( 1. - distance(pos, r) * 3., 0.001, 1. );
+			return clamp( 1. - distance(pos, r) * 3., 0.005, 1. );
 		return 0.;
 	}
 
