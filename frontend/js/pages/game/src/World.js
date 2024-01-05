@@ -1,7 +1,7 @@
 import { createRenderer } from './systems/renderer.js';
 import { createComposer } from './systems/PostProcess.js';
 import { MainCamera } from './components/camera.js';
-import { createLights } from './components/lights.js';
+import { Lights } from './components/lights.js';
 import { createScene } from './components/scene.js';
 
 import { Resizer } from './systems/Resizer.js';
@@ -76,9 +76,7 @@ class World {
 		this.score = new Score();
 		this.input = new InputManager();
 
-		const { ambientLight, mainLight } = createLights();
-
-		this.scene.add( ambientLight, mainLight );
+		this.lights = new Lights();
 
 		this.currentGameState = GameState.InMenu;
 	

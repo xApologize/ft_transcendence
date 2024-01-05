@@ -1,4 +1,4 @@
-import { BoxGeometry, Mesh, MeshStandardMaterial, Vector3 } from 'three';
+import { BoxGeometry, Mesh, MeshBasicMaterial, MeshStandardMaterial, Vector3 } from 'three';
 import { Layers } from '../systems/Layers.js';
 import { Collider } from '../modules/Collider.js';
 import { Renderer } from '../modules/Renderer.js';
@@ -6,13 +6,13 @@ import { World } from '../World.js';
 import { ParticleSystem } from './ParticleSystem.js';
 
 const particles_geo = new BoxGeometry( 0.8, 0.8, 0.8 );
-const particles_mat = new MeshStandardMaterial({ color: 'grey' });
+const particles_mat = new MeshBasicMaterial({ color: 'white' });
 const parameters = {
 	duration: 0.6,
 	position: new Vector3( 0, 0, 0 ),
-	positionRandomRange: new Vector3( 0.2, 0.2, 0.2 ),
+	positionRandomRange: new Vector3( 0.2, 1.2, 0.2 ),
 	direction: new Vector3( 0, 0, 0 ),
-	directionRandomRange: new Vector3( 0, 0, 0 ),
+	directionRandomRange: new Vector3( 8, 1, 1 ),
 	speed: 20,
 	speedOverTime: 0,
 	eulerRotation: new Vector3( 0, 0, 0 ),
@@ -50,6 +50,7 @@ class GoalZone extends Mesh {
 	goal( hit ) {
 		parameters.position.copy( hit.pos );
 		this.particles = new ParticleSystem( particles_geo, particles_mat, 100, parameters );
+		this.particles.renderer.setLayers( Layers.Buffer );
 
 		World._instance.camera.screeShake( new Vector3( 0.2, 0, 0 ), 0.2, 3000 );
 		World._instance.score.increment( this.position.x < 0 ? 2 : 1 );

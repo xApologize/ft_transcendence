@@ -53,14 +53,14 @@ class Terrain extends Object3D {
 			if ( child.type == "Mesh" ) {
 				child.castShadow = true;
 				child.receiveShadow = true;
-				child.material = new MeshStandardMaterial({
-					color: "grey",
-					metalness: 0.9,
-					roughness: 0.0,
-					envMap: texCube,
-					normalMap: glassNormal,
-					normalScale: new Vector2( .1, .1 )
-				});
+				// child.material = new MeshStandardMaterial({
+				// 	color: "grey",
+				// 	metalness: 0.9,
+				// 	roughness: 0.0,
+				// 	envMap: texCube,
+				// 	normalMap: glassNormal,
+				// 	normalScale: new Vector2( .1, .1 )
+				// });
 			}
 		});
 	}

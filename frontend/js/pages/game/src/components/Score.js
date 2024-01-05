@@ -5,7 +5,7 @@ import { Color, Mesh, MeshStandardMaterial, Object3D, ShapeGeometry } from 'thre
 import { fetchMatchHistory } from '../../../../api/fetchData.js';
 
 let scoreTab = [0, 0];
-const maxScore = 1;
+const maxScore = 3;
 
 class Score extends Object3D {
 	constructor() {
@@ -56,7 +56,7 @@ class Score extends Object3D {
 		scoreTab[playerId - 1] += 1;
 
 		this.setText( (scoreTab[0] < 10 ? "0" : "") + scoreTab[0],  (scoreTab[1] < 10 ? "0" : "") + scoreTab[1] );
-		if (scoreTab[World._instance.match.self.participantId] >= maxScore) {
+		if ( scoreTab[World._instance.match.self.participantId] >= maxScore ) {
 			this.tryPostMatch( World._instance.match.self.participantId );
 			World._instance.match.endMatch();
 		}

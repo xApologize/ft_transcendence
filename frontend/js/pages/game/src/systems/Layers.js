@@ -4,6 +4,7 @@ const Layers = Object.freeze({
 	Ball: 2,
 	Player: 3,
 	Goal: 4,
+	Buffer: 5,
 	UI: 9
 })
 
