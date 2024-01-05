@@ -1,4 +1,4 @@
-import { CameraHelper, DirectionalLight, HemisphereLight, Object3D, PointLight, RectAreaLight } from 'three';
+import { CameraHelper, DirectionalLight, HemisphereLight, Object3D, PointLight, RectAreaLight, SpotLight, Vector3 } from 'three';
 import { Renderer } from '../modules/Renderer.js';
 import { RectAreaLightHelper } from '/public/three/examples/jsm/helpers/RectAreaLightHelper.js';
 
@@ -35,11 +35,16 @@ class Lights extends Object3D {
 		// DEBUG
 		// World._instance.scene.add( new CameraHelper( dirLight.shadow.camera ) );
 
-	// POINT LIGHT
-		// const pLight = new PointLight( 0xff00ff, 1, 100 );
-		// pLight.position.set( 0, 0, 4 );
-		// pLight.castShadow = true;
-		// this.add( pLight );
+	// SPOT LIGHT
+		const sLight = new SpotLight( 0xffffff, 100, 100, Math.PI / 2 );
+		sLight.position.set( 0, 20, 8 );
+		const target = new Object3D();
+		target.position.set( 0, 30, -4 );
+		this.add( target );
+		sLight.target = target;
+		sLight.castShadow = true;
+		sLight.shadow.normalBias = 0.01;
+		this.add( sLight );
 
 	// RECTAREA LIGHT
 		const raLightTop = new RectAreaLight( 0xff00ff, 2, 16, 0.2 );

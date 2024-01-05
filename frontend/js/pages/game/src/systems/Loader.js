@@ -15,7 +15,7 @@ const loaderCubeTexture = new CubeTextureLoader();
 const loaderFont = new FontLoader();
 
 async function loadAll() {
-	await loadFile( loaderGLTF, '/public/model/model.glb' ).then( (res) => airHockeyTable = res );
+	await loadFile( loaderGLTF, '/public/model/arcadeScene.glb' ).then( (res) => airHockeyTable = res );
 	await loadFile( loaderTexture, '/public/arcade_carpet_512.png' ).then( (res) => floorDiffuse = res );
 	floorDiffuse.wrapS = RepeatWrapping;
 	floorDiffuse.wrapT = RepeatWrapping;

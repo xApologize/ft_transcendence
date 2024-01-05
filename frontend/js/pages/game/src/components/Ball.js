@@ -83,7 +83,7 @@ class Ball extends InstancedMesh {
 				if ( ballInst.dir.dot( closerHit.object.dir ) > 0 ) {
 					ballInst.dir.reflect( closerHit.point.x < 0 ? new Vector3( 1, 0, 0 ) : new Vector3( -1, 0, 0 ) );
 
-					ballInst.speed *= 1.2;
+					ballInst.speed *= 1.1;
 					ballInst.dir.y += ( closerHit.point.y - closerHit.object.position.y ) / ( closerHit.object.length / 2 );
 					ballInst.dir.normalize();
 					ballInst.dir.y /= 2;

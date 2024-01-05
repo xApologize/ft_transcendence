@@ -16,7 +16,7 @@ function createComposer( renderer, scene, camera ) {
 	composer.addPass( new UnrealBloomPass( 256, 0.1, 0.5, 0.1 ) );
 	composer.addPass( new FilmPass( 0.15, false ) );
 	// composer.addPass( new GlitchPass( 0 ) );
-	composer.addPass( new SSAOPass( scene, camera ) );
+	// composer.addPass( new SSAOPass( scene, camera ) );
 	composer.addPass( new OutputPass() );
 
 	return composer;
