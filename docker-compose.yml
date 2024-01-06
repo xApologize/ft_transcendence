@@ -25,12 +25,13 @@ services:
 
   backend:
     container_name: backend
-    restart: unless-stopped
+    restart: on-failure:5
     build:
       context: backend
       dockerfile: Dockerfile
     volumes:
       - ./backend:/usr/src/app/
+      # - media:/usr/src/app/media/ For correction later
       - init_flag:/usr/src/init
     ports:
       - '8000:8000'
@@ -45,9 +46,9 @@ services:
   postgres:
     container_name: postgres
     image: postgres:alpine3.18
-    restart: unless-stopped
+    restart: on-failure:5
     volumes:
-      - ./database-postgres:/var/lib/postgresql/data
+      - database-postgres:/var/lib/postgresql/data
     ports:
       - '5432:5432'
     # networks:
@@ -60,9 +61,9 @@ services:
   redis:
     container_name: redis
     image: redis:7.2.3-alpine3.19
-    restart: unless-stopped
+    restart: on-failure:5
     volumes:
-      - ./database-redis:/data
+      - database-redis:/data
     ports:
       - '6379:6379'
     # networks:
@@ -72,6 +73,7 @@ services:
 
   nginx:
     container_name: nginx
+    restart: on-failure:5
     build:
       context: nginx
       dockerfile: Dockerfile
@@ -85,3 +87,6 @@ services:
 
 volumes:
   init_flag:
+  database-postgres:
+  database-redis:
+  # media: For correction later

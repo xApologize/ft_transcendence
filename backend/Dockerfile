@@ -16,6 +16,8 @@ RUN pip install --upgrade pip
 
 COPY requirements.txt .
 
+# COPY . . FOR CORRECTION LATER
+
 RUN pip install -r requirements.txt
 
 ENTRYPOINT ["dumb-init", "./start.sh"]
