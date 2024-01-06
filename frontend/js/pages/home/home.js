@@ -14,6 +14,7 @@ import { loadFonts } from '../game/src/systems/Fonts.js';
 import { loadModel } from '../game/src/systems/Loader.js';
 import interactiveSocket from './socket.js';
 import { navigateTo } from '../../router.js';
+import { closeInviteRequest } from './inviteGame.js';
 import { initGameMenu } from './gameMenu.js';
 ////////
 
@@ -27,6 +28,8 @@ export async function showHome() {
         }
         new bootstrap.Modal(document.getElementById('otherUserInfo'));
         new bootstrap.Modal(document.getElementById('inviteGameModal'));
+        document.getElementById('inviteGameModal').addEventListener('hide.bs.modal',closeInviteRequest)
+
 
         const friendsBtn = document.getElementById('friendsBtn');
         const everyoneBtn = document.getElementById('everyoneBtn');
