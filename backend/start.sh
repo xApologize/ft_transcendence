@@ -2,20 +2,19 @@
 # Author producks 10/29/2023
 # updated 10/30/2023
 
-# Reset
-Reset='\033[0m'       # Text Reset
+Reset='\033[0m'
+Black='\033[0;30m'
+Red='\033[0;31m'
+Green='\033[0;32m'
+Yellow='\033[0;33m'
+Blue='\033[0;34m'
+Purple='\033[0;35m'
+Cyan='\033[0;36m'
+White='\033[0;37m'
+UWhite='\033[4;37m'
+ICyan='\033[0;96m'
 
-# Regular Colors
-Black='\033[0;30m'        # Black
-Red='\033[0;31m'          # Red
-Green='\033[0;32m'        # Green
-Yellow='\033[0;33m'       # Yellow
-Blue='\033[0;34m'         # Blue
-Purple='\033[0;35m'       # Purple
-Cyan='\033[0;36m'         # Cyan
-White='\033[0;37m'        # White
-
-MIGRATION_FLAG="/usr/src/app/.flag"
+FLAG="/usr/src/init/flag"
 
 
 while true; do
@@ -31,11 +30,18 @@ done
 
 while true; do
     if nc -z -w 2 $POSTGRES_HOST $POSTGRES_PORT; then
-        echo -e "${Green}Postgres is up! Migrating..."
-        python manage.py makemigrations # temp fix
-        python manage.py migrate # temp fix
-        echo -e "${Purple}Seeding data now..."
-        python manage.py loaddata seed.json # temp fix
+        echo -e "${Green}Postgres is up!"
+        if ! test -f $FLAG; then
+            echo -e "${Yellow}No migration flag were found..."
+            echo -e "${Cyan}Migrating now!"
+            python manage.py makemigrations
+            python manage.py migrate
+            echo -e "${Purple}Seeding data now..."
+            python manage.py loaddata seed.json # temp fix
+            touch $FLAG
+        else
+            echo -e "${UWhite}Migration file was found, ignoring initialization"
+        fi
         break
     else
         echo -e "${Red}Postgres isn't up...waiting..."
@@ -43,5 +49,5 @@ while true; do
     fi
 done
 
-echo "Starting server"
+echo -e "${ICyan}Starting backend!"
 python manage.py runserver 0.0.0.0:8000
