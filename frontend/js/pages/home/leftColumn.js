@@ -3,6 +3,7 @@ import { assembler } from '../../api/assembler.js';
 import { displayOtherUserProfile } from './otherUserProfile.js';
 import { fetchUser } from '../../api/fetchData.js';
 import { setStatus } from './utils.js';
+import interactiveSocket from './socket.js';
 
 export async function displayUser(allUsers, container) {
     container.innerHTML = '';
@@ -97,6 +98,7 @@ async function displayInviteModal(event) {
     const userResponse = await assembler(response)
     const user = userResponse[0]
     console.log('invite ', user.nickname, 'to a game'); // Need to fetch the user
+    interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Send Invite", "user": user.nickname}));
 
 
     const modalElement = document.getElementById('inviteGameModal')

@@ -60,6 +60,9 @@ const interactiveSocket = {
             case "Refresh":
                 this.refresh_handler(data);
                 break;
+            case "Match Invite":
+                this.match_invite_handler(data);
+                break;
             case "Init":
                 displayEveryone();
                 break;
@@ -99,6 +102,10 @@ const interactiveSocket = {
             default:
                 console.error("Rtype error");
         }
+    },
+
+    match_invite_handler: function(data) {
+        console.log("hey", data);
     },
 
     interactive_error_handler: function(message) {

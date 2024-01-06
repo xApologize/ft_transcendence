@@ -93,7 +93,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             create_layer_dict(
                 send_type, {"type": type, "id": user_id, "rType": rType}, self.channel_name)
             )
-        
+
     async def send_to_layer_social(self, send_type: str, user_id: int, type: str, rType: str, other_user_id: int):
         await self.channel_layer.group_send(
             "interactive",
@@ -162,7 +162,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         return handle
 
     @staticmethod
-    async def create_invite_request(sender: id, recipient: id) -> dict:
+    async def create_invite_request(sender: int, recipient: int) -> dict:
         handle = {
             "type": "Match Invite",
             "sender": sender,
@@ -170,7 +170,8 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         }
         return handle
 
-    async def get_user_nickname(self, user_id: int) -> str:
+    @staticmethod
+    async def get_user_nickname(user_id: int) -> str:
         user = await sync_to_async(User.objects.get)(pk=user_id)
         return user.nickname
 

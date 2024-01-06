@@ -10,3 +10,4 @@ class MatchInvite(models.Model):
     user_inviting = models.IntegerField()
     recipient = models.IntegerField()
     time_stamp = models.TimeField(auto_now=True)
+    pending = models.BooleanField()
