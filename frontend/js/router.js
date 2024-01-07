@@ -80,7 +80,6 @@ function checkAllModal() {
         'lobbyTournamentModal',
         'joinTournamentModal',
         'createTournamentModal',
-
     ];
 
     modals.forEach(disposeModal);
@@ -102,7 +101,7 @@ window.addEventListener('beforeunload', () => {
 document.addEventListener('DOMContentLoaded', async () => {
     loadPage();
     window.addEventListener('popstate', handlePopState);
-    window.addEventListener("visibilitychange", async function() {
+    window.addEventListener("visibilitychange", function() {
         if (document.visibilityState === 'visible' && window.location.pathname == '/home') {
             if (interactiveSocket.isSocketClosed()) {
                 checkAllModal();

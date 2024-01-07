@@ -1,6 +1,7 @@
 import { logoutUser } from '../../components/userCard/userCard.js'
 import { World } from '../game/src/World.js';
 import { displayEveryone } from './home.js'
+import { handleInviteInteraction } from './inviteGame.js';
 import { newUser, removeUser, updateSpecificUser, handleSocialUpdate } from './socketUpdate.js'
 
 const interactiveSocket = {
@@ -95,6 +96,10 @@ const interactiveSocket = {
             case "refuse":
             case "unfriend":
                 handleSocialUpdate(refresh_type, id, other_user_id);
+                break;
+            case "sendGameInvite":
+            case "cancelGameInvite":
+                handleInviteInteraction(refresh_type, id, other_user_id)
                 break;
             default:
                 console.error("Rtype error");

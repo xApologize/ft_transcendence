@@ -7,7 +7,7 @@ class LookingForMatch(models.Model):
     paddleB = models.IntegerField(default=-1)
 
 class MatchInvite(models.Model):
-    user_inviting = models.IntegerField()
-    recipient = models.IntegerField()
+    user_inviting = models.ForeignKey(User, related_name='invites_sent', on_delete=models.CASCADE)
+    recipient = models.ForeignKey(User, related_name='invites_received', on_delete=models.CASCADE)
     time_stamp = models.TimeField(auto_now=True)
     pending = models.BooleanField()
