@@ -15,6 +15,7 @@ MATCH_INVITE = "send_message_match_invite"
 class UserInteractiveSocket(AsyncWebsocketConsumer):
     async def connect(self):
         self.user_id: int = self.scope.get("user_id")
+        self.init: bool = False
         if self.user_id < 0:
             await self.close()
         else:
@@ -25,9 +26,12 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             await self.set_user_status("ONL")
             await self.send_to_layer(NO_ECHO, self.user_id, "Refresh", "Login")
             await self.send(text_data=json.dumps({"type": "Init"}))
+            self.init: bool = True
 
     async def disconnect(self, close_code: any):
-        print("Disconected interactive socket code:", close_code) 
+        print("Disconected interactive socket code:", close_code)
+        if self.init is False:
+            return
         if self.waiting is True:
             print("REMOVED ENTRY FROM DB")
             match_entry = await sync_to_async(

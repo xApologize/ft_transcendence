@@ -1,6 +1,6 @@
 #!/bin/bash
 # Author producks 10/29/2023
-# updated 10/30/2023
+# updated 1/6/2024
 
 Reset='\033[0m'
 Black='\033[0;30m'
@@ -37,7 +37,7 @@ while true; do
             python manage.py makemigrations
             python manage.py migrate
             echo -e "${Purple}Seeding data now..."
-            python manage.py loaddata seed.json # temp fix
+            python manage.py loaddata seed.json # Remove for correction
             touch $FLAG
         else
             echo -e "${UWhite}Migration file was found, ignoring initialization"

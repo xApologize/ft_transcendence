@@ -72,6 +72,10 @@
 
 FROM produckss/ft_transcendence_modsecurity_nginx:1.0
 
+# Add to 1.1 version to save compile time :)
+RUN apt-get install -y netcat-traditional
+RUN apt-get install -y dumb-init
+
 RUN	mkdir -p /etc/nginx/ssl
 
 RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/nginx/ssl/server.key -out /etc/nginx/ssl/server.crt -subj "/C=CA/ST=QC/L=QC/O=42school/OU=42Network/CN=ddemers/UID=ddemers"
@@ -83,3 +87,7 @@ COPY /nginx-conf/nginx.conf /etc/nginx/nginx.conf
 COPY /modsec/modsecurity.conf /etc/nginx/modsec/
 
 COPY /modsec /etc/nginx/modsec/
+
+COPY start.sh .
+
+ENTRYPOINT ["dumb-init", "./start.sh"]
