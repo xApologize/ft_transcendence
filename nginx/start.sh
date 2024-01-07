@@ -13,12 +13,12 @@ White='\033[0;37m'
 
 while true; do
     if nc -z -w 2 backend 8000; then
-    echo -e "${Green}Backend is up!"
-    sleep 2
-    break
+        echo -e "${Green}Backend is up!"
+        sleep 2
+        break
     else
         echo -e "${Red}Backend isn't up...waiting...😡"
-        sleep 2
+        sleep 4
     fi
 done
 

@@ -19,9 +19,9 @@ FLAG="/usr/src/init/flag"
 
 while true; do
     if nc -z -w 2 redis 6379; then
-    echo -e "${Green}Redis is up!"
-    sleep 2
-    break
+        echo -e "${Green}Redis is up!"
+        sleep 2
+        break
     else
         echo -e "${Red}Redis isn't up...waiting...😡"
         sleep 2
@@ -40,7 +40,7 @@ while true; do
             python manage.py loaddata seed.json # Remove for correction
             touch $FLAG
         else
-            echo -e "${UWhite}Migration file was found, ignoring initialization"
+            echo -e "\e[93mMigration file was found, ignoring initialization"
         fi
         break
     else
@@ -49,5 +49,5 @@ while true; do
     fi
 done
 
-echo -e "${ICyan}Starting backend!"
+echo -e "\e[92mStarting backend!"
 python manage.py runserver 0.0.0.0:8000
