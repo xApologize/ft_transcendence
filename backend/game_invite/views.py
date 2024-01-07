@@ -29,10 +29,10 @@ class gameInvite(View):
                 return JsonResponse({"error": "Invite already sent"}, status=400)
             elif MatchInvite.objects.filter(user_inviting=recipient, recipient=user_inviting, pending=True).exists():
                 MatchInvite.objects.filter(user_inviting=recipient, recipient=user_inviting, pending=True).update(pending=False)
-                return JsonResponse({"rType": "accept game"})
+                return JsonResponse({"rType": "acceptGameInvite"})
             else:
                 MatchInvite.objects.create(user_inviting=user_inviting, recipient=recipient, pending=True)  # Updated to use objects instead of PKs
-                return JsonResponse({"rType": "invite game"})
+                return JsonResponse({"rType": "sendGameInvite"})
         except (KeyError, json.JSONDecodeError):
             return JsonResponse({"error": "Invalid data"}, status=400)
         except PermissionDenied:
@@ -44,31 +44,39 @@ class gameInvite(View):
 
     @token_validation
     def delete(self, request):
+        response_data = {"rType": "refreshGameInvite"}
         try:
             data = json.loads(request.body)
             recipient_id = int(data['recipient'])
             user_inviting = get_user_obj(request)
-            recipient = User.objects.filter(pk=recipient_id).first()  # Simplified retrieval with .first()
+            recipient = User.objects.filter(pk=recipient_id).first()
 
             if not recipient:
                 raise Http404
             if user_inviting == recipient:
                 raise PermissionDenied
             elif not FriendList.objects.filter(Q(friend1=user_inviting, friend2=recipient, status="ACCEPTED") | Q(friend1=recipient, friend2=user_inviting, status="ACCEPTED")).exists():
-                return JsonResponse({"error": "You are not friends"}, status=403)
-            elif not MatchInvite.objects.filter(user_inviting=user_inviting, recipient=recipient, pending=True).exists():
-                return JsonResponse({"error": "Invite not found"}, status=404)
+                response_data["error"] = "You are not friends"
+                return JsonResponse(response_data, status=403)
             else:
-                MatchInvite.objects.filter(user_inviting=user_inviting, recipient=recipient, pending=True).delete()
-                return JsonResponse({"rType": "cancel invite"})
+                inviting_user_query = Q(user_inviting=user_inviting) | Q(recipient=user_inviting)
+                recipient_query = Q(user_inviting=recipient) | Q(recipient=recipient)
+                match_invite = MatchInvite.objects.filter(inviting_user_query & recipient_query & Q(pending=True))
+                if match_invite.exists():
+                    match_invite.delete()
+                return JsonResponse(response_data)
         except (KeyError, json.JSONDecodeError):
-            return JsonResponse({"error": "Invalid data"}, status=400)
+            response_data["error"] = "Invalid data"
+            return JsonResponse(response_data, status=400)
         except PermissionDenied:
-            return JsonResponse({"error": "You cannot cancel your own invite"}, status=403)
+            response_data["error"] = "You cannot cancel invite not sent by you"
+            return JsonResponse(response_data, status=403)
         except Http404:
-            return JsonResponse({"error": "User not found"}, status=404)
+            response_data["error"] = "User not found"
+            return JsonResponse(response_data, status=404)
         except Exception as e:
-            return JsonResponse({"error": f"Something went wrong: {e}"}, status=500)
+            response_data["error"] = f"Something went wrong: {e}"
+            return JsonResponse(response_data, status=500)
 
     @token_validation
     def get(self, request):

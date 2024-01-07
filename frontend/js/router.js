@@ -53,7 +53,7 @@ export async function handleRoute() {
 }
 
 function handlePopState(event) {
-    checkAllModal();
+    checkModal();
     handleRoute();
     interactiveSocket.closeSocket();
 }
@@ -68,7 +68,7 @@ function disposeModal(modalId) {
     }
 }
 
-function checkAllModal() {
+export function checkModal(modalToClose = null) {
     const modals = [
         'userSettingsModal',
         'twoFAModal',
@@ -82,7 +82,11 @@ function checkAllModal() {
         'createTournamentModal',
     ];
 
-    modals.forEach(disposeModal);
+    if (modalToClose) {
+        disposeModal(modalToClose);
+    } else {
+        modals.forEach(disposeModal);
+    }
 }
 
 async function loadPage() {
@@ -104,7 +108,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.addEventListener("visibilitychange", function() {
         if (document.visibilityState === 'visible' && window.location.pathname == '/home') {
             if (interactiveSocket.isSocketClosed()) {
-                checkAllModal();
+                checkModal();
                 showHome();
             }
         }

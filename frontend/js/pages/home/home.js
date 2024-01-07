@@ -28,6 +28,7 @@ export async function showHome() {
         }
         new bootstrap.Modal(document.getElementById('otherUserInfo'));
         new bootstrap.Modal(document.getElementById('inviteGameModal'));
+        new bootstrap.Modal(document.getElementById('loadingModal'));
         document.getElementById('inviteGameModal').addEventListener('hide.bs.modal',closeInviteRequest)
 
 

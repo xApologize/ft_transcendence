@@ -3,9 +3,9 @@ import { userRequestCardComponent } from '../../components/userRequestCard/userR
 import { assembler } from '../../api/assembler.js';
 import { handleFriendAction } from './utils.js';
 import { displayFriend } from './home.js';
+import interactiveSocket from './socket.js';
 
 export async function updateSocial(typeToUpdate) {
-    console.log("IN UPDATE SOCIAL: ", typeToUpdate)
     const userRequestTemplate = await userRequestCardComponent();
     if (!userRequestTemplate) return;
 
@@ -29,7 +29,6 @@ export async function updateSocial(typeToUpdate) {
         await handleFriendUpdate();
         await handleInviteUpdate();
     }
-
     updateSocialBadge();
 }
 
@@ -45,13 +44,16 @@ async function updateSocialInvite(userRequestTemplate) {
     allPendingInvites.forEach(invite => {
         const inviteNode = userRequestTemplate.cloneNode(true);
         const userNode = fillRequestTemplate(inviteNode, invite);
-        
-        const button1 = userNode.querySelector('#button1');
-        const button2 = userNode.querySelector('#button2');
-        setupSocialInviteButton(button1, 'Accept', {'id': invite.id}, 'accept');
-        setupSocialInviteButton(button2, 'Refuse', {'id': invite.id}, 'refuse');
-        inviteGameContainer.appendChild(inviteNode);
+        updateSocialInviteBtn(userNode, invite);
+        inviteGameContainer.appendChild(userNode);
     });
+}
+
+function updateSocialInviteBtn(userNode, invite) {
+    const button1 = userNode.querySelector('#button1');
+    const button2 = userNode.querySelector('#button2');
+    setupSocialInviteButton(button1, 'Accept', {'id': invite.id}, 'accept');
+    setupSocialInviteButton(button2, 'Refuse', {'id': invite.id}, 'refuse');
 }
 
 function setupSocialInviteButton(button, text, request, action) {
@@ -59,9 +61,30 @@ function setupSocialInviteButton(button, text, request, action) {
         button.textContent = text;
         button.dataset.id = request.id;
         button.dataset.action = action;
-        // button.addEventListener('click', getSocialUserID);
+        button.addEventListener('click', getSocialInviteReqID);
         button.removeAttribute('id');
     }
+}
+
+function getSocialInviteReqID(event) {
+    let ancestor = event.currentTarget;
+    while (ancestor && !ancestor.hasAttribute('data-userid-flag')) {
+        ancestor = ancestor.parentNode;
+    }
+    if (!ancestor || !ancestor.dataset.id) {
+        console.error('User ID not found');
+        return;
+    }
+    const userID = ancestor.dataset.id;
+    const action = event.currentTarget.dataset.action;
+    console.log("USER ID: ", userID, "\nACTION: ", action)
+    handleSocialInvInterac(action, userID);
+}
+
+function handleSocialInvInterac(action, id) {
+    const actionType = action === 'accept' ? 'acceptGameInvite' : 'refuseGameInvite';
+
+    interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Social", "rType": actionType, "other_user_id": id}));
 }
 
 
@@ -105,7 +128,7 @@ function setupSocialFriendBtn(button, text, request, action) {
         button.textContent = text;
         button.dataset.id = request.id;
         button.dataset.action = action;
-        button.addEventListener('click', getSocialUserID);
+        button.addEventListener('click', getSocialFriendReqID);
         button.removeAttribute('id');
     }
 }
@@ -125,15 +148,11 @@ function fillRequestTemplate(requestNode, request) {
 function updateSocialBadge() {
     const receivedRequestCount = document.getElementById('receivedRequest').childElementCount;
     const inviteGameCount = document.getElementById('inviteGameReceived').childElementCount;
-    console.log(document.getElementById('receivedRequest').children)
-    console.log(document.getElementById('inviteGameReceived').children)
-    console.log("Invite game count: ", inviteGameCount, "\nReceived request count: ", receivedRequestCount)
     const socialBadge = document.getElementById('socialBadge');
     socialBadge.textContent = receivedRequestCount + inviteGameCount;
-    console.log("Social Badge: ", socialBadge.textContent)
 }
 
-function getSocialUserID(event) {
+function getSocialFriendReqID(event) {
     let ancestor = event.currentTarget;
     while (ancestor && !ancestor.hasAttribute('data-userid-flag')) {
         ancestor = ancestor.parentNode;

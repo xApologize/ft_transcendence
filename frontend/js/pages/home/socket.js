@@ -99,6 +99,9 @@ const interactiveSocket = {
                 break;
             case "sendGameInvite":
             case "cancelGameInvite":
+            case "acceptGameInvite":
+            case "refuseGameInvite":
+            case "refreshGameInvite":
                 handleInviteInteraction(refresh_type, id, other_user_id)
                 break;
             default:
