@@ -23,11 +23,13 @@ export async function displayInviteModal(event) {
         return
     }
     const assembleResponse = await assembler(response)
+    console.log(assembleResponse)
     if (response.status >= 400) { // ERROR HANDLING
-        console.log("Error Invite Game")
-        console.log(assembleResponse)
-    } else {
-        // NEED TO DETECT IF IT SENT A REQUEST OR ACCEPT IT
+        displayToast(assembleResponse.error, "Error", "https://png.pngtree.com/png-clipart/20190904/ourmid/pngtree-80-3d-text-png-image_18456.jpg")
+        return;
+    }
+    const rType = assembleResponse.rType
+    if (rType == 'sendGameInvite') {
         const modalElement = document.getElementById('inviteGameModal')
         const inviteModal = bootstrap.Modal.getInstance(modalElement);
         if (!inviteModal) {
@@ -37,8 +39,17 @@ export async function displayInviteModal(event) {
         modalElement.querySelector('.modal-content').dataset.id = userID
         inviteModal.show()
         console.log("Socket Invite Game Sent")
-        interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Social", "rType": "sendGameInvite", "other_user_id": userID}));
+    } else if (rType == 'acceptGameInvite') {
+        console.log('acceptGameInvite')
+        const modalEl = document.getElementById('loadingModal')
+        const modal = bootstrap.Modal.getInstance(modalEl);
+        modal.show()
+    
+        // I ACCEPTED THE INVITE, I NEED TO JOIN THE GAME HERE
+
+        ///////////////////////////
     }
+    interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Social", "rType": rType, "other_user_id": userID}));
 }
 
 export async function closeInviteRequest(event) {
@@ -50,16 +61,13 @@ export async function closeInviteRequest(event) {
     const response = await fetchGameInvite('DELETE', {'recipient': userID})
     if (!response)
         return;
-    // const assemble = await assembler(response);
-    // console.log(assemble)
-    // Update social modal of other user, remove the request.
-    // If (request accepted) ... else (delete request)
+    // If (request accepted) ... else (delete request) ... OR keep the current method ?
     interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Social", "rType": "cancelGameInvite", "other_user_id": userID}));
 }
 
 // Function called by socket when a game invite is sent by someone.
 export async function handleInviteInteraction(refresh_type, id, other_user_id) {
-    console.log("receiveGameInvite")
+    console.log("handleInviteInteraction")
     const userID = getMyID();
     if (!userID || (userID != other_user_id && userID != id))
         return;
@@ -83,7 +91,6 @@ async function handleInviteUpdate(refresh_type, request_id, other_user_id, userI
 }
 
 async function handleAcceptInvite(request_id, other_user_id, userID) {
-    // Determine the role of the user and handle accordingly.
     if (userID == request_id) {
         handleSelfAcceptedInvite();
     } else if (userID == other_user_id) {
@@ -103,7 +110,7 @@ function handleSelfAcceptedInvite() {
     if (loadingModal) {
         loadingModal.show();
     }
-    // SOCKET GAME LOGIC HERE FOR ACCEPT 
+    // I ACCEPTED THE INVITE, I NEED TO JOIN THE GAME HERE
 
     ///////////////////////////
 }
@@ -111,7 +118,6 @@ function handleSelfAcceptedInvite() {
 async function handleOtherUserAcceptedInvite(request_id) {
     console.log("I am the one who sent the invite and he accepted it.");
 
-    // Handle the invite modal UI updates.
     const inviteModalEl = document.getElementById('inviteGameModal');
     const inviteModal = bootstrap.Modal.getInstance(inviteModalEl);
     resetModalContentID(inviteModalEl);
@@ -131,7 +137,7 @@ async function handleOtherUserAcceptedInvite(request_id) {
 
     notifySocialUpdate(request_id);
 
-    // SOCKET GAME LOGIC HERE FOR ACCEPT 
+    //  I AM THE HOST, I NEED TO CREATE THE GAME LOGIC HERE
 
 
     ///////////////////////////
@@ -163,7 +169,6 @@ async function handleOtherUserAcceptedInvite(request_id) {
 }
 
 function handleRefuseInvite(request_id, other_user_id, userID) {
-    // Determine the role of the user and handle accordingly.
     if (userID == request_id) {
         handleSelfRefusedInvite(other_user_id);
     } else if (userID == other_user_id) {
