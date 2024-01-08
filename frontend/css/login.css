@@ -31,5 +31,12 @@
 }
 
 .link-secondary {
-    color: rgb(93, 89, 89) !important;
+    color: white !important;
+}
+
+#login-div {
+    height: 100vh;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
 }
