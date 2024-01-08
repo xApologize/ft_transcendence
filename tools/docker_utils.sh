@@ -1,6 +1,6 @@
 #!/bin/bash
 # Clean up docker related containers, images, volumes and caches
-# Author producks 9/1/2023, updated 10/19/2023
+# Author producks 9/1/2023, updated 12/24/2023
 
 # Reset
 Reset='\033[0m'       # Text Reset
@@ -49,7 +49,8 @@ clean_volumes() {
 			echo -e "${Green}All docker volumes have been deleted${Reset}"
 		fi
 	fi
-	rm -rf ../database-data
+	rm -rf ../database-postgres
+	rm -rf ../database-redis
 }
 
 clean_images() {
@@ -71,17 +72,27 @@ clean_caches() {
 
 clean_folders() {
 	echo -e "${Red}SENT THE FOLDERS TO THE SHADOW REALMS${Reset}"
-	sudo rm -rf ../database-data 
+	sudo rm -rf ../database-postgres
+	sudo rm -rf ../database-redis
 	sudo rm -rf ../frontend/node_modules
 }
 
 clean_folders_nuke() {
 	echo -e "${Red}SENT THE FOLDERS TO THE SHADOW REALMS${Reset}"
-	sudo rm -rf database-data backend/dist backend/node_modules frontend/node_modules
+	sudo rm -rf database-postgres database-redis backend/dist backend/node_modules frontend/node_modules
 }
 
 clean_folder_nuke_school_mac() {
-	rm -rf database-data backend/dist backend/node_modules frontend/node_modules
+	rm -rf database-postgres database-redis backend/dist backend/node_modules frontend/node_modules
+}
+
+clean_migration() {
+	rm -rf backend/auth/migrations/*_initial.py
+	rm -rf backend/friend_list/migrations/*_initial.py
+	rm -rf backend/interactive/migrations/*_initial.py
+	rm -rf backend/match_history/migrations/*_initial.py
+	rm -rf backend/tournament_history/migrations/*_initial.py
+	rm -rf backend/user_profile/migrations/*_initial.py
 }
 
 
@@ -151,9 +162,11 @@ case $input in
 	;;
 	"7")
 	clean_folders_nuke
+	clean_migration
 	;;
 	"9")
 	clean_folder_nuke_school_mac
+	clean_migration
 	;;
 	*)
 	echo -e "${Red}Invalid input provided${Reset}"
