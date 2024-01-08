@@ -8,21 +8,6 @@ version: '3.8'
 #     driver: bridge
 
 services:
-  frontend:
-    container_name: frontend
-    build:
-      context: frontend
-      dockerfile: Dockerfile
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    ports:
-      - '3001:3001'
-    # networks:
-    #   - proxy_to_backend_network
-    depends_on:
-      - backend
-
   backend:
     container_name: backend
     restart: on-failure:5
@@ -82,8 +67,10 @@ services:
       - "443:443"
     # networks:
     #   - proxy_to_backend_network
+    volumes:
+      - ./frontend:/etc/frontend
     depends_on:
-      - frontend
+      - backend
 
 volumes:
   init_flag:
