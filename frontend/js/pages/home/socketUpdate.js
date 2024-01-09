@@ -18,11 +18,11 @@ function updateSocialSocket(user) {
         const nameElement = card.querySelector('#userRequestCardNickname');
 
         if (avatarElement) {
-            avatarElement.src = user.avatar; // Update avatar image source
-            avatarElement.alt = user.nickname; // Update alt text
+            avatarElement.src = user.avatar;
+            avatarElement.alt = user.nickname;
         }
         if (nameElement) {
-            nameElement.textContent = user.nickname; // Update user's name
+            nameElement.textContent = user.nickname;
         }
     });
 }
@@ -49,11 +49,11 @@ function updateOtherUsersCard(user) {
         const nameElement = card.querySelector('#user-name');
 
         if (avatarElement) {
-            avatarElement.src = user.avatar; // Update avatar image source
-            avatarElement.alt = user.nickname; // Update alt text
+            avatarElement.src = user.avatar;
+            avatarElement.alt = user.nickname;
         }
         if (nameElement) {
-            nameElement.textContent = user.nickname; // Update user's name
+            nameElement.textContent = user.nickname;
         }
     });
     updateOtherProfileSocket(user);
