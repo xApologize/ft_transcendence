@@ -8,49 +8,69 @@ import { displayToast } from './toastNotif.js';
 
 
 export async function displayInviteModal(event) {
-    event.stopPropagation(); // Empêche le otherUserModal d'open pcq le listener est sur la div.
-    let ancestor = event.currentTarget;
-    while (ancestor && !ancestor.hasAttribute('data-userid-flag')) {
-        ancestor = ancestor.parentNode;
-    }
-    if (!ancestor || !ancestor.dataset.id) {
+    event.stopPropagation();
+    const userID = getUserIDFromEventTarget(event.currentTarget);
+
+    if (!userID) {
         console.error('User ID not found');
         return;
     }
-    const userID = ancestor.dataset.id;
+
     const response = await fetchGameInvite('POST', {'recipient': userID});
-    if (!response) {
-        return
-    }
-    const assembleResponse = await assembler(response)
-    console.log(assembleResponse)
-    if (response.status >= 400) { // ERROR HANDLING
-        displayToast(assembleResponse.error, "Error", "https://png.pngtree.com/png-clipart/20190904/ourmid/pngtree-80-3d-text-png-image_18456.jpg")
+    if (!response) return;
+
+    const assembledResponse = await assembler(response);
+
+    if (response.status >= 400) {
+        displayErrorResponse(assembledResponse.error);
         return;
     }
-    const rType = assembleResponse.rType
-    if (rType == 'sendGameInvite') {
-        const modalElement = document.getElementById('inviteGameModal')
-        const inviteModal = bootstrap.Modal.getInstance(modalElement);
-        if (!inviteModal) {
-            console.error('Other user modal instance not found')
-            return
-        }
-        modalElement.querySelector('.modal-content').dataset.id = userID
-        inviteModal.show()
-        console.log("Socket Invite Game Sent")
-    } else if (rType == 'acceptGameInvite') {
-        console.log('acceptGameInvite')
-        const modalEl = document.getElementById('loadingModal')
-        const modal = bootstrap.Modal.getInstance(modalEl);
-        modal.show()
-    
-        // I ACCEPTED THE INVITE, I NEED TO JOIN THE GAME HERE
-
-        ///////////////////////////
-    }
+    const rType = assembledResponse.rType
+    handleResponseType(rType, userID);
     interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Social", "rType": rType, "other_user_id": userID}));
 }
+
+function getUserIDFromEventTarget(target) {
+    let ancestor = target;
+    while (ancestor && !ancestor.hasAttribute('data-userid-flag')) {
+        ancestor = ancestor.parentNode;
+    }
+    return ancestor ? ancestor.dataset.id : null;
+}
+
+function displayErrorResponse(errorMessage) {
+    displayToast(errorMessage, "Error", "https://png.pngtree.com/png-clipart/20190904/ourmid/pngtree-80-3d-text-png-image_18456.jpg");
+}
+
+function handleResponseType(rType, userID) {
+    switch (rType) {
+        case 'sendGameInvite':
+            showModal('inviteGameModal', userID);
+            console.log("Socket Invite Game Sent");
+            break;
+        case 'acceptGameInvite':
+            console.log('Accept Game Invite');
+            showModal('loadingModal');
+            // Additional logic for accepting the invite and joining the game.
+            break;
+        // Add more cases if necessary
+    }
+}
+
+function showModal(modalId, userID = null) {
+    const modalElement = document.getElementById(modalId);
+    const modal = bootstrap.Modal.getInstance(modalElement);
+    if (!modal) {
+        console.error(`${modalId} instance not found`);
+        return;
+    }
+    if (userID) {
+        modalElement.querySelector('.modal-content').dataset.id = userID;
+    }
+    modal.show();
+}
+
+
 
 export async function closeInviteRequest(event) {
     const modal_content =  event.currentTarget.querySelector('.modal-content')
