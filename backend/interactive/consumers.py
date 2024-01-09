@@ -24,7 +24,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             await self.close()
         else:
             await self.accept()
-            await self.channel_layer.group_add(
+            await self.channel_layer.group_add  (
                 "interactive", self.channel_name)
             self.waiting: bool = False
             await self.set_user_status("ONL")
