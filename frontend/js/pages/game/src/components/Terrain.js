@@ -1,6 +1,6 @@
 import { SolidMesh } from './SolidMesh.js';
 import { GoalZone } from './GoalZone.js';
-import { airHockeyTable, floorDiffuse, floorNormal, glassNormal, texCube } from '../systems/Loader.js';
+import { airHockeyTable, floorDiffuse, floorNormal, glassNormal, spriteCircle, texCube } from '../systems/Loader.js';
 import { Renderer } from '../modules/Renderer.js';
 import {
 	BoxGeometry,
@@ -9,10 +9,13 @@ import {
 	MeshStandardMaterial,
 	Object3D,
 	PlaneGeometry,
+	Sprite,
+	SpriteMaterial,
 	Vector2,
 	Vector3
 } from 'three';
 import { ScreenBoard } from './ScreenBoard.js';
+import { Updatable } from '../modules/Updatable.js';
 
 class Terrain extends Object3D {
 	constructor( size, lineWidth, margin ) {
@@ -53,6 +56,7 @@ class Terrain extends Object3D {
 			if ( child.type == "Mesh" ) {
 				child.castShadow = true;
 				child.receiveShadow = true;
+				child.material.depthWrite = true;
 				// child.material = new MeshStandardMaterial({
 				// 	color: "grey",
 				// 	metalness: 0.9,
@@ -63,7 +67,17 @@ class Terrain extends Object3D {
 				// });
 			}
 		});
+
+		// this.s = new Sprite( new SpriteMaterial( { map:spriteCircle, color:0xffffff} ) )
+		// this.s.position.set( 0, 0, 2 );
+		// this.s.scale.set( 10, 10, 1 );
+		// this.add( this.s );
+		// const u = new Updatable( this );
 	}
+
+	// update( dt ) {
+	// 	this.s.material.alphaTest += dt * 0.1;
+	// }
 
 	delete() {
 		this.wallTop.delete();

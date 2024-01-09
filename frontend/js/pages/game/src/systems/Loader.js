@@ -8,6 +8,7 @@ let floorNormal;
 let glassNormal;
 let digitalFont;
 let texCube;
+let spriteCircle;
 
 const loaderGLTF = new GLTFLoader();
 const loaderTexture = new TextureLoader();
@@ -34,6 +35,7 @@ async function loadAll() {
 		'/public/MilkyWay/dark-s_py.jpg', '/public/MilkyWay/dark-s_ny.jpg', 
 		'/public/MilkyWay/dark-s_pz.jpg', '/public/MilkyWay/dark-s_nz.jpg', 
 	] ).then( (res) => texCube = res );
+	await loadFile( loaderTexture, '/public/circle_04.png' ).then( (res) => spriteCircle = res );
 }
 
 function loadFile( loader, filePath ) {
@@ -48,4 +50,4 @@ function loadFile( loader, filePath ) {
 	}, 2000)
 }
 
-export { loadAll, airHockeyTable, floorDiffuse, floorNormal, glassNormal, digitalFont, texCube };
+export { loadAll, airHockeyTable, floorDiffuse, floorNormal, glassNormal, digitalFont, texCube, spriteCircle };
