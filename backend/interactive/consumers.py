@@ -14,8 +14,14 @@ MATCH_INVITE = "send_message_match_invite"
 
 class UserInteractiveSocket(AsyncWebsocketConsumer):
     async def connect(self):
-        self.user_id: int = self.scope.get("user_id")
-        self.init: bool = False
+        try:
+            self.user_id: int = self.scope.get("user_id")
+            self.init: bool = False
+            status: str = await self.get_user_status()
+            if status == "ONL":
+                self.user_id = -1
+        except Exception:
+            self.user_id = -1
         if self.user_id < 0:
             await self.close()
         else:
@@ -112,6 +118,10 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         user: User = await sync_to_async(User.objects.get)(pk=self.user_id)
         user.status = status
         await sync_to_async(user.save)()
+    
+    async def get_user_status(self) -> str:
+        user: User = await sync_to_async(User.objects.get)(pk=self.user_id)
+        return user.status
 
     async def find_match(self):
         match_entry = await sync_to_async(LookingForMatch.objects.filter(paddleB=-1).first)()
