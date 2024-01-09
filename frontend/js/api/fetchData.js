@@ -150,3 +150,6 @@ export const fetchIsToken = async () => {
     return fetchApi('GET', 'auth/token/');
 }
 
+export const fetchGameInvite = async (method, data = null) => {
+    return fetchApi(method, 'game_invite/', null, data);
+}

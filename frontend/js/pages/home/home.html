@@ -131,7 +131,6 @@
                 <div class="modal-content">
                     <div class="modal-header border-0">
                         <h5 class="modal-title" id="waitingGameModal">
-                            <!-- Can I set the user to the name of the user? Jacob: For sure you can -->
                             Waiting for user...
                         </h5>
                     </div>
@@ -151,7 +150,7 @@
                         <div class="d-flex align-items-center flex-grow-1">
                             <button id="addFriendBtn" class="btn btn-success d-none me-2 flex-shrink-0"></button>
                             <button id="deleteFriendBtn" class="btn btn-danger d-none me-2 flex-shrink-0"></button>
-                            <p class="mb-0 flex-grow-1 text-break" id="responseFriendQuery"></p>
+                            <p class="mb-0 flex-grow-1 text-break text-danger" id="responseFriendQuery"></p>
                         </div>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
@@ -205,10 +204,9 @@
                     </div>
                     <div class="modal-body">
                         <!-- Invite Game Receive -->
-                        <div class="invite-game-received align-items-center">
+                        <div id="invite-game-received" class="align-items-center">
                             <h6 class="text-center"> Invite Game Received</h6>
                             <div id="inviteGameReceived" class="list-group">
-                                <!-- List of sent friend requests will go here -->
         
                             </div>
                         </div>
@@ -255,10 +253,10 @@
                             </div>
                             <div class="col-6 text-center">
                                 <div class="mb-2"> <!-- Same as above, for spacing -->
-                                    <button class="btn btn-primary">Create Tournament</button>
+                                    <button id="createTournamentBtn" class="btn btn-primary">Create Tournament</button>
                                 </div>
                                 <div>
-                                    <button class="btn btn-primary">Join Tournament</button>
+                                    <button id="joinTournamentBtn" class="btn btn-primary">Join Tournament</button>
                                 </div>
                             </div>
                         </div>
@@ -266,6 +264,145 @@
                     
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Create Tournament -->
+        <div class="modal fade" id="createTournamentModal" tabindex="-1" aria-labelledby="createTournamentModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header text-center">
+                        <h5 class="modal-title w-100" id="createTournamentModalLabel">Create Tournament</h5>
+                    </div>
+                    <div class="modal-body d-flex justify-content-center">
+                        <form id="tournamentForm" class="w-100"> <!-- You can adjust the width as needed -->
+                            <div class="mb-3">
+                                <label for="tournamentName" class="form-label">Tournament Name:</label>
+                                <input type="text" class="form-control" id="tournamentName" required>
+                            </div>
+                            <div class="d-flex justify-content-center">
+                                <button type="submit" class="btn btn-primary">Create Tournament</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="cancelCreateTournament" type="button" class="btn btn-danger">Cancel Tournament</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Join Tournament -->
+        <div class="modal fade" id="joinTournamentModal" tabindex="-1" aria-labelledby="joinTournamentModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header text-center">
+                        <h5 class="modal-title w-100" id="joinTournamentModalLabel">Join Tournament</h5>
+                    </div>
+                    <div class="modal-body">
+                        <ul class="list-group">
+                            <!-- Tournament 1 -->
+                            <li class="list-group-item d-flex justify-content-start align-items-center">
+                                <img src="https://png.pngtree.com/png-clipart/20190904/ourmid/pngtree-80-3d-text-png-image_18456.jpg" alt="Creator's Avatar" class="rounded-circle me-2" style="width: 40px; height: 40px;">
+                                <div>
+                                    <h6 class="mb-0">Tournament Name</h6>
+                                    <small>3/4 Players</small>
+                                </div>
+                            </li>
+                            <!-- Tournament 2 -->
+                            <li class="list-group-item d-flex justify-content-start align-items-center">
+                                <img src="https://png.pngtree.com/png-clipart/20190904/ourmid/pngtree-80-3d-text-png-image_18456.jpg" alt="Another Creator's Avatar" class="rounded-circle me-2" style="width: 40px; height: 40px;">
+                                <div>
+                                    <h6 class="mb-0">Another Tournament</h6>
+                                    <small>2/4 Players</small>
+                                </div>
+                            </li>
+                            <!-- Add more tournaments as needed -->
+                        </ul>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="cancelJoinTournament" type="button" class="btn btn-danger">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Lobby Tournament -->
+        <div class="modal fade" id="lobbyTournamentModal" tabindex="-1" aria-labelledby="lobbyTournamentModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header text-center">
+                        <h5 class="modal-title w-100" id="lobbyTournamentModalLabel">Tournament Lobby</h5>
+                    </div>
+                    <div class="modal-body">
+                        <div class="participants">
+                            <h6>Participants:</h6>
+                            <ul id="participantList" class="list-group">
+                                <!-- Fake User 1 -->
+                                <li class="list-group-item d-flex align-items-center">
+                                    <img src="https://png.pngtree.com/png-clipart/20190904/ourmid/pngtree-80-3d-text-png-image_18456.jpg" alt="Avatar 1" class="rounded-circle me-2" style="width: 30px; height: 30px;">
+                                    PlayerOneNickname
+                                </li>
+                                <!-- Fake User 2 -->
+                                <li class="list-group-item d-flex align-items-center">
+                                    <img src="https://png.pngtree.com/png-clipart/20190904/ourmid/pngtree-80-3d-text-png-image_18456.jpg" alt="Avatar 2" class="rounded-circle me-2" style="width: 30px; height: 30px;">
+                                    PlayerTwoNickname
+                                </li>
+                            </ul>
+                        </div>
+                        <!-- Waiting Message -->
+                        <div class="waiting-message text-center mt-3">
+                            <span class="badge bg-warning text-dark">Waiting for more players (2/4)</span>
+                        </div>
+                        <div class="invite mt-3 text-center">
+                            <button id="inviteTournamentBtn" type="button" class="btn btn-primary">
+                                Invite Players
+                            </button>
+                        </div>
+                    </div>
+                    <div class="modal-footer justify-content-center">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel Tournament</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Invite Tournament Modal -->
+        <div class="modal fade" id="inviteTournamentModal" tabindex="1" aria-labelledby="inviteTournamentModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header text-center">
+                        <h5 class="modal-title w-100" id="inviteTournamentModalLabel">Invite Friends</h5>
+                    </div>
+                    <div class="modal-body">
+                        <ul class="list-group">
+                            <!-- Fake User 1 -->
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <img src="https://png.pngtree.com/png-clipart/20190904/ourmid/pngtree-80-3d-text-png-image_18456.jpg" alt="Avatar 1" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+                                <span class="nickname">PlayerOne</span>
+                                <button class="btn btn-success">Invite</button>
+                            </li>
+                            <!-- Fake User 2 -->
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <img src="https://png.pngtree.com/png-clipart/20190904/ourmid/pngtree-80-3d-text-png-image_18456.jpg" alt="Avatar 2" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+                                <span class="nickname">PlayerTwo</span>
+                                <button class="btn btn-success">Invite</button>
+                            </li>
+                            <!-- Add more fake users as needed -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal" id="loadingModal" tabindex="-1" aria-labelledby="loadingModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <!-- Content inside the modal -->
+                        <div class="text-center">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Loading... Please wait</p>
+                        </div>
                     </div>
                 </div>
             </div>

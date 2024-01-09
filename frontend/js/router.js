@@ -53,7 +53,7 @@ export async function handleRoute() {
 }
 
 function handlePopState(event) {
-    checkAllModal();
+    checkModal();
     handleRoute();
     interactiveSocket.closeSocket();
 }
@@ -68,7 +68,7 @@ function disposeModal(modalId) {
     }
 }
 
-function checkAllModal() {
+export function checkModal(modalToClose = null) {
     const modals = [
         'userSettingsModal',
         'twoFAModal',
@@ -76,9 +76,17 @@ function checkAllModal() {
         'inviteGameModal',
         'socialModal',
         'gameMenuModal',
+        'inviteTournamentModal',
+        'lobbyTournamentModal',
+        'joinTournamentModal',
+        'createTournamentModal',
     ];
 
-    modals.forEach(disposeModal);
+    if (modalToClose) {
+        disposeModal(modalToClose);
+    } else {
+        modals.forEach(disposeModal);
+    }
 }
 
 async function loadPage() {
@@ -97,10 +105,10 @@ window.addEventListener('beforeunload', () => {
 document.addEventListener('DOMContentLoaded', async () => {
     loadPage();
     window.addEventListener('popstate', handlePopState);
-    window.addEventListener("visibilitychange", async function() {
+    window.addEventListener("visibilitychange", function() {
         if (document.visibilityState === 'visible' && window.location.pathname == '/home') {
             if (interactiveSocket.isSocketClosed()) {
-                checkAllModal();
+                checkModal();
                 showHome();
             }
         }

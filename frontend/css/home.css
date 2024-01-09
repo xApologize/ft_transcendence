@@ -152,3 +152,8 @@
 .border-right {
     border-right: 1px solid #dee2e6; /* This color is a light grey, common for Bootstrap borders */
 }
+
+#joinTournamentModal .list-group-item:hover {
+    background-color: #d6d8db;  /* Darker shade for hover, adjust color as needed */
+    cursor: pointer;
+}
