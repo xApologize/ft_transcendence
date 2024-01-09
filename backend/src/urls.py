@@ -27,4 +27,5 @@ urlpatterns = [
     path('api/login/', include('auth.urls')),
     path('api/auth/', include('auth.urls')),
     path('api/match/', include('match_history.urls')),
+    path('api/game_invite/', include('game_invite.urls')),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

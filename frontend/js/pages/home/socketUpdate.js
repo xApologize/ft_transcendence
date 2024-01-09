@@ -18,11 +18,11 @@ function updateSocialSocket(user) {
         const nameElement = card.querySelector('#userRequestCardNickname');
 
         if (avatarElement) {
-            avatarElement.src = user.avatar; // Update avatar image source
-            avatarElement.alt = user.nickname; // Update alt text
+            avatarElement.src = user.avatar;
+            avatarElement.alt = user.nickname;
         }
         if (nameElement) {
-            nameElement.textContent = user.nickname; // Update user's name
+            nameElement.textContent = user.nickname;
         }
     });
 }
@@ -49,11 +49,11 @@ function updateOtherUsersCard(user) {
         const nameElement = card.querySelector('#user-name');
 
         if (avatarElement) {
-            avatarElement.src = user.avatar; // Update avatar image source
-            avatarElement.alt = user.nickname; // Update alt text
+            avatarElement.src = user.avatar;
+            avatarElement.alt = user.nickname;
         }
         if (nameElement) {
-            nameElement.textContent = user.nickname; // Update user's name
+            nameElement.textContent = user.nickname;
         }
     });
     updateOtherProfileSocket(user);
@@ -94,6 +94,10 @@ export async function removeUser(userID) {
                 friendContainer.removeChild(card);
                 friendContainer.appendChild(card);
             }
+            const inviteGameBtn = card.querySelector('#inviteGameBtn');
+            if (inviteGameBtn) {
+                inviteGameBtn.classList.add("disabled", "border-0");
+            }
         }
     });
 }
@@ -104,7 +108,7 @@ export async function removeUser(userID) {
 export function handleSocialUpdate(rType, currentUser, otherUserId) {
     const userId = getMyID();
     if (!userId || userId == currentUser || userId == otherUserId) {
-        updateSocial();
+        updateSocial('friend');
         if (userId == otherUserId)
             updateModalIfOpen()
         displayFriend();
@@ -125,7 +129,6 @@ async function createNotifications(rType, userId, otherUserId, currentUser) {
     let toastMsg = "";
     let toastTitle = "";
     
-    console.log("CREATE NOTIF")
     if (userId == currentUser || !userId) {
         const user = await fetchUserById(otherUserId);
         let imgUrl = user ? user.avatar : "https://png.pngtree.com/png-clipart/20190904/ourmid/pngtree-80-3d-text-png-image_18456.jpg";
@@ -152,7 +155,6 @@ async function createNotifications(rType, userId, otherUserId, currentUser) {
                 return;
         }
 
-        console.log("toastMsg: ", toastMsg)
         if (toastMsg)
             displayToast(toastMsg, toastTitle, imgUrl);
     }
@@ -196,6 +198,15 @@ async function addNewUser(user) {
     }
 }
 
+async function checkIfFriend(user) {
+    const response = await fetchFriendChange('GET', { id: user.id });
+    if (!response) return false;
+    
+    const friendStatus = await assembler(response);
+    return friendStatus && friendStatus.state === 'friend';
+}
+
+
 async function changeFriendStatus(userID, container, templateUser) {
     const friendCard = container.querySelector(`div[data-id="${userID}"]`);
 
@@ -213,11 +224,16 @@ function updateBadgeColor(friendCard, container) {
         container.removeChild(friendCard);
         container.insertBefore(friendCard, container.firstChild);
     }
+    const inviteGameBtn = friendCard.querySelector('#inviteGameBtn');
+    if (inviteGameBtn) {
+        inviteGameBtn.classList.remove("disabled", "border-0");
+    }
 }
 
 function appendToContainer(container, element, userID) {
     if (!container.querySelector(`div[data-id="${userID}"]`)) {
         element.setAttribute('data-id', userID);
+        element.querySelector('#inviteGameBtn').remove()
         container.appendChild(element);
     } else {
         console.log(`User with ID ${userID} already exists in the container.`);
@@ -236,14 +252,6 @@ async function getTemplateUser(user) {
         return null;
     }
     return fillOtherUserInfo(templateUser, user);
-}
-
-async function checkIfFriend(user) {
-    const response = await fetchFriendChange('GET', { id: user.id });
-    if (!response) return false;
-    
-    const friendStatus = await assembler(response);
-    return friendStatus && friendStatus.state === 'friend';
 }
 
 /////////////////////

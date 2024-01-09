@@ -23,7 +23,6 @@ function prepToastInfo(toastMsg, toastTitle, imgUrl) {
 }
 
 async function createToast(toastInfo) {
-    console.log("CREATE TOAST")
     const toastNotif = await toastComponent(); 
     toastNotif.querySelector('#toast-img').src = toastInfo['imgUrl'];
     toastNotif.querySelector('#toast-title').textContent = toastInfo['toastTitle'];
@@ -46,7 +45,6 @@ async function createToast(toastInfo) {
         });
     });
 
-    console.log("SHOW TOAST")
     toast.show();
 }
 

@@ -1,16 +1,10 @@
 import { userTemplateComponent } from '../../components/userTemplate/userTemplate.js';
 import { assembler } from '../../api/assembler.js';
 import { displayOtherUserProfile } from './otherUserProfile.js';
-import { fetchUser } from '../../api/fetchData.js';
 import { setStatus } from './utils.js';
+import { displayInviteModal } from './inviteGame.js';
 
-export async function displayUser(allUsers, container) {
-    container.innerHTML = '';
-    let currentUser;
-    const objectAllUsers = await assembler(allUsers);
-    if (typeof objectAllUsers !== 'object' && objectAllUsers !== null) {
-        return;
-    }
+function sortUser(objectAllUsers) {
     objectAllUsers.sort((a, b) => {
         // Custom sorting logic: Online users come before Offline users.
         if (
@@ -27,13 +21,21 @@ export async function displayUser(allUsers, container) {
             return 0;
         }
     });
+    return (objectAllUsers)
+}
 
-    
-    currentUser = document.getElementById('nickname').innerText;
-    if (!objectAllUsers) {
+
+export async function displayUser(allUsers, container) {
+    container.innerHTML = '';
+    let currentUser;
+    const objectAllUsers = await assembler(allUsers);
+    if (typeof objectAllUsers !== 'object' && objectAllUsers !== null) {
         return;
     }
-    await loopDisplayUser(objectAllUsers, currentUser, container);
+    currentUser = document.getElementById('nickname').innerText;
+
+    const sortAllUser = sortUser(objectAllUsers);
+    await loopDisplayUser(sortAllUser, currentUser, container);
 }
 
 async function loopDisplayUser(objectAllUsers, currentUser, userContainer) {
@@ -41,20 +43,27 @@ async function loopDisplayUser(objectAllUsers, currentUser, userContainer) {
     const currentUserIndex = objectAllUsers.findIndex(
         (user) => user.nickname === currentUser
     );
+
     if (currentUserIndex !== -1) {
         const currentUserObject = objectAllUsers.splice(currentUserIndex, 1)[0];
         objectAllUsers.unshift(currentUserObject);
     }
+
     objectAllUsers.forEach((user) => {
         const clonedUserTemplate = templateUser.cloneNode(true);
 
         const seeProfileBtn = clonedUserTemplate.querySelector('.card');
         seeProfileBtn.addEventListener('click', displayOtherUserProfile)
         
-        const inviteGameBtn = clonedUserTemplate.querySelector('#inviteGameBtn');
-        inviteGameBtn.addEventListener('click', displayInviteModal);
-        if (user.status === 'ING' || user.status === 'OFF')
-            inviteGameBtn.classList.add("disabled", "border-0");
+        if (userContainer.id == 'friendDisplay') {
+            const inviteGameBtn = clonedUserTemplate.querySelector('#inviteGameBtn');
+            inviteGameBtn.addEventListener('click', displayInviteModal);
+            if (user.status === 'ING' || user.status === 'OFF')
+                inviteGameBtn.classList.add("disabled", "border-0");
+        } else {
+            clonedUserTemplate.querySelector('#inviteGameBtn').remove();;
+        }
+            
 
 
         const filledTemplate = fillOtherUserInfo(clonedUserTemplate, user)
@@ -79,32 +88,4 @@ export function fillOtherUserInfo(clonedUserTemplate, user) {
     avatarElement.src = user.avatar;
     nameElement.textContent = user.nickname;
     return clonedUserTemplate
-}
-
-async function displayInviteModal(event) {
-    event.stopPropagation(); // Empêche le otherUserModal d'open pcq le listener est sur la div.
-    let ancestor = event.currentTarget;
-    while (ancestor && !ancestor.hasAttribute('data-userid-flag')) {
-        ancestor = ancestor.parentNode;
-    }
-    if (!ancestor || !ancestor.dataset.id) {
-        console.error('User ID not found');
-        return;
-    }
-    const userID = ancestor.dataset.id;
-    
-    const response = await fetchUser('GET', { id: userID })
-    const userResponse = await assembler(response)
-    const user = userResponse[0]
-    console.log('invite ', user.nickname, 'to a game'); // Need to fetch the user
-
-
-    const modalElement = document.getElementById('inviteGameModal')
-    const inviteModal = bootstrap.Modal.getInstance(modalElement);
-    if (!inviteModal) {
-        console.error('Other user modal instance not found')
-        return
-    }
-
-    inviteModal.show()
 }

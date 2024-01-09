@@ -145,9 +145,6 @@ class Login(View):
             return JsonResponse(errorMessage, status=400)
         elif user.two_factor_auth == True:
             return handle_2fa_login(user)
-            # response = JsonResponse({'2fa_required': True})
-            # temp_token = generate_2fa_token(user.id)
-            # response.set_cookie('2fa_token', temp_token, httponly=True, secure=True, max_age=300)
         elif user.status == "ONL":
             return JsonResponse({'error': 'This account is already logged in.'}, status=409)
         else:

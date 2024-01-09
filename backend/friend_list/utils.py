@@ -67,7 +67,7 @@ def handle_accept_friend(sender, receiver):
 
     changeState(existing_relationship, "ACCEPTED", sender)
     return JsonResponse({
-        'message': f'You are now friends with {sender.nickname}.',
+        'message': f'You are now friends with {receiver.nickname}.',
         'status': 'friend'
     }, status=200)
 
