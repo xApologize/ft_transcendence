@@ -1,11 +1,6 @@
 from django.db import models
 from user_profile.models import User
 
-class LookingForMatch(models.Model):
-    paddleA = models.IntegerField()
-    mailbox_a = models.TextField()
-    paddleB = models.IntegerField(default=-1)
-
 class MatchInvite(models.Model):
     user_inviting = models.ForeignKey(User, related_name='invites_sent', on_delete=models.CASCADE)
     recipient = models.ForeignKey(User, related_name='invites_received', on_delete=models.CASCADE)
