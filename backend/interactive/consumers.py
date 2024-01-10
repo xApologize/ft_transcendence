@@ -1,5 +1,5 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
-from interactive.models import LookingForMatch, MatchInvite
+from interactive.models import LookingForMatch
 from asgiref.sync import sync_to_async
 from user_profile.models import User
 from channels.layers import get_channel_layer
@@ -188,25 +188,26 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         return user.nickname
 
     async def send_invite(self, data: any) -> None:
-        try:
-            user = data["user"]
-            user_object = await sync_to_async(User.objects.get)(nickname=user)
-            recipient_id: int = user_object.pk
-            await sync_to_async(MatchInvite.objects.create)(
-                user_inviting=self.user_id,
-                recipient=recipient_id
-            )
-        except Exception:
-            print("No match invite could be created")
-            return
-        request: dict = await self.create_invite_request(self.user_id, recipient_id)
-        await self.channel_layer.group_send(
-            "interactive", {
-                "type": MATCH_INVITE,
-                "message": request,
-                "receiver": recipient_id
-                }
-            )
+        print("Hi")
+        # try:
+        #     user = data["user"]
+        #     user_object = await sync_to_async(User.objects.get)(nickname=user)
+        #     recipient_id: int = user_object.pk
+        #     await sync_to_async(MatchInvite.objects.create)(
+        #         user_inviting=self.user_id,
+        #         recipient=recipient_id
+        #     )
+        # except Exception:
+        #     print("No match invite could be created")
+        #     return
+        # request: dict = await self.create_invite_request(self.user_id, recipient_id)
+        # await self.channel_layer.group_send(
+        #     "interactive", {
+        #         "type": MATCH_INVITE,
+        #         "message": request,
+        #         "receiver": recipient_id
+        #         }
+        #     )
 
 
 def create_layer_dict(type: str, message: str, sender: str) -> dict:
