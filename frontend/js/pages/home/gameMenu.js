@@ -20,7 +20,9 @@ function initMainGameMenu(world) {
     });
 
     document.getElementById('createTournamentBtn').addEventListener('click', async () => {
-        // CREATE TOURNAMENT LOGIC IN BACKEND        
+        // CREATE TOURNAMENT LOGIC IN BACKEND 
+        
+        // Add event listener before unload or on socket?
 
         const response = await fetchUser('GET', {'id': getMyID()});
         if (!response) return;
