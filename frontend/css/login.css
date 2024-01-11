@@ -21,6 +21,7 @@
 }
 
 .fixed-bottom-left {
+    z-index: 1;
     position: fixed; /* Fixed position relative to the viewport */
     bottom: 1rem; /* Distance from the bottom */
     left: 1rem; /* Distance from the left */
@@ -35,8 +36,53 @@
 }
 
 #login-div {
+    position: relative;
+    z-index: 1;
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+#intra-login-div {
+    width: 100%;
+}
+
+/* #intra-button {
+    width: 100%;
+    max-width: 318px;
+} */
+
+.canvas-login {
+    z-index: 0;
+    position: absolute;
+    background: #000;
+}
+
+.container1 {
+    width: 100%;
+}
+
+#ruler {
+    display: flex;
+    flex-direction: row;
+    font-size: 12px;
+    font-weight: 500;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+}
+
+#ruler span {
+    text-align: center;
+    flex: 0.2 0 auto;
+    margin: 0;
+}
+
+#ruler::before,
+#ruler::after {
+    content: '';
+    border-bottom: 1px solid white;
+    flex: 1 0 auto;
+    margin: 0;
 }
