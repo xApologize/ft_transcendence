@@ -1,11 +1,11 @@
 version: '3.8'
 
-networks:
-  proxy_to_backend_network:
-    driver: bridge
+# networks:
+#   proxy_to_backend_network:
+#     driver: bridge
 
-  database_network:
-    driver: bridge
+#   database_network:
+#     driver: bridge
 
 services:
   backend:
@@ -22,9 +22,9 @@ services:
       - '8000:8000'
     env_file:
       - ./backend/.env
-    networks:
-      - proxy_to_backend_network
-      - database_network
+    # networks:
+    #   - proxy_to_backend_network
+    #   - database_network
     depends_on:
       - redis
 
@@ -36,8 +36,8 @@ services:
       - database-postgres:/var/lib/postgresql/data
     ports:
       - '5432:5432'
-    networks:
-      - database_network
+    # networks:
+    #   - database_network
     env_file:
       - .env
     # environment:
@@ -53,8 +53,8 @@ services:
       - database-redis:/data
     ports:
       - '6379:6379'
-    networks:
-      - database_network
+    # networks:
+    #   - database_network
     depends_on:
       - postgres
 
@@ -67,8 +67,8 @@ services:
     ports:
       - "8080:80"
       - "443:443"
-    networks:
-      - proxy_to_backend_network
+    # networks:
+    #   - proxy_to_backend_network
     volumes:
       - ./frontend:/etc/frontend
     depends_on:
