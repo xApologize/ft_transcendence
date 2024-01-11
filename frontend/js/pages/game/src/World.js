@@ -14,10 +14,11 @@ import { Terrain } from './components/Terrain.js';
 import { Ball } from './components/Ball.js';
 import { Score } from './components/Score.js';
 
-import { Vector2 } from 'three';
+import { Audio, AudioListener, AudioLoader, Vector2 } from 'three';
 
 import interactiveSocket from '../../home/socket.js';
 import { fetchUser } from '../../../api/fetchData.js';
+import { insertCoinSound } from './systems/Loader.js';
 
 const _ballCount = 1;
 

@@ -1,8 +1,9 @@
-import { CapsuleGeometry, MeshStandardMaterial, Vector3, WebGLRenderer } from 'three';
+import { Audio, AudioListener, CapsuleGeometry, MeshStandardMaterial, Vector3, WebGLRenderer } from 'three';
 import { World } from '../World.js';
 import { Player } from '../components/Player.js';
 import { Opponent } from '../components/Opponent.js';
 import { GameState } from './GameStates.js';
+import { insertCoinSound } from './Loader.js';
 
 let world;
 
@@ -60,6 +61,16 @@ class Match {
 	
 		this.onWebsocketReceivedEvent = (event) => this.onWebsocketReceived( event );
 		this.socket.addEventListener( "message", this.onWebsocketReceivedEvent );
+
+
+		this.audioListener = new AudioListener();
+		world.camera.add( this.audioListener );
+		this.sound = new Audio( this.audioListener );
+
+		this.sound.setBuffer( insertCoinSound );
+		// this.sound.setLoop( true );
+		this.sound.setVolume( 0.5 );
+		this.sound.play();
 	}
 
 	onWebsocketReceived( event ) {

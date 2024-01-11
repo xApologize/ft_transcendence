@@ -1,6 +1,6 @@
 import { GLTFLoader } from '/public/three/examples/jsm/loaders/GLTFLoader.js';
 import { FontLoader } from '/public/three/examples/jsm/loaders/FontLoader.js';
-import { CubeTextureLoader, RepeatWrapping, TextureLoader } from 'three';
+import { AudioLoader, CubeTextureLoader, RepeatWrapping, TextureLoader } from 'three';
 
 let airHockeyTable;
 let floorDiffuse;
@@ -9,11 +9,13 @@ let glassNormal;
 let digitalFont;
 let texCube;
 let spriteCircle;
+let insertCoinSound;
 
 const loaderGLTF = new GLTFLoader();
 const loaderTexture = new TextureLoader();
 const loaderCubeTexture = new CubeTextureLoader();
 const loaderFont = new FontLoader();
+const loaderAudio = new AudioLoader();
 
 async function loadAll() {
 	await loadFile( loaderGLTF, '/public/model/arcadeScene.glb' ).then( (res) => airHockeyTable = res );
@@ -36,6 +38,7 @@ async function loadAll() {
 		'/public/MilkyWay/dark-s_pz.jpg', '/public/MilkyWay/dark-s_nz.jpg', 
 	] ).then( (res) => texCube = res );
 	await loadFile( loaderTexture, '/public/circle_04.png' ).then( (res) => spriteCircle = res );
+	await loadFile( loaderAudio, '/public/insert-coin.mp3' ).then( (res) => insertCoinSound = res );
 }
 
 function loadFile( loader, filePath ) {
@@ -50,4 +53,4 @@ function loadFile( loader, filePath ) {
 	}, 2000)
 }
 
-export { loadAll, airHockeyTable, floorDiffuse, floorNormal, glassNormal, digitalFont, texCube, spriteCircle };
+export { loadAll, airHockeyTable, floorDiffuse, floorNormal, glassNormal, digitalFont, texCube, spriteCircle, insertCoinSound };
