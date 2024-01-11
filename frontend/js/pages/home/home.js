@@ -13,7 +13,7 @@ import { World } from '../game/src/World.js';
 import { loadFonts } from '../game/src/systems/Fonts.js';
 import { loadModel } from '../game/src/systems/Loader.js';
 import interactiveSocket from './socket.js';
-import { navigateTo } from '../../router.js';
+import { checkModal, navigateTo } from '../../router.js';
 import { closeInviteRequest } from './inviteGame.js';
 import { initGameMenu } from './gameMenu.js';
 ////////
@@ -21,46 +21,16 @@ import { initGameMenu } from './gameMenu.js';
 export async function showHome() {
     try {
         await loadHTMLPage('./js/pages/home/home.html');
-        // await initPage()
+        const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+        loadingModal.show();
+        setupHomeModal();
+    
         const result = await initPage()
-        if (result === false) {
-            return;
-        }
-        new bootstrap.Modal(document.getElementById('otherUserInfo'));
-        new bootstrap.Modal(document.getElementById('inviteGameModal'));
-        new bootstrap.Modal(document.getElementById('loadingModal'));
-        document.getElementById('inviteGameModal').addEventListener('hide.bs.modal',closeInviteRequest)
-
-
-        const friendsBtn = document.getElementById('friendsBtn');
-        const everyoneBtn = document.getElementById('everyoneBtn');
-        friendsBtn.addEventListener('click', () => {
-            friendsBtnFunc(friendsBtn, everyoneBtn);
-        });
-        everyoneBtn.addEventListener('click', () => {
-            everyoneBtnFunc(friendsBtn, everyoneBtn);
-        });
-        document.getElementById('otherUserInfo').addEventListener('hide.bs.modal', () => {
-            document.getElementById('responseFriendQuery').textContent = '';
-        });
-        responsiveLeftColumn();
-
-        await loadFonts();
-        await loadModel();
-        const gameContainer = document.querySelector('#sceneContainer')
-        if (!gameContainer) {
-            console.error('No game container, please refresh page.');
-            return
-        }
-        const world = new World(gameContainer);
-        initGameMenu(world);
-
-        document
-            .getElementById('inviteGameModal')
-            .addEventListener('hide.bs.modal', () => {
-                console.log('modal game invite closed');
-            });
-
+        if (result === false) return;
+        
+        leftColumnListener();
+        await loadGame();
+        loadingModal.hide();
     } catch (error) {
         console.error('Error fetching home.html:', error);
     }
@@ -73,7 +43,7 @@ export async function showHome() {
 export async function displayFriend() {
     const allFriends = await fetchFriend('GET');
     if (!allFriends || !allFriends.ok) {
-        return false;
+        return;
     }
     const container = document.getElementById('friendDisplay')
     await displayUser(allFriends, container);
@@ -82,7 +52,7 @@ export async function displayFriend() {
 export async function displayEveryone() {
     const onlineUsers = await fetchUser('GET', { status: ['ONL', 'ING'] });
     if (!onlineUsers || !onlineUsers.ok) {
-        return false;
+        return;
     }
     const container = document.getElementById('userDisplay')
     await displayUser(onlineUsers, container);
@@ -91,10 +61,10 @@ export async function displayEveryone() {
 async function initPage() {
     const user = await fetchMe('GET');
     if (!user)
-        return false;
+        return;
     const userAssembled = await assembler(user);
     if (!userAssembled || typeof userAssembled !== 'object') {
-        console.log('Error assembling user');
+        console.error('Error assembling user. Please refresh page.');
         return false;
     }
     displayUserCard(userAssembled);
@@ -102,6 +72,8 @@ async function initPage() {
     interactiveSocket.initSocket() // <- this is calling displayEveryone.
     displayFriend();
     updateSocial();
+
+    responsiveLeftColumn();
 }
 
 ///////////////////////////////
@@ -128,6 +100,28 @@ function friendsBtnFunc(friendsBtn, everyoneBtn) {
     }
 }
 
+function leftColumnListener() {
+    const friendsBtn = document.getElementById('friendsBtn');
+    const everyoneBtn = document.getElementById('everyoneBtn');
+    friendsBtn.addEventListener('click', () => {
+        friendsBtnFunc(friendsBtn, everyoneBtn);
+    });
+    everyoneBtn.addEventListener('click', () => {
+        everyoneBtnFunc(friendsBtn, everyoneBtn);
+    });
+}
+
+function setupHomeModal() {    
+    new bootstrap.Modal(document.getElementById('otherUserInfo'));
+    new bootstrap.Modal(document.getElementById('inviteGameModal'));
+    
+    document.getElementById('otherUserInfo').addEventListener('hide.bs.modal', () => {
+        document.getElementById('responseFriendQuery').textContent = '';
+    });
+
+    document.getElementById('inviteGameModal').addEventListener('hide.bs.modal',closeInviteRequest)
+}
+
 //////////
 
 function responsiveLeftColumn() {
@@ -150,3 +144,15 @@ function responsiveLeftColumn() {
 
 //////////
 
+
+async function loadGame() {
+    await loadFonts();
+    await loadModel();
+    const gameContainer = document.querySelector('#sceneContainer')
+    if (!gameContainer) {
+        console.error('No game container, please refresh page.');
+        return
+    }
+    const world = new World(gameContainer);
+    initGameMenu(world);
+}
