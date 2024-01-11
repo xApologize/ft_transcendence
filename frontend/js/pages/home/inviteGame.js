@@ -51,9 +51,8 @@ function handleResponseType(rType, userID) {
         case 'acceptGameInvite':
             console.log('Accept Game Invite');
             showModal('loadingModal');
-            // Additional logic for accepting the invite and joining the game.
+            
             break;
-        // Add more cases if necessary
     }
 }
 

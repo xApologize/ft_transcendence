@@ -1,9 +1,8 @@
+import { assembler } from '../../api/assembler.js';
+import { fetchUser } from '../../api/fetchData.js';
 import interactiveSocket from './socket.js';
+import { getMyID } from './utils.js';
 
-
-function getFriendsForInvite() {
-    
-}
 
 
 function initMainGameMenu(world) {
@@ -20,11 +19,22 @@ function initMainGameMenu(world) {
         );
     });
 
-    document.getElementById('createTournamentBtn').addEventListener('click', () => {
+    document.getElementById('createTournamentBtn').addEventListener('click', async () => {
+        // CREATE TOURNAMENT LOGIC IN BACKEND        
+
+        const response = await fetchUser('GET', {'id': getMyID()});
+        if (!response) return;
+        let currentUser = await assembler(response);
+        currentUser = currentUser[0];
+        
+        const lobbyTitle = document.getElementById('lobbyTournamentModalLabel');
+        lobbyTitle.textContent = currentUser.nickname + '\'s Tournament';
+        addParticipant(currentUser.nickname, currentUser.avatar);    
+        
         const gameMenuModal = bootstrap.Modal.getInstance(document.getElementById('gameMenuModal'));
-        gameMenuModal.hide()
-        const createTournamentModal = bootstrap.Modal.getInstance(document.getElementById('createTournamentModal'));
-        createTournamentModal.show()
+        gameMenuModal.hide();
+        const lobbyTournamentModal = bootstrap.Modal.getInstance(document.getElementById('lobbyTournamentModal'));
+        lobbyTournamentModal.show();
     });
 
     document.getElementById('joinTournamentBtn').addEventListener('click', function(event) {
@@ -35,31 +45,69 @@ function initMainGameMenu(world) {
     });
 }
 
-function initCreateTournamentMenu() {
-    const tournamentForm = document.getElementById('tournamentForm');
+function addParticipant(nickname, avatarUrl) {
+    const participantList = document.getElementById('participantList');
+    const li = document.createElement('li');
+    li.className = 'list-group-item d-flex align-items-center';
 
-    tournamentForm.addEventListener('submit', function(event) {
-        event.preventDefault();
-        const tournamentName = document.getElementById('tournamentName');
+    const img = document.createElement('img');
+    img.src = avatarUrl;
+    img.alt = nickname + ' Avatar';
+    img.className = 'rounded-circle me-2';
+    img.style.width = '30px';
+    img.style.height = '30px';
 
-        const lobbyTitle = document.getElementById('lobbyTournamentModalLabel');
-        lobbyTitle.textContent = tournamentName.value;  // Set the text of the title
-        tournamentName.value = '';
+    const text = document.createTextNode(nickname);
 
-        const createTournamentModal = bootstrap.Modal.getInstance(document.getElementById('createTournamentModal'));
-        createTournamentModal.hide();
-
-        const lobbyTournamentModal = bootstrap.Modal.getInstance(document.getElementById('lobbyTournamentModal'));
-        lobbyTournamentModal.show();
-    });
-
-    document.getElementById('cancelCreateTournament').addEventListener('click', function(event) {
-        const createTournamentModal = bootstrap.Modal.getInstance(document.getElementById('createTournamentModal'));
-        createTournamentModal.hide();
-        const gameMenuModal = bootstrap.Modal.getInstance(document.getElementById('gameMenuModal'));
-        gameMenuModal.show();
-    });
+    li.appendChild(img);
+    li.appendChild(text);
+    participantList.appendChild(li);
+    updateWaitingMessage();
 }
+
+function updateWaitingMessage() {
+    const participantList = document.getElementById('participantList');
+    const waitingMessage = document.getElementById('waitingMessage');
+    const maxPlayers = 4; // Set the maximum number of players
+
+    const currentPlayers = participantList.children.length;
+    waitingMessage.textContent = `Waiting for more players (${currentPlayers}/${maxPlayers})`;
+
+    if (currentPlayers >= maxPlayers) {
+        waitingMessage.classList.add('bg-success');
+        waitingMessage.classList.remove('bg-warning');
+        waitingMessage.textContent = 'Game Ready to Start!';
+    } else {
+        waitingMessage.classList.add('bg-warning');
+        waitingMessage.classList.remove('bg-success');
+    }
+}
+
+// function initCreateTournamentMenu() {
+    // const tournamentForm = document.getElementById('tournamentForm');
+
+    // tournamentForm.addEventListener('submit', function(event) {
+    //     event.preventDefault();
+    //     const tournamentName = document.getElementById('tournamentName');
+
+    //     const lobbyTitle = document.getElementById('lobbyTournamentModalLabel');
+    //     lobbyTitle.textContent = tournamentName.value;  // Set the text of the title
+    //     tournamentName.value = '';
+
+    //     const createTournamentModal = bootstrap.Modal.getInstance(document.getElementById('createTournamentModal'));
+    //     createTournamentModal.hide();
+
+    //     const lobbyTournamentModal = bootstrap.Modal.getInstance(document.getElementById('lobbyTournamentModal'));
+    //     lobbyTournamentModal.show();
+    // });
+
+    // document.getElementById('cancelCreateTournament').addEventListener('click', function(event) {
+    //     const createTournamentModal = bootstrap.Modal.getInstance(document.getElementById('createTournamentModal'));
+    //     createTournamentModal.hide();
+    //     const gameMenuModal = bootstrap.Modal.getInstance(document.getElementById('gameMenuModal'));
+    //     gameMenuModal.show();
+    // });
+// }
 
 
 function initLobbyTournament() {
@@ -95,14 +143,8 @@ function initJoinTournament() {
 }
 
 export function initGameMenu(world) {
-    new bootstrap.Modal(document.getElementById('gameMenuModal'));
-    new bootstrap.Modal(document.getElementById('createTournamentModal'));
-    new bootstrap.Modal(document.getElementById('lobbyTournamentModal'));
-    new bootstrap.Modal(document.getElementById('inviteTournamentModal'))
-    new bootstrap.Modal(document.getElementById('joinTournamentModal'))
-
     initMainGameMenu(world)
-    initCreateTournamentMenu()
+    // initCreateTournamentMenu()
     initLobbyTournament()
     initInviteTournament()
     initJoinTournament()

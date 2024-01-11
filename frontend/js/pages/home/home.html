@@ -68,10 +68,9 @@
                             class="col-12 col-md-3 col-xl-3 text-center textWhite p-2"
                         >
                             <div>
-                                <h1 class="m-3 text-center">Find game</h1>
                                 <button
                                     id="findGame"
-                                    class="btn shadow-none btn-primary textWhite"
+                                    class="btn shadow-none btn-primary btn-lg textWhite"
                                     data-bs-toggle="modal"
                                     data-bs-target="#gameMenuModal"
                                 >
@@ -327,7 +326,7 @@
             </div>
         </div>
         <!-- Lobby Tournament -->
-        <div class="modal fade" id="lobbyTournamentModal" tabindex="-1" aria-labelledby="lobbyTournamentModalLabel" aria-hidden="true">
+        <div class="modal fade" id="lobbyTournamentModal" tabindex="-1" aria-labelledby="lobbyTournamentModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header text-center">
@@ -336,25 +335,14 @@
                     <div class="modal-body">
                         <div class="participants">
                             <h6>Participants:</h6>
-                            <ul id="participantList" class="list-group">
-                                <!-- Fake User 1 -->
-                                <li class="list-group-item d-flex align-items-center">
-                                    <img src="https://png.pngtree.com/png-clipart/20190904/ourmid/pngtree-80-3d-text-png-image_18456.jpg" alt="Avatar 1" class="rounded-circle me-2" style="width: 30px; height: 30px;">
-                                    PlayerOneNickname
-                                </li>
-                                <!-- Fake User 2 -->
-                                <li class="list-group-item d-flex align-items-center">
-                                    <img src="https://png.pngtree.com/png-clipart/20190904/ourmid/pngtree-80-3d-text-png-image_18456.jpg" alt="Avatar 2" class="rounded-circle me-2" style="width: 30px; height: 30px;">
-                                    PlayerTwoNickname
-                                </li>
-                            </ul>
+                            <ul id="participantList" class="list-group"></ul>
                         </div>
                         <!-- Waiting Message -->
                         <div class="waiting-message text-center mt-3">
-                            <span class="badge bg-warning text-dark">Waiting for more players (2/4)</span>
+                            <span id="waitingMessage" class="badge bg-warning text-dark">Waiting for more players (0/4)</span>
                         </div>
                         <div class="invite mt-3 text-center">
-                            <button id="inviteTournamentBtn" type="button" class="btn btn-primary">
+                            <button id="inviteTournamentBtn" type="button" class="btn btn-primary" disabled>
                                 Invite Players
                             </button>
                         </div>

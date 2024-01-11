@@ -13,7 +13,6 @@ import { World } from '../game/src/World.js';
 import { loadFonts } from '../game/src/systems/Fonts.js';
 import { loadModel } from '../game/src/systems/Loader.js';
 import interactiveSocket from './socket.js';
-import { checkModal, navigateTo } from '../../router.js';
 import { closeInviteRequest } from './inviteGame.js';
 import { initGameMenu } from './gameMenu.js';
 ////////
@@ -25,6 +24,7 @@ export async function showHome() {
         loadingModal.show();
         setupHomeModal();
     
+
         const result = await initPage()
         if (result === false) return;
         
@@ -111,7 +111,15 @@ function leftColumnListener() {
     });
 }
 
-function setupHomeModal() {    
+function setupHomeModal() {
+    // Game Menu Modal
+    new bootstrap.Modal(document.getElementById('gameMenuModal'));
+    new bootstrap.Modal(document.getElementById('createTournamentModal'));
+    new bootstrap.Modal(document.getElementById('lobbyTournamentModal'));
+    new bootstrap.Modal(document.getElementById('inviteTournamentModal'))
+    new bootstrap.Modal(document.getElementById('joinTournamentModal'))
+
+    // Invite + other user modal
     new bootstrap.Modal(document.getElementById('otherUserInfo'));
     new bootstrap.Modal(document.getElementById('inviteGameModal'));
     
