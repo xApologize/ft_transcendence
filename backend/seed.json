@@ -60,48 +60,6 @@
         }
     },
     {
-        "model": "friend_list.FriendList",
-        "pk": 1,
-        "fields": {
-            "friend1": 4,
-            "friend2": 5,
-            "status": "ACCEPTED",
-            "timeLastUpdate": "2023-01-01T12:00:00Z"
-
-        }
-    },
-    {
-        "model": "friend_list.FriendList",
-        "pk": 2,
-        "fields": {
-            "friend1": 5,
-            "friend2": 1,
-            "status": "ACCEPTED",
-            "timeLastUpdate": "2023-01-01T12:00:00Z"
-        }
-    },
-    {
-        "model": "friend_list.FriendList",
-        "pk": 3,
-        "fields":{
-            "friend1": 4,
-            "friend2": 3,
-            "status": "ACCEPTED",
-            "timeLastUpdate": "2023-01-01T12:00:00Z"
-        }
-    },
-    {
-        "model": "friend_list.FriendList",
-        "pk": 4,
-        "fields":{
-            "friend1": 5,
-            "friend2": 2,
-            "status": "ACCEPTED",
-            "timeLastUpdate": "2023-01-01T12:00:00Z"
-
-        }
-    },
-    {
         "model": "match_history.MatchHistory",
         "pk": 1,
         "fields": {
