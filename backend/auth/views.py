@@ -2,16 +2,20 @@ from django.http import JsonResponse, HttpResponse, Http404, HttpResponseBadRequ
 from django.views import View
 from utils.decorators import token_validation
 from django.core.exceptions import PermissionDenied
-import json
+import json, random
 from django.contrib.auth.hashers import check_password
 from user_profile.models import User
 from utils.functions import first_token
 from utils.functions import get_user_obj, generate_2fa_token, decrypt_user_id
 from django_otp.plugins.otp_totp.models import TOTPDevice
-from django.http import JsonResponse
 import base64, qrcode
 from io import BytesIO
 from base64 import b64encode
+from django.conf import settings
+from django.core.files.base import ContentFile
+import urllib.parse
+import urllib.request
+from .utils import handle_2fa_login
 
 class Create2FA(View):
     @token_validation
@@ -140,10 +144,7 @@ class Login(View):
         if check_password(password, user.password) is False:
             return JsonResponse(errorMessage, status=400)
         elif user.two_factor_auth == True:
-            response = JsonResponse({'2fa_required': True})
-            temp_token = generate_2fa_token(user.id)
-            response.set_cookie('2fa_token', temp_token, httponly=True, secure=True, max_age=300)
-            return response
+            return handle_2fa_login(user)
         elif user.status == "ONL":
             return JsonResponse({'error': 'This account is already logged in.'}, status=409)
         else:
@@ -188,15 +189,15 @@ class Login2FA(View):
             response.delete_cookie('2fa_token')
             return response
         
-        if not device.verify_token(otp_token):
-            return JsonResponse(errorCode, status=400)
-        elif user.status == "ONL":
+        if user.status == "ONL":
             return JsonResponse({'error': 'This account is already logged in.'}, status=409)
-        else:
+        elif device.verify_token(otp_token):
             response: HttpResponse = JsonResponse({'success': 'Login successful.'})
             response.delete_cookie('2fa_token')
             primary_key = User.objects.get(nickname=user.nickname).pk
             return first_token(response, primary_key)
+        else:
+            return JsonResponse(errorCode, status=400)
             
 class Logout(View):
     @token_validation
@@ -218,3 +219,92 @@ class Token(View):
     @token_validation
     def get(self, request):
         return HttpResponse("Checkup if token valid")
+    
+
+# Utiliser pip install request ou garder lib dégueulasse ?
+class RemoteAuthToken(View):
+    def post(self, request):
+        code = request.GET.get('code')
+        if not code:
+            return JsonResponse({'error': 'Missing authorization code'}, status=400)
+
+        access_token = self.get_access_token(code)
+        if access_token:
+            user_info = self.get_user_info(access_token)
+            if user_info:
+                return self.handle_user(user_info)
+        return JsonResponse({'error': 'Invalid authorization code'}, status=400)
+
+    def get_access_token(self, code):
+        token_url = 'https://api.intra.42.fr/oauth/token'
+        data = {
+            'grant_type': 'authorization_code',
+            'client_id': settings.AUTH42_CLIENT,
+            'client_secret': settings.AUTH42_SECRET,
+            'code': code,
+            'redirect_uri': settings.AUTH42_REDIRECT_URI,
+        }
+        data = urllib.parse.urlencode(data).encode('ascii')
+        req = urllib.request.Request(token_url, data)
+        try:
+            with urllib.request.urlopen(req) as response:
+                response_data = json.loads(response.read())
+                return response_data.get('access_token')
+        except urllib.error.URLError as e:
+            print('Error fetching access token:', e)
+        return None
+
+    def get_user_info(self, access_token):
+        user_info_url = 'https://api.intra.42.fr/v2/me'
+        headers = {'Authorization': f'Bearer {access_token}'}
+        req = urllib.request.Request(user_info_url, headers=headers)
+        try:
+            with urllib.request.urlopen(req) as response:
+                return json.loads(response.read())
+        except urllib.error.URLError as e:
+            print('Error fetching user info:', e)
+        return None
+
+    def handle_user(self, user_info):
+        intra_id = user_info.get('id')
+        try:
+            user = User.objects.get(intra_id=intra_id)
+            return self.authenticate_user(user)
+        except User.DoesNotExist:
+            return self.create_user(user_info)
+
+    def authenticate_user(self, user):
+        response = JsonResponse({'success': 'Login successful.'})
+        if user.status == "ONL":
+            return JsonResponse({'error': 'This account is already logged in.'}, status=409)
+        if user.two_factor_auth:
+            return handle_2fa_login(user)
+        return first_token(response, user.pk)
+
+    def create_user(self, user_info):
+        avatar_url = user_info.get('image', {}).get('versions', {}).get('large', '')
+        try:
+            avatar_data = urllib.request.urlopen(avatar_url).read()
+        except Exception as e:
+            return JsonResponse({'error': 'downloading avatar: ' + str(e)})
+
+        nickname = user_info.get('login')
+        email = user_info.get('email')
+        intra_id = user_info.get('id')
+
+        nickname = self.get_unique_nickname(nickname)
+        user = User.objects.create(
+            intra_id=intra_id,
+            nickname=nickname,
+            email=email,
+            account_creation_method='intra'
+        )
+        new_file_name = f"user_{user.pk}.jpg"
+        user.avatar.save(new_file_name, ContentFile(avatar_data))
+        response = JsonResponse({'success': 'Login successful.'})
+        return first_token(response, user.pk)
+    def get_unique_nickname(self, nickname):
+        unique_nickname = nickname
+        while User.objects.filter(nickname=unique_nickname).exists():
+            unique_nickname = f"{nickname}{random.randint(1, 9999)}"
+        return unique_nickname

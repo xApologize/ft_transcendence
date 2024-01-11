@@ -118,7 +118,7 @@ class FriendHandling(View):
             changeState(existing_relationship, "REFUSED", current_user)
             return JsonResponse({
                 'message': f'Friend request from {other_user.nickname} refused.',
-                'status': 'refuse'
+                'status': 'none'
             }, status=200)
         elif action == 'unfriend' and existing_relationship.status == "ACCEPTED":
             changeState(existing_relationship, "UNFRIEND", current_user)
@@ -142,7 +142,7 @@ class FriendHandling(View):
                 'status': status
             }, status=403)
 
-class FriendGetAll(View):
+class GetPendingRequest(View):
     @token_validation
     def get(self, request: HttpRequest):
         try:

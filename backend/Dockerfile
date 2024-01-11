@@ -4,6 +4,8 @@ RUN apt-get update && apt-get install -y dumb-init
 
 RUN apt-get install -y netcat
 
+WORKDIR /usr/src/init
+
 WORKDIR /usr/src/app
 
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -13,6 +15,8 @@ ENV PYTHONUNBUFFERED 1
 RUN pip install --upgrade pip
 
 COPY requirements.txt .
+
+# COPY . . FOR CORRECTION LATER
 
 RUN pip install -r requirements.txt
 

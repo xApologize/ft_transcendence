@@ -13,11 +13,10 @@ import { World } from '../game/src/World.js';
 import { loadAll } from '../game/src/systems/Loader.js';
 import interactiveSocket from './socket.js';
 import { navigateTo } from '../../router.js';
-import { GameState } from '../game/src/systems/GameStates.js';
-import { displayToast } from './toastNotif.js';
-import { newUser } from './utils.js';
+import { closeInviteRequest } from './inviteGame.js';
+import { initGameMenu } from './gameMenu.js';
 ////////
-// Quand user Update son profil (avatar/nickname) -> Socket call function: not done (update only 1 user)
+
 export async function showHome() {
     try {
 		// await CheckIfRedirectionIsntHappening
@@ -26,14 +25,13 @@ export async function showHome() {
         // await initPage()
         const result = await initPage()
         if (result === false) {
-            console.error("Error loading home page")
-            navigateTo('/')
             return;
         }
-
-        // document.getElementById('displayNotification').addEventListener('click', displayToast);
         new bootstrap.Modal(document.getElementById('otherUserInfo'));
         new bootstrap.Modal(document.getElementById('inviteGameModal'));
+        new bootstrap.Modal(document.getElementById('loadingModal'));
+        document.getElementById('inviteGameModal').addEventListener('hide.bs.modal',closeInviteRequest)
+
 
         const friendsBtn = document.getElementById('friendsBtn');
         const everyoneBtn = document.getElementById('everyoneBtn');
@@ -55,17 +53,7 @@ export async function showHome() {
             return
         }
         const world = new World(gameContainer);
-
-        const findGameBtn = document.getElementById('findGame');
-        findGameBtn.addEventListener('click', () => {
-            document.getElementById('toastContainer').classList.add('d-none')
-            document.getElementById('ui').classList.add('d-none');
-            world.currentGameState = GameState.LookingForPlayer;
-            document.getElementById('lfp').classList.remove('d-none');
-            interactiveSocket.sendMessageSocket(
-                JSON.stringify({ type: 'Find Match' })
-            );
-        });
+        initGameMenu(world);
 
         document
             .getElementById('inviteGameModal')
@@ -85,7 +73,6 @@ export async function showHome() {
 export async function displayFriend() {
     const allFriends = await fetchFriend('GET');
     if (!allFriends || !allFriends.ok) {
-        // if !allFriends, c'est que le status == 401 et si !allFriends.ok == Aucun Ami
         return false;
     }
     const container = document.getElementById('friendDisplay')
@@ -95,7 +82,6 @@ export async function displayFriend() {
 export async function displayEveryone() {
     const onlineUsers = await fetchUser('GET', { status: ['ONL', 'ING'] });
     if (!onlineUsers || !onlineUsers.ok) {
-        // if !onlineUsers, c'est que le status == 401 et si !onlineUsers.ok == Aucun user Online
         return false;
     }
     const container = document.getElementById('userDisplay')
@@ -105,7 +91,7 @@ export async function displayEveryone() {
 async function initPage() {
     const user = await fetchMe('GET');
     if (!user)
-        return;
+        return false;
     const userAssembled = await assembler(user);
     if (!userAssembled || typeof userAssembled !== 'object') {
         console.log('Error assembling user');
@@ -113,8 +99,7 @@ async function initPage() {
     }
     displayUserCard(userAssembled);
     displayMatchHistory(userAssembled);
-    interactiveSocket.initSocket()
-    //displayEveryone();
+    interactiveSocket.initSocket() // <- this is calling displayEveryone.
     displayFriend();
     updateSocial();
 }
@@ -130,7 +115,6 @@ function everyoneBtnFunc(friendsBtn, everyoneBtn) {
 
         friendsBtn.classList.remove('active-dark');
         everyoneBtn.classList.add('active-dark');
-        // displayEveryone();
     }
 }
 
@@ -141,11 +125,10 @@ function friendsBtnFunc(friendsBtn, everyoneBtn) {
 
         everyoneBtn.classList.remove('active-dark');
         friendsBtn.classList.add('active-dark');
-        // displayFriend();
     }
 }
 
-/////
+//////////
 
 function responsiveLeftColumn() {
     const userCol = document.getElementById('left-column');
@@ -164,29 +147,6 @@ function responsiveLeftColumn() {
         gameCol.classList.toggle('hide');
     });
 }
-// 
 
-// async function displayToast() {
-//     console.log('display TOoast !')
-//     const toastNotif = await toastComponent();
-//     document.getElementById('toastContainer').append(toastNotif);
-//     var toast = new bootstrap.Toast(toastNotif);
-//     toastNotif.addEventListener('shown.bs.toast', () => {
-//         const startTime = Date.now();
-//         const timeSinceToastElement = toastNotif.querySelector('#timeSinceToast');
-
-//         // Update the time every second
-//         const intervalId = setInterval(() => {
-//             const secondsPassed = Math.floor((Date.now() - startTime) / 1000);
-//             timeSinceToastElement.textContent = `${secondsPassed} seconds ago`;
-//         }, 1000);
-
-//         // When the toast is hidden, clear the interval
-//         toastNotif.addEventListener('hidden.bs.toast', () => {
-//             console.log("hide toast")
-//             toastNotif.remove();
-//         });
-//     });
-//     toast.show();
-// }
+//////////
 

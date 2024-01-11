@@ -22,6 +22,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("SECRET_KEY")
+AUTH42_CLIENT = os.environ.get("AUTH42_CLIENT")
+AUTH42_SECRET = os.environ.get("AUTH42_SECRET")
+AUTH42_REDIRECT_URI = os.environ.get("AUTH42_REDIRECT_URI")
+
+# SSL
+# SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(os.environ.get("DEBUG", default=0))
@@ -44,7 +51,7 @@ INSTALLED_APPS = [
     'django_otp',
     'django_otp.plugins.otp_totp',
     "channels",
-    "channels_postgres",
+    "game_invite",
     "user_profile",
     "friend_list",
     "match_history",
@@ -144,7 +151,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 ASGI_APPLICATION = "src.asgi.application"
 
 CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("redis", 6379)],
+        },
     },
 }
