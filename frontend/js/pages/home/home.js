@@ -14,6 +14,8 @@ import { loadFonts } from '../game/src/systems/Fonts.js';
 import { loadModel } from '../game/src/systems/Loader.js';
 import interactiveSocket from './socket.js';
 import { navigateTo } from '../../router.js';
+import { closeInviteRequest } from './inviteGame.js';
+import { initGameMenu } from './gameMenu.js';
 ////////
 
 export async function showHome() {
@@ -24,11 +26,11 @@ export async function showHome() {
         if (result === false) {
             return;
         }
-
-        // document.getElementById('displayNotification').addEventListener('click', displayToast);
         new bootstrap.Modal(document.getElementById('otherUserInfo'));
         new bootstrap.Modal(document.getElementById('inviteGameModal'));
-        new bootstrap.Modal(document.getElementById('gameMenuModal'));
+        new bootstrap.Modal(document.getElementById('loadingModal'));
+        document.getElementById('inviteGameModal').addEventListener('hide.bs.modal',closeInviteRequest)
+
 
         const friendsBtn = document.getElementById('friendsBtn');
         const everyoneBtn = document.getElementById('everyoneBtn');
@@ -54,21 +56,7 @@ export async function showHome() {
             return;
         }
         const world = new World(gameContainer);
-
-        const play1vs1 = document.getElementById('play1vs1');
-        play1vs1.addEventListener('click', () => {
-            const modal = bootstrap.Modal.getInstance(
-                document.getElementById('gameMenuModal')
-            );
-            modal.hide();
-            document.getElementById('toastContainer').classList.add('d-none');
-            document.getElementById('ui').classList.add('d-none');
-            world.currentGameState = 'lookingForPlayer';
-            document.getElementById('lfp').classList.remove('d-none');
-            interactiveSocket.sendMessageSocket(
-                JSON.stringify({ type: 'Find Match' })
-            );
-        });
+        initGameMenu(world);
 
         document
             .getElementById('inviteGameModal')
@@ -87,7 +75,6 @@ export async function showHome() {
 export async function displayFriend() {
     const allFriends = await fetchFriend('GET');
     if (!allFriends || !allFriends.ok) {
-        // if !allFriends, c'est que le status == 401 et si !allFriends.ok == Aucun Ami
         return false;
     }
     const container = document.getElementById('friendDisplay');
@@ -97,7 +84,6 @@ export async function displayFriend() {
 export async function displayEveryone() {
     const onlineUsers = await fetchUser('GET', { status: ['ONL', 'ING'] });
     if (!onlineUsers || !onlineUsers.ok) {
-        // if !onlineUsers, c'est que le status == 401 et si !onlineUsers.ok == Aucun user Online
         return false;
     }
     const container = document.getElementById('userDisplay');
@@ -114,8 +100,7 @@ async function initPage() {
     }
     displayUserCard(userAssembled);
     displayMatchHistory(userAssembled);
-    interactiveSocket.initSocket();
-    //displayEveryone();
+    interactiveSocket.initSocket() // <- this is calling displayEveryone.
     displayFriend();
     updateSocial();
 }
@@ -144,7 +129,7 @@ function friendsBtnFunc(friendsBtn, everyoneBtn) {
     }
 }
 
-/////
+//////////
 
 function responsiveLeftColumn() {
     const userCol = document.getElementById('left-column');
@@ -163,6 +148,7 @@ function responsiveLeftColumn() {
         gameCol.classList.toggle('hide');
     });
 }
+
 
 function listenerTeamDisplay() {
     daveBox();

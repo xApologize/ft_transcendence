@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'django_otp.plugins.otp_totp',
     "channels",
     "channels_postgres",
+    "game_invite",
     "user_profile",
     "friend_list",
     "match_history",

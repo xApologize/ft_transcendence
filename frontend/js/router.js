@@ -9,7 +9,8 @@ import { showLogin } from './pages/login/login.js';
 import { templateComponent } from './components/template/template.js';
 import { showSocket } from './pages/socket/debug_socket.js';
 import { showCallback } from './pages/callback/callback.js';
-import interactiveSocket from './pages/home/socket.js';
+import interactiveSocket from './pages/home/socket.js'
+import { fetchIsToken } from './api/fetchData.js';
 
 const routes = {
     '/': showLogin,
@@ -33,29 +34,17 @@ export function navigateTo(route) {
     handleRoute();
 }
 
-export async function checkIfCookie() {
-    const accessTokenLive = sessionStorage.getItem('jwt');
-    const options = {
-        method: 'GET',
-        credentials: 'include',
-        headers: {
-            ...(accessTokenLive ? { jwt: `${accessTokenLive}` } : {}),
-        },
-    };
-    const tokenResponse = await fetch('/api/auth/token/', options);
-    return tokenResponse;
-}
-
-export function handleRoute() {
+export async function handleRoute() {
     let pageFunction = null;
     let goPath = window.location.pathname;
+    
     // make this work properly with the history
-    // if (goPath == '/home') {
-    //     let cookieResponse = await checkIfCookie();
-    //     if (cookieResponse.status == 401) {
-    //         goPath = '/';
-    //     }
-    // }
+    if (goPath == '/home') {
+        let cookieResponse = await fetchIsToken();
+        if (!cookieResponse) {
+            goPath = '/';
+        }
+    }
 
     if (routes[goPath]) {
         pageFunction = routes[goPath];
@@ -66,7 +55,7 @@ export function handleRoute() {
 }
 
 function handlePopState(event) {
-    checkAllModal();
+    checkModal();
     handleRoute();
     interactiveSocket.closeSocket();
 }
@@ -81,7 +70,7 @@ function disposeModal(modalId) {
     }
 }
 
-function checkAllModal() {
+export function checkModal(modalToClose = null) {
     const modals = [
         'userSettingsModal',
         'twoFAModal',
@@ -89,9 +78,17 @@ function checkAllModal() {
         'inviteGameModal',
         'socialModal',
         'gameMenuModal',
+        'inviteTournamentModal',
+        'lobbyTournamentModal',
+        'joinTournamentModal',
+        'createTournamentModal',
     ];
 
-    modals.forEach(disposeModal);
+    if (modalToClose) {
+        disposeModal(modalToClose);
+    } else {
+        modals.forEach(disposeModal);
+    }
 }
 
 async function loadPage() {
@@ -110,13 +107,10 @@ window.addEventListener('beforeunload', () => {
 document.addEventListener('DOMContentLoaded', async () => {
     loadPage();
     window.addEventListener('popstate', handlePopState);
-    window.addEventListener('visibilitychange', async function () {
-        if (
-            document.visibilityState === 'visible' &&
-            window.location.pathname == '/home'
-        ) {
+    window.addEventListener("visibilitychange", function() {
+        if (document.visibilityState === 'visible' && window.location.pathname == '/home') {
             if (interactiveSocket.isSocketClosed()) {
-                checkAllModal();
+                checkModal();
                 showHome();
             }
         }

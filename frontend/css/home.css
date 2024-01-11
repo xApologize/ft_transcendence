@@ -197,3 +197,7 @@
 .link-primary {
     color: white !important;
 }
+#joinTournamentModal .list-group-item:hover {
+    background-color: #d6d8db;  /* Darker shade for hover, adjust color as needed */
+    cursor: pointer;
+}
