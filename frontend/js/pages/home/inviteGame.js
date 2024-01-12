@@ -1,7 +1,7 @@
 import { fetchGameInvite, fetchUser } from '../../api/fetchData.js';
 import { assembler } from '../../api/assembler.js';
 import interactiveSocket from './socket.js';
-import { getMyID } from './utils.js';
+import { getMyID, hideModal } from './utils.js';
 import { updateSocial } from './social.js';
 import { checkModal } from '../../router.js';
 import { displayToast } from './toastNotif.js';
@@ -51,7 +51,6 @@ function handleResponseType(rType, userID) {
         case 'acceptGameInvite':
             console.log('Accept Game Invite');
             showModal('loadingModal');
-            
             break;
     }
 }
@@ -136,6 +135,7 @@ function handleSelfAcceptedInvite() {
     // I ACCEPTED THE INVITE, I NEED TO JOIN THE GAME HERE
 
     ///////////////////////////
+    // loadingModal.hide()
 }
 
 async function handleOtherUserAcceptedInvite(request_id) {
@@ -164,6 +164,7 @@ async function handleOtherUserAcceptedInvite(request_id) {
 
 
     ///////////////////////////
+    // loadingModal.hide()
     function resetModalContentID(inviteModalEl) {
         const modalContentDatasetID = inviteModalEl.querySelector('.modal-content');
         modalContentDatasetID.dataset.id = '';

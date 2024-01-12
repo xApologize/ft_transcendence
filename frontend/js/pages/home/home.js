@@ -114,9 +114,7 @@ function leftColumnListener() {
 function setupHomeModal() {
     // Game Menu Modal
     new bootstrap.Modal(document.getElementById('gameMenuModal'));
-    new bootstrap.Modal(document.getElementById('createTournamentModal'));
     new bootstrap.Modal(document.getElementById('lobbyTournamentModal'));
-    new bootstrap.Modal(document.getElementById('inviteTournamentModal'))
     new bootstrap.Modal(document.getElementById('joinTournamentModal'))
 
     // Invite + other user modal

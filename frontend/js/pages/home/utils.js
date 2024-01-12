@@ -87,7 +87,16 @@ export function getMyID() {
 }
 
 
-export async function fetchUserById(userID) {
+export async function fetchUserById(userID = null) {
+    if (!userID) {
+        userID = getMyID();
+    }
+
+    if (!userID) {
+        console.error('No JWT in storage');
+        return;
+    }
+
     const response = await fetchUser('GET', { id: userID });
     if (!response)
         return;
@@ -98,5 +107,20 @@ export async function fetchUserById(userID) {
     return assemble[0];
 }
 
+export function switchModals(hideModalId, showModalId) {
+    hideModal(hideModalId);
+    const showModal = bootstrap.Modal.getInstance(document.getElementById(showModalId));
+    showModal.show();
+
+    function hideModal(modalId) {
+        const modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
+        modal.hide();
+    }
+}
+
+export function hideModal(modalId) {
+    const modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
+    modal.hide();
+}
 
 //////////////////////////// SOCKET FUNCTIONS ////////////////////////////
