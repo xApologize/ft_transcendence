@@ -18,7 +18,13 @@ class gameInvite(View):
             recipient_id = int(data['recipient'])
             user_inviting = get_user_obj(request)
             recipient = User.objects.filter(pk=recipient_id).first()  # Simplified retrieval with .first()
-
+        except User.DoesNotExist:
+            return HttpResponseNotFound("User not found")
+        except (KeyError, json.JSONDecodeError):
+            return HttpResponseBadRequest("Invalid data")
+        except PermissionDenied:
+            return HttpResponseForbidden("Couldn't locate cookie jar")
+        try:
             if not recipient:
                 raise Http404
             if user_inviting == recipient:
@@ -63,7 +69,7 @@ class gameInvite(View):
                 recipient_query = Q(user_inviting=recipient) | Q(recipient=recipient)
                 match_invite = MatchInvite.objects.filter(inviting_user_query & recipient_query & Q(pending=True))
                 if match_invite.exists():
-                    match_invite.delete()
+                    match_invite.update(pending=False)
                 return JsonResponse(response_data)
         except (KeyError, json.JSONDecodeError):
             response_data["error"] = "Invalid data"
