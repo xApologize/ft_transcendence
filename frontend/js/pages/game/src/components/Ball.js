@@ -38,7 +38,7 @@ class Ball extends InstancedMesh {
 
 		this.ballInst = [];
 		for (let i = 0; i < this.count; i++) {
-			this.ballInst[i] = { id: i, pos: new Vector3(), dir: new Vector3(), speed: 0, colliding: undefined };
+			this.ballInst[i] = { id: i, pos: new Vector3(), dir: new Vector3(), speed: 0, colliding: undefined, smashed: false };
 			this.hideInst( this.ballInst[i] );
 		}
 		
@@ -86,21 +86,8 @@ class Ball extends InstancedMesh {
 			}
 			closerHit.normal.setZ( 0 );
 			
-			// ballInst.dir.reflect( closerHit.normal );
-			if ( closerHit.object.layers.isEnabled( Layers.Player ) ) {
-				if ( ballInst.dir.dot( closerHit.object.dir ) > 0 ) {
-					ballInst.dir.reflect( closerHit.point.x < 0 ? new Vector3( 1, 0, 0 ) : new Vector3( -1, 0, 0 ) );
-
-					ballInst.speed *= 1.1;
-					ballInst.dir.y += ( closerHit.point.y - closerHit.object.position.y ) / ( closerHit.object.length / 2 );
-					ballInst.dir.normalize();
-					ballInst.dir.y /= 2;
-
-					const dot = ballInst.dir.dot( closerHit.object.movement );
-					if ( ballInst.speed < dot * closerHit.object.speed )
-						ballInst.speed = dot * closerHit.object.speed;
-				}
-			}
+			if ( closerHit.object.layers.isEnabled( Layers.Player ) )
+				this.playerCollision( ballInst, closerHit.point, closerHit.object );
 			else
 				ballInst.dir.reflect( closerHit.normal );
 
@@ -118,10 +105,28 @@ class Ball extends InstancedMesh {
 		ballInst.pos.add( ballInst.dir.clone().multiplyScalar( dist ) );
 	}
 
+	playerCollision( ballInst, point, object ) {
+		if ( ballInst.dir.dot( object.dir ) > 0 ) {
+			ballInst.dir.reflect( point.x < 0 ? new Vector3( 1, 0, 0 ) : new Vector3( -1, 0, 0 ) );
+
+			ballInst.speed *= 1.1;
+			ballInst.dir.y += ( point.y - object.position.y ) / ( object.length / 2 );
+			ballInst.dir.y /= 2;
+
+			const dot = ballInst.dir.dot( object.movement );
+			if ( ballInst.speed < dot * object.speed )
+				ballInst.speed = dot * object.speed;
+
+			ballInst.smashed = false;
+		}
+	}
+
 	update( dt ) {
 		for (let i = 0; i < this.count; i++) {
 			const lag = (new Date().getTime() - this.lastFixedUpdate) / 1000;
-			const newPos = this.ballInst[i].pos.clone().add( this.ballInst[i].dir.clone().multiplyScalar( lag * this.ballInst[i].speed ) );
+			const newPos = this.ballInst[i].pos.clone().add(
+				this.ballInst[i].dir.clone().multiplyScalar( lag * this.ballInst[i].speed * ( this.ballInst[i].smashed ? 2 : 1 ) )
+			);
 
 			// Rotate toward movement
 			let rot = new Quaternion().setFromUnitVectors( new Vector3( 1, 0, 0 ), this.ballInst[i].dir );
@@ -141,7 +146,7 @@ class Ball extends InstancedMesh {
 
 	fixedUpdate( dt ) {
 		for (let i = 0; i < this.count; i++) {
-			this.calcCollision( this.ballInst[i], this.ballInst[i].speed * dt, 5 );
+			this.calcCollision( this.ballInst[i], this.ballInst[i].speed * ( this.ballInst[i].smashed ? 2 : 1 ) * dt, 5 );
 	
 			// Reset if OOB
 			if ( Math.abs( this.ballInst[i].pos.x ) > 12 || Math.abs( this.ballInst[i].pos.y ) > 8 ) {
@@ -175,6 +180,7 @@ class Ball extends InstancedMesh {
 		ballInst.dir.set( side, Math.cos( ballInst.id ), 0 );
 		ballInst.dir.normalize();
 		ballInst.speed = 0;
+		ballInst.smashed = false;
 		ballInst.colliding = undefined;
 
 		this.matrix.compose(
@@ -200,6 +206,7 @@ class Ball extends InstancedMesh {
 		this.ballInst[inst.id].pos.copy( inst.pos );
 		this.ballInst[inst.id].dir.copy( inst.dir );
 		this.ballInst[inst.id].speed = inst.speed;
+		this.ballInst[inst.id].smashed = inst.smashed;
 	}
 
 	delete() {

@@ -74,7 +74,7 @@ class World {
 		this.lights = new Lights();
 
 		this.currentGameState = GameState.InMenu;
-		this.currentGameMode = "Classic";
+		this.currentGameMode = "Upgraded";
 		
 		this.balls = new Ball( _ballCount );
 		
