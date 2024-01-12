@@ -65,9 +65,6 @@ class Player extends Paddle {
 	}
 
 	fixedUpdate ( dt ) {
-		if ( this.movement.y === 0 )
-			return;
-		
 		if ( World._instance.socket != undefined && World._instance.socket.readyState === WebSocket.OPEN) {
 			World._instance.socket.send( JSON.stringify( this.wsData ) );
 		}

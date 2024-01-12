@@ -1,3 +1,4 @@
+import { GameState } from '../game/src/systems/GameStates.js';
 import interactiveSocket from './socket.js';
 
 
@@ -13,7 +14,7 @@ function initMainGameMenu(world) {
         modal.hide()
         document.getElementById('toastContainer').classList.add('d-none')
         document.getElementById('ui').classList.add('d-none');
-        world.currentGameState = 'lookingForPlayer';
+        world.currentGameState = GameState.LookingForPlayer;
         document.getElementById('lfp').classList.remove('d-none');
         interactiveSocket.sendMessageSocket(
             JSON.stringify({ type: 'Find Match' })

@@ -4,8 +4,11 @@ import { Player } from '../components/Player.js';
 import { Opponent } from '../components/Opponent.js';
 import { GameState } from './GameStates.js';
 import { insertCoinSound } from './Loader.js';
+import interactiveSocket from '../../../home/socket.js';
+import { Updatable } from '../modules/Updatable.js';
 
 let world;
+let lastSocketTime;
 
 const divNicknames = [ 'left-player-name', 'right-player-name' ];
 
@@ -40,6 +43,31 @@ class Match {
 		this.initMatch();
 		document.getElementById('lfp').classList.add("d-none");
 
+		this.updatable = new Updatable( this );
+		lastSocketTime = Date.now();
+		this.loading = false;
+	}
+
+	update() {}
+
+	fixedUpdate() {
+		
+		if ( Date.now() - lastSocketTime > 3000) {
+			this.endMatch();
+			document.getElementById("loading").classList.add("d-none");
+			console.error("Disconnected");
+			this.loading = false;
+		} else if ( Date.now() - lastSocketTime > 500) {
+			if (!this.loading) {
+				console.warn("Instable Connection");
+				document.getElementById("loading").classList.remove("d-none");
+				this.loading = true;
+			}
+		}
+		else if ( this.loading ) {
+			document.getElementById("loading").classList.add("d-none");
+			this.loading = false;
+		}
 	}
 
 	initMatch() {
@@ -79,6 +107,8 @@ class Match {
 			this.endMatch();
 			return;
 		}
+		lastSocketTime = Date.now();
+
 		const wsData = JSON.parse( event.data );
 		if ( this.participants[wsData.id] != undefined && wsData.pos != undefined )
 			this.participants[wsData.id].position.copy( wsData.pos );
@@ -119,6 +149,7 @@ class Match {
 		this.socket.removeEventListener( "message", this.onWebsocketReceivedEvent );
 
 		world.changeStatus( "ONL" );
+		this.updatable.delete();
 	}
 }
 
