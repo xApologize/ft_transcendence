@@ -11,7 +11,7 @@ const interactiveSocket = {
         const self = this;
         if (this.interactive_socket === null){
             console.log("INIT !")
-            this.interactive_socket = new WebSocket('wss://' + window.location.host + '/ws/pong/interactive' + "?" + sessionStorage.getItem('jwt'));
+            this.interactive_socket = new WebSocket('wss://' + window.location.host + '/wss/pong/interactive' + "?" + sessionStorage.getItem('jwt'));
             self.interactive_socket.onerror = function(event) {
                 console.error("WebSocket error:", event);
                 logoutUser();
@@ -61,6 +61,9 @@ const interactiveSocket = {
             case "Refresh":
                 this.refresh_handler(data);
                 break;
+            case "Match Invite":
+                this.match_invite_handler(data);
+                break;
             case "Init":
                 displayEveryone();
                 break;
@@ -107,6 +110,10 @@ const interactiveSocket = {
             default:
                 console.error("Rtype error");
         }
+    },
+
+    match_invite_handler: function(data) {
+        console.log("hey", data);
     },
 
     interactive_error_handler: function(message) {
