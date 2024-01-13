@@ -41,12 +41,12 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             match_entry = await sync_to_async(
                 LookingForMatch.objects.filter(paddleA=self.user_id).first)()
             await sync_to_async(match_entry.delete)()
+        await self.set_user_status("OFF")
+        await self.send_to_layer(NO_ECHO, self.user_id, "Refresh", "Logout")
         await self.channel_layer.group_discard(
             "interactive",
             self.channel_name
         )
-        await self.set_user_status("OFF")
-        await self.send_to_layer(NO_ECHO, self.user_id, "Refresh", "Logout")
 
     async def receive(self, text_data: any):
         try:

@@ -3,6 +3,7 @@ import { showUser } from './pages/user/user.js';
 import { showGame } from './pages/game/game.js';
 import { showAbout } from './pages/about/about.js';
 import { showSignUp } from './pages/signUp/signUp.js';
+import { showFirewall } from './pages/firewall/firewall.js';
 import { show404 } from './pages/404/404.js';
 import { showLogin } from './pages/login/login.js';
 import { templateComponent } from './components/template/template.js';
@@ -19,6 +20,7 @@ const routes = {
     '/user': showUser,
     '/login': showLogin,
     '/signUp': showSignUp,
+    '/firewall': showFirewall,
     '/socket': showSocket,
     '/callback': showCallback,
 };
@@ -100,7 +102,7 @@ async function loadPage() {
 window.addEventListener('beforeunload', () => {
     sessionStorage.clear();
     localStorage.clear();
-})
+});
 
 document.addEventListener('DOMContentLoaded', async () => {
     loadPage();
