@@ -42,6 +42,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             match_entry = await sync_to_async(
                 LookingForMatch.objects.filter(paddleA=self.user_id).first)()
             await sync_to_async(match_entry.delete)()
+        await self.handle_invite_cleaning()
         await self.set_user_status("OFF")
         await self.send_to_layer(NO_ECHO, self.user_id, "Refresh", "Logout")
         await self.channel_layer.group_discard(
@@ -192,7 +193,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         invite: MatchInvite = await sync_to_async(
             MatchInvite.objects.filter(user_inviting__id=self.user_id).first)()
         if invite is None:
-            print("FATAL ERROR wrong querry sent to game invite")
+            print("FATAL ERROR wrong querry sent to the game invite")
             return
         host_nickname: str = await self.get_user_nickname(self.user_id)
         recipient_id: int = await sync_to_async(lambda: invite.recipient.pk)()
@@ -221,6 +222,25 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
                 "Receiver": recipient_id
                 })
         await self.send(text_data=json.dumps(host_match_handle))
+    
+    async def handle_invite_cleaning(self) -> None:
+        invite: MatchInvite = await sync_to_async(
+            MatchInvite.objects.filter(user_inviting__id=self.user_id).first)()
+        if invite is None:
+            return
+        recipient_id: int = await sync_to_async(lambda: invite.recipient.pk)()
+        await sync_to_async(invite.delete)()
+        await self.channel_layer.group_send(
+            "interactive", {
+                "type": MATCH_INVITE,
+                "message": {
+                    "type": "Refresh",
+                    "id": self.user_id,
+                    "rType": "refreshGameInvite",
+                    "other_user_id": recipient_id
+                    }, "Receiver": recipient_id
+                })
+        print("Invite clean done")
 
 
 def create_layer_dict(type: str, message: str, sender: str) -> dict:
