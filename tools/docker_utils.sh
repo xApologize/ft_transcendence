@@ -1,6 +1,6 @@
 #!/bin/bash
 # Clean up docker related containers, images, volumes and caches
-# Author producks 9/1/2023, updated 12/24/2023
+# Author producks 9/1/2023, updated 1/09/2024
 
 # Reset
 Reset='\033[0m'       # Text Reset
@@ -15,7 +15,6 @@ Purple='\033[0;35m'       # Purple
 Cyan='\033[0;36m'         # Cyan
 White='\033[0;37m'        # White
 
-# Functions
 stop_all_containers() {
 	if [ -z "$(docker ps -aq)" ]; then
 		echo -e "${Red}No docker container are currently running${Reset}"
@@ -49,8 +48,6 @@ clean_volumes() {
 			echo -e "${Green}All docker volumes have been deleted${Reset}"
 		fi
 	fi
-	rm -rf ../database-postgres
-	rm -rf ../database-redis
 }
 
 clean_images() {
@@ -68,22 +65,6 @@ clean_images() {
 
 clean_caches() {
 	docker builder prune --all
-}
-
-clean_folders() {
-	echo -e "${Red}SENT THE FOLDERS TO THE SHADOW REALMS${Reset}"
-	sudo rm -rf ../database-postgres
-	sudo rm -rf ../database-redis
-	sudo rm -rf ../frontend/node_modules
-}
-
-clean_folders_nuke() {
-	echo -e "${Red}SENT THE FOLDERS TO THE SHADOW REALMS${Reset}"
-	sudo rm -rf database-postgres database-redis backend/dist backend/node_modules frontend/node_modules
-}
-
-clean_folder_nuke_school_mac() {
-	rm -rf database-postgres database-redis backend/dist backend/node_modules frontend/node_modules
 }
 
 clean_migration() {
@@ -111,8 +92,6 @@ elif [ $# -eq 0 ]; then
 	echo -e "[3] Clean images"
 	echo -e "[4] Clean caches"
 	echo -e "[5] Nuke all ☢️"
-
-	#Read input
 	read -n1 -p "Enter your input " input
 	echo ""
 else
@@ -120,7 +99,6 @@ else
 	exit 1
 fi
 
-#switch case
 case $input in
 	"0")
 	stop_all_containers
@@ -142,7 +120,6 @@ case $input in
 	clean_containers
 	clean_volumes
 	clean_images
-	clean_folders
 	clean_caches
 	;;
 	"6")
@@ -150,7 +127,6 @@ case $input in
 	clean_containers
 	clean_volumes
 	clean_images
-	clean_folders_nuke
 	clean_caches
 	;;
 	"8")
@@ -158,15 +134,12 @@ case $input in
 	clean_containers
 	clean_volumes
 	clean_images
-	clean_folder_nuke_school_mac
 	clean_caches
 	;;
 	"7")
-	clean_folders_nuke
 	clean_migration
 	;;
 	"9")
-	clean_folder_nuke_school_mac
 	clean_migration
 	;;
 	*)
