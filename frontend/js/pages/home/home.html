@@ -44,18 +44,31 @@
                             </button>
                         </div>
                         <div class="m-0 row p-0 text-center border border-2">
-                            <button type="button" id="socialModalBtn" class="btn btn-light btn-block w-100 rounded-0 border shadow-none position-relative" data-bs-toggle="modal" data-bs-target="#socialModal">
+                            <button
+                                type="button"
+                                id="socialModalBtn"
+                                class="btn btn-light btn-block w-100 rounded-0 border shadow-none position-relative"
+                                data-bs-toggle="modal"
+                                data-bs-target="#socialModal"
+                            >
                                 Social
                                 <!-- Badge in the corner -->
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="socialBadge">
-                                    0 <!-- Number of social events -->
+                                <span
+                                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                    id="socialBadge"
+                                >
+                                    0
+                                    <!-- Number of social events -->
                                 </span>
                             </button>
                         </div>
                     </div>
                     <div class="divFill">
                         <div class="row row-center" id="userDisplay"></div>
-                        <div class="row row-center d-none" id="friendDisplay"></div>
+                        <div
+                            class="row row-center d-none"
+                            id="friendDisplay"
+                        ></div>
                     </div>
                 </div>
                 <div
@@ -89,7 +102,7 @@
                                 <div class="lowerRow bg-main-second">
                                     <h1 class="m-3 text-center">
                                         Match history
-                                    </h1>    
+                                    </h1>
                                     <div class="row">
                                         <div class="col text-center p-0">
                                             <p>Date</p>
@@ -107,7 +120,92 @@
                                             <p>Score</p>
                                         </div>
                                     </div>
-                                    <div id="matchHistory" class="matchHistoryBox"></div>
+                                    <div id="matchHistory"></div>
+                                    <div
+                                        id="ddemers-box"
+                                        class="about-box hide"
+                                    >
+                                        <div class="textWhite">
+                                            <p>Dave Demers</p>
+                                            <a
+                                                class="textWhite"
+                                                href="https://github.com/Producks"
+                                                target="_blank"
+                                                >Github</a
+                                            >
+                                        </div>
+                                    </div>
+                                    <div
+                                        id="jalevesq-box"
+                                        class="about-box hide"
+                                    >
+                                        <p>jacob</p>
+                                    </div>
+                                    <div
+                                        id="fgeslin-box"
+                                        class="about-box hide"
+                                    >
+                                        <p>florian</p>
+                                    </div>
+                                    <div
+                                        id="jrossign-box"
+                                        class="about-box hide"
+                                    >
+                                        <p>jb</p>
+                                    </div>
+                                    <div id="copyright">
+                                        <div class="row">
+                                            <div id="team" class="col">
+                                                <p class="m-0">
+                                                    Dream team &copy 2024
+                                                </p>
+                                            </div>
+                                            <div class="col">
+                                                <div class="row m-0">
+                                                    <div
+                                                        id="ddemers"
+                                                        class="col ml-1 mr-1"
+                                                    >
+                                                        <p
+                                                            class="m-0 hover-pointer"
+                                                        >
+                                                            DDemers
+                                                        </p>
+                                                    </div>
+                                                    <div
+                                                        id="jalevesq"
+                                                        class="col ml-1 mr-1"
+                                                    >
+                                                        <p
+                                                            class="m-0 hover-pointer"
+                                                        >
+                                                            JaLevesq
+                                                        </p>
+                                                    </div>
+                                                    <div
+                                                        id="fgeslin"
+                                                        class="col ml-1 mr-1"
+                                                    >
+                                                        <p
+                                                            class="m-0 hover-pointer"
+                                                        >
+                                                            FGeslin
+                                                        </p>
+                                                    </div>
+                                                    <div
+                                                        id="jrossign"
+                                                        class="col ml-1 mr-1"
+                                                    >
+                                                        <p
+                                                            class="m-0 hover-pointer"
+                                                        >
+                                                            JRossign
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -116,8 +214,7 @@
             </div>
         </div>
         <!-- Notification Container -->
-        <div id="toastContainer" class="toast-container end-0 top-0">
-        </div>
+        <div id="toastContainer" class="toast-container end-0 top-0"></div>
         <!-- Invite Game Modal -->
         <div
             class="modal fade"
@@ -142,7 +239,13 @@
             </div>
         </div>
         <!-- Other User Profile Modal -->
-        <div class="modal fade" id="otherUserInfo" tabindex="-1" aria-labelledby="otherUserInfoLabel" aria-hidden="true">
+        <div
+            class="modal fade"
+            id="otherUserInfo"
+            tabindex="-1"
+            aria-labelledby="otherUserInfoLabel"
+            aria-hidden="true"
+        >
             <div id="otherUserInfoDialog" class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -151,25 +254,55 @@
                             <button id="deleteFriendBtn" class="btn btn-danger d-none me-2 flex-shrink-0"></button>
                             <p class="mb-0 flex-grow-1 text-break text-danger" id="responseFriendQuery"></p>
                         </div>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"
+                        ></button>
                     </div>
                     <div class="modal-body">
                         <div class="text-center mb-3">
-                            <img id="userAvatar" src="" alt="User Avatar" class="rounded-circle" width="100" height="100">
+                            <img
+                                id="userAvatar"
+                                src=""
+                                alt="User Avatar"
+                                class="rounded-circle"
+                                width="100"
+                                height="100"
+                            />
                         </div>
-                        <h1 id="userNickname" class="text-center mb-3">Loading...</h4>
+                        <h1 id="userNickname" class="text-center mb-3">
+                            Loading...
+                        </h1>
                         <div class="row text-center">
-                            <p class="col">Wins: <span id="userWins" class="fw-bold">0</span></p>
-                            <p class="col">Losses: <span id="userLosses" class="fw-bold">0</span></p>
-                            <p class="col">Matches Played: <span id="userMatchesPlayed" class="fw-bold">0</span></p>
-                            <p id="winrate" class="col">Winrate: <span id="userWinrate" class="fw-bold">0</span></p>
+                            <p class="col">
+                                Wins:
+                                <span id="userWins" class="fw-bold">0</span>
+                            </p>
+                            <p class="col">
+                                Losses:
+                                <span id="userLosses" class="fw-bold">0</span>
+                            </p>
+                            <p class="col">
+                                Matches Played:
+                                <span id="userMatchesPlayed" class="fw-bold"
+                                    >0</span
+                                >
+                            </p>
+                            <p id="winrate" class="col">
+                                Winrate:
+                                <span id="userWinrate" class="fw-bold">0</span>
+                            </p>
                         </div>
                         <div id="otherMatchHistory" class="d-none">
                             <div class="col text-center mb-4">
                                 <h3>Match History</h3>
                             </div>
                             <div>
-                                <div class="row text-center border-2 border mb-2">
+                                <div
+                                    class="row text-center border-2 border mb-2"
+                                >
                                     <div class="col">
                                         <p class="mt-2 mb-2">Date of Match</p>
                                     </div>
@@ -186,20 +319,27 @@
                                         <p class="mt-2 mb-2">Loser Score</p>
                                     </div>
                                 </div>
-                                <div id="matchHistoryContainer">
-                                </div>
+                                <div id="matchHistoryContainer"></div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- Social Modal --> 
-        <div class="modal fade" id="socialModal" tabindex="-1" aria-labelledby="socialModalLabel" aria-hidden="true">
+        <!-- Social Modal -->
+        <div
+            class="modal fade"
+            id="socialModal"
+            tabindex="-1"
+            aria-labelledby="socialModalLabel"
+            aria-hidden="true"
+        >
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header text-center">
-                        <h5 class="modal-title w-100" id="socialModalLabel">Social</h5>
+                        <h5 class="modal-title w-100" id="socialModalLabel">
+                            Social
+                        </h5>
                     </div>
                     <div class="modal-body">
                         <!-- Invite Game Receive -->
@@ -209,45 +349,83 @@
         
                             </div>
                         </div>
-                        <hr> <!-- Separator -->
-                        <div id="friend-requests-sent" class="align-items-center">
+                        <hr />
+                        <!-- Separator -->
+                        <div
+                            id="friend-requests-sent"
+                            class="align-items-center"
+                        >
                             <h6 class="text-center">Friend Requests Sent</h6>
-                            <p class="text-center" id="response-requests-sent-info"></p>
+                            <p
+                                class="text-center"
+                                id="response-requests-sent-info"
+                            ></p>
                             <div id="sentRequest" class="list-group">
                                 <!-- List of sent friend requests will go here -->
                             </div>
                         </div>
-                        <hr> <!-- Separator -->
+                        <hr />
+                        <!-- Separator -->
                         <!-- Friend Requests Received -->
-                        <div id="friend-requests-received" class="align-items-center">
-                            <h6 class="text-center">Friend Requests Received</h6>
-                            <p class="text-center" id="response-requests-received-info"></p>
+                        <div
+                            id="friend-requests-received"
+                            class="align-items-center"
+                        >
+                            <h6 class="text-center">
+                                Friend Requests Received
+                            </h6>
+                            <p
+                                class="text-center"
+                                id="response-requests-received-info"
+                            ></p>
                             <div id="receivedRequest" class="list-group">
                                 <!-- List of received friend requests will go here -->
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button
+                            type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal"
+                        >
+                            Close
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- Game Menu --> 
-        <div class="modal fade" id="gameMenuModal" tabindex="-1" aria-labelledby="gameMenuModalLabel" aria-hidden="true">
+        <!-- Game Menu -->
+        <div
+            class="modal fade"
+            id="gameMenuModal"
+            tabindex="-1"
+            aria-labelledby="gameMenuModalLabel"
+            aria-hidden="true"
+        >
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header text-center">
-                        <h5 class="modal-title w-100" id="gameMenuModalLabel">Game Menu</h5>
+                        <h5 class="modal-title w-100" id="gameMenuModalLabel">
+                            Game Menu
+                        </h5>
                     </div>
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-6 text-center border-right">
-                                <div class="mb-2"> <!-- mb-2 adds a margin to the bottom of the element -->
-                                    <button  id="play1vs1" class="btn btn-primary">Play 1vs1</button>
+                                <div class="mb-2">
+                                    <!-- mb-2 adds a margin to the bottom of the element -->
+                                    <button
+                                        id="play1vs1"
+                                        class="btn btn-primary"
+                                    >
+                                        Play 1vs1
+                                    </button>
                                 </div>
                                 <div>
-                                    <button class="btn btn-primary">Play 2vs2</button>
+                                    <button class="btn btn-primary">
+                                        Play 2vs2
+                                    </button>
                                 </div>
                             </div>
                             <div class="col-6 text-center">
@@ -260,7 +438,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="modal-footer">
                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                     </div>
@@ -347,6 +525,3 @@
         </div>
     </div>
 </div>
-
-
-

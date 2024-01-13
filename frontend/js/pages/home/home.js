@@ -29,6 +29,7 @@ export async function showHome() {
         if (result === false) return;
         
         leftColumnListener();
+        listenerTeamDisplay()
         await loadGame();
         loadingModal.hide();
     } catch (error) {
@@ -45,7 +46,7 @@ export async function displayFriend() {
     if (!allFriends || !allFriends.ok) {
         return;
     }
-    const container = document.getElementById('friendDisplay')
+    const container = document.getElementById('friendDisplay');
     await displayUser(allFriends, container);
 }
 
@@ -54,14 +55,13 @@ export async function displayEveryone() {
     if (!onlineUsers || !onlineUsers.ok) {
         return;
     }
-    const container = document.getElementById('userDisplay')
+    const container = document.getElementById('userDisplay');
     await displayUser(onlineUsers, container);
 }
 
 async function initPage() {
     const user = await fetchMe('GET');
-    if (!user)
-        return;
+    if (!user) return;
     const userAssembled = await assembler(user);
     if (!userAssembled || typeof userAssembled !== 'object') {
         console.error('Error assembling user. Please refresh page.');
@@ -148,7 +148,6 @@ function responsiveLeftColumn() {
     });
 }
 
-//////////
 
 
 async function loadGame() {
@@ -162,3 +161,64 @@ async function loadGame() {
     const world = new World(gameContainer);
     initGameMenu(world);
 }
+
+function listenerTeamDisplay() {
+    daveBox();
+    jacobBox();
+    florianBox();
+    jeanbenoitBox();
+}
+
+function daveBox() {
+    const box = document.getElementById('ddemers-box');
+    document.getElementById('ddemers').addEventListener('mouseover', () => {
+        hideOtherBox();
+        box.classList.remove('hide');
+        box.addEventListener('mouseleave', () => {
+            box.classList.add('hide');
+        });
+    });
+}
+
+function jacobBox() {
+    const box = document.getElementById('jalevesq-box');
+    document.getElementById('jalevesq').addEventListener('mouseover', () => {
+        hideOtherBox();
+        box.classList.remove('hide');
+        box.addEventListener('mouseleave', () => {
+            box.classList.add('hide');
+        });
+    });
+}
+
+function florianBox() {
+    const box = document.getElementById('fgeslin-box');
+    document.getElementById('fgeslin').addEventListener('mouseover', () => {
+        hideOtherBox();
+        box.classList.remove('hide');
+        box.addEventListener('mouseleave', () => {
+            box.classList.add('hide');
+        });
+    });
+}
+
+function jeanbenoitBox() {
+    const box = document.getElementById('jrossign-box');
+    document.getElementById('jrossign').addEventListener('mouseover', () => {
+        hideOtherBox();
+        box.classList.remove('hide');
+        box.addEventListener('mouseleave', () => {
+            box.classList.add('hide');
+        });
+    });
+}
+
+function hideOtherBox() {
+    const boxes = document.getElementsByClassName('about-box');
+    Array.prototype.forEach.call(boxes, function (box) {
+        if (!box.classList.contains('hide')) {
+            box.classList.add('hide');
+        }
+    });
+}
+//
