@@ -165,7 +165,8 @@ async function createNotifications(rType, userId, otherUserId, currentUser) {
 // To use when user login
 export async function newUser(userID) {
     const apiParam = { id: userID };
-    if (getMyID() == userID) 
+    const currentUser = getMyID()
+    if (!currentUser || currentUser == userID) 
         return;
     try {
         const response = await fetchUser('GET', apiParam);

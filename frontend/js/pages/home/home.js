@@ -18,7 +18,7 @@ import { initGameMenu } from './gameMenu.js';
 
 export async function showHome() {
     try {
-		// await CheckIfRedirectionIsntHappening
+		// await CheckIfRedirectionIsntHappening (?)
 
         await loadHTMLPage('./js/pages/home/home.html');
         const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));

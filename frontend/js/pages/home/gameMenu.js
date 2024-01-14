@@ -1,5 +1,4 @@
 import { assembler } from '../../api/assembler.js';
-import { fetchTournamentUser, fetchUser } from '../../api/fetchData.js';
 import { GameState } from '../game/src/systems/GameStates.js';
 import interactiveSocket from './socket.js';
 import { getMyID } from './utils.js';
@@ -15,7 +14,9 @@ export function initGameMenu(world) {
 function initLobbyTournament() {
     const lobbyModal = document.getElementById('lobbyTournamentModal');
     lobbyModal.addEventListener('hide.bs.modal', () => {
-        const participantList = document.getElementById('participantList');
+        const lobbyModalListener = document.getElementById('lobbyTournamentModal');
+        lobbyModalListener.dataset.id = ''
+        const participantList = lobbyModalListener.querySelector('#participantList')
         participantList.innerHTML = '';
     });
 }
@@ -59,6 +60,10 @@ function setupCreateTournamentButton() {
 
 function setupJoinTournamentButton() {
     const joinBtn = document.getElementById('joinTournamentBtn');
-    joinBtn.addEventListener('click', () => switchModals('gameMenuModal', 'joinTournamentModal'));
+    joinBtn.addEventListener('click', () => {
+        // FETCH ALL CURRENT TOURNAMENT AND DISPLAY IT
+
+        switchModals('gameMenuModal', 'joinTournamentModal')
+    });
 }
 

@@ -1,74 +1,175 @@
 import { assembler } from '../../api/assembler.js';
-import { fetchTournamentUser, fetchUser } from '../../api/fetchData.js';
 import interactiveSocket from './socket.js';
 import { displayToast } from './toastNotif.js';
-import { fetchUserById, getMyID } from './utils.js';
-import { switchModals } from './utils.js';
+import { fetchUserById, getMyID, switchModals, showModal, isModalShown } from './utils.js';
+import { fetchMe } from '../../api/fetchData.js';
 
-export async function handleCreateTournamentClick() {
-    const response = await fetchTournamentUser('POST');
-    if (!response) return;
-    const data = await assembler(response);
-    if (response.status >= 400) {
-        displayToast(data.error, 'Error Tournament');
-        await fetchTournamentUser('PATCH', {'status': 'finish'})
-        // Display a way to delete the tournament ?
-        return; 
-    }
-    switchMenuBtn(false);
-    changeMenu
-    const cancelButton = document.getElementById('cancelTournamentBtn');
-    cancelButton.addEventListener('click', quitTournament);
-
-    const currentUser = await fetchUserById();
-    if (!currentUser) return;
-    updateLobbyTitle(currentUser.nickname);
-    addParticipant(currentUser.nickname, currentUser.avatar);    
-    
-    switchModals('gameMenuModal', 'lobbyTournamentModal');
-    
-    function updateLobbyTitle(nickname) {
-        const lobbyTitle = document.getElementById('lobbyTournamentModalLabel');
-        lobbyTitle.textContent = `${nickname}'s Tournament`;
-    }
-}
-
-async function quitTournament(event) {
-    await fetchTournamentUser('PATCH', {'status': 'finish'});
-    switchModals('lobbyTournamentModal', 'gameMenuModal');
-    switchMenuBtn(true)
-
-    const cancelButton = document.getElementById('cancelTournamentBtn');
-    cancelButton.removeEventListener('click', quitTournament);
-
-}
-
-function switchMenuBtn(state) {
-    const buttons = document.querySelectorAll('#gameMenuModal .modal-body button');
-    if (state === true) {
-        buttons.forEach(button => button.disabled = false);
+export function socketTournamentUser(rType, concernUserID, ownerTournamentID) {
+    // Handle tournament creation and cancellation
+    if (rType === 'createTournament' || rType === 'cancelTournament') {
+        handleTournamentCreationOrCancellation(ownerTournamentID, rType);
     } else {
-        buttons.forEach(button => button.disabled = true);
+        // Check if user is part of the tournament
+        if (!isUserInTournament(ownerTournamentID)) return;
+
+        switch (rType) {
+            case 'joinTournament':
+                someoneJoinLobby(concernUserID);
+                break;
+            case 'leftTournament':
+                someoneLeftLobby(concernUserID);
+                break;
+            case 'startTournament':
+                tournamentStarting()
+                break;
+        }
     }
 }
 
-function addParticipant(nickname, avatarUrl) {
+function handleTournamentCreationOrCancellation(ownerTournamentID, rType) {
+    if (isModalShown('joinTournamentModal')) {
+        updateJoinTournament();
+    } else if (isModalShown('lobbyTournamentModal') && rType == 'cancelTournament') {
+        isMyTournamentCancel(ownerTournamentID);
+    }
+}
+
+function updateJoinTournament() {
+    // Fetch la view du backend pour update la liste de tournoi car un tournoi viens d'être cancel ou créer.
+}
+
+function isMyTournamentCancel(ownerTournamentID) {
+    if (!isUserInTournament(ownerTournamentID))
+        return
+    // Le tournoi dans lequel je suis a été annulé par le owner.
+}
+
+// Quand quelqu'un quitte un tournoi - Envpoyé par le Socket de celui qui leave un tournoi
+function someoneLeftLobby(leavingUserID, ownerTournamentID) {
+    // More Logic ?
+    removeParticipant(leavingUserID)
+}
+
+// Quand quelqu'un rejoins le tournoi - Envoyé par le Socket de celui qui join
+function someoneJoinLobby(joiningUserID) {
+    // More logic ?
+    addParticipant(joiningUserID)
+
+
+}
+
+function tournamentStarting() {
+    // Hide lobby, show game Modal + fetch backend to change status
+
+}
+
+
+///////////////////////////////////
+//// TRIGGER BY EVENT LISTENER ////
+///////////////////////////////////
+
+// Quand je crée un tournoi - Trigger par event listener
+export async function handleCreateTournamentClick() {
+    const response = await fetchMe('GET');
+    if (!response) return;
+    const lobbyModalEl = document.getElementById('lobbyTournamentModal')
+    const lobbyModal = bootstrap.Modal.getInstance(lobbyModalEl)
+    const myID = getMyID();
+    if (!myID)
+        return;
+
+    lobbyModalEl.addEventListener('hide.bs.modal', cancelTournament);
+
+    lobbyModalEl.dataset.id = myID
+    const user = await assembler(response);
+    addParticipant(user)
+    lobbyModal.show()
+
+
+    // Socket envoie signal à:
+    // - ceux qui ont le joinTournamentModal ouvert
+    // qu'un tournoi a été créé
+    // +
+    // (?) Créé tournoi dans backend
+}
+
+// Quand je suis owner et cancel mon tournoi - Trigger par event listener
+function cancelTournament() {
+
+    // Socket doit envoyer: cancelTournament
+    // backend delete le tournoi ?
+    document.getElementById('lobbyTournamentModal').removeEventListener('hide.bs.modal', cancelTournament);
+}
+
+// Quand je rejoins un tournoi - Trigger par event listener
+export function joinTournament(event) {
+    const currentElement = event.currentTarget
+    const ownerID = currentElement.dataset.id
+    console.log(currentElement)
+    
+    const lobbyModalEl = document.getElementById('lobbyTournamentModal')
+    lobbyModalEl.addEventListener('hide.bs.modal', leftTournament)
+
+    // Socket envoie joinTournament
+
+    // fetch backend tournoi pour display liste de joueur dans lobbyTournamentModal
+    switchModals('joinTournamentModal', 'lobbyTournamentModal')
+}
+
+// Quand je quitte le tournoi - Trigger par event listener
+async function leftTournament(event) {
+
+    // Socket envoie leftTournament
+    document.getElementById('lobbyTournamentModal').removeEventListener('hide.bs.modal', leftTournament);
+}
+
+// Quand le owner start le tournoi - Trigger par event listener
+export function startTournament(event) {
+    document.getElementById('lobbyTournamentModal').removeEventListener('hide.bs.modal', leftTournament);
+    document.getElementById('lobbyTournamentModal').removeEventListener('hide.bs.modal', cancelTournament);
+    
+    // ONLY TOURNAMENT OWNER CAN START
+    // [Socket envoie signal que le tournoi a commencé] - Hide lobby modal & Show game modal with bracket
+}
+
+/////////////
+/// UTILS ///
+/////////////
+
+// Sert à afficher la nouvelle personne qui join le lobby du tournoi,
+function addParticipant(user) {
     const participantList = document.getElementById('participantList');
     const li = document.createElement('li');
     li.className = 'list-group-item d-flex align-items-center';
+    li.dataset.id = user.id
 
     const img = document.createElement('img');
-    img.src = avatarUrl;
-    img.alt = nickname + ' Avatar';
+    img.src = user.avatar;
+    img.alt = user.nickname + ' Avatar';
     img.className = 'rounded-circle me-2';
     img.style.width = '30px';
     img.style.height = '30px';
 
     const text = document.createTextNode(nickname);
+    text.textContent = user.nickname
 
     li.appendChild(img);
     li.appendChild(text);
     participantList.appendChild(li);
+    updateWaitingMessage();
+}
+
+// Sert à retirer une personne du lobby quand elle quitte.
+function removeParticipant(userId) {
+    const participantList = document.getElementById('participantList');
+    const participants = participantList.querySelectorAll('li');
+
+    for (let participant of participants) {
+        if (participant.dataset.id == userId) {
+            participantList.removeChild(participant);
+            break;
+        }
+    }
     updateWaitingMessage();
 }
 
@@ -88,4 +189,13 @@ function updateWaitingMessage() {
         waitingMessage.classList.add('bg-warning');
         waitingMessage.classList.remove('bg-success');
     }
+}
+
+function isUserInTournament(ownerTournamentID) {
+    const lobbyModalEl = document.getElementById('lobbyTournamentModal')
+    const lobbyModal = bootstrap.Modal.getInstance(lobbyModalEl)
+    // fetch backend for better protection ? [Probably too much over head]
+    if (lobbyModal.isShown() && lobbyModalEl.dataset.id == ownerTournamentID)
+        return true;
+    return false;
 }

@@ -70,16 +70,18 @@ export function getMyID() {
     let userID = sessionStorage.getItem('user_id');
     if (!userID) {
         const token = sessionStorage.getItem('jwt');
-        if (token) {
-            const parts = token.split('.');
-            if (parts.length === 3) {
-                try {
-                    const decodedPayload = JSON.parse(atob(parts[1]));
-                    userID = decodedPayload.sub;
-                    sessionStorage.setItem('user_id', userID);
-                } catch (e) {
-                    console.error('Failed to decode JWT:', e);
-                }
+        if (!token) {
+            console.error('Can\'t get your Token. Please refresh page.')
+            return;
+        }
+        const parts = token.split('.');
+        if (parts.length === 3) {
+            try {
+                const decodedPayload = JSON.parse(atob(parts[1]));
+                userID = decodedPayload.sub;
+                sessionStorage.setItem('user_id', userID);
+            } catch (e) {
+                console.error('Failed to decode JWT:', e);
             }
         }
     }
@@ -90,11 +92,8 @@ export function getMyID() {
 export async function fetchUserById(userID = null) {
     if (!userID) {
         userID = getMyID();
-    }
-
-    if (!userID) {
-        console.error('No JWT in storage');
-        return;
+        if (!userID)
+            return;
     }
 
     const response = await fetchUser('GET', { id: userID });
@@ -109,18 +108,22 @@ export async function fetchUserById(userID = null) {
 
 export function switchModals(hideModalId, showModalId) {
     hideModal(hideModalId);
-    const showModal = bootstrap.Modal.getInstance(document.getElementById(showModalId));
-    showModal.show();
-
-    function hideModal(modalId) {
-        const modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
-        modal.hide();
-    }
+    showModal(showModalId)
 }
 
 export function hideModal(modalId) {
     const modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
     modal.hide();
+}
+
+export function showModal(modalId) {
+    const modal = bootstrap.Modal.getInstance(document.getElementById(modalId))
+    modal.hide()
+}
+
+export function isModalShown(modalId) {
+    const modal = bootstrap.Modal.getInstance(document.getElementById(modalId))
+    return modal.isShown()
 }
 
 //////////////////////////// SOCKET FUNCTIONS ////////////////////////////
