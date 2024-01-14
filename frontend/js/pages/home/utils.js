@@ -118,7 +118,7 @@ export function hideModal(modalId) {
 
 export function showModal(modalId) {
     const modal = bootstrap.Modal.getInstance(document.getElementById(modalId))
-    modal.hide()
+    modal.show()
 }
 
 export function isModalShown(modalId) {

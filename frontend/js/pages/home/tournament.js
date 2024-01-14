@@ -5,7 +5,6 @@ import { fetchUserById, getMyID, switchModals, showModal, isModalShown } from '.
 import { fetchMe } from '../../api/fetchData.js';
 
 export function socketTournamentUser(rType, concernUserID, ownerTournamentID) {
-    // Handle tournament creation and cancellation
     if (rType === 'createTournament' || rType === 'cancelTournament') {
         handleTournamentCreationOrCancellation(ownerTournamentID, rType);
     } else {
@@ -28,20 +27,61 @@ export function socketTournamentUser(rType, concernUserID, ownerTournamentID) {
 
 function handleTournamentCreationOrCancellation(ownerTournamentID, rType) {
     if (isModalShown('joinTournamentModal')) {
-        updateJoinTournament();
+        updateTournamentList();
     } else if (isModalShown('lobbyTournamentModal') && rType == 'cancelTournament') {
         isMyTournamentCancel(ownerTournamentID);
     }
 }
 
-function updateJoinTournament() {
+export function updateTournamentList() {
     // Fetch la view du backend pour update la liste de tournoi car un tournoi viens d'être cancel ou créer.
+    // const response = fetchTournament('GET')
+    // if(!response) return;
+    // const tournaments = assembler(response)
+
+    const tournamentList = document.getElementById('tournamentList');
+    tournamentList.innerHTML = '';
+
+    // tournaments.forEach(tournament => {
+    //     tournamentList.appendChild(createTournamentElement(tournament));
+    // });
+    function createTournamentElement(tournament) {
+        const li = document.createElement('li');
+        li.dataset.id = tournament.id
+        li.className = 'list-group-item d-flex justify-content-start align-items-center';
+        const img = document.createElement('img');
+        img.src = tournament.creatorAvatarUrl;
+        img.alt = "Creator's Avatar";
+        img.className = 'rounded-circle me-2';
+        img.style.width = '40px';
+        img.style.height = '40px';
+    
+        const div = document.createElement('div');
+        const h6 = document.createElement('h6');
+        h6.className = 'mb-0';
+        // h6.textContent = tournament.name;
+    
+        const small = document.createElement('small');
+        small.textContent = `${tournament.playerCount}/4 Players`;
+    
+        div.appendChild(h6);
+        div.appendChild(small);
+    
+        li.appendChild(img);
+        li.appendChild(div);
+    
+        li.addEventListener('click', joinTournament);
+        return li;
+    }
 }
 
 function isMyTournamentCancel(ownerTournamentID) {
     if (!isUserInTournament(ownerTournamentID))
         return
     // Le tournoi dans lequel je suis a été annulé par le owner.
+    switchModals('lobbyTournamentModal', 'joinTournamentModal')
+    displayToast('The tournament has been cancelled by the host.', 'Tournament Cancelled')
+    // Need to fetch something ? 
 }
 
 // Quand quelqu'un quitte un tournoi - Envpoyé par le Socket de celui qui leave un tournoi
@@ -54,12 +94,10 @@ function someoneLeftLobby(leavingUserID, ownerTournamentID) {
 function someoneJoinLobby(joiningUserID) {
     // More logic ?
     addParticipant(joiningUserID)
-
-
 }
 
 function tournamentStarting() {
-    // Hide lobby, show game Modal + fetch backend to change status
+    // Hide lobby, show tournamentPrep Modal + (?) fetch backend to change status of tournament
 
 }
 
@@ -83,12 +121,12 @@ export async function handleCreateTournamentClick() {
     lobbyModalEl.dataset.id = myID
     const user = await assembler(response);
     addParticipant(user)
+    const cancelBtn = document.getElementById('cancelTournamentBtn');
+    cancelBtn.textContent = 'Cancel Tournament';
     lobbyModal.show()
 
 
-    // Socket envoie signal à:
-    // - ceux qui ont le joinTournamentModal ouvert
-    // qu'un tournoi a été créé
+    // Socket doit envoyer: createTournament
     // +
     // (?) Créé tournoi dans backend
 }
@@ -97,8 +135,11 @@ export async function handleCreateTournamentClick() {
 function cancelTournament() {
 
     // Socket doit envoyer: cancelTournament
-    // backend delete le tournoi ?
+    // +
+    // (?) backend delete le tournoi
     document.getElementById('lobbyTournamentModal').removeEventListener('hide.bs.modal', cancelTournament);
+    switchModals('lobbyTournamentModal', 'gameMenuModal')
+    displayToast('The tournament has been cancelled successfully.', 'Tournament Cancelled')
 }
 
 // Quand je rejoins un tournoi - Trigger par event listener
@@ -110,7 +151,10 @@ export function joinTournament(event) {
     const lobbyModalEl = document.getElementById('lobbyTournamentModal')
     lobbyModalEl.addEventListener('hide.bs.modal', leftTournament)
 
-    // Socket envoie joinTournament
+    // Socket doit envoyer: joinTournament
+
+    const leaveBtn = document.getElementById('cancelTournamentBtn');
+    leaveBtn.textContent = 'Leave Tournament';
 
     // fetch backend tournoi pour display liste de joueur dans lobbyTournamentModal
     switchModals('joinTournamentModal', 'lobbyTournamentModal')
@@ -119,7 +163,8 @@ export function joinTournament(event) {
 // Quand je quitte le tournoi - Trigger par event listener
 async function leftTournament(event) {
 
-    // Socket envoie leftTournament
+    // Socket doit envoyer: leftTournament
+    switchModals('lobbyTournamentModal', 'joinTournamentModal')
     document.getElementById('lobbyTournamentModal').removeEventListener('hide.bs.modal', leftTournament);
 }
 

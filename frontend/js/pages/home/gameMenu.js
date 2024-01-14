@@ -2,7 +2,7 @@ import { assembler } from '../../api/assembler.js';
 import { GameState } from '../game/src/systems/GameStates.js';
 import interactiveSocket from './socket.js';
 import { getMyID } from './utils.js';
-import { handleCreateTournamentClick } from './tournament.js';
+import { handleCreateTournamentClick, updateTournamentList } from './tournament.js';
 import { switchModals, hideModal } from './utils.js';
 
 export function initGameMenu(world) {
@@ -62,8 +62,9 @@ function setupJoinTournamentButton() {
     const joinBtn = document.getElementById('joinTournamentBtn');
     joinBtn.addEventListener('click', () => {
         // FETCH ALL CURRENT TOURNAMENT AND DISPLAY IT
-
         switchModals('gameMenuModal', 'joinTournamentModal')
+
+        updateTournamentList()
     });
 }
 
