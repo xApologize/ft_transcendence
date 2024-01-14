@@ -97,7 +97,7 @@ function someoneJoinLobby(joiningUserID) {
 }
 
 function tournamentStarting() {
-    // Hide lobby, show tournamentPrep Modal + (?) fetch backend to change status of tournament
+    // Hide lobby, show tournamentPrep Modal
 
 }
 
@@ -156,7 +156,7 @@ export function joinTournament(event) {
     const leaveBtn = document.getElementById('cancelTournamentBtn');
     leaveBtn.textContent = 'Leave Tournament';
 
-    // fetch backend tournoi pour display liste de joueur dans lobbyTournamentModal
+    // fetch backend tournoi pour display liste de joueur dans lobbyTournamentModal de ce tournoi
     switchModals('joinTournamentModal', 'lobbyTournamentModal')
 }
 
@@ -173,8 +173,9 @@ export function startTournament(event) {
     document.getElementById('lobbyTournamentModal').removeEventListener('hide.bs.modal', leftTournament);
     document.getElementById('lobbyTournamentModal').removeEventListener('hide.bs.modal', cancelTournament);
     
-    // ONLY TOURNAMENT OWNER CAN START
-    // [Socket envoie signal que le tournoi a commencé] - Hide lobby modal & Show game modal with bracket
+    // [ONLY TOURNAMENT OWNER CAN START]
+    // Socket doit envoyer: startTournament
+    // + (?) fetch backend to change status of tournament
 }
 
 /////////////
@@ -230,10 +231,40 @@ function updateWaitingMessage() {
         waitingMessage.classList.add('bg-success');
         waitingMessage.classList.remove('bg-warning');
         waitingMessage.textContent = 'Game Ready to Start!';
+        showStartBtnForOwner();
     } else {
         waitingMessage.classList.add('bg-warning');
         waitingMessage.classList.remove('bg-success');
+        hideStartBtnForOwner();
     }
+}
+
+function showStartBtnForOwner() {
+    const startTournamentBtn = document.getElementById('startTournamentBtn')
+    if (!startTournament.classList.contains('d-none'))
+        return;
+    const userID = getMyID();
+    if (!userID) return;
+
+    // Check if user is owner of tournament
+    if (!isUserInTournament(userID))
+        return;
+
+    startTournament.classList.remove('d-none')
+}
+
+function hideStartBtnForOwner() {
+    const startTournamentBtn = document.getElementById('startTournamentBtn')
+    if (startTournament.classList.contains('d-none'))
+        return;
+    const userID = getMyID();
+    if (!userID) return;
+
+    // Check if user is owner of tournament
+    if (!isUserInTournament(userID))
+        return;
+
+    startTournament.classList.add('d-none')
 }
 
 function isUserInTournament(ownerTournamentID) {

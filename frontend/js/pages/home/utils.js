@@ -1,4 +1,4 @@
-import { fetchFriendChange, fetchUser } from '../../api/fetchData.js';
+import { fetchFriendChange, fetchIsToken, fetchUser } from '../../api/fetchData.js';
 import { assembler } from '../../api/assembler.js';
 import { getUserAndDisplay, updateOtherFriendButton, updateStatusMsg } from './otherUserProfile.js';
 import { updateSocial, updateSocialFriendCard } from './social.js';
@@ -66,13 +66,14 @@ export function setStatus(user) {
 }
 
 
-export function getMyID() {
+export async function getMyID() {
     let userID = sessionStorage.getItem('user_id');
     if (!userID) {
-        const token = sessionStorage.getItem('jwt');
+        let token = sessionStorage.getItem('jwt');
         if (!token) {
-            console.error('Can\'t get your Token. Please refresh page.')
-            return;
+            const response = await fetchIsToken();
+            if (!response) return;
+            token = sessionStorage.getItem('jwt');
         }
         const parts = token.split('.');
         if (parts.length === 3) {
