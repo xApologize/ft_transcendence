@@ -10,8 +10,7 @@ import { displayMatchHistory } from '../../components/matchHistory/matchHistory.
 import { displayUser } from './leftColumn.js';
 import { updateSocial } from './social.js';
 import { World } from '../game/src/World.js';
-import { loadFonts } from '../game/src/systems/Fonts.js';
-import { loadModel } from '../game/src/systems/Loader.js';
+import { loadAll } from '../game/src/systems/Loader.js';
 import interactiveSocket from './socket.js';
 import { closeInviteRequest } from './inviteGame.js';
 import { initGameMenu } from './gameMenu.js';
@@ -19,6 +18,8 @@ import { initGameMenu } from './gameMenu.js';
 
 export async function showHome() {
     try {
+		// await CheckIfRedirectionIsntHappening
+
         await loadHTMLPage('./js/pages/home/home.html');
         const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
         loadingModal.show();
@@ -151,8 +152,7 @@ function responsiveLeftColumn() {
 
 
 async function loadGame() {
-    await loadFonts();
-    await loadModel();
+    await loadAll()
     const gameContainer = document.querySelector('#sceneContainer')
     if (!gameContainer) {
         console.error('No game container, please refresh page.');

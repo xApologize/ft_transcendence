@@ -1,5 +1,6 @@
 import { assembler } from '../../api/assembler.js';
 import { fetchTournamentUser, fetchUser } from '../../api/fetchData.js';
+import { GameState } from '../game/src/systems/GameStates.js';
 import interactiveSocket from './socket.js';
 import { getMyID } from './utils.js';
 import { handleCreateTournamentClick } from './tournament.js';
@@ -37,16 +38,14 @@ function setupPlay1vs1Button(world) {
         hideModal('gameMenuModal');
         hideElement('toastContainer');
         hideElement('ui');
-        world.currentGameState = 'lookingForPlayer';
+        world.currentGameState = GameState.LookingForPlayer;
         showElement('lfp');
         interactiveSocket.sendMessageSocket(
             JSON.stringify({ type: 'Find Match' })
         );
-    
         function showElement(elementId) {
             document.getElementById(elementId).classList.remove('d-none');
         }
-        
         function hideElement(elementId) {
             document.getElementById(elementId).classList.add('d-none');
         }

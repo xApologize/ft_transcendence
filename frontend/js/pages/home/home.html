@@ -1,10 +1,15 @@
 <div class="container-fluid">
-    <div class="row fill">
-        <div id="sceneContainer" class="vw-100 vh-100 p-0"></div>
-
+	<div class="row fill">
+		<div id="sceneContainer" class="vw-100 vh-100 p-0"></div>
+		
         <div id="lfp" class="d-none text-center position-absolute">
-            Looking for player...
+			Looking for player...
         </div>
+		<div id="loading" class="d-none position-absolute bottom-50 start-50 translate-middle nickname">
+			<img src="https://i.gifer.com/origin/34/34338d26023e5515f6cc8969aa027bca.gif" alt="" style="width:100px">
+		</div>
+		<div id="left-player-name" class="d-none position-absolute bottom-0 text-start p-4 nickname">Left Player</div>
+		<div id="right-player-name" class="d-none position-absolute bottom-0 text-end p-4 nickname">Right Player</div>
 
         <div id="ui" class="container-fluid position-absolute">
             <div class="row vh-100">
@@ -525,3 +530,18 @@
         </div>
     </div>
 </div>
+
+<style>
+	#lfp {
+		font-size: 2rem;
+		color: white;
+		transform: translate(-50%, -50%);
+		top: 50%;
+		left: 50%;
+	}
+
+	.nickname {
+		font-size: 2rem;
+		color: white;
+	}
+</style>
