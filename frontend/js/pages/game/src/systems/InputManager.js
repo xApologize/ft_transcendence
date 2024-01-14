@@ -15,6 +15,13 @@ const InputMap = {
 		eventPressed: new Event("boostButtonPressed"),
 		eventHold: new Event("boostButtonHold"),
 		eventReleased: new Event("boostButtonReleased"),
+	},
+	reflectButton : {
+		value : false,
+		key : ["Space", "E"],
+		eventPressed: new Event("reflectButtonPressed"),
+		eventHold: new Event("reflectButtonHold"),
+		eventReleased: new Event("reflectButtonReleased"),
 	}
 }
 
@@ -33,6 +40,10 @@ class InputManager {
 			InputMap.boostButton.value = true;
 			document.dispatchEvent( InputMap.boostButton.eventPressed );
 		}
+		if ( InputMap.reflectButton.key.includes( event.code ) ) {
+			InputMap.reflectButton.value = true;
+			document.dispatchEvent( InputMap.reflectButton.eventPressed );
+		}
 
 		InputMap.movementAxis.value = this.inputStrength.x > this.inputStrength.y ? 1 :
 							this.inputStrength.x < this.inputStrength.y ? -1 : 0;
@@ -46,6 +57,10 @@ class InputManager {
 		if ( InputMap.boostButton.key.includes( event.code ) ) {
 			InputMap.boostButton.value = false;
 			document.dispatchEvent( InputMap.boostButton.eventReleased );
+		}
+		if ( InputMap.reflectButton.key.includes( event.code ) ) {
+			InputMap.reflectButton.value = false;
+			document.dispatchEvent( InputMap.reflectButton.eventReleased );
 		}
 
 		InputMap.movementAxis.value = this.inputStrength.x > this.inputStrength.y ? 1 :
@@ -65,6 +80,8 @@ class InputManager {
 	update( dt ) {
 		if ( InputMap.boostButton.value === true )
 			document.dispatchEvent( InputMap.boostButton.eventHold );
+		if ( InputMap.boostButton.value === true )
+			document.dispatchEvent( InputMap.reflectButton.eventHold );
 	}
 
 	delete() {

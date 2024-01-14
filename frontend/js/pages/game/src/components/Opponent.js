@@ -6,8 +6,8 @@ import {
 } from 'three';
 
 class Opponent extends Paddle {
-	constructor( geometry, material, position, socket ) {
-		super( geometry, material, position );
+	constructor( position ) {
+		super( position );
 
 		this.isOpponent = true;
 

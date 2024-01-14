@@ -4,103 +4,110 @@ import { Layers } from '../systems/Layers.js';
 import { InputMap } from '../systems/InputManager.js';
 import { Paddle } from './Paddle.js';
 import {
-	Color,
 	Raycaster,
 	Vector3
 } from 'three';
 import { World } from '../World.js';
 
+const initialSpeed = 6;
+const initialBoostSpeed = 35;
+
 class Player extends Paddle {
-	constructor( geometry, material, position, socket ) {
-		super( geometry, material, position );
+	constructor( position, id, nickname ) {
+		super( position, id, nickname );
 
 		this.isPlayer = true;
 
-		this.speed = 5;
+		this.speed = initialSpeed;
+		this.movement = new Vector3( 0, 0, 0 );
 
 		this.ray = new Raycaster();
 		this.ray.layers.set( Layers.Solid );
 
-		this.msg = {
+		this.wsData = {
+			id: this.participantId,
 			pos: this.position,
-			ballInst: undefined,
-			scored: false,
-			goalScoredId: undefined
+			ballInst: undefined
 		};
-
-		this.socket = socket;
-		// DEBUG COLOR
-		// this.socket.addEventListener("open", (event) => {
-			// this.material.color = new Color( 0x00aaff );
-			// this.socket.send("Joined");
-		// });
 
 		this.collider = new Collider( this );
 		this.updatable = new Updatable( this );
 
-		//TEMP WARNING NOT DESTROYED
-		document.addEventListener("boostButtonPressed", (e) => {
-			this.speed = 10;
-		});
-		document.addEventListener("boostButtonReleased", (e) => {
-			this.speed = 5;
-		});
+		this.boostButtonPressedEvent = (e) => {
+			if ( this.speed == initialSpeed )
+				this.speed = initialBoostSpeed;
+		};
+		this.boostButtonReleasedEvent = (e) => {
+			// this.speed = initialSpeed;
+		};
+		this.reflectButtonPressedEvent = (e) => {
+			const ball = World._instance.balls.ballInst[0];
+			if ( ball.pos.y < (this.position.y - this.length / 2) || ball.pos.y > (this.position.y + this.length / 2) ) {
+				console.log( "not in y range");
+				return;
+			}
+			if ( Math.abs( ball.pos.x - this.position.x ) > 2 ) {
+				console.log( "not close enough");
+				return;
+			}
+			if ( Math.sign( ball.dir.x ) != Math.sign( position.x ) ) {
+				console.log( "wrong way");
+				return;
+			}
+			console.log( "SMASH! ");
+			ball.speed *= 2;
+		};
+		if ( World._instance.currentGameMode == "Upgraded" ) {
+			document.addEventListener( "boostButtonPressed", this.boostButtonPressedEvent );
+			document.addEventListener( "boostButtonReleased", this.boostButtonReleasedEvent );
+			document.addEventListener( "reflectButtonPressed", this.reflectButtonPressedEvent );
+		}
 	}
 
 	fixedUpdate ( dt ) {
-		if ( InputMap.movementAxis.value === 0 )
-			return;
-		
-		if ( this.socket != undefined && this.socket.readyState === WebSocket.OPEN) {
-			this.socket.send( JSON.stringify( this.msg ) );
+		if ( World._instance.socket != undefined && World._instance.socket.readyState === WebSocket.OPEN) {
+			World._instance.socket.send( JSON.stringify( this.wsData ) );
 		}
 	}
 
 	update( dt ) {
-		if ( InputMap.movementAxis.value === 0 )
-			return;
-		// if ( InputMap.boostButton.value === true )
-		// 	this.speed = 10;
-		// else
-		// 	this.speed = 5;
+		this.movement = new Vector3( 0, InputMap.movementAxis.value, 0 );
 
-		let movement = new Vector3( 0, InputMap.movementAxis.value, 0 );
+		if ( this.speed > initialSpeed ) {
+			this.speed -= initialBoostSpeed * dt * 8;
+			if ( this.speed < initialSpeed )
+				this.speed = initialSpeed;
+		}
+		if ( this.movement.y === 0 )
+			return;
 		
-		this.ray.set( this.position, movement );
-		this.ray.far = 1.4 + this.speed * dt;
+		this.ray.set( this.position, this.movement );
+		this.ray.far = this.length / 2 + this.speed * dt;
 		const hits = this.ray.intersectObjects( Collider.getSolids() );
 		if ( hits.length > 0 ) {
-			this.position.add(movement.multiplyScalar( hits[0].distance - 1.4 ));
+			this.position.add( this.movement.clone().multiplyScalar( hits[0].distance - this.length / 2 ) );
 		} else {
-			this.position.add(movement.multiplyScalar( this.speed * dt ));
+			this.position.add( this.movement.clone().multiplyScalar( this.speed * dt ) );
 		}
 	}
 
 	onCollision( hit ) {
-		if ( this.socket != undefined && this.socket.readyState === WebSocket.OPEN) {
-			this.msg.ballInst = hit;
-			this.socket.send( JSON.stringify( this.msg ) );
+		if ( World._instance.socket != undefined && World._instance.socket.readyState === WebSocket.OPEN) {
+			this.wsData.ballInst = hit;
+			World._instance.socket.send( JSON.stringify( this.wsData ) );
 		}
-		this.msg.ballInst = undefined;
-	}
-
-	ballMissed( hit ) {
-		if ( this.socket != undefined && this.socket.readyState === WebSocket.OPEN) {
-			this.msg.ballInst = hit;
-			this.msg.scored = true;
-			this.msg.goalScoredId = this.position.x < 0 ? 2 : 1;
-			this.socket.send( JSON.stringify( this.msg ) );
-			World._instance.score.increment( this.msg.goalScoredId );
-		}
-		this.msg.ballInst = undefined;
-		this.msg.scored = false;
-		this.msg.goalScoredId = undefined;
+		this.wsData.ballInst = undefined;
 	}
 
 	delete() {
 		super.delete();
 		this.updatable.delete();
 		this.collider.delete();
+		if ( World._instance.currentGameMode == "Upgraded" ) {
+			document.removeEventListener( "boostButtonPressed", this.boostButtonPressedEvent );
+			document.removeEventListener( "boostButtonReleased", this.boostButtonReleasedEvent );
+			document.removeEventListener( "reflectButtonPressed", this.reflectButtonPressedEvent );
+		}
 	}
 }
 

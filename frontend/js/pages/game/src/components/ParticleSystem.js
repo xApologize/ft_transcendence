@@ -41,7 +41,10 @@ class ParticleSystem extends InstancedMesh {
 			this.inst[i] = {
 				id: i,
 				pos: new Vector3(),
-				direction: new Vector3().randomDirection(),
+				// direction: new Vector3().randomDirection(),
+				direction: parameters.direction.clone().add(
+					parameters.directionRandomRange.clone().multiply( new Vector3().randomDirection() )
+					),
 				speed: parameters.speed * (0.2 + Math.random() * 0.8),
 				speedOverTime: parameters.speedOverTime * Math.random(),
 				colliding: undefined
@@ -55,11 +58,13 @@ class ParticleSystem extends InstancedMesh {
 			const initialScale = parameters.scale.clone().add(
 				parameters.scaleRandomRange.clone().multiply( new Vector3().randomDirection() )
 				);
+			const initialDirection = parameters.direction.clone().add(
+				parameters.directionRandomRange.clone().multiply( new Vector3().randomDirection() )
+				);
 			// console.log( "Pos: ", initialPosition );
 			// console.log( "Rot: ", initialEulerRotation );
 			// console.log( "Scale: ", initialScale );
 			this.matrix.compose( initialPosition, new Quaternion().setFromEuler( initialEulerRotation ), initialScale );
-			// this.matrix.setPosition( new Vector3( 2, 0, 1 ) );
 			this.setMatrixAt( i, this.matrix );
 			this.instanceMatrix.needsUpdate = true;
 		}
