@@ -231,47 +231,33 @@ function updateWaitingMessage() {
         waitingMessage.classList.add('bg-success');
         waitingMessage.classList.remove('bg-warning');
         waitingMessage.textContent = 'Game Ready to Start!';
-        showStartBtnForOwner();
+        toggleStartBtnForOwner(true)
     } else {
         waitingMessage.classList.add('bg-warning');
         waitingMessage.classList.remove('bg-success');
-        hideStartBtnForOwner();
+        toggleStartBtnForOwner(false);
     }
 }
 
-function showStartBtnForOwner() {
-    const startTournamentBtn = document.getElementById('startTournamentBtn')
-    if (!startTournament.classList.contains('d-none'))
-        return;
+function toggleStartBtnForOwner(shouldShow) {
+    const startTournamentBtn = document.getElementById('startTournamentBtn');
     const userID = getMyID();
-    if (!userID) return;
+    if (!userID || !isUserInTournament(userID)) return;
 
-    // Check if user is owner of tournament
-    if (!isUserInTournament(userID))
-        return;
-
-    startTournament.classList.remove('d-none')
-}
-
-function hideStartBtnForOwner() {
-    const startTournamentBtn = document.getElementById('startTournamentBtn')
-    if (startTournament.classList.contains('d-none'))
-        return;
-    const userID = getMyID();
-    if (!userID) return;
-
-    // Check if user is owner of tournament
-    if (!isUserInTournament(userID))
-        return;
-
-    startTournament.classList.add('d-none')
+    const isCurrentlyHidden = startTournamentBtn.classList.contains('d-none');
+    
+    if (shouldShow && isCurrentlyHidden) {
+        startTournamentBtn.classList.remove('d-none');
+    } else if (!shouldShow && !isCurrentlyHidden) {
+        startTournamentBtn.classList.add('d-none');
+    }
 }
 
 function isUserInTournament(ownerTournamentID) {
     const lobbyModalEl = document.getElementById('lobbyTournamentModal')
     const lobbyModal = bootstrap.Modal.getInstance(lobbyModalEl)
     // fetch backend for better protection ? [Probably too much over head]
-    if (lobbyModal.isShown() && lobbyModalEl.dataset.id == ownerTournamentID)
+    if (lobbyModal._isShown && lobbyModalEl.dataset.id == ownerTournamentID)
         return true;
     return false;
 }

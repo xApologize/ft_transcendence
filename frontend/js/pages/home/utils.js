@@ -66,14 +66,13 @@ export function setStatus(user) {
 }
 
 
-export async function getMyID() {
+export function getMyID() {
     let userID = sessionStorage.getItem('user_id');
     if (!userID) {
         let token = sessionStorage.getItem('jwt');
         if (!token) {
-            const response = await fetchIsToken();
-            if (!response) return;
-            token = sessionStorage.getItem('jwt');
+            console.error('Error with jwt token. Please refresh your page.')
+            return; 
         }
         const parts = token.split('.');
         if (parts.length === 3) {
@@ -124,7 +123,7 @@ export function showModal(modalId) {
 
 export function isModalShown(modalId) {
     const modal = bootstrap.Modal.getInstance(document.getElementById(modalId))
-    return modal.isShown()
+    return modal._isShown
 }
 
 //////////////////////////// SOCKET FUNCTIONS ////////////////////////////
