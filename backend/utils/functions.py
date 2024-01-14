@@ -26,6 +26,7 @@ def first_token(response: HttpResponse, id: int) -> HttpResponse:
     response["new"] = "True"
     return add_double_jwt(response, id)
 
+
 def add_double_jwt(response: HttpResponse, id: int) -> HttpResponse:
     '''Create access and refresh token and add them to the http response'''
     REFRESH_DURATION: int = 7200
@@ -44,7 +45,6 @@ def decrypt_user_id(jwt_token: str) -> int:
     a negative integer'''
     EXPIRED: int = -1
     INVALID: int = -2
-
     try:
         decrypt_token: dict = jwt.decode(
             jwt_token, settings.SECRET_KEY, algorithms=["HS256"])
@@ -54,18 +54,18 @@ def decrypt_user_id(jwt_token: str) -> int:
     except jwt.InvalidTokenError:
         return INVALID
 
+
 def get_user_obj(request: HttpRequest) -> User:
     access_jwt_cookie = request.headers.get("jwt-access")
     if access_jwt_cookie is None:
         raise PermissionDenied("Couldn't locate access jwt")
-    
     decrypt_result = decrypt_user_id(access_jwt_cookie)
     if decrypt_result <= 0:
         # IF 404 DELETE COOKIE ?? IF LOG, MAKE NUKE, MAKE AND TOKEN STILL THERE, WILL NOT FIND USER
         raise Http404("User not found")
-
     user = get_object_or_404(User, id=decrypt_result)
     return user
+
 
 def generate_2fa_token(id: int) -> str:
     '''Function that will generate a jwt token with the id and secret'''

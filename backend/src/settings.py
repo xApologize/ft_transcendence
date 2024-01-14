@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
-import os # Import the ability to retrive OS env variables
+import os  # Import the ability to retrive OS env variables
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -34,7 +34,7 @@ SESSION_COOKIE_SECURE = True
 DEBUG = bool(os.environ.get("DEBUG", default=0))
 
 # DJANGO ALLOWED_HOSTS used with AllowedHostsOriginValidator.
-#ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
+# ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 ALLOWED_HOSTS = ['*']
 
 AUTH_USER_MODEL = 'user_profile.User'
@@ -94,7 +94,7 @@ WSGI_APPLICATION = 'src.wsgi.application'
 
 DATABASES = {
     'default': {
-        "ENGINE": 'django.db.backends.postgresql', # THIS IS SO STUPID FIX YOUR PDF
+        "ENGINE": 'django.db.backends.postgresql',  # THIS IS SO STUPID FIX YOUR PDF
         "NAME": os.environ.get("POSTGRES_DB", BASE_DIR / "db.sqlite3"),
         "USER": os.environ.get("POSTGRES_USER", "user"),
         "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "password"),

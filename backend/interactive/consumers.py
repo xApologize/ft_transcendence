@@ -37,11 +37,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         print("Disconected interactive socket code:", close_code)
         if self.init is False:
             return
-        if self.waiting is True:
-            print("REMOVED ENTRY FROM DB")
-            match_entry = await database_sync_to_async(
-                LookingForMatch.objects.filter(paddleA=self.user_id).first)()
-            await database_sync_to_async(match_entry.delete)()
+        await self.handle_lfm_cleaning()
         await self.handle_invite_cleaning()
         await self.set_user_status("OFF")
         await self.send_to_layer(NO_ECHO, self.user_id, "Refresh", "Logout")
@@ -69,7 +65,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             case "Refresh":
                 await self.send_to_layer(ECHO, self.user_id, "Refresh", rType)
             case "Social":
-                await self.send_to_layer_social(ECHO, self.user_id, "Social", rType, other_user_id)
+                await self.send_to_layer_social(ECHO, self.user_id, rType, other_user_id)
             case _:
                 await self.send_error("argument")
 
@@ -104,11 +100,17 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
                 send_type, {"type": type, "id": user_id, "rType": rType}, self.channel_name)
             )
 
-    async def send_to_layer_social(self, send_type: str, user_id: int, type: str, rType: str, other_user_id: int):
+    async def send_to_layer_social(
+            self, send_type: str, user_id: int, rType: str, other_user_id: int):
         await self.channel_layer.group_send(
             "interactive",
             create_layer_dict(
-                send_type, {"type": "Refresh", "id": user_id, "rType": rType, "other_user_id": other_user_id}, self.channel_name)
+                send_type, {
+                    "type": "Refresh",
+                    "id": user_id,
+                    "rType": rType,
+                    "other_user_id": other_user_id
+                }, self.channel_name)
             )
 
     async def send_error(self, error: str):
@@ -124,7 +126,8 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         return user.status
 
     async def find_match(self):
-        match_entry = await database_sync_to_async(LookingForMatch.objects.filter(paddleB=-1).first)()
+        match_entry = await database_sync_to_async(
+            LookingForMatch.objects.filter(paddleB=-1).first)()
         if match_entry:
             await self.setup_match(match_entry)
         else:
@@ -165,7 +168,8 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             await self.send_error("lfm")
 
     @staticmethod
-    async def create_math_handle(first_id: int, second_id: int, paddle: str, me: str, opponent: str) -> dict:
+    async def create_math_handle(
+            first_id: int, second_id: int, paddle: str, me: str, opponent: str) -> dict:
         handle = {
             "type": "Found Match",
             "handle": f"wss/pong/{first_id}{second_id}/{paddle}",
@@ -222,7 +226,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
                 "Receiver": recipient_id
                 })
         await self.send(text_data=json.dumps(host_match_handle))
-    
+
     async def handle_invite_cleaning(self) -> None:
         invite: MatchInvite = await database_sync_to_async(
             MatchInvite.objects.filter(user_inviting__id=self.user_id).first)()
@@ -242,6 +246,13 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
                 })
         print("Invite clean done")
 
+    async def handle_lfm_cleaning(self) -> None:
+        if self.waiting is True:
+            print("REMOVED ENTRY FROM DB")
+            match_entry = await database_sync_to_async(
+                LookingForMatch.objects.filter(paddleA=self.user_id).first)()
+            await database_sync_to_async(match_entry.delete)()
+
 
 def create_layer_dict(type: str, message: str, sender: str) -> dict:
     return {"type": type, "message": message, "sender": sender}
@@ -254,7 +265,7 @@ async def send_refresh(user_id: int) -> None:
     if channel_layer is not None:
         await channel_layer.group_send(
             "interactive", {
-                "type": "send_message_echo", 
+                "type": "send_message_echo",
                 "message": {"type": "Refresh", "id": user_id, "rType": "User"}
                 }
             )
