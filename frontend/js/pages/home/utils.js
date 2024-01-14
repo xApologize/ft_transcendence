@@ -122,8 +122,8 @@ export function showModal(modalId) {
 }
 
 export function isModalShown(modalId) {
-    const modal = bootstrap.Modal.getInstance(document.getElementById(modalId))
-    return modal._isShown
+    const modalElement = document.getElementById(modalId);
+    return modalElement && modalElement.classList.contains('show');
 }
 
 //////////////////////////// SOCKET FUNCTIONS ////////////////////////////

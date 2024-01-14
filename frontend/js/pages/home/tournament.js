@@ -254,10 +254,10 @@ function toggleStartBtnForOwner(shouldShow) {
 }
 
 function isUserInTournament(ownerTournamentID) {
-    const lobbyModalEl = document.getElementById('lobbyTournamentModal')
-    const lobbyModal = bootstrap.Modal.getInstance(lobbyModalEl)
-    // fetch backend for better protection ? [Probably too much over head]
-    if (lobbyModal._isShown && lobbyModalEl.dataset.id == ownerTournamentID)
+    const lobbyModalEl = document.getElementById('lobbyTournamentModal');
+    const isModalShown = lobbyModalEl.classList.contains('show');
+    if (isModalShown && lobbyModalEl.dataset.id == ownerTournamentID) {
         return true;
+    }
     return false;
 }
