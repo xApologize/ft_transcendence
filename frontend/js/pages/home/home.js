@@ -61,7 +61,7 @@ export async function displayEveryone() {
 
 async function initPage() {
     const user = await fetchMe('GET');
-    if (!user) return;
+    if (!user) return false;
     const userAssembled = await assembler(user);
     if (!userAssembled || typeof userAssembled !== 'object') {
         console.error('Error assembling user. Please refresh page.');
