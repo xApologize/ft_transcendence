@@ -1,9 +1,9 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 from interactive.models import LookingForMatch
-from asgiref.sync import sync_to_async
 from user_profile.models import User
 from game_invite.models import MatchInvite
 from channels.layers import get_channel_layer
+from channels.db import database_sync_to_async
 import json
 
 ECHO = "send_message_echo"
@@ -39,9 +39,9 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             return
         if self.waiting is True:
             print("REMOVED ENTRY FROM DB")
-            match_entry = await sync_to_async(
+            match_entry = await database_sync_to_async(
                 LookingForMatch.objects.filter(paddleA=self.user_id).first)()
-            await sync_to_async(match_entry.delete)()
+            await database_sync_to_async(match_entry.delete)()
         await self.handle_invite_cleaning()
         await self.set_user_status("OFF")
         await self.send_to_layer(NO_ECHO, self.user_id, "Refresh", "Logout")
@@ -86,10 +86,10 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
 
     async def send_message_and_clean_db(self, data: any):
         if self.channel_name == data["sender"]:
-            match_entry = await sync_to_async(
+            match_entry = await database_sync_to_async(
                 LookingForMatch.objects.filter(paddleA=self.user_id).first)()
             print("REMOVED ENTRY FROM DB")
-            await sync_to_async(match_entry.delete)()
+            await database_sync_to_async(match_entry.delete)()
             self.waiting = False
             await self.send(text_data=json.dumps(data["message"]))
 
@@ -115,16 +115,16 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({"type": "Invalid", "error": error}))
 
     async def set_user_status(self, status: str):
-        user: User = await sync_to_async(User.objects.get)(pk=self.user_id)
+        user: User = await database_sync_to_async(User.objects.get)(pk=self.user_id)
         user.status = status
-        await sync_to_async(user.save)()
+        await database_sync_to_async(user.save)()
 
     async def get_user_status(self) -> str:
-        user: User = await sync_to_async(User.objects.get)(pk=self.user_id)
+        user: User = await database_sync_to_async(User.objects.get)(pk=self.user_id)
         return user.status
 
     async def find_match(self):
-        match_entry = await sync_to_async(LookingForMatch.objects.filter(paddleB=-1).first)()
+        match_entry = await database_sync_to_async(LookingForMatch.objects.filter(paddleB=-1).first)()
         if match_entry:
             await self.setup_match(match_entry)
         else:
@@ -132,7 +132,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
 
     async def create_lfm(self):
         try:
-            await sync_to_async(LookingForMatch.objects.create)(
+            await database_sync_to_async(LookingForMatch.objects.create)(
                     paddleA=self.user_id, mailbox_a=self.channel_name, paddleB=-1)
             self.waiting: bool = True
         except Exception as e:
@@ -142,7 +142,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
     async def setup_match(self, match: any):
         match.paddleB = self.user_id
         try:
-            await sync_to_async(match.save)()
+            await database_sync_to_async(match.save)()
             player_a_nick = await self.get_user_nickname(match.paddleA)
             player_b_nick = await self.get_user_nickname(match.paddleB)
             handle_a: dict = await self.create_math_handle(
@@ -186,17 +186,17 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
 
     @staticmethod
     async def get_user_nickname(user_id: int) -> str:
-        user = await sync_to_async(User.objects.get)(pk=user_id)
+        user = await database_sync_to_async(User.objects.get)(pk=user_id)
         return user.nickname
 
     async def game_invite(self) -> None:
-        invite: MatchInvite = await sync_to_async(
+        invite: MatchInvite = await database_sync_to_async(
             MatchInvite.objects.filter(user_inviting__id=self.user_id).first)()
         if invite is None:
             print("FATAL ERROR wrong querry sent to the game invite")
             return
         host_nickname: str = await self.get_user_nickname(self.user_id)
-        recipient_id: int = await sync_to_async(lambda: invite.recipient.pk)()
+        recipient_id: int = await database_sync_to_async(lambda: invite.recipient.pk)()
         recipient_nickname: str = await self.get_user_nickname(recipient_id)
         host_match_handle: dict = await self.create_math_handle(
             self.user_id, recipient_id, "A", host_nickname, recipient_nickname
@@ -204,7 +204,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         recipient_match_handle: dict = await self.create_math_handle(
                 self.user_id, recipient_id, "B", recipient_nickname, host_nickname
         )
-        await sync_to_async(invite.delete)()
+        await database_sync_to_async(invite.delete)()
         await self.channel_layer.group_send(
             "interactive", {
                 "type": MATCH_INVITE,
@@ -224,12 +224,12 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps(host_match_handle))
     
     async def handle_invite_cleaning(self) -> None:
-        invite: MatchInvite = await sync_to_async(
+        invite: MatchInvite = await database_sync_to_async(
             MatchInvite.objects.filter(user_inviting__id=self.user_id).first)()
         if invite is None:
             return
-        recipient_id: int = await sync_to_async(lambda: invite.recipient.pk)()
-        await sync_to_async(invite.delete)()
+        recipient_id: int = await database_sync_to_async(lambda: invite.recipient.pk)()
+        await database_sync_to_async(invite.delete)()
         await self.channel_layer.group_send(
             "interactive", {
                 "type": MATCH_INVITE,
