@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "user_profile",
     "friend_list",
     "match_history",
+    "tournament",
     "interactive",
 ]
 
