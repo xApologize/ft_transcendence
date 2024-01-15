@@ -62,6 +62,8 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
                 await self.find_match()
             case "Game Invite":
                 await self.game_invite()
+            case "Tournament":
+                await self.tournament_handler(data)
             case "Refresh":
                 await self.send_to_layer(ECHO, self.user_id, "Refresh", rType)
             case "Social":
@@ -252,6 +254,17 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             match_entry = await database_sync_to_async(
                 LookingForMatch.objects.filter(paddleA=self.user_id).first)()
             await database_sync_to_async(match_entry.delete)()
+    
+    async def tournament_handler(self, data) -> None:
+        try:
+            event_type: str = data["event"]
+        except Exception:
+            print("FATAL ERROR")
+            return
+        # match event_type:
+        #     case "Join":
+        #     case "Leave":
+        #     case "Refresh":
 
 
 def create_layer_dict(type: str, message: str, sender: str) -> dict:
