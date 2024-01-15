@@ -28,11 +28,13 @@ function updateSocialSocket(user) {
 }
 
 function updateOtherProfileSocket(user) {
-    const otherUserModal = document.getElementById('otherUserInfo')
-    var modalInstance = bootstrap.Modal.getInstance(otherUserModal);
-    if (modalInstance && modalInstance._isShown) {
-        const id = otherUserModal.querySelector('.modal-content').dataset.id;
-        if (id == user.id) {
+    const otherUserModal = document.getElementById('otherUserInfo');
+    const isModalShown = otherUserModal.classList.contains('show');
+    if (isModalShown) {
+        const modalContent = otherUserModal.querySelector('.modal-content');
+        const id = modalContent ? modalContent.dataset.id : null;
+
+        if (id && id == user.id) {
             let nickname = otherUserModal.querySelector('#userNickname');
             nickname.textContent = user.nickname;
 
@@ -165,7 +167,8 @@ async function createNotifications(rType, userId, otherUserId, currentUser) {
 // To use when user login
 export async function newUser(userID) {
     const apiParam = { id: userID };
-    if (getMyID() == userID) 
+    const currentUser = getMyID()
+    if (!currentUser || currentUser == userID) 
         return;
     try {
         const response = await fetchUser('GET', apiParam);

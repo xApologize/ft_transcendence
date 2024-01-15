@@ -1,7 +1,9 @@
 import { toastComponent } from '../../components/toast/toast.js';
 
 let toastQueue = [];
-export function displayToast(toastMsg, toastTitle, imgUrl) {
+export function displayToast(toastMsg, toastTitle, imgUrl = '') {
+    if (imgUrl === '')
+        imgUrl = 'https://png.pngtree.com/png-clipart/20190904/ourmid/pngtree-80-3d-text-png-image_18456.jpg';
     const toastPrep = prepToastInfo(toastMsg, toastTitle, imgUrl);
     if (document.querySelectorAll('#toastContainer .toast.show').length >= 5) {
         toastQueue.push(toastPrep);

@@ -1,110 +1,72 @@
+import { assembler } from '../../api/assembler.js';
 import { GameState } from '../game/src/systems/GameStates.js';
 import interactiveSocket from './socket.js';
+import { getMyID } from './utils.js';
+import { handleCreateTournamentClick, updateTournamentList } from './tournament.js';
+import { switchModals, hideModal } from './utils.js';
 
+export function initGameMenu(world) {
+    initMainGameMenu(world)
+    initLobbyTournament()
+    initJoinTournament()
+}
 
-function getFriendsForInvite() {
-    
+function initLobbyTournament() {
+    // const lobbyModal = document.getElementById('lobbyTournamentModal');
+    // lobbyModal.addEventListener('hide.bs.modal', () => {
+    //     const lobbyModalListener = document.getElementById('lobbyTournamentModal');
+    //     lobbyModalListener.dataset.id = ''
+    //     const participantList = lobbyModalListener.querySelector('#participantList')
+    //     participantList.innerHTML = '';
+    // });
+}
+
+function initJoinTournament() {
+    document.getElementById('cancelJoinTournament').addEventListener('click', () => {
+        switchModals('joinTournamentModal', 'gameMenuModal');
+    });
 }
 
 
 function initMainGameMenu(world) {
+    setupPlay1vs1Button(world);
+    setupCreateTournamentButton();
+    setupJoinTournamentButton();
+}
+
+function setupPlay1vs1Button(world) {
     const play1vs1 = document.getElementById('play1vs1');
-    play1vs1.addEventListener('click', () => {
-        const modal = bootstrap.Modal.getInstance(document.getElementById('gameMenuModal'));
-        modal.hide()
-        document.getElementById('toastContainer').classList.add('d-none')
-        document.getElementById('ui').classList.add('d-none');
+    play1vs1.addEventListener('click', () => handlePlay1vs1Click(world));
+    function handlePlay1vs1Click(world) {
+        hideModal('gameMenuModal');
+        hideElement('toastContainer');
+        hideElement('ui');
         world.currentGameState = GameState.LookingForPlayer;
-        document.getElementById('lfp').classList.remove('d-none');
+        showElement('lfp');
         interactiveSocket.sendMessageSocket(
             JSON.stringify({ type: 'Find Match' })
         );
-    });
+        function showElement(elementId) {
+            document.getElementById(elementId).classList.remove('d-none');
+        }
+        function hideElement(elementId) {
+            document.getElementById(elementId).classList.add('d-none');
+        }
+    }
+}
 
-    document.getElementById('createTournamentBtn').addEventListener('click', () => {
-        const gameMenuModal = bootstrap.Modal.getInstance(document.getElementById('gameMenuModal'));
-        gameMenuModal.hide()
-        const createTournamentModal = bootstrap.Modal.getInstance(document.getElementById('createTournamentModal'));
-        createTournamentModal.show()
-    });
+function setupCreateTournamentButton() {
+    const createBtn = document.getElementById('createTournamentBtn');
+    createBtn.addEventListener('click', handleCreateTournamentClick);
+}
 
-    document.getElementById('joinTournamentBtn').addEventListener('click', function(event) {
-        const gameMenuModal = bootstrap.Modal.getInstance(document.getElementById('gameMenuModal'));
-        gameMenuModal.hide()
-        const joinModal = bootstrap.Modal.getInstance(document.getElementById('joinTournamentModal'));
-        joinModal.show();
+function setupJoinTournamentButton() {
+    const joinBtn = document.getElementById('joinTournamentBtn');
+    joinBtn.addEventListener('click', () => {
+        // FETCH ALL CURRENT TOURNAMENT AND DISPLAY IT
+        switchModals('gameMenuModal', 'joinTournamentModal')
+
+        updateTournamentList()
     });
 }
 
-function initCreateTournamentMenu() {
-    const tournamentForm = document.getElementById('tournamentForm');
-
-    tournamentForm.addEventListener('submit', function(event) {
-        event.preventDefault();
-        const tournamentName = document.getElementById('tournamentName');
-
-        const lobbyTitle = document.getElementById('lobbyTournamentModalLabel');
-        lobbyTitle.textContent = tournamentName.value;  // Set the text of the title
-        tournamentName.value = '';
-
-        const createTournamentModal = bootstrap.Modal.getInstance(document.getElementById('createTournamentModal'));
-        createTournamentModal.hide();
-
-        const lobbyTournamentModal = bootstrap.Modal.getInstance(document.getElementById('lobbyTournamentModal'));
-        lobbyTournamentModal.show();
-    });
-
-    document.getElementById('cancelCreateTournament').addEventListener('click', function(event) {
-        const createTournamentModal = bootstrap.Modal.getInstance(document.getElementById('createTournamentModal'));
-        createTournamentModal.hide();
-        const gameMenuModal = bootstrap.Modal.getInstance(document.getElementById('gameMenuModal'));
-        gameMenuModal.show();
-    });
-}
-
-
-function initLobbyTournament() {
-    document.getElementById('inviteTournamentBtn').addEventListener('click', function(event) {
-        const inviteModal = bootstrap.Modal.getInstance(document.getElementById('inviteTournamentModal'));
-        inviteModal.show();
-    });
-
-}
-
-function initInviteTournament() {
-    const inviteTournamentModal = document.getElementById('inviteTournamentModal');
-    inviteTournamentModal.addEventListener('show.bs.modal', function(event) {
-        inviteTournamentModal.classList.add('bg-dark');
-        inviteTournamentModal.classList.add('bg-opacity-50')
-        getFriendsForInvite();
-    });
-
-    inviteTournamentModal.addEventListener('hidden.bs.modal', function(event) {
-        inviteTournamentModal.classList.remove('bg-dark');
-        inviteTournamentModal.classList.remove('bg-opacity-50')
-    });
-}
-
-
-function initJoinTournament() {
-    document.getElementById('cancelJoinTournament').addEventListener('click', function(event) {
-        const joinModal = bootstrap.Modal.getInstance(document.getElementById('joinTournamentModal'));
-        joinModal.hide();
-        const gameMenuModal = bootstrap.Modal.getInstance(document.getElementById('gameMenuModal'));
-        gameMenuModal.show();
-    });
-}
-
-export function initGameMenu(world) {
-    new bootstrap.Modal(document.getElementById('gameMenuModal'));
-    new bootstrap.Modal(document.getElementById('createTournamentModal'));
-    new bootstrap.Modal(document.getElementById('lobbyTournamentModal'));
-    new bootstrap.Modal(document.getElementById('inviteTournamentModal'))
-    new bootstrap.Modal(document.getElementById('joinTournamentModal'))
-
-    initMainGameMenu(world)
-    initCreateTournamentMenu()
-    initLobbyTournament()
-    initInviteTournament()
-    initJoinTournament()
-}
