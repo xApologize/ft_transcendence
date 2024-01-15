@@ -117,18 +117,5 @@
             "winner": 1,
             "loser": 4
         }
-    },
-    {
-        "model": "tournament_history.TournamentHistory",
-        "pk": 1,
-        "fields": {
-            "winner": 1,
-            "loser": 2,
-            "winner_score": 69,
-            "loser_score": 420,
-            "tournament_ID": 1,
-            "match_position": 2,
-            "time_of_match": "2023-01-01T12:00:00Z"
-        }
     }
 ]
