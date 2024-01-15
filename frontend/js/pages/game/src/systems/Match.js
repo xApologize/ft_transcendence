@@ -4,14 +4,14 @@ import { Player } from '../components/Player.js';
 import { Opponent } from '../components/Opponent.js';
 import { GameState } from './GameStates.js';
 import { insertCoinSound } from './Loader.js';
-import interactiveSocket from '../../../home/socket.js';
 import { Updatable } from '../modules/Updatable.js';
+import { fetchMatchHistory } from '../../../../api/fetchData.js';
 
 let world;
 let lastSocketTime;
+const maxScore = 3;
 
 const divNicknames = [ 'left-player-name', 'right-player-name' ];
-
 
 class Match {
 	constructor( path, myId, myNickname, opponentNickname ) {
@@ -26,16 +26,17 @@ class Match {
 		for (let i = 0; i < 2; i++) {
 			if ( i == myId ) {
 				this.participants.push( new Player( new Vector3( -7.2 + 14.4 * i, 0, 0 ), i ) );
-				this.participants[i].participantNickname = myNickname;
+				this.participants[i].nickname = myNickname;
 				this.self = this.participants[i];
 			} else {
 				this.participants.push( new Opponent( new Vector3( -7.2 + 14.4 * i, 0, 0 ), i ) );
-				this.participants[i].participantNickname = opponentNickname;
+				this.participants[i].nickname = opponentNickname;
+				this.opponent = this.participants[i];
 			}
-			this.participants[i].participantId = i;
+			this.participants[i].sideId = i;
 			this.participants[i].position.setZ( -1 );
 			document.getElementById(divNicknames[i]).classList.remove("d-none");
-			document.getElementById(divNicknames[i]).innerHTML = this.participants[i].participantNickname;
+			document.getElementById(divNicknames[i]).innerHTML = this.participants[i].nickname;
 		}
 		world.terrain.leftGoalZone.paddle = this.participants[0];
 		world.terrain.rightGoalZone.paddle = this.participants[1];
@@ -160,6 +161,46 @@ class Match {
 		this.socket.removeEventListener( "message", this.onWebsocketReceivedEvent );
 
 		this.updatable.delete();
+	}
+
+
+	increment( playerId ) {
+		this.participants[playerId - 1].score += 1;
+
+		world.score.setText(
+			( this.participants[0].score < 10 ? "0" : "" ) + this.participants[0].score, 
+			( this.participants[1].score < 10 ? "0" : "" ) + this.participants[1].score
+		);
+
+
+		document.getElementById('leftName').innerHTML = this.participants[0].nickname;
+		document.getElementById('leftScore').innerHTML = this.participants[0].score;
+		document.getElementById('rightScore').innerHTML = this.participants[1].score;
+		document.getElementById('rightName').innerHTML = this.participants[1].nickname;
+
+		if ( this.participants[this.self.sideId].score >= maxScore ) {
+			document.getElementById("resultTitle").innerHTML = "You WIN!";
+
+			this.tryPostMatch( this.self.sideId, this.opponent.sideId );
+			this.endMatch();
+		}
+		else if ( this.participants[this.opponent.sideId].score >= maxScore ) {
+			document.getElementById("resultTitle").innerHTML = "You LOST!";
+		}
+	}
+
+	tryPostMatch( winnerId, loserId ) {
+		const data = {
+			winner: this.participants[winnerId].nickname,
+			loser: this.participants[loserId].nickname,
+			winner_score: this.participants[winnerId].score,
+			loser_score: this.participants[loserId].score
+		}
+		const response = fetchMatchHistory( 'POST', data );
+		if ( !response ) {
+			console.error( "No response from POST MatchHistory" );
+			return;
+		}
 	}
 }
 

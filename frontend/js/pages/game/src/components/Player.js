@@ -25,7 +25,7 @@ class Player extends Paddle {
 		this.ray.layers.set( Layers.Solid );
 
 		this.wsData = {
-			id: this.participantId,
+			id: this.sideId,
 			pos: this.position,
 			ballInst: undefined
 		};
