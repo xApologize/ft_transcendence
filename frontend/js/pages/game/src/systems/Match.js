@@ -4,14 +4,14 @@ import { Player } from '../components/Player.js';
 import { Opponent } from '../components/Opponent.js';
 import { GameState } from './GameStates.js';
 import { insertCoinSound } from './Loader.js';
-import interactiveSocket from '../../../home/socket.js';
 import { Updatable } from '../modules/Updatable.js';
+import { fetchMatchHistory } from '../../../../api/fetchData.js';
 
 let world;
 let lastSocketTime;
+const maxScore = 3;
 
 const divNicknames = [ 'left-player-name', 'right-player-name' ];
-
 
 class Match {
 	constructor( path, myId, myNickname, opponentNickname ) {
@@ -26,16 +26,17 @@ class Match {
 		for (let i = 0; i < 2; i++) {
 			if ( i == myId ) {
 				this.participants.push( new Player( new Vector3( -7.2 + 14.4 * i, 0, 0 ), i ) );
-				this.participants[i].participantNickname = myNickname;
+				this.participants[i].nickname = myNickname;
 				this.self = this.participants[i];
 			} else {
 				this.participants.push( new Opponent( new Vector3( -7.2 + 14.4 * i, 0, 0 ), i ) );
-				this.participants[i].participantNickname = opponentNickname;
+				this.participants[i].nickname = opponentNickname;
+				this.opponent = this.participants[i];
 			}
-			this.participants[i].participantId = i;
+			this.participants[i].sideId = i;
 			this.participants[i].position.setZ( -1 );
 			document.getElementById(divNicknames[i]).classList.remove("d-none");
-			document.getElementById(divNicknames[i]).innerHTML = this.participants[i].participantNickname;
+			document.getElementById(divNicknames[i]).innerHTML = this.participants[i].nickname;
 		}
 		world.terrain.leftGoalZone.paddle = this.participants[0];
 		world.terrain.rightGoalZone.paddle = this.participants[1];
@@ -125,12 +126,34 @@ class Match {
 	}
 
 	endMatch() {
-		world.currentGameState = GameState.InMenu;
+		world.currentGameState = GameState.MatchEnding;
 
-		world.camera.viewLarge( 1 , function() {
-			document.getElementById('ui').classList.remove("d-none");
-			document.getElementById('toastContainer').classList.remove('d-none')
-		} );
+		document.getElementById('result').classList.remove('d-none')
+		// if TOURNAMENT
+		// add other function to button
+		// else
+		document.getElementById('resultButton').onclick = function() {
+			document.getElementById('result').classList.add('d-none')
+			world.camera.viewLarge( 1 , function() {
+				document.getElementById('ui').classList.remove("d-none");
+				document.getElementById('toastContainer').classList.remove('d-none')
+				world.changeStatus( "ONL" );
+				world.currentGameState = GameState.InMenu;
+			} );
+		}
+
+		document.getElementById('leftName').innerHTML = this.participants[0].nickname;
+		document.getElementById('leftScore').innerHTML = this.participants[0].score;
+		document.getElementById('rightScore').innerHTML = this.participants[1].score;
+		document.getElementById('rightName').innerHTML = this.participants[1].nickname;
+		if ( this.self.score < maxScore && this.opponent.score < maxScore )
+			document.getElementById("resultTitle").innerHTML = "Disconnected";
+		if ( this.self.score >= maxScore )
+			document.getElementById("resultTitle").innerHTML = "YOU WIN!";
+		if ( this.opponent.score >= maxScore )
+			document.getElementById("resultTitle").innerHTML = "YOU LOST!";
+
+
 		this.participants.forEach(element => {
 			element.delete();
 		});
@@ -140,6 +163,7 @@ class Match {
 				document.getElementById(element).classList.add("d-none");
 		});
 
+		world.balls.hide();
 		world.balls.updatable.setEnabled(false);
 		world.balls.renderer.setEnabled(false);
 	
@@ -148,8 +172,36 @@ class Match {
 
 		this.socket.removeEventListener( "message", this.onWebsocketReceivedEvent );
 
-		world.changeStatus( "ONL" );
 		this.updatable.delete();
+	}
+
+
+	increment( sideId ) {
+		this.participants[sideId - 1].score += 1;
+
+		world.score.setText(
+			( this.participants[0].score < 10 ? "0" : "" ) + this.participants[0].score, 
+			( this.participants[1].score < 10 ? "0" : "" ) + this.participants[1].score
+		);
+
+		if ( this.self.score >= maxScore ) {
+			this.tryPostWin();
+			this.endMatch();
+		}
+	}
+
+	tryPostWin() {
+		const data = {
+			winner: this.self.nickname,
+			winner_score: this.self.score,
+			loser: this.opponent.nickname,
+			loser_score: this.opponent.score
+		}
+		const response = fetchMatchHistory( 'POST', data );
+		if ( !response ) {
+			console.error( "No response from POST MatchHistory" );
+			return;
+		}
 	}
 }
 
