@@ -265,6 +265,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         #     case "Join":
         #     case "Leave":
         #     case "Refresh":
+        #     case "Start":
 
 
 def create_layer_dict(type: str, message: str, sender: str) -> dict:
