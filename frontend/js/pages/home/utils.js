@@ -1,4 +1,4 @@
-import { fetchFriendChange, fetchUser } from '../../api/fetchData.js';
+import { fetchFriendChange, fetchIsToken, fetchUser } from '../../api/fetchData.js';
 import { assembler } from '../../api/assembler.js';
 import { getUserAndDisplay, updateOtherFriendButton, updateStatusMsg } from './otherUserProfile.js';
 import { updateSocial, updateSocialFriendCard } from './social.js';
@@ -69,17 +69,19 @@ export function setStatus(user) {
 export function getMyID() {
     let userID = sessionStorage.getItem('user_id');
     if (!userID) {
-        const token = sessionStorage.getItem('jwt');
-        if (token) {
-            const parts = token.split('.');
-            if (parts.length === 3) {
-                try {
-                    const decodedPayload = JSON.parse(atob(parts[1]));
-                    userID = decodedPayload.sub;
-                    sessionStorage.setItem('user_id', userID);
-                } catch (e) {
-                    console.error('Failed to decode JWT:', e);
-                }
+        let token = sessionStorage.getItem('jwt');
+        if (!token) {
+            console.error('Error with jwt token. Please refresh your page.')
+            return; 
+        }
+        const parts = token.split('.');
+        if (parts.length === 3) {
+            try {
+                const decodedPayload = JSON.parse(atob(parts[1]));
+                userID = decodedPayload.sub;
+                sessionStorage.setItem('user_id', userID);
+            } catch (e) {
+                console.error('Failed to decode JWT:', e);
             }
         }
     }
@@ -87,7 +89,13 @@ export function getMyID() {
 }
 
 
-export async function fetchUserById(userID) {
+export async function fetchUserById(userID = null) {
+    if (!userID) {
+        userID = getMyID();
+        if (!userID)
+            return;
+    }
+
     const response = await fetchUser('GET', { id: userID });
     if (!response)
         return;
@@ -98,5 +106,26 @@ export async function fetchUserById(userID) {
     return assemble[0];
 }
 
+export function switchModals(hideModalId, showModalId) {
+    hideModal(hideModalId);
+    showModal(showModalId)
+}
+
+export function hideModal(modalId) {
+    console.log("HIDE ", modalId)
+    const modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
+    modal.hide();
+}
+
+export function showModal(modalId) {
+    console.log("SHOW ", modalId)
+    const modal = bootstrap.Modal.getInstance(document.getElementById(modalId))
+    modal.show();
+}
+
+export function isModalShown(modalId) {
+    const modalElement = document.getElementById(modalId);
+    return modalElement && modalElement.classList.contains('show');
+}
 
 //////////////////////////// SOCKET FUNCTIONS ////////////////////////////

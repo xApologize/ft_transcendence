@@ -26,8 +26,10 @@ def check_info_update(data, allowed_fields):
         # Check field length constraints
         if len(value) < 3:
             return HttpResponseBadRequest(f'{field} is too short')
-        if (len(value) > 20 and field != 'email') or (len(value) > 50 and field == 'email'):
-            return HttpResponseBadRequest(f'{field} is too long')
+        if not all(ord(char) < 128 for char in value):
+            return HttpResponseBadRequest(f'{field} contains non-ASCII characters')
+            
+
 
     return None
 
@@ -56,6 +58,9 @@ def check_info_signup(data, allowed_fields):
             return HttpResponseBadRequest(f'{field} is too short')
         if (len(value) > 20 and field != 'email' or len(value) > 50 and field == 'email'):
             return HttpResponseBadRequest(f'{field} is too long')
+        if not all(ord(char) < 128 for char in value):
+            return HttpResponseBadRequest(f'{field} contains non-ASCII characters')
+
     return None
 
 

@@ -1,7 +1,7 @@
-import { fetchGameInvite } from '../../api/fetchData.js';
+import { fetchGameInvite, fetchUser } from '../../api/fetchData.js';
 import { assembler } from '../../api/assembler.js';
 import interactiveSocket from './socket.js';
-import { getMyID } from './utils.js';
+import { getMyID, hideModal } from './utils.js';
 import { updateSocial } from './social.js';
 import { checkModal } from '../../router.js';
 import { displayToast } from './toastNotif.js';
@@ -51,9 +51,7 @@ function handleResponseType(rType, userID) {
         case 'acceptGameInvite':
             console.log('Accept Game Invite');
             showModal('loadingModal');
-            // Additional logic for accepting the invite and joining the game.
             break;
-        // Add more cases if necessary
     }
 }
 
@@ -95,7 +93,11 @@ export async function handleInviteInteraction(refresh_type, id, other_user_id) {
     if (refresh_type == "acceptGameInvite" || refresh_type == "refuseGameInvite") {
         await handleInviteUpdate(refresh_type, id, other_user_id, userID)
     } else if (refresh_type == 'sendGameInvite' && userID == other_user_id) {
-        displayToast("You have received a game invite from " + other_user_id, "Game Invite", "https://png.pngtree.com/png-clipart/20190904/ourmid/pngtree-80-3d-text-png-image_18456.jpg")
+        const response = await fetchUser('GET', {'id': id})
+        if (!response) return;
+        const userToNotif = await assembler(response);
+        console.log(userToNotif)
+        displayToast("You have received a game invite from " + userToNotif[0].nickname, "Game Invite", userToNotif[0].avatar)
         await updateSocial('gameInvite')
     } else if (userID == other_user_id) {
         await updateSocial('gameInvite')
@@ -133,6 +135,7 @@ function handleSelfAcceptedInvite() {
     // I ACCEPTED THE INVITE, I NEED TO JOIN THE GAME HERE
 
     ///////////////////////////
+    // loadingModal.hide()
 }
 
 async function handleOtherUserAcceptedInvite(request_id) {
@@ -149,18 +152,15 @@ async function handleOtherUserAcceptedInvite(request_id) {
         loadingModal.show();
     }
 
-    const response = await fetchGameInvite('DELETE', {'recipient': request_id});
-    if (!response) return;
+    interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Game Invite"}));
+    // const response = await fetchGameInvite('DELETE', {'recipient': request_id});
+    // if (!response) return;
 
-    const data = await assembler(response);
-    handleResponseErrors(data, response.status);
+    // const data = await assembler(response);
+    // handleResponseErrors(data, response.status);
 
-    notifySocialUpdate(request_id);
+    // notifySocialUpdate(request_id);
 
-    //  I AM THE HOST, I NEED TO CREATE THE GAME LOGIC HERE
-
-
-    ///////////////////////////
     function resetModalContentID(inviteModalEl) {
         const modalContentDatasetID = inviteModalEl.querySelector('.modal-content');
         modalContentDatasetID.dataset.id = '';

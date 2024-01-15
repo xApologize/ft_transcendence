@@ -128,8 +128,8 @@ class Match {
 		world.currentGameState = GameState.InMenu;
 
 		world.camera.viewLarge( 1 , function() {
-			if ( document.getElementById('ui') )
-				document.getElementById('ui').classList.remove("d-none");
+			document.getElementById('ui').classList.remove("d-none");
+			document.getElementById('toastContainer').classList.remove('d-none')
 		} );
 		this.participants.forEach(element => {
 			element.delete();
