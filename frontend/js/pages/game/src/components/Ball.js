@@ -161,6 +161,8 @@ class Ball extends InstancedMesh {
 		for (let i = 0; i < this.count; i++) {
 			this.hideInst(this.ballInst[i]);
 		}
+
+		World._instance.terrain.panel.bufferMat.uniforms.refPos.value = new Vector2( 0, 0 );
 	}
 
 	hideInst( ballInst ) {

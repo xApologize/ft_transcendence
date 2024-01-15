@@ -125,12 +125,22 @@ class Match {
 	}
 
 	endMatch() {
-		world.currentGameState = GameState.InMenu;
+		world.currentGameState = GameState.MatchEnding;
 
-		world.camera.viewLarge( 1 , function() {
-			document.getElementById('ui').classList.remove("d-none");
-			document.getElementById('toastContainer').classList.remove('d-none')
-		} );
+		document.getElementById('result').classList.remove('d-none')
+		// if TOURNAMENT
+		// add other function to button
+		// else
+		document.getElementById('resultButton').onclick = function() {
+			document.getElementById('result').classList.add('d-none')
+			world.camera.viewLarge( 1 , function() {
+				document.getElementById('ui').classList.remove("d-none");
+				document.getElementById('toastContainer').classList.remove('d-none')
+				world.changeStatus( "ONL" );
+				world.currentGameState = GameState.InMenu;
+			} );
+		}
+
 		this.participants.forEach(element => {
 			element.delete();
 		});
@@ -140,6 +150,7 @@ class Match {
 				document.getElementById(element).classList.add("d-none");
 		});
 
+		world.balls.hide();
 		world.balls.updatable.setEnabled(false);
 		world.balls.renderer.setEnabled(false);
 	
@@ -148,7 +159,6 @@ class Match {
 
 		this.socket.removeEventListener( "message", this.onWebsocketReceivedEvent );
 
-		world.changeStatus( "ONL" );
 		this.updatable.delete();
 	}
 }
