@@ -149,18 +149,15 @@ async function handleOtherUserAcceptedInvite(request_id) {
         loadingModal.show();
     }
 
-    const response = await fetchGameInvite('DELETE', {'recipient': request_id});
-    if (!response) return;
+    interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Game Invite"}));
+    // const response = await fetchGameInvite('DELETE', {'recipient': request_id});
+    // if (!response) return;
 
-    const data = await assembler(response);
-    handleResponseErrors(data, response.status);
+    // const data = await assembler(response);
+    // handleResponseErrors(data, response.status);
 
-    notifySocialUpdate(request_id);
+    // notifySocialUpdate(request_id);
 
-    //  I AM THE HOST, I NEED TO CREATE THE GAME LOGIC HERE
-
-
-    ///////////////////////////
     function resetModalContentID(inviteModalEl) {
         const modalContentDatasetID = inviteModalEl.querySelector('.modal-content');
         modalContentDatasetID.dataset.id = '';
