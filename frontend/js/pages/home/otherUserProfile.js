@@ -2,7 +2,6 @@ import { fetchUser, fetchFriendChange } from '../../api/fetchData.js';
 import { matchHistoryComponent } from '../../components/matchHistory/matchHistory.js';
 import { handleFriendAction } from './utils.js';
 
-// TO DO: ERROR HANDLING
 export async function displayOtherUserProfile(event) {
     let ancestor = event.currentTarget;
     while (ancestor && !ancestor.hasAttribute('data-userid-flag')) {
@@ -163,12 +162,6 @@ async function displayOtherMatchHistory(currentUserInfo) {
         matchEntry.querySelector('#loser').textContent = match.loser_username;
         matchEntry.querySelector('#loserScore').textContent = match.loser_score;
         matchEntry.classList.add('hover-row-white');
-
-        // matchEntry.querySelector('#otherDateOfMatch').id = '';
-        // matchEntry.querySelector('#otherWinnerUsername').id = '';
-        // matchEntry.querySelector('#otherWinnerScore').id = '';
-        // matchEntry.querySelector('#otherLoserUsername').id = '';
-        // matchEntry.querySelector('#otherLoserScore').id = '';
 
         matchHistoryContainer.appendChild(matchEntry);
     });

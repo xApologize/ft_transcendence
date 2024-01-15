@@ -8,7 +8,10 @@
             "avatar": "",
             "status": "ONL",
             "admin": false,
-            "password": "abc"
+            "password": "abc",
+            "two_factor_auth": false,
+            "intra_id": null,
+            "account_creation_method": "signup"
         }
     },
     {
@@ -20,7 +23,10 @@
             "avatar": "",
             "status": "ONL",
             "admin": false,
-            "password": "abc"
+            "password": "abc",
+            "two_factor_auth": false,
+            "intra_id": null,
+            "account_creation_method": "signup"
         }
     },
     {
@@ -32,7 +38,10 @@
             "avatar": "",
             "status": "ING",
             "admin": false,
-            "password": "abc"
+            "password": "abc",
+            "two_factor_auth": false,
+            "intra_id": null,
+            "account_creation_method": "signup"
         }
     },
     {
@@ -44,7 +53,10 @@
             "avatar": "",
             "status": "OFF",
             "admin": true,
-            "password": "pbkdf2_sha256$390000$80cswTzjCoGsGCtkulEwOg$hPnG+2ALlJ45KyuQxG0D1GRyqWQHCJ5nobmMATQ3rWg="
+            "password": "pbkdf2_sha256$390000$80cswTzjCoGsGCtkulEwOg$hPnG+2ALlJ45KyuQxG0D1GRyqWQHCJ5nobmMATQ3rWg=",
+            "two_factor_auth": false,
+            "intra_id": null,
+            "account_creation_method": "signup"
         }
     },
     {
@@ -56,49 +68,10 @@
             "avatar": "",
             "status": "OFF",
             "admin": true,
-            "password": "pbkdf2_sha256$390000$D5BizRq5c0D05Z4ObkDaJu$cNhvilc05PdpPVbr9NBdCFYiafvfVKHSmYd2VR/foZ8="
-        }
-    },
-    {
-        "model": "friend_list.FriendList",
-        "pk": 1,
-        "fields": {
-            "friend1": 4,
-            "friend2": 5,
-            "status": "ACCEPTED",
-            "timeLastUpdate": "2023-01-01T12:00:00Z"
-
-        }
-    },
-    {
-        "model": "friend_list.FriendList",
-        "pk": 2,
-        "fields": {
-            "friend1": 5,
-            "friend2": 1,
-            "status": "ACCEPTED",
-            "timeLastUpdate": "2023-01-01T12:00:00Z"
-        }
-    },
-    {
-        "model": "friend_list.FriendList",
-        "pk": 3,
-        "fields":{
-            "friend1": 4,
-            "friend2": 3,
-            "status": "ACCEPTED",
-            "timeLastUpdate": "2023-01-01T12:00:00Z"
-        }
-    },
-    {
-        "model": "friend_list.FriendList",
-        "pk": 4,
-        "fields":{
-            "friend1": 5,
-            "friend2": 2,
-            "status": "ACCEPTED",
-            "timeLastUpdate": "2023-01-01T12:00:00Z"
-
+            "password": "pbkdf2_sha256$390000$D5BizRq5c0D05Z4ObkDaJu$cNhvilc05PdpPVbr9NBdCFYiafvfVKHSmYd2VR/foZ8=",
+            "two_factor_auth": false,
+            "intra_id": null,
+            "account_creation_method": "signup"
         }
     },
     {

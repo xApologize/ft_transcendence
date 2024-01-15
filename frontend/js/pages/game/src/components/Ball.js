@@ -1,29 +1,45 @@
+import { World } from '../World.js';
 import { Collider } from '../modules/Collider.js';
 import { Renderer } from '../modules/Renderer.js';
 import { Updatable } from '../modules/Updatable.js';
+import { GameState } from '../systems/GameStates.js';
 import { Layers } from '../systems/Layers.js';
 import {
+	CylinderGeometry,
 	InstancedMesh,
 	Matrix4,
+	MeshStandardMaterial,
 	Quaternion,
 	Raycaster,
+	SphereGeometry,
+	Vector2,
 	Vector3
 } from 'three';
 
+const _baseSpeed = 5.0;
+const _baseSize = 0.2;
+
 class Ball extends InstancedMesh {
-	constructor( geometry, material, count ) {
-		super( geometry, material, count );
+	constructor( count ) {
+		super(
+			new CylinderGeometry( _baseSize, _baseSize, 0.4 ),
+			// new SphereGeometry( 0.2 ),
+			new MeshStandardMaterial({ color: 'white' }),
+			count
+		);
+		this.geometry.rotateX( Math.PI / 2 );
+
+		this.castShadow = true;
+		this.receiveShadow = true;
 
 		this.renderer = new Renderer( this );
 		this.renderer.setLayers( Layers.Default, Layers.Ball );
 		this.updatable = new Updatable( this );
 
-		this.radius = this.geometry.parameters.radius;
-
 		this.ballInst = [];
 		for (let i = 0; i < this.count; i++) {
 			this.ballInst[i] = { id: i, pos: new Vector3(), dir: new Vector3(), speed: 0, colliding: undefined };
-			this.reset( this.ballInst[i] );
+			this.hideInst( this.ballInst[i] );
 		}
 		
 		
@@ -41,7 +57,7 @@ class Ball extends InstancedMesh {
 		let closerHit = undefined;
 		let offset = undefined;
 		for (let i = 0; i < 8; i++) {
-			const origin = new Vector3( Math.cos( i * (Math.PI / 4) ) * this.radius, Math.sin( i * (Math.PI / 4) ) * this.radius, 0 );
+			const origin = new Vector3( Math.cos( i * (Math.PI / 4) ) * _baseSize, Math.sin( i * (Math.PI / 4) ) * _baseSize, 0 );
 			origin.add( ballInst.pos );
 			this.ray.set( origin, ballInst.dir );
 			this.ray.far = dist;
@@ -49,7 +65,7 @@ class Ball extends InstancedMesh {
 			if ( hits.length > 0 ) {
 				if (closerHit == undefined || hits[0].distance < closerHit.distance ) {
 					closerHit = hits[0];
-					offset = new Vector3( Math.cos( i * (Math.PI / 4) ) * this.radius, Math.sin( i * (Math.PI / 4) ) * this.radius, 0 );
+					offset = new Vector3( Math.cos( i * (Math.PI / 4) ) * _baseSize, Math.sin( i * (Math.PI / 4) ) * _baseSize, 0 );
 					continue;
 				}
 			}
@@ -63,20 +79,31 @@ class Ball extends InstancedMesh {
 					ballInst.speed = 0;
 					return;
 				}
-				this.initInst( ballInst );
-				if ( typeof closerHit.object.onCollision === "function" )
-					closerHit.object.onCollision( ballInst );
+				if ( typeof closerHit.object.onCollision !== "function" )
+					console.error( "Missing onCollision method on Goal object" );
+				closerHit.object.onCollision( ballInst );
 				return;
 			}
 			closerHit.normal.setZ( 0 );
 			
-			ballInst.dir.reflect( closerHit.normal );
+			// ballInst.dir.reflect( closerHit.normal );
 			if ( closerHit.object.layers.isEnabled( Layers.Player ) ) {
-				if ( ballInst.dir.dot( closerHit.object.dir ) < 0 ) {
-					ballInst.speed *= 1.2;
-					ballInst.dir.y += closerHit.point.y - closerHit.object.position.y;
+				if ( ballInst.dir.dot( closerHit.object.dir ) > 0 ) {
+					ballInst.dir.reflect( closerHit.point.x < 0 ? new Vector3( 1, 0, 0 ) : new Vector3( -1, 0, 0 ) );
+
+					ballInst.speed *= 1.1;
+					ballInst.dir.y += ( closerHit.point.y - closerHit.object.position.y ) / ( closerHit.object.length / 2 );
+					ballInst.dir.normalize();
+					ballInst.dir.y /= 2;
+
+					const dot = ballInst.dir.dot( closerHit.object.movement );
+					if ( ballInst.speed < dot * closerHit.object.speed )
+						ballInst.speed = dot * closerHit.object.speed;
 				}
 			}
+			else
+				ballInst.dir.reflect( closerHit.normal );
+
 			ballInst.dir.normalize();
 			ballInst.pos.copy( closerHit.point.clone().sub(offset) );
 
@@ -106,6 +133,10 @@ class Ball extends InstancedMesh {
 			this.setMatrixAt( i, this.matrix );
 			this.instanceMatrix.needsUpdate = true;
 		}
+		World._instance.terrain.panel.bufferMat.uniforms.refPos.value = new Vector2(
+				this.ballInst[0].pos.x + this.ballInst[0].dir.x * this.ballInst[0].speed * dt,
+				this.ballInst[0].pos.y + this.ballInst[0].dir.y * this.ballInst[0].speed * dt
+			);
 	}
 
 	fixedUpdate( dt ) {
@@ -113,7 +144,7 @@ class Ball extends InstancedMesh {
 			this.calcCollision( this.ballInst[i], this.ballInst[i].speed * dt, 5 );
 	
 			// Reset if OOB
-			if ( Math.abs( this.ballInst[i].pos.x ) > 8 || Math.abs( this.ballInst[i].pos.y ) > 5 ) {
+			if ( Math.abs( this.ballInst[i].pos.x ) > 12 || Math.abs( this.ballInst[i].pos.y ) > 8 ) {
 				console.error( "OOB" );
 				this.initInst( this.ballInst[i] );
 			}
@@ -121,16 +152,14 @@ class Ball extends InstancedMesh {
 		this.lastFixedUpdate = new Date().getTime();
 	}
 
-	resetAll() {
+	hide() {
 		for (let i = 0; i < this.count; i++) {
-			this.reset(this.ballInst[i]);
+			this.hideInst(this.ballInst[i]);
 		}
 	}
 
-	reset( ballInst ) {
+	hideInst( ballInst ) {
 		ballInst.pos.set( 0, 0, -1 );
-		ballInst.dir.set( 1, 1, 0 );
-		ballInst.dir.normalize();
 		ballInst.speed = 0;
 		ballInst.colliding = undefined;
 	}
@@ -141,9 +170,9 @@ class Ball extends InstancedMesh {
 		}
 	}
 
-	initInst( ballInst ) {
+	initInst( ballInst, side = 1 ) {
 		ballInst.pos.set( 0, 0, 0 );
-		ballInst.dir.set( 1, ballInst.id, 0 );
+		ballInst.dir.set( side, Math.cos( ballInst.id ), 0 );
 		ballInst.dir.normalize();
 		ballInst.speed = 0;
 		ballInst.colliding = undefined;
@@ -156,12 +185,13 @@ class Ball extends InstancedMesh {
 		this.setMatrixAt( ballInst.id, this.matrix );
 		this.instanceMatrix.needsUpdate = true;
 
-		let promise = new Promise( resolve => {
+		new Promise( resolve => {
 			setTimeout(() => resolve(this), 1000);
 		})
-		promise.then(
-			function(result) {
-				ballInst.speed = 5;
+		.then(
+			function() {
+				if ( World._instance.currentGameState == GameState.InMatch )
+					ballInst.speed = _baseSpeed;
 			}
 		)
 	}

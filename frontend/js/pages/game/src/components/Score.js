@@ -1,24 +1,27 @@
-import { DigitalFont } from '../systems/Fonts.js';
+import { digitalFont } from '../systems/Loader.js';
 import { Renderer } from '../modules/Renderer.js';
 import { World } from '../World.js';
 import { Color, Mesh, MeshStandardMaterial, Object3D, ShapeGeometry } from 'three';
+import { fetchMatchHistory } from '../../../../api/fetchData.js';
 
 let scoreTab = [0, 0];
-const maxScore = 6;
+const maxScore = 3;
 
 class Score extends Object3D {
-	constructor( font ) {
+	constructor() {
 		super();
 
 		const mat = new MeshStandardMaterial( { color: 'Orange' } );
 		mat.emissive = new Color( 0xffff00 );
 		const mat_shade = new MeshStandardMaterial( { color: 'Brown' } );
-		const shape = DigitalFont.generateShapes( "88", 1 );
+		const shape = digitalFont.generateShapes( "88", 1 );
 		let geo = new ShapeGeometry( shape );
 		this.leftScore = new Mesh( geo, mat );
 		this.rightScore = new Mesh( geo, mat );
 		this.leftScoreShadow = new Mesh( geo, mat_shade );
+		this.leftScoreShadow.receiveShadow = true;
 		this.rightScoreShadow = new Mesh( geo, mat_shade );
+		this.rightScoreShadow.receiveShadow = true;
 		this.add( this.leftScore, this.rightScore );
 		this.add( this.leftScoreShadow, this.rightScoreShadow );
 		
@@ -33,11 +36,11 @@ class Score extends Object3D {
 	}
 	
 	setText( l, r ) {
-		const l_shape = DigitalFont.generateShapes( l, 1 );
+		const l_shape = digitalFont.generateShapes( l, 1 );
 		const l_geo = new ShapeGeometry( l_shape );
 		this.leftScore.geometry = l_geo;
 
-		const r_shape = DigitalFont.generateShapes( r, 1 );
+		const r_shape = digitalFont.generateShapes( r, 1 );
 		const r_geo = new ShapeGeometry( r_shape );
 		this.rightScore.geometry = r_geo;
 	}
@@ -52,14 +55,27 @@ class Score extends Object3D {
 			scoreTab.push( 0 );
 		scoreTab[playerId - 1] += 1;
 
-		this.setText( "0" + scoreTab[0],  "0" + scoreTab[1] );
-		if (scoreTab[0] >= maxScore) {
-			World._instance.endMatch();
-			this.setText( "00", "--" );
+		this.setText( (scoreTab[0] < 10 ? "0" : "") + scoreTab[0],  (scoreTab[1] < 10 ? "0" : "") + scoreTab[1] );
+		if ( scoreTab[World._instance.match.self.participantId] >= maxScore ) {
+			this.tryPostMatch( World._instance.match.self.participantId );
+			World._instance.match.endMatch();
 		}
-		if (scoreTab[1] >= maxScore) {
-			World._instance.endMatch();
-			this.setText( "--", "00" );
+	}
+
+	tryPostMatch( winnerId, loserId ) {
+		const participants = World._instance.match.participants;
+		loserId = winnerId == 0 ? 1 : 0;
+
+		const data = {
+			winner: participants[winnerId].participantNickname,
+			loser: participants[loserId].participantNickname,
+			winner_score: scoreTab[winnerId],
+			loser_score: scoreTab[loserId]
+		}
+		const response = fetchMatchHistory( 'POST', data );
+		if ( !response ) {
+			console.error( "No response from POST MatchHistory" );
+			return;
 		}
 	}
 }

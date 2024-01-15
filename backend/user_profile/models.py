@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 
+
 class User(AbstractBaseUser, PermissionsMixin):
     status_enum = [
         ("ONL", "Online"),
@@ -12,7 +13,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         ('signup', 'Signup Page'),
         ('intra', 'Intra Login'),
     ]
-    account_creation_method = models.CharField(max_length=10, choices=ACCOUNT_CREATION_METHODS, default='signup')
+    account_creation_method = models.CharField(
+        max_length=10, choices=ACCOUNT_CREATION_METHODS, default='signup')
     intra_id = models.IntegerField(null=True, blank=True, default=None)
 
     nickname = models.CharField(max_length=50, unique=True)
@@ -23,5 +25,5 @@ class User(AbstractBaseUser, PermissionsMixin):
     password = models.CharField(max_length=128, default="abc")
     two_factor_auth = models.BooleanField(default=False)
 
-    USERNAME_FIELD = 'nickname' 
+    USERNAME_FIELD = 'nickname'
     REQUIRED_FIELDS = ['password']
