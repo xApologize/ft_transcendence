@@ -20,7 +20,7 @@
     }
 }
 
-@media only screen and (max-height: 688px) {
+/* @media only screen and (max-height: 688px) {
     .lowerRow {
         max-height: 300px;
     }
@@ -36,7 +36,7 @@
     .lowerRow {
         max-height: 200px;
     }
-}
+} */
 
 .fill {
     height: 100%;
@@ -153,6 +153,50 @@
     border-right: 1px solid #dee2e6; /* This color is a light grey, common for Bootstrap borders */
 }
 
+#copyright {
+    background-color: var(--bg-main-second);
+    right: 0;
+    position: absolute;
+    width: 100%;
+    height: 25px;
+}
+
+.hover-pointer:hover {
+    cursor: pointer;
+    background-color: var(--bg-accent);
+}
+
+.about-box {
+    position: absolute;
+    background-color: var(--bg-accent);
+    height: 100px;
+    width: 200px;
+    border-radius: 10px;
+}
+
+#ddemers-box {
+    bottom: 10px;
+    right: 30%;
+}
+
+#jalevesq-box {
+    bottom: 10px;
+    right: 18%;
+}
+
+#fgeslin-box {
+    bottom: 10px;
+    right: 5%;
+}
+
+#jrossign-box {
+    bottom: 10px;
+    right: 0%;
+}
+
+.link-primary {
+    color: white !important;
+}
 #joinTournamentModal .list-group-item:hover {
     background-color: #d6d8db;  /* Darker shade for hover, adjust color as needed */
     cursor: pointer;
