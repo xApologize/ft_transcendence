@@ -183,6 +183,7 @@ class Me(View):
 
         avatar_data = get_avatar_data(user)
         user_data = {
+            'id': user.pk,
             'nickname': user.nickname,
             'email': user.email,
             'avatar': avatar_data,

@@ -54,7 +54,7 @@ INSTALLED_APPS = [
     "friend_list",
     "match_history",
     "tournament_history",
-    "interactive"
+    "interactive",
 ]
 
 MIDDLEWARE = [
