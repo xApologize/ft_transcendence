@@ -218,6 +218,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
                     "rType": "refreshGameInvite",
                     "other_user_id": recipient_id
                     }, "Receiver": recipient_id
+                    
                 })
         await self.channel_layer.group_send(
             "interactive", {
