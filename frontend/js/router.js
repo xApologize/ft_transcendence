@@ -74,6 +74,7 @@ export function checkModal(modalToClose = null) {
         'lobbyTournamentModal',
         'joinTournamentModal',
         'createTournamentModal',
+        'tournamentInfoModal'
     ];
 
     if (modalToClose) {

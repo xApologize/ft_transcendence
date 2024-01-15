@@ -12,17 +12,19 @@ export function initGameMenu(world) {
 }
 
 function initLobbyTournament() {
-    const lobbyModal = document.getElementById('lobbyTournamentModal');
-    lobbyModal.addEventListener('hide.bs.modal', () => {
-        const lobbyModalListener = document.getElementById('lobbyTournamentModal');
-        lobbyModalListener.dataset.id = ''
-        const participantList = lobbyModalListener.querySelector('#participantList')
-        participantList.innerHTML = '';
-    });
+    // const lobbyModal = document.getElementById('lobbyTournamentModal');
+    // lobbyModal.addEventListener('hide.bs.modal', () => {
+    //     const lobbyModalListener = document.getElementById('lobbyTournamentModal');
+    //     lobbyModalListener.dataset.id = ''
+    //     const participantList = lobbyModalListener.querySelector('#participantList')
+    //     participantList.innerHTML = '';
+    // });
 }
 
 function initJoinTournament() {
-    document.getElementById('cancelJoinTournament').addEventListener('click', () => switchModals('joinTournamentModal', 'gameMenuModal'));
+    document.getElementById('cancelJoinTournament').addEventListener('click', () => {
+        switchModals('joinTournamentModal', 'gameMenuModal');
+    });
 }
 
 

@@ -116,7 +116,9 @@ function setupHomeModal() {
     // Game Menu Modal
     new bootstrap.Modal(document.getElementById('gameMenuModal'));
     new bootstrap.Modal(document.getElementById('lobbyTournamentModal'));
-    new bootstrap.Modal(document.getElementById('joinTournamentModal'))
+    new bootstrap.Modal(document.getElementById('joinTournamentModal'));
+    new bootstrap.Modal(document.getElementById('tournamentInfoModal'));
+
 
     // Invite + other user modal
     new bootstrap.Modal(document.getElementById('otherUserInfo'));

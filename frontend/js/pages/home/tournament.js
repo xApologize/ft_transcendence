@@ -1,7 +1,7 @@
 import { assembler } from '../../api/assembler.js';
 import interactiveSocket from './socket.js';
 import { displayToast } from './toastNotif.js';
-import { fetchUserById, getMyID, switchModals, showModal, isModalShown } from './utils.js';
+import { fetchUserById, getMyID, switchModals, showModal, isModalShown, hideModal } from './utils.js';
 import { fetchMe } from '../../api/fetchData.js';
 
 export function socketTournamentUser(rType, concernUserID, ownerTournamentID) {
@@ -97,8 +97,8 @@ function someoneJoinLobby(joiningUserID) {
 }
 
 function tournamentStarting() {
-    // Hide lobby, show tournamentPrep Modal
-
+    console.log("TOURNAMENT STARTING TRIGGER BY SOCKET")
+    transferToInfoModal()
 }
 
 
@@ -116,6 +116,7 @@ export async function handleCreateTournamentClick() {
     if (!myID)
         return;
 
+    document.getElementById('startTournamentBtn').addEventListener('click', startTournament);
     lobbyModalEl.addEventListener('hide.bs.modal', cancelTournament);
 
     lobbyModalEl.dataset.id = myID
@@ -123,6 +124,7 @@ export async function handleCreateTournamentClick() {
     addParticipant(user)
     const cancelBtn = document.getElementById('cancelTournamentBtn');
     cancelBtn.textContent = 'Cancel Tournament';
+    hideModal('gameMenuModal')
     lobbyModal.show()
 
 
@@ -133,23 +135,24 @@ export async function handleCreateTournamentClick() {
 
 // Quand je suis owner et cancel mon tournoi - Trigger par event listener
 function cancelTournament() {
-
+    console.log("CANCEL TOURNAMENT")
     // Socket doit envoyer: cancelTournament
     // +
     // (?) backend delete le tournoi
     document.getElementById('lobbyTournamentModal').removeEventListener('hide.bs.modal', cancelTournament);
     switchModals('lobbyTournamentModal', 'gameMenuModal')
     displayToast('The tournament has been cancelled successfully.', 'Tournament Cancelled')
+    removeInfoLobbyModal()
 }
 
 // Quand je rejoins un tournoi - Trigger par event listener
 export function joinTournament(event) {
     const currentElement = event.currentTarget
     const ownerID = currentElement.dataset.id
-    console.log(currentElement)
     
     const lobbyModalEl = document.getElementById('lobbyTournamentModal')
     lobbyModalEl.addEventListener('hide.bs.modal', leftTournament)
+    lobbyModalEl.dataset.id = ownerID;
 
     // Socket doit envoyer: joinTournament
 
@@ -166,13 +169,14 @@ async function leftTournament(event) {
     // Socket doit envoyer: leftTournament
     switchModals('lobbyTournamentModal', 'joinTournamentModal')
     document.getElementById('lobbyTournamentModal').removeEventListener('hide.bs.modal', leftTournament);
+    removeInfoLobbyModal()
+
 }
 
 // Quand le owner start le tournoi - Trigger par event listener
 export function startTournament(event) {
-    document.getElementById('lobbyTournamentModal').removeEventListener('hide.bs.modal', leftTournament);
-    document.getElementById('lobbyTournamentModal').removeEventListener('hide.bs.modal', cancelTournament);
-    
+    transferToInfoModal()
+
     // [ONLY TOURNAMENT OWNER CAN START]
     // Socket doit envoyer: startTournament
     // + (?) fetch backend to change status of tournament
@@ -260,4 +264,19 @@ function isUserInTournament(ownerTournamentID) {
         return true;
     }
     return false;
+}
+
+function removeInfoLobbyModal() {
+    const lobbyTournamentModal = document.getElementById('lobbyTournamentModal')
+    lobbyTournamentModal.dataset.id = ''
+    const participantList = lobbyTournamentModal.querySelector('#participantList')
+    participantList.innerHTML = '';
+}
+
+function transferToInfoModal() {
+    document.getElementById('lobbyTournamentModal').removeEventListener('hide.bs.modal', leftTournament);
+    document.getElementById('lobbyTournamentModal').removeEventListener('hide.bs.modal', cancelTournament);
+    
+    switchModals('lobbyTournamentModal', 'tournamentInfoModal')
+    // Add event listener on tournamentInfoModal to know when the modal is closing.
 }
