@@ -56,6 +56,7 @@ const interactiveSocket = {
         }
         switch (data.type) {
             case "Found Match":
+                hideAllUI();
                 World._instance.joinMatch( data.handle, data.paddle, data.me, data.opponent );
                 break;
             case "Refresh":
@@ -137,3 +138,11 @@ const interactiveSocket = {
 };
 
 export default interactiveSocket;
+
+export function hideAllUI() {
+    const modal = bootstrap.Modal.getInstance(document.getElementById('loadingModal'));
+    modal.hide()
+    document.getElementById('toastContainer').classList.add('d-none')
+    document.getElementById('ui').classList.add('d-none');
+    document.getElementById('lfp').classList.remove('d-none');
+}
