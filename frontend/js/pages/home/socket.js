@@ -65,6 +65,9 @@ const interactiveSocket = {
             case "Match Invite":
                 this.match_invite_handler(data);
                 break;
+            // case "Tournament":
+            //     this.tournament_handler(data);
+                break;
             case "Init":
                 displayEveryone();
                 break;
@@ -112,6 +115,10 @@ const interactiveSocket = {
                 console.error("Rtype error");
         }
     },
+
+    // tournament_handler: function(data) {
+        
+    // },
 
     match_invite_handler: function(data) {
         console.log("hey", data);

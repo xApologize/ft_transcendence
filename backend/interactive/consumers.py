@@ -257,15 +257,23 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
     
     async def tournament_handler(self, data) -> None:
         try:
-            event_type: str = data["event"]
+            action_type: str = data["action"]
         except Exception:
             print("FATAL ERROR")
             return
-        # match event_type:
+        # match action_type:
+        #     case "Create":
+        # send all notif that it was created. + owned id
         #     case "Join":
+        # send all notif send owner id
         #     case "Leave":
+        # send all notif send no owner id
+        #     case "Cancel":
+        # send all notif send owner id
         #     case "Refresh":
+        # probably not
         #     case "Start":
+        # start ?????
 
 
 def create_layer_dict(type: str, message: str, sender: str) -> dict:
