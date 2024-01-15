@@ -4,6 +4,12 @@ import { displayToast } from './toastNotif.js';
 import { fetchUserById, getMyID, switchModals, showModal, isModalShown, hideModal } from './utils.js';
 import { fetchMe } from '../../api/fetchData.js';
 
+// VIEW BACKEND
+// - Quand user join tournament, vérifier qu'il est pas dans un autre lobby en coursù
+//
+//
+//
+
 export function socketTournamentUser(rType, concernUserID, ownerTournamentID) {
     if (rType === 'createTournament' || rType === 'cancelTournament') {
         handleTournamentCreationOrCancellation(ownerTournamentID, rType);
