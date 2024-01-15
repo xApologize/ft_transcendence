@@ -5,24 +5,24 @@ import { fetchUserById, getMyID, switchModals, showModal, isModalShown, hideModa
 import { fetchMe } from '../../api/fetchData.js';
 
 // VIEW BACKEND
-// - Quand user join tournament, vérifier qu'il est pas dans un autre lobby en coursù
+// - Quand user join tournament, vérifier qu'il est pas dans un autre lobby en cours
 //
 //
 //
 
-export function socketTournamentUser(rType, concernUserID, ownerTournamentID) {
-    if (rType === 'createTournament' || rType === 'cancelTournament') {
-        handleTournamentCreationOrCancellation(ownerTournamentID, rType);
+export function socketTournamentUser(action, concernUserID, ownerTournamentID) {
+    if (action === 'createTournament' || action === 'cancelTournament') {
+        handleTournamentCreationOrCancellation(ownerTournamentID, action);
     } else {
         // Check if user is part of the tournament
         if (!isUserInTournament(ownerTournamentID)) return;
 
-        switch (rType) {
+        switch (action) {
             case 'joinTournament':
-                someoneJoinLobby(concernUserID);
+                someoneJoinLobby(concernUserID, ownerTournamentID);
                 break;
             case 'leftTournament':
-                someoneLeftLobby(concernUserID);
+                someoneLeftLobby(concernUserID, ownerTournamentID);
                 break;
             case 'startTournament':
                 tournamentStarting()
@@ -31,10 +31,10 @@ export function socketTournamentUser(rType, concernUserID, ownerTournamentID) {
     }
 }
 
-function handleTournamentCreationOrCancellation(ownerTournamentID, rType) {
+function handleTournamentCreationOrCancellation(ownerTournamentID, action) {
     if (isModalShown('joinTournamentModal')) {
         updateTournamentList();
-    } else if (isModalShown('lobbyTournamentModal') && rType == 'cancelTournament') {
+    } else if (isModalShown('lobbyTournamentModal') && action == 'cancelTournament') {
         isMyTournamentCancel(ownerTournamentID);
     }
 }
@@ -93,12 +93,14 @@ function isMyTournamentCancel(ownerTournamentID) {
 // Quand quelqu'un quitte un tournoi - Envpoyé par le Socket de celui qui leave un tournoi
 function someoneLeftLobby(leavingUserID, ownerTournamentID) {
     // More Logic ?
+    // Check if it is in my tournament
     removeParticipant(leavingUserID)
 }
 
 // Quand quelqu'un rejoins le tournoi - Envoyé par le Socket de celui qui join
-function someoneJoinLobby(joiningUserID) {
+function someoneJoinLobby(joiningUserID, ownerTournamentID) {
     // More logic ?
+    // Check if it is in my tournament
     addParticipant(joiningUserID)
 }
 
@@ -134,7 +136,7 @@ export async function handleCreateTournamentClick() {
     lobbyModal.show()
 
 
-    // Socket doit envoyer: createTournament
+    // Socket doit envoyer: createTournament -> owner ID
     // +
     // (?) Créé tournoi dans backend
 }
@@ -160,7 +162,7 @@ export function joinTournament(event) {
     lobbyModalEl.addEventListener('hide.bs.modal', leftTournament)
     lobbyModalEl.dataset.id = ownerID;
 
-    // Socket doit envoyer: joinTournament
+    // Socket doit envoyer: joinTournament -> owner ID
 
     const leaveBtn = document.getElementById('cancelTournamentBtn');
     leaveBtn.textContent = 'Leave Tournament';
@@ -172,11 +174,10 @@ export function joinTournament(event) {
 // Quand je quitte le tournoi - Trigger par event listener
 async function leftTournament(event) {
 
-    // Socket doit envoyer: leftTournament
+    // Socket doit envoyer: leftTournament -> owner ID
     switchModals('lobbyTournamentModal', 'joinTournamentModal')
     document.getElementById('lobbyTournamentModal').removeEventListener('hide.bs.modal', leftTournament);
     removeInfoLobbyModal()
-
 }
 
 // Quand le owner start le tournoi - Trigger par event listener
