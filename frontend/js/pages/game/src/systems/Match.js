@@ -142,6 +142,18 @@ class Match {
 			} );
 		}
 
+		document.getElementById('leftName').innerHTML = this.participants[0].nickname;
+		document.getElementById('leftScore').innerHTML = this.participants[0].score;
+		document.getElementById('rightScore').innerHTML = this.participants[1].score;
+		document.getElementById('rightName').innerHTML = this.participants[1].nickname;
+		if ( this.self.score < maxScore && this.opponent.score < maxScore )
+			document.getElementById("resultTitle").innerHTML = "Disconnected";
+		if ( this.self.score >= maxScore )
+			document.getElementById("resultTitle").innerHTML = "YOU WIN!";
+		if ( this.opponent.score >= maxScore )
+			document.getElementById("resultTitle").innerHTML = "YOU LOST!";
+
+
 		this.participants.forEach(element => {
 			element.delete();
 		});
@@ -164,37 +176,26 @@ class Match {
 	}
 
 
-	increment( playerId ) {
-		this.participants[playerId - 1].score += 1;
+	increment( sideId ) {
+		this.participants[sideId - 1].score += 1;
 
 		world.score.setText(
 			( this.participants[0].score < 10 ? "0" : "" ) + this.participants[0].score, 
 			( this.participants[1].score < 10 ? "0" : "" ) + this.participants[1].score
 		);
 
-
-		document.getElementById('leftName').innerHTML = this.participants[0].nickname;
-		document.getElementById('leftScore').innerHTML = this.participants[0].score;
-		document.getElementById('rightScore').innerHTML = this.participants[1].score;
-		document.getElementById('rightName').innerHTML = this.participants[1].nickname;
-
-		if ( this.participants[this.self.sideId].score >= maxScore ) {
-			document.getElementById("resultTitle").innerHTML = "You WIN!";
-
-			this.tryPostMatch( this.self.sideId, this.opponent.sideId );
+		if ( this.self.score >= maxScore ) {
+			this.tryPostWin();
 			this.endMatch();
-		}
-		else if ( this.participants[this.opponent.sideId].score >= maxScore ) {
-			document.getElementById("resultTitle").innerHTML = "You LOST!";
 		}
 	}
 
-	tryPostMatch( winnerId, loserId ) {
+	tryPostWin() {
 		const data = {
-			winner: this.participants[winnerId].nickname,
-			loser: this.participants[loserId].nickname,
-			winner_score: this.participants[winnerId].score,
-			loser_score: this.participants[loserId].score
+			winner: this.self.nickname,
+			winner_score: this.self.score,
+			loser: this.opponent.nickname,
+			loser_score: this.opponent.score
 		}
 		const response = fetchMatchHistory( 'POST', data );
 		if ( !response ) {
