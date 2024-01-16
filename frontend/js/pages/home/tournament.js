@@ -73,7 +73,9 @@ function someoneJoinLobby(ownerTournamentID) {
 
 function tournamentStarting(ownerTournamentID) {
     console.log("TOURNAMENT STARTING TRIGGER BY OWNER SOCKET")
-    if (isModalShown('lobbyTournamentModal') && isUserInTournament(ownerTournamentID)) {
+    if (isModalShown('joinTournamentModal')) {
+        updateTournamentList();
+    } else if (isModalShown('lobbyTournamentModal') && isUserInTournament(ownerTournamentID)) {
         transferToInfoModal()
     }
 }
@@ -163,6 +165,10 @@ export async function joinTournament(event) {
 
 // Quand le owner start le tournoi - Trigger par event listener
 export function startTournament(event) {
+    const lobbyModalEl = document.getElementById('lobbyTournamentModal');
+    const ownerID = lobbyModalEl.dataset.id
+
+    interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Tournament", "action": "Start", "owner_id": ownerID}));
 
     // [ONLY TOURNAMENT OWNER CAN START]
     // Socket doit envoyer: startTournament
@@ -316,5 +322,5 @@ export function transferToInfoModal() {
     document.getElementById('lobbyTournamentModal').removeEventListener('hide.bs.modal', cancelTournament);
 
     switchModals('lobbyTournamentModal', 'tournamentInfoModal')
-    // Add event listener on tournamentInfoModal to know when the modal is closing.
+    // FETCH IT'S TOURNAMENT
 }
