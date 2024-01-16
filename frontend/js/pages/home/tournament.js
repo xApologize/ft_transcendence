@@ -5,7 +5,7 @@ import { fetchUserById, getMyID, switchModals, isModalShown, hideModal } from '.
 import { fetchMe, fetchAllLobbies, fetchMyLobby } from '../../api/fetchData.js';
 
 // This is handler for when someone sent something with socket and it worked.
-export function socketTournamentUser(action, concernUserID, ownerTournamentID) {
+export function socketTournamentUser(action, ownerTournamentID) {
 
     // if (!isUserInTournament(ownerTournamentID)) return;
     switch (action) {
@@ -24,14 +24,15 @@ export function socketTournamentUser(action, concernUserID, ownerTournamentID) {
         case 'startTournament':
             tournamentStarting()
             break;
+        default:
+            socketLobbyError(ownerTournamentID);
+            break;
     }
 }
 
-
-
 // This is handler for response to request I sent with socket and failed
-export function socketTournamentMyself() {
-
+export function socketLobbyError() {
+    console.log("SOMETHING WENT WRONG WITH SOCKET")
 }
 
 function someoneCancelTournament(ownerTournamentID) {
@@ -119,8 +120,6 @@ export async function handleCreateTournamentClick() {
 export function cancelTournament() {
     console.log("CANCEL TOURNAMENT")
     // Socket doit envoyer: cancelTournament
-    // +
-    // (?) backend delete le tournoi
     document.getElementById('lobbyTournamentModal').removeEventListener('hide.bs.modal', cancelTournament);
     switchModals('lobbyTournamentModal', 'gameMenuModal')
     displayToast('The tournament has been cancelled successfully.', 'Tournament Cancelled')
@@ -160,7 +159,6 @@ export function startTournament(event) {
 
     // [ONLY TOURNAMENT OWNER CAN START]
     // Socket doit envoyer: startTournament
-    // + (?) fetch backend to change status of tournament
 }
 
 /////////////
