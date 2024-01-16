@@ -29,7 +29,7 @@ export function socketTournamentUser(action, concernUserID, ownerTournamentID) {
 
 
 
-// This is handler for response to request I sent with socket
+// This is handler for response to request I sent with socket and failed
 export function socketTournamentMyself() {
 
 }
