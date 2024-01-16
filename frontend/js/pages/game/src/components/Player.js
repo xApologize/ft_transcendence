@@ -8,9 +8,12 @@ import {
 	Vector3
 } from 'three';
 import { World } from '../World.js';
+import { Tween } from '../systems/Tween.js';
 
 const initialSpeed = 6;
 const initialBoostSpeed = 50;
+const initialSmashCd = 0.4;
+const initialDashCd = 3;
 
 class Player extends Paddle {
 	constructor( position, id, nickname ) {
@@ -20,6 +23,9 @@ class Player extends Paddle {
 
 		this.speed = initialSpeed;
 		this.movement = new Vector3( 0, 0, 0 );
+		this.smashCd = 0;
+		this.lastDir = 1;
+		this.dashCount = 3;
 
 		this.ray = new Raycaster();
 		this.ray.layers.set( Layers.Solid );
@@ -27,39 +33,54 @@ class Player extends Paddle {
 		this.wsData = {
 			id: this.sideId,
 			pos: this.position,
-			ballInst: undefined
+			ballInst: undefined,
+			smash: undefined,
+			dashCount: undefined
 		};
 
 		this.collider = new Collider( this );
 		this.updatable = new Updatable( this );
 
 		this.boostButtonPressedEvent = (e) => {
-			if ( this.speed == initialSpeed )
+			if ( this.speed == initialSpeed && this.dashCount >= 1 ) {
 				this.speed = initialBoostSpeed;
+				this.dashCount -= 1;
+			}
 		};
 		this.boostButtonReleasedEvent = (e) => {
 			// this.speed = initialSpeed;
 		};
 		this.reflectButtonPressedEvent = (e) => {
+			if ( this.smashCd > 0 )
+				return;
+
 			const ball = World._instance.balls.ballInst[0];
-			if ( ball.pos.y < (this.position.y - this.length / 2) || ball.pos.y > (this.position.y + this.length / 2) ) {
-				console.log( "not in y range");
-				return;
+			this.smashAnimation( this.lastDir );
+			this.smashCd = initialSmashCd;
+
+
+			if ( World._instance.socket != undefined && World._instance.socket.readyState === WebSocket.OPEN) {
+				this.wsData.smash = this.lastDir;
+				World._instance.socket.send( JSON.stringify( this.wsData ) );
 			}
-			if ( Math.abs( ball.pos.x - this.position.x ) > 2 ) {
-				console.log( "not close enough");
+			this.wsData.smash = undefined;
+
+			if ( this.position.distanceTo( ball.pos ) > this.length * 0.7 )
 				return;
-			}
-			if ( Math.sign( ball.dir.x ) != Math.sign( position.x ) ) {
-				console.log( "wrong way");
-				return;
-			}
-			console.log( "SMASH! ");
+
+			// if ( ball.pos.y < (this.position.y - this.length / 2) || ball.pos.y > (this.position.y + this.length / 2) )
+			// 	return;
+			// if ( Math.abs( ball.pos.x - this.position.x ) > 2 )
+			// 	return;
+			// if ( Math.sign( ball.dir.x ) != Math.sign( position.x ) )
+			// 	return;
+
 			const pos = new Vector3(
 				this.position.x,
 				World._instance.balls.ballInst[0].pos.y,
 				this.position.z
 			);
+			World._instance.balls.ballInst[0].dir.y += this.lastDir;
 			World._instance.balls.playerCollision( World._instance.balls.ballInst[0], pos, this );
 			World._instance.balls.ballInst[0].smashed = true;
 			World._instance.balls.ballInst[0].dir.normalize();
@@ -76,6 +97,17 @@ class Player extends Paddle {
 		if ( World._instance.socket != undefined && World._instance.socket.readyState === WebSocket.OPEN) {
 			World._instance.socket.send( JSON.stringify( this.wsData ) );
 		}
+
+		this.smashCd -= dt;
+
+		if ( this.dashCount < 3 )
+			this.dashCount += dt / initialDashCd;
+		else
+			this.dashCount = 3;
+		this.dashSpheresAnimation( this.dashCount );
+
+		if ( World._instance.currentGameMode == "Upgraded" )
+			this.wsData.dashCount = this.dashCount;
 	}
 
 	update( dt ) {
@@ -86,8 +118,14 @@ class Player extends Paddle {
 			if ( this.speed < initialSpeed )
 				this.speed = initialSpeed;
 		}
-		if ( this.movement.y === 0 )
-			return;
+		// if ( this.movement.y === 0 )
+		// 	return;
+		if ( this.movement.y !== 0 )
+			this.lastDir = this.movement.y;
+
+		if ( this.speed > initialSpeed ) {
+			this.movement = new Vector3( 0, this.lastDir, 0 );
+		}
 		
 		this.ray.set( this.position, this.movement );
 		this.ray.far = this.length / 2 + this.speed * dt;

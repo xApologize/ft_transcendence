@@ -4,6 +4,7 @@ const clock = new Clock();
 const updatables = [];
 
 let t1 = 0;
+let timeFreezed = 0;
 
 class Loop {
 	constructor( camera, scene, renderer, composer ) {
@@ -22,21 +23,31 @@ class Loop {
 
 		let worker = new Worker('/js/pages/game/worker.js');
 		worker.addEventListener( "message", this.fixedTick, false );
+
+		timeFreezed = 0;
 	}
 
 	fixedTick() {
-
-		// console.log('fps =', 1000 / (new Date().getTime() - t1) | 0);
+		const delta = (new Date().getTime() - t1) / 1000;
+		t1 = new Date().getTime();
+		
+		if ( timeFreezed > 0 ) {
+			timeFreezed -= delta;
+			return;
+		}
+		
 		for( const object of updatables ) {
 			if ( typeof object.fixedUpdate === "function" )
-				object.fixedUpdate( (new Date().getTime() - t1) / 1000 );
-			// else
-			// 	console.warn("fixedUpdate() called but undefined!");
+				object.fixedUpdate( delta );
+		// else
+		// 	console.warn("fixedUpdate() called but undefined!");
 		}
-		t1 = new Date().getTime();
 	}
 	
 	tick () {
+		if ( timeFreezed > 0 )
+			return;
+
 		const delta = clock.getDelta();
 		for( const object of updatables ) {
 			if ( typeof object.update === "function" )
@@ -44,6 +55,10 @@ class Loop {
 			else
 				console.warn("update() called but undefined!");
 		}
+	}
+
+	timeFreeze( duration ) {
+		timeFreezed = duration;
 	}
 
 	static addUpdatable( object ) { updatables.push(object); }

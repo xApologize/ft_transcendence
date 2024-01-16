@@ -1,4 +1,4 @@
-import { BoxGeometry, CameraHelper, Color, FloatType, LinearFilter, Mesh, MeshBasicMaterial, MeshPhysicalMaterial, MeshStandardMaterial, Object3D, OrthographicCamera, PerspectiveCamera, Plane, PlaneGeometry, RGBAFormat, Scene, WebGLRenderTarget } from "three";
+import { AmbientLight, BoxGeometry, CameraHelper, Color, FloatType, LinearFilter, Mesh, MeshBasicMaterial, MeshPhysicalMaterial, MeshStandardMaterial, Object3D, OrthographicCamera, PerspectiveCamera, Plane, PlaneGeometry, RGBAFormat, Scene, WebGLRenderTarget } from "three";
 import { ScreenBoardMat } from "../custom/ScreenBoardMat.js";
 import { Updatable } from "../modules/Updatable.js";
 import { World } from "../World.js";
@@ -47,6 +47,10 @@ class ScreenBoard extends Object3D {
 		});
 		this.quad = new Mesh( this.plane, this.finalMat );
 		this.add( this.quad );
+
+		const light = new AmbientLight( 0xffffff, 2 );
+		this.add( light );
+		light.layers.set( Layers.Buffer );
 	}
 
 	update( dt ) {

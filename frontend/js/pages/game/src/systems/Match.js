@@ -113,6 +113,13 @@ class Match {
 		const wsData = JSON.parse( event.data );
 		if ( this.participants[wsData.id] != undefined && wsData.pos != undefined )
 			this.participants[wsData.id].position.copy( wsData.pos );
+		if ( wsData.smash != undefined ) {
+			this.opponent.smashAnimation( wsData.smash );
+		}
+		console.log(wsData.dashCount);
+		if ( wsData.dashCount != undefined ) {
+			this.opponent.dashSpheresAnimation( wsData.dashCount );
+		}
 		if ( wsData.ballInst != undefined ) {
 			if ( wsData.scored == true ) {
 				if ( world.terrain.leftGoalZone.paddle.isOpponent )
@@ -152,6 +159,9 @@ class Match {
 			document.getElementById("resultTitle").innerHTML = "YOU WIN!";
 		if ( this.opponent.score >= maxScore )
 			document.getElementById("resultTitle").innerHTML = "YOU LOST!";
+
+		this.self.dashSpheresAnimation( 0 );
+		this.opponent.dashSpheresAnimation( 0 );
 
 
 		this.participants.forEach(element => {

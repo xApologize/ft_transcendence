@@ -41,12 +41,13 @@ const fragmentShader = () => {
 	void main() {
 		vec2 uv = v_position.xy / u_planeSize + .5;
 
-		vec3 col = texture2D( u_frameBuffer, uv ).xyz * 0.8;
-		col += vec3( grid(v_position.xy, .1) * 2. );
+		// vec3 col = texture2D( u_frameBuffer, uv ).xyz * 0.8;
+		// col += vec3( grid(v_position.xy, .1) * 2. );
 
-		gl_FragColor = vec4(col, 1.);
+		// gl_FragColor = vec4(col, 1.);
 
 		gl_FragColor = vec4( pixelate( uv, 0.01 ) + grid(v_position.xy, .1), 1. );
+		// gl_FragColor = vec4( pixelate( uv, 0.01 ) , 1. );
 	}`
 }
 
