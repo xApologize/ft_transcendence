@@ -3,9 +3,10 @@ from interactive.models import LookingForMatch
 from user_profile.models import User
 from game_invite.models import MatchInvite
 from tournament.models import Lobby
-from django.db import models
+from django.db.models import Q
 from channels.layers import get_channel_layer
 from channels.db import database_sync_to_async
+from django.db import IntegrityError
 import json
 
 ECHO = "send_message_echo"
@@ -13,6 +14,7 @@ NO_ECHO = "send_message_no_echo"
 MAILBOX = "send_mailbox_message"
 CLEAN = "send_message_and_clean_db"
 MATCH_INVITE = "send_message_match_invite"
+SEND_LIST_IDS = "send_message_list_ids"
 
 
 class UserInteractiveSocket(AsyncWebsocketConsumer):
@@ -95,6 +97,11 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
 
     async def send_message_match_invite(self, data: any):
         if self.user_id == data["Receiver"]:
+            await self.send(text_data=json.dumps(data["message"]))
+
+    async def send_message_list_ids(self, data: any):
+        user_ids = data.get("user_ids", [])
+        if self.user_id in user_ids:
             await self.send(text_data=json.dumps(data["message"]))
 
     async def send_to_layer(self, send_type: str, user_id: int, type: str, rType: str):
@@ -270,24 +277,25 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
                 await self.join_tournament(data)
             case "Leave":
                 await self.leave_tournament()
-        # send all notif send no owner id
         #     case "Cancel":
         # send all notif send owner id
-        #     case "Refresh":
-        # probably not
         #     case "Start":
         # start ?????
 
     async def create_tournament(self) -> None:
-        await database_sync_to_async(Lobby.objects.create)(owner=self.user_id)
+        try:
+            await database_sync_to_async(Lobby.objects.create)(owner=self.user_id)
+        except IntegrityError:
+            print("Integrity error")
+            return
         # Send notification to frontend
     
     async def leave_tournament(self) -> None:
         try:
             lobby_instance: Lobby = await database_sync_to_async(Lobby.objects.get)(
-                models.Q(player_2=self.user_id) | models.Q(
-                    player_3=self.user_id) | models.Q(player_4=self.user_id))
-        except Exception:
+                Q(player_2=self.user_id) | Q(
+                    player_3=self.user_id) | Q(player_4=self.user_id))
+        except Lobby.DoesNotExist:
             print("FATAL ERROR")
             # NOTIFY FRONTEND
             return
@@ -326,6 +334,18 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         elif instance.player_4 == id:
             return "player_4"
         return None
+
+    @staticmethod
+    def get_users_ids(lobby_instance: Lobby) -> list:
+        id_list: list = [lobby_instance.owner]
+        if lobby_instance.player_2 != -1:
+            id_list.append(lobby_instance.player_2)
+        if lobby_instance.player_3 != -1:
+            id_list.append(lobby_instance.player_3)
+        if lobby_instance.player_4 != -1:
+            id_list.append(lobby_instance.player_4)
+        return id_list
+
 
 
 def create_layer_dict(type: str, message: str, sender: str) -> dict:
