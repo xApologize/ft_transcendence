@@ -8,9 +8,10 @@ from utils.functions import get_user_obj
 from django.db.models import Q
 from user_profile.models import User
 from user_profile.utils import get_avatar_data
+from django.shortcuts import get_object_or_404
 
 
-class LobbyHandling(View):    
+class GetAllLobbies(View):    
     @token_validation
     def get(self, request:HttpRequest):
         lobbies = Lobby.objects.all()
@@ -38,3 +39,53 @@ class LobbyHandling(View):
                 })
 
         return JsonResponse({"lobbies": lobby_owner_data})
+    
+class GetMyLobby(View):
+    @token_validation
+    def get(self, request:HttpRequest):
+        try:
+            user = get_user_obj(request)
+            userID = user.pk
+        except User.DoesNotExist:
+            return HttpResponseBadRequest({'error': "User not found"})
+        except PermissionDenied:
+            return HttpResponseBadRequest({'error': "Invalid token"})
+        lobby = Lobby.objects.filter(
+            Q(owner=userID) | 
+            Q(player_2=userID) | 
+            Q(player_3=userID) | 
+            Q(player_4=userID)
+            ).first()
+        if not lobby:
+            return HttpResponseBadRequest({'error': "Lobby not found"})
+        player_fields = ['owner', 'player_2', 'player_3', 'player_4']
+        lobby_data = {field: get_user(getattr(lobby, field)) for field in player_fields}
+        return JsonResponse({"lobby": lobby_data})
+
+def get_user(userID):
+    if userID == -1:
+        return None
+    try:
+        user_obj = get_object_or_404(User, pk=userID)
+    except Http404:
+        return None
+    return {
+        'id': user_obj.pk,
+        'nickname': user_obj.nickname,
+        'avatar': get_avatar_data(user_obj)
+    }
+
+class GetPlayerNbrInSpecificLobby(View):
+    @token_validation
+    def get(self, request:HttpRequest):
+        owner_id = request.GET.get('owner_id')
+        try:
+            lobby = Lobby.get(owner=owner_id)
+        except Lobby.DoesNotExist:
+            return HttpResponseNotFound({'error': "Lobby not found"})
+        player_fields = ['owner', 'player_2', 'player_3', 'player_4']
+        player_nbr = 0
+        for field in player_fields:
+            if getattr(lobby, field) != -1:
+                player_nbr += 1
+        return JsonResponse({"player_nbr": player_nbr})
