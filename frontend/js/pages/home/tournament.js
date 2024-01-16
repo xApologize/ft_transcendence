@@ -50,10 +50,10 @@ function someoneCreateTournament(ownerTournamentID) {
 }
 
 // Quand quelqu'un quitte un tournoi - Envpoyé par le Socket de celui qui leave un tournoi
-function someoneLeftLobby() {
+function someoneLeftLobby(ownerTournamentID) {
     console.log("SOMEONE LEAVED A LOBBY")
     if (isModalShown('joinTournamentModal')) {
-        updateTournamentListNbr('remove');
+        updateTournamentListNbr('remove', ownerTournamentID);
     } else if (isModalShown('lobbyTournamentModal') && isUserInTournament(ownerTournamentID)) {
         updateParticipantList()
     }
@@ -64,15 +64,10 @@ function someoneJoinLobby(ownerTournamentID) {
     console.log("SOMEONE JOINED A LOBBY, UPDATE ", ownerTournamentID)
     if (isModalShown('joinTournamentModal')) {
         console.log("UPDATE TOURNAMENT PLAYER NBR LIST")
-        updateTournamentListNbr('add');
+        updateTournamentListNbr('add', ownerTournamentID);
     } else if (isModalShown('lobbyTournamentModal') && isUserInTournament(ownerTournamentID)) {
         console.log("UPDATE PARTICIPANT LIST")
         updateParticipantList()
-    } else {
-        console.log("ELSE WTF")
-        console.log(isModalShown('lobbyTournamentModal'))
-        console.log(isUserInTournament(ownerTournamentID))
-        console.log("END ELSE WTF")
     }
 }
 
@@ -81,7 +76,7 @@ function tournamentStarting() {
     transferToInfoModal()
 }
 
-export function updateTournamentListNbr(action) {
+export function updateTournamentListNbr(action, ownerTournamentID) {
     const tournamentToUpdate = document.querySelector(`#tournamentList li[data-id="${ownerTournamentID}"] small`)
     console.log(tournamentToUpdate)
     if (!tournamentToUpdate) return;
@@ -137,7 +132,7 @@ export function cancelTournament() {
 // Quand je quitte le tournoi - Trigger par event listener
 export async function leftTournament(event) {
     console.log("LEFT TOURNAMENT")
-    // Socket doit envoyer: leftTournament -> owner ID
+    interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Tournament", "action": "Leave"}));
     document.getElementById('lobbyTournamentModal').removeEventListener('hide.bs.modal', leftTournament);
     switchModals('lobbyTournamentModal', 'joinTournamentModal')
     removeInfoLobbyModal()

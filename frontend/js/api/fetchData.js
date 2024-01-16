@@ -31,7 +31,7 @@ export const loadHTMLComponent = async (filePath) => {
     }
 };
 
-const redirectToHome = () => {
+export const redirectToHome = () => {
     closeAllModals();
     interactiveSocket.closeSocket()
     sessionStorage.clear();

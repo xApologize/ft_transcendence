@@ -298,9 +298,9 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
     
     async def leave_tournament(self) -> None:
         try:
-            if self.is_owner_tourny():
+            # if self.is_owner_tourny():
                 # add cancel tournament call it?
-                return
+                # return
             lobby_instance: Lobby = await database_sync_to_async(Lobby.objects.get)(
                 Q(player_2=self.user_id) | Q(
                     player_3=self.user_id) | Q(player_4=self.user_id))
@@ -315,6 +315,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             return
         setattr(lobby_instance, lobby_spot, -1)
         await database_sync_to_async(lobby_instance.save)()
+        await self.send_to_layer(ECHO, lobby_instance.owner,"Tournament", "leftTournament")
         # NOTIFY FRONTEND
 
     async def join_tournament(self, data) -> None:

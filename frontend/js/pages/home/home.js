@@ -15,6 +15,7 @@ import interactiveSocket from './socket.js';
 import { closeInviteRequest } from './inviteGame.js';
 import { initGameMenu } from './gameMenu.js';
 import { checkModal } from '../../router.js';
+import { redirectToHome } from '../../api/fetchData.js';
 ////////
 
 export async function showHome() {
@@ -29,7 +30,10 @@ export async function showHome() {
     
 
         const result = await initPage()
-        if (result === false) return;
+        if (result === false) {
+            console.error('Error with user. Redirecting to home.');
+            return redirectToHome();
+        }
         
         leftColumnListener();
         listenerTeamDisplay()
@@ -66,10 +70,7 @@ async function initPage() {
     const user = await fetchMe('GET');
     if (!user) return false;
     const userAssembled = await assembler(user);
-    if (!userAssembled || typeof userAssembled !== 'object') {
-        console.error('Error assembling user. Please refresh page.');
-        return false;
-    }
+    if (!userAssembled || typeof userAssembled !== 'object') return false;
     displayUserCard(userAssembled);
     displayMatchHistory(userAssembled);
     interactiveSocket.initSocket() // <- this is calling displayEveryone.
