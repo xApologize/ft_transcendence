@@ -1,6 +1,8 @@
 from django.urls import path
-from .views import LobbyHandling
+from .views import GetAllLobbies, GetMyLobby, GetPlayerNbrInSpecificLobby
 
 urlpatterns = [
-    path('', LobbyHandling.as_view(), name="lobby"),
+    path('', GetAllLobbies.as_view(), name="getAllLobbies"),
+    path('specific/', GetMyLobby.as_view(), name='getmylobby'),
+    path('players/', GetPlayerNbrInSpecificLobby.as_view(), name='GetPlayerNbrInSpecificLobby')
 ]
