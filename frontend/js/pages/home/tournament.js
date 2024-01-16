@@ -326,13 +326,5 @@ export function transferToInfoModal() {
         document.getElementById('bracket').classList.remove('d-none')
     }, 1000);
 
-    setTimeout(function() {
-        
-    }, 10000)
-
-    
-
-
-
     // switchModals('lobbyTournamentModal', 'tournamentInfoModal')
 }
