@@ -33,7 +33,7 @@ export function socketTournamentUser(action, ownerTournamentID) {
 
 // This is handler for response to request I sent with socket and failed
 export function socketLobbyError() {
-    console.log("SOMETHING WENT WRONG WITH SOCKET")
+    console.log("LOBBY ERROR")
 }
 
 function someoneCancelTournament(ownerTournamentID) {
@@ -320,10 +320,19 @@ export function transferToInfoModal() {
     document.getElementById('lobbyTournamentModal').removeEventListener('hide.bs.modal', cancelTournament);
     hideAllUI();
     World._instance.camera.viewTable(1, null);
-    document.getElementById('result').classList.remove('d-none')
-    document.getElementById('bracket').classList.remove('d-none')
+
+    setTimeout(function() {
+        document.getElementById('result').classList.remove('d-none')
+        document.getElementById('bracket').classList.remove('d-none')
+    }, 1000);
+
+    setTimeout(function() {
+        
+    }, 10000)
+
+    
+
 
 
     // switchModals('lobbyTournamentModal', 'tournamentInfoModal')
-    // FETCH IT'S TOURNAMENT
 }

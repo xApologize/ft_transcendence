@@ -47,7 +47,7 @@ export async function handleRoute() {
 }
 
 function handlePopState(event) {
-    checkModal();
+    checkModal(true);
     handleRoute();
     interactiveSocket.closeSocket();
 }
@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.addEventListener("visibilitychange", function() {
         if (document.visibilityState === 'visible' && window.location.pathname == '/home') {
             if (interactiveSocket.isSocketClosed()) {
-                checkModal();
+                checkModal(true);
                 showHome();
             }
         }
