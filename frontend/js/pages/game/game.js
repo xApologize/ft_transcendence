@@ -15,6 +15,7 @@ export async function showGame() {
 		startBtn.addEventListener('click', () => {
 			world.currentGameState = GameState.LookingForPlayer;
 			interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Find Match"}));
+			// interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Tournament", "action": "Leave", "owner_id": 69}));
 			startBtn.classList.add("d-none");
 			document.getElementById('lfp').classList.remove("d-none");
 		});

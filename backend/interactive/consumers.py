@@ -2,6 +2,8 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from interactive.models import LookingForMatch
 from user_profile.models import User
 from game_invite.models import MatchInvite
+from tournament.models import Lobby
+from django.db import models
 from channels.layers import get_channel_layer
 from channels.db import database_sync_to_async
 import json
@@ -261,12 +263,13 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         except Exception:
             print("FATAL ERROR")
             return
-        # match action_type:
-        #     case "Create":
-        # send all notif that it was created. + owned id
-        #     case "Join":
-        # send all notif send owner id
-        #     case "Leave":
+        match action_type:
+            case "Create":
+                await self.create_tournament()
+            case "Join":
+                await self.join_tournament(data)
+            case "Leave":
+                await self.leave_tournament()
         # send all notif send no owner id
         #     case "Cancel":
         # send all notif send owner id
@@ -274,6 +277,55 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         # probably not
         #     case "Start":
         # start ?????
+
+    async def create_tournament(self) -> None:
+        await database_sync_to_async(Lobby.objects.create)(owner=self.user_id)
+        # Send notification to frontend
+    
+    async def leave_tournament(self) -> None:
+        try:
+            lobby_instance: Lobby = await database_sync_to_async(Lobby.objects.get)(
+                models.Q(player_2=self.user_id) | models.Q(
+                    player_3=self.user_id) | models.Q(player_4=self.user_id))
+        except Exception:
+            print("FATAL ERROR")
+            # NOTIFY FRONTEND
+            return
+        lobby_spot: str = self.find_lobby_spot(lobby_instance, self.user_id)
+        if lobby_spot is None:
+            print("NO USER FOUND IN LOBBY")
+            # NOTIFY FRONTEND
+            return
+        setattr(lobby_instance, lobby_spot, -1)
+        await database_sync_to_async(lobby_instance.save)()
+        # NOTIFY FRONTEND
+
+    async def join_tournament(self, data) -> None:
+        try:
+            owner_id: int = data["owner_id"]
+            lobby_instance: Lobby = await database_sync_to_async(Lobby.objects.get)(owner=owner_id)
+        except Exception:
+            print("FATAL ERROR")
+            # SEND ERROR TO FRONT
+            return
+        lobby_spot: str = self.find_lobby_spot(lobby_instance, -1)
+        if lobby_spot is None:
+            print("FATAL ERROR NO SPOT")
+            # SEND ERROR TO FRONT
+            return
+        setattr(lobby_instance, lobby_spot, self.user_id)
+        await database_sync_to_async(lobby_instance.save)()
+        # NOTIFY FRONTEND
+
+    @staticmethod
+    def find_lobby_spot(instance: Lobby, id: int) -> str:
+        if instance.player_2 == id:
+            return "player_2"
+        elif instance.player_3 == id:
+            return "player_3"
+        elif instance.player_4 == id:
+            return "player_4"
+        return None
 
 
 def create_layer_dict(type: str, message: str, sender: str) -> dict:

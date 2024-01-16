@@ -117,5 +117,13 @@
             "winner": 1,
             "loser": 4
         }
+    },
+    {
+        "model": "tournament.Lobby",
+        "pk": 1,
+        "fields":{
+            "owner": 69,
+            "player_2": 4
+        }
     }
 ]
