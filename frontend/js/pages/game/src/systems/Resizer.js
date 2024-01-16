@@ -1,12 +1,12 @@
 const setSize = ( container, camera, renderer, composer ) => {
-	camera.aspect = container.clientWidth / container.clientHeight;
+	camera.aspect = window.innerWidth / window.innerHeight;
 	camera.zoom = camera.aspect < 16/9 ? camera.aspect / (16/9) : 1;
 	camera.updateProjectionMatrix();
 
-	renderer.setSize(container.clientWidth, container.clientHeight);
+	renderer.setSize(window.innerWidth, window.innerHeight);
 	renderer.setPixelRatio(window.devicePixelRatio);
 
-	composer.setSize( container.clientWidth, container.clientHeight );
+	composer.setSize( window.innerWidth, window.innerHeight );
 };
 
 class Resizer {

@@ -18,8 +18,9 @@ class Paddle extends Mesh {
 
 		this.position.copy( position );
 		this.length = this.geometry.parameters.length + this.geometry.parameters.radius * 2;
-		this.participantId = id;
-		this.participantNickname = nickname;
+		this.sideId = id;
+		this.nickname = nickname;
+		this.score = 0;
 
 		const from = new Vector2( this.position.x, this.position.y );
 		this.rotation.set( 0, 0, from.angle() );
