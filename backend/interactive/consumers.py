@@ -396,7 +396,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         # self.send_message_list_ids()
         # notifier
 
-    async def start_tournament(self, data: any) -> None:
+    async def start_tournament(self) -> None:
         try:
             lobby_instance: Lobby = await database_sync_to_async(Lobby.objects.get)(owner=self.user_id)
         except Exception:
