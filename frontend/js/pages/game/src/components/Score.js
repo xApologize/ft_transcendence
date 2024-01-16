@@ -1,11 +1,6 @@
 import { digitalFont } from '../systems/Loader.js';
 import { Renderer } from '../modules/Renderer.js';
-import { World } from '../World.js';
 import { Color, Mesh, MeshStandardMaterial, Object3D, ShapeGeometry } from 'three';
-import { fetchMatchHistory } from '../../../../api/fetchData.js';
-
-let scoreTab = [0, 0];
-const maxScore = 3;
 
 class Score extends Object3D {
 	constructor() {
@@ -46,37 +41,7 @@ class Score extends Object3D {
 	}
 
 	reset() {
-		scoreTab = [0, 0];
 		this.setText( "00", "00" );
-	}
-
-	increment( playerId ) {
-		while ( scoreTab.length < playerId )
-			scoreTab.push( 0 );
-		scoreTab[playerId - 1] += 1;
-
-		this.setText( (scoreTab[0] < 10 ? "0" : "") + scoreTab[0],  (scoreTab[1] < 10 ? "0" : "") + scoreTab[1] );
-		if ( scoreTab[World._instance.match.self.participantId] >= maxScore ) {
-			this.tryPostMatch( World._instance.match.self.participantId );
-			World._instance.match.endMatch();
-		}
-	}
-
-	tryPostMatch( winnerId, loserId ) {
-		const participants = World._instance.match.participants;
-		loserId = winnerId == 0 ? 1 : 0;
-
-		const data = {
-			winner: participants[winnerId].participantNickname,
-			loser: participants[loserId].participantNickname,
-			winner_score: scoreTab[winnerId],
-			loser_score: scoreTab[loserId]
-		}
-		const response = fetchMatchHistory( 'POST', data );
-		if ( !response ) {
-			console.error( "No response from POST MatchHistory" );
-			return;
-		}
 	}
 }
 
