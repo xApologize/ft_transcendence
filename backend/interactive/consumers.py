@@ -332,7 +332,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             return
         setattr(lobby_instance, lobby_spot, self.user_id)
         await database_sync_to_async(lobby_instance.save)()
-        await self.send_to_layer(ECHO, self.user_id, "Tournament", "joinTournament")
+        await self.send_to_layer(ECHO, owner_id ,"Tournament", "joinTournament")
         # NOTIFY FRONTEND
 
     @staticmethod

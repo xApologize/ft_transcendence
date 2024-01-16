@@ -61,11 +61,18 @@ function someoneLeftLobby() {
 
 // Quand quelqu'un rejoins le tournoi - Envoyé par le Socket de celui qui join
 function someoneJoinLobby(ownerTournamentID) {
-    console.log("SOMEONE JOINED A LOBBY")
+    console.log("SOMEONE JOINED A LOBBY, UPDATE ", ownerTournamentID)
     if (isModalShown('joinTournamentModal')) {
+        console.log("UPDATE TOURNAMENT PLAYER NBR LIST")
         updateTournamentListNbr('add');
     } else if (isModalShown('lobbyTournamentModal') && isUserInTournament(ownerTournamentID)) {
+        console.log("UPDATE PARTICIPANT LIST")
         updateParticipantList()
+    } else {
+        console.log("ELSE WTF")
+        console.log(isModalShown('lobbyTournamentModal'))
+        console.log(isUserInTournament(ownerTournamentID))
+        console.log("END ELSE WTF")
     }
 }
 
@@ -100,6 +107,7 @@ export async function handleCreateTournamentClick() {
     if (!myID)
         return;
 
+    console.log("CREATE ", myID)
     // Socket doit envoyer: createTournament -> owner ID
     interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Tournament", "action": "Create"}));
     document.getElementById('startTournamentBtn').addEventListener('click', startTournament);
@@ -144,7 +152,8 @@ export async function joinTournament(event) {
     const lobbyModalEl = document.getElementById('lobbyTournamentModal')
     lobbyModalEl.addEventListener('hide.bs.modal', leftTournament)
     lobbyModalEl.dataset.id = ownerID;
-
+    
+    console.log("JOINING ", ownerID)
     // Socket doit envoyer: joinTournament -> owner ID
     interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Tournament", "action": "Join", "owner_id": ownerID}));
 
@@ -259,10 +268,14 @@ export async function updateParticipantList() {
     const response = await fetchMyLobby('GET');
     if (!response) return;
     // Error handling if response.status >= 400
-    const tournament = await assembler(response);
+    let tournament = await assembler(response);
+    tournament = tournament['lobby']
+    console.log(tournament)
     const participantList = document.getElementById('participantList');
     participantList.innerHTML = '';
-    tournament.players.forEach(player => {
+    
+    const players = Object.values(tournament);
+    players.forEach(player => {
         addParticipant(player);
     });
 }
@@ -286,6 +299,8 @@ export function toggleStartBtnForOwner(shouldShow) {
 export function isUserInTournament(ownerTournamentID) {
     const lobbyModalEl = document.getElementById('lobbyTournamentModal');
     const isModalShown = lobbyModalEl.classList.contains('show');
+    console.log(isModalShown)
+    console.log(lobbyModalEl.dataset.id == ownerTournamentID)
     if (isModalShown && lobbyModalEl.dataset.id == ownerTournamentID) {
         return true;
     }

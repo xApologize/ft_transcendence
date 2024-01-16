@@ -26,6 +26,8 @@ function sortUser(objectAllUsers) {
 
 
 export async function displayUser(allUsers, container) {
+    if (!container) 
+        return;
     container.innerHTML = '';
     let currentUser;
     const objectAllUsers = await assembler(allUsers);
