@@ -97,6 +97,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             await self.send(text_data=json.dumps(data["message"]))
 
     async def send_message_match_invite(self, data: any):
+        print("AAAA")
         if self.user_id == data["Receiver"]:
             await self.send(text_data=json.dumps(data["message"]))
 
@@ -160,10 +161,10 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             await database_sync_to_async(match.save)()
             player_a_nick = await self.get_user_nickname(match.paddleA)
             player_b_nick = await self.get_user_nickname(match.paddleB)
-            handle_a: dict = await self.create_math_handle(
+            handle_a: dict = await self.create_match_handle(
                 match.paddleA, match.paddleB, "A", player_a_nick, player_b_nick
                 )
-            handle_b: dict = await self.create_math_handle(
+            handle_b: dict = await self.create_match_handle(
                 match.paddleA, match.paddleB, "B", player_b_nick, player_a_nick
                 )
             await self.channel_layer.group_send(
@@ -180,7 +181,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             await self.send_error("lfm")
 
     @staticmethod
-    async def create_math_handle(
+    async def create_match_handle(
             first_id: int, second_id: int, paddle: str, me: str, opponent: str) -> dict:
         handle = {
             "type": "Found Match",
@@ -214,10 +215,10 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         host_nickname: str = await self.get_user_nickname(self.user_id)
         recipient_id: int = await database_sync_to_async(lambda: invite.recipient.pk)()
         recipient_nickname: str = await self.get_user_nickname(recipient_id)
-        host_match_handle: dict = await self.create_math_handle(
+        host_match_handle: dict = await self.create_match_handle(
             self.user_id, recipient_id, "A", host_nickname, recipient_nickname
         )
-        recipient_match_handle: dict = await self.create_math_handle(
+        recipient_match_handle: dict = await self.create_match_handle(
                 self.user_id, recipient_id, "B", recipient_nickname, host_nickname
         )
         await database_sync_to_async(invite.delete)()
@@ -265,7 +266,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             match_entry = await database_sync_to_async(
                 LookingForMatch.objects.filter(paddleA=self.user_id).first)()
             await database_sync_to_async(match_entry.delete)()
-    
+
     async def tournament_handler(self, data) -> None:
         try:
             action_type: str = data["action"]
@@ -283,9 +284,6 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
                 await self.cancel_tournament()
             case "Start":
                 await self.start_tournament()
-        # send all notif send owner id
-        #     case "Start":
-        # start ?????
 
     async def create_tournament(self) -> None:
         try:
@@ -406,6 +404,38 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         lobby_instance.open = False
         await database_sync_to_async(lobby_instance.save)()
         await self.send_to_layer(ECHO, self.user_id ,"Tournament", "startTournament")
+        await self.create_game_set(lobby_instance)
+    
+    async def create_game_set(self, lobby_instance: Lobby) -> None:
+        owner_nickname: str = await self.get_user_nickname(lobby_instance.owner)
+        player_2_nickname: str = await self.get_user_nickname(lobby_instance.player_2)
+        player_3_nickname: str = await self.get_user_nickname(lobby_instance.player_3)
+        player_4_nickname: str = await self.get_user_nickname(lobby_instance.player_4)
+        owner_handle: dict = await self.create_match_handle(
+            lobby_instance.owner, lobby_instance.player_2, "A", owner_nickname, player_2_nickname
+        )
+        player_2_handle: dict = await self.create_match_handle(
+            lobby_instance.player_2, lobby_instance.owner, "B", player_2_nickname, owner_nickname
+        )
+        player_3_handle: dict = await self.create_match_handle(
+            lobby_instance.player_3, lobby_instance.player_4, "A", player_3_nickname, player_4_nickname
+        )
+        player_4_handle: dict = await self.create_match_handle(
+            lobby_instance.player_4, lobby_instance.player_3, "B", player_4_nickname, player_3_nickname
+        )
+        await self.send_tourny_handle(owner_handle, lobby_instance.owner)
+        await self.send_tourny_handle(player_2_handle, lobby_instance.player_2)
+        await self.send_tourny_handle(player_3_handle, lobby_instance.player_3)
+        await self.send_tourny_handle(player_4_handle, lobby_instance.player_4)
+                    
+    async def send_tourny_handle(self, match_handle: dict, id: int) -> None:
+        await self.channel_layer.group_send(
+            "interactive", {
+                "type": MATCH_INVITE,
+                "message": match_handle,
+                "Receiver": id
+                }
+            )
 
 
 
