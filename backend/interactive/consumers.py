@@ -219,7 +219,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             self.user_id, recipient_id, "A", host_nickname, recipient_nickname
         )
         recipient_match_handle: dict = await self.create_match_handle(
-                self.user_id, recipient_id, "B", recipient_nickname, host_nickname
+            self.user_id, recipient_id, "B", recipient_nickname, host_nickname
         )
         await database_sync_to_async(invite.delete)()
         await self.channel_layer.group_send(
@@ -412,9 +412,11 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         player_1_handle: dict = await self.create_match_handle(
             player_1_id, player_2_id, "A", player_1_nickname, player_2_nicknake
         )
+        print("Player 1 handle:", player_1_handle)
         player_2_handle: dict = await self.create_match_handle(
-            player_2_id, player_1_id, "B", player_2_nicknake, player_1_nickname
+            player_1_id, player_2_id, "B", player_2_nicknake, player_1_nickname
         )
+        print("Player 2 handle:", player_2_handle)
         await self.send_tourny_handle(player_1_handle, player_1_id)
         await self.send_tourny_handle(player_2_handle, player_2_id)
 
