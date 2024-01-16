@@ -2,14 +2,38 @@
 	<div class="row fill">
 		<div id="sceneContainer" class="vw-100 vh-100 p-0"></div>
 		
-        <div id="lfp" class="d-none text-center position-absolute">
+        <div id="lfp" class="d-none text-center position-absolute" style="font-size: 2rem; color: white; transform: translate(-50%, -50%); top: 50%; left: 50%;">
 			Looking for player...
         </div>
+		
 		<div id="loading" class="d-none position-absolute bottom-50 start-50 translate-middle nickname">
 			<img src="https://i.gifer.com/origin/34/34338d26023e5515f6cc8969aa027bca.gif" alt="" style="width:100px">
 		</div>
-		<div id="left-player-name" class="d-none position-absolute bottom-0 text-start p-4 nickname">Left Player</div>
-		<div id="right-player-name" class="d-none position-absolute bottom-0 text-end p-4 nickname">Right Player</div>
+
+		<div id="left-player-name" class="d-none position-absolute bottom-0 text-start p-4 nickname" style="font-size: 2rem; color: white;">Left Player</div>
+		<div id="right-player-name" class="d-none position-absolute bottom-0 text-end p-4 nickname" style="font-size: 2rem; color: white;">Right Player</div>
+
+		<!-- RESULT SCREEN -->
+		<div id="result" class="d-none position-absolute top-50 start-50 translate-middle lowerRow bg-main-second rounded" style="max-width: 50%; max-height: 50%;">
+			<h3 id="resultTitle" class="row text-center p-0"> You Lost </h3>
+			<div class="row">
+				<div class="col text-center p-0">
+					<p id="leftName">Left</p>
+				</div>
+				<div class="col text-center p-0">
+					<p id="leftScore">LeftScore</p>
+				</div>
+				<div class="col text-center p-0">
+					<p id="rightScore">RightScore</p>
+				</div>
+				<div class="col text-center p-0">
+					<p id="rightName">Right</p>
+				</div>
+			</div>
+			<div class="row text-center p-0">brackets</div>
+			<button id="resultButton" class="row text-center p-0">Back to menu</button>
+		</div>
+		<!-- RESULT SCREEN -->
 
         <div id="ui" class="container-fluid position-absolute">
             <div class="row vh-100">

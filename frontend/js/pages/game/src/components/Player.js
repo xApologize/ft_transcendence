@@ -10,7 +10,7 @@ import {
 import { World } from '../World.js';
 
 const initialSpeed = 6;
-const initialBoostSpeed = 35;
+const initialBoostSpeed = 50;
 
 class Player extends Paddle {
 	constructor( position, id, nickname ) {
@@ -25,7 +25,7 @@ class Player extends Paddle {
 		this.ray.layers.set( Layers.Solid );
 
 		this.wsData = {
-			id: this.participantId,
+			id: this.sideId,
 			pos: this.position,
 			ballInst: undefined
 		};
@@ -55,7 +55,15 @@ class Player extends Paddle {
 				return;
 			}
 			console.log( "SMASH! ");
-			ball.speed *= 2;
+			const pos = new Vector3(
+				this.position.x,
+				World._instance.balls.ballInst[0].pos.y,
+				this.position.z
+			);
+			World._instance.balls.playerCollision( World._instance.balls.ballInst[0], pos, this );
+			World._instance.balls.ballInst[0].smashed = true;
+			World._instance.balls.ballInst[0].dir.normalize();
+			this.onCollision( World._instance.balls.ballInst[0] );
 		};
 		if ( World._instance.currentGameMode == "Upgraded" ) {
 			document.addEventListener( "boostButtonPressed", this.boostButtonPressedEvent );

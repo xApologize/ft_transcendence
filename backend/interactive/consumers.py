@@ -279,8 +279,8 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
                 await self.join_tournament(data)
             case "Leave":
                 await self.leave_tournament()
-            # case "Cancel":
-            #     await self.cancel_tournament()
+            case "Cancel":
+                await self.cancel_tournament()
         # send all notif send owner id
         #     case "Start":
         # start ?????
@@ -376,6 +376,14 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         if lobby_instance is not None:
             # call cancel
             pass
+    
+    async def cancel_tournament(self) -> None:
+        get_owner_tournament: Lobby = await self.get_owner_tournament()
+        if get_owner_tournament is None:
+            # SEND ERROR
+            return
+        print("Cancel")
+        return
 
 
 
