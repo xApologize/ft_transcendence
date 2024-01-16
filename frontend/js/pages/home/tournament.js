@@ -165,10 +165,7 @@ export async function joinTournament(event) {
 
 // Quand le owner start le tournoi - Trigger par event listener
 export function startTournament(event) {
-    const lobbyModalEl = document.getElementById('lobbyTournamentModal');
-    const ownerID = lobbyModalEl.dataset.id
-
-    interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Tournament", "action": "Start", "owner_id": ownerID}));
+    interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Tournament", "action": "Start"}));
 
     // [ONLY TOURNAMENT OWNER CAN START]
     // Socket doit envoyer: startTournament
