@@ -60,7 +60,15 @@ class Ball extends InstancedMesh {
 
 		this.ballInst = [];
 		for (let i = 0; i < this.count; i++) {
-			this.ballInst[i] = { id: i, pos: new Vector3(), dir: new Vector3(), speed: 0, colliding: undefined, smashed: false };
+			this.ballInst[i] = {
+				id: i,
+				pos: new Vector3(),
+				dir: new Vector3(),
+				spin: 0,
+				speed: 0,
+				colliding: undefined,
+				smashed: false
+			};
 			this.hideInst( this.ballInst[i] );
 		}
 		
@@ -140,11 +148,13 @@ class Ball extends InstancedMesh {
 			ballInst.dir.y += ( point.y - object.position.y ) / ( object.length / 2 );
 			ballInst.dir.y /= 2;
 
-			const dot = ballInst.dir.dot( object.movement );
-			if ( ballInst.speed < dot * object.speed )
-				ballInst.speed = dot * object.speed;
+			// Match player velocity - break the game w/ Dash
+			// const dot = ballInst.dir.dot( object.movement );
+			// if ( ballInst.speed < dot * object.speed )
+			// 	ballInst.speed = dot * object.speed;
 
 			ballInst.smashed = false;
+			ballInst.spin = 0;
 		}
 	}
 
@@ -168,11 +178,13 @@ class Ball extends InstancedMesh {
 		World._instance.terrain.panel.bufferMat.uniforms.refPos.value = new Vector2(
 				this.ballInst[0].pos.x + this.ballInst[0].dir.x * this.ballInst[0].speed * dt,
 				this.ballInst[0].pos.y + this.ballInst[0].dir.y * this.ballInst[0].speed * dt
-			);
+			);	
 	}
 
 	fixedUpdate( dt ) {
 		for (let i = 0; i < this.count; i++) {
+			this.ballInst[i].dir.applyAxisAngle( new Vector3( 0, 0, 1 ), Math.cos( new Date().getTime() / 1000 ) * this.ballInst[i].spin * dt )
+
 			this.calcCollision( this.ballInst[i], this.ballInst[i].speed * ( this.ballInst[i].smashed ? 2 : 1 ) * dt, 5 );
 	
 			// Reset if OOB
@@ -210,6 +222,7 @@ class Ball extends InstancedMesh {
 		ballInst.dir.normalize();
 		ballInst.speed = 0;
 		ballInst.smashed = false;
+		ballInst.spin = 0;
 		ballInst.colliding = undefined;
 
 		this.matrix.compose(
@@ -236,6 +249,7 @@ class Ball extends InstancedMesh {
 		this.ballInst[inst.id].dir.copy( inst.dir );
 		this.ballInst[inst.id].speed = inst.speed;
 		this.ballInst[inst.id].smashed = inst.smashed;
+		this.ballInst[inst.id].spin = inst.spin;
 
 
 		hitParticlesParam.position.copy( inst.pos );

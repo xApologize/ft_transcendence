@@ -46,19 +46,16 @@ class Terrain extends Object3D {
 		this.floor.receiveShadow = true;
 		this.add( this.floor );
 		
-		this.panel = new ScreenBoard();
-		this.add( this.panel );
-
 		this.add( airHockeyTable.scene );
 		airHockeyTable.scene.rotation.set( Math.PI / 2, 0, 0 );
 		airHockeyTable.scene.position.set( 0, 0, -6 );
-
+		
 		airHockeyTable.scene.traverse(function(child) {
-			if ( child.type == "Mesh" ) {
-				child.castShadow = true;
-				child.receiveShadow = true;
-				child.material.depthWrite = true;
-				// child.material = new MeshStandardMaterial({
+		if ( child.type == "Mesh" ) {
+			child.castShadow = true;
+			child.receiveShadow = true;
+			child.material.depthWrite = true;
+			// child.material = new MeshStandardMaterial({
 				// 	color: "grey",
 				// 	metalness: 0.9,
 				// 	roughness: 0.0,
@@ -68,6 +65,9 @@ class Terrain extends Object3D {
 				// });
 			}
 		});
+		
+		this.panel = new ScreenBoard( airHockeyTable.scene.children[2] );
+		this.add( this.panel );
 
 		// this.s = new Sprite( new SpriteMaterial( { map:spriteCircle, color:0xffffff} ) )
 		// this.s.position.set( 0, 0, 2 );

@@ -13,7 +13,7 @@ import { Tween } from '../systems/Tween.js';
 const initialSpeed = 6;
 const initialBoostSpeed = 50;
 const initialSmashCd = 0.4;
-const initialDashCd = 3;
+const initialDashCd = 4.2;
 
 class Player extends Paddle {
 	constructor( position, id, nickname ) {
@@ -84,6 +84,7 @@ class Player extends Paddle {
 			World._instance.balls.playerCollision( World._instance.balls.ballInst[0], pos, this );
 			World._instance.balls.ballInst[0].smashed = true;
 			World._instance.balls.ballInst[0].dir.normalize();
+			World._instance.balls.ballInst[0].spin = InputMap.movementAxis.value * Math.PI / 2;
 			this.onCollision( World._instance.balls.ballInst[0] );
 		};
 		if ( World._instance.currentGameMode == "Upgraded" ) {

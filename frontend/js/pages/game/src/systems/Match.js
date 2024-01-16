@@ -116,7 +116,6 @@ class Match {
 		if ( wsData.smash != undefined ) {
 			this.opponent.smashAnimation( wsData.smash );
 		}
-		console.log(wsData.dashCount);
 		if ( wsData.dashCount != undefined ) {
 			this.opponent.dashSpheresAnimation( wsData.dashCount );
 		}
