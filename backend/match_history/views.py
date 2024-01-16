@@ -65,7 +65,7 @@ class MatchHistoryView(View):
         try:
             recent_played_matches = MatchHistory.objects.filter(
                 Q(winner=user) | Q(loser=user)
-            ).order_by('-date_of_match')[:10]
+            ).order_by('-date_of_match')
 
             data = {
                 'won_matches': [

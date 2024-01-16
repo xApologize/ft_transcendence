@@ -1,8 +1,9 @@
 import { assembler } from '../../api/assembler.js';
-import interactiveSocket from './socket.js';
+import interactiveSocket, { hideAllUI } from './socket.js';
 import { displayToast } from './toastNotif.js';
 import { fetchUserById, getMyID, switchModals, isModalShown, hideModal } from './utils.js';
 import { fetchMe, fetchAllLobbies, fetchMyLobby } from '../../api/fetchData.js';
+import { World } from '../game/src/World.js';
 
 // This is handler for when someone sent something with socket and it worked.
 export function socketTournamentUser(action, ownerTournamentID) {
@@ -317,7 +318,12 @@ export function removeInfoLobbyModal() {
 export function transferToInfoModal() {
     document.getElementById('lobbyTournamentModal').removeEventListener('hide.bs.modal', leftTournament);
     document.getElementById('lobbyTournamentModal').removeEventListener('hide.bs.modal', cancelTournament);
+    hideAllUI();
+    World._instance.camera.viewTable(1, null);
+    document.getElementById('result').classList.remove('d-none')
+    document.getElementById('bracket').classList.remove('d-none')
 
-    switchModals('lobbyTournamentModal', 'tournamentInfoModal')
+
+    // switchModals('lobbyTournamentModal', 'tournamentInfoModal')
     // FETCH IT'S TOURNAMENT
 }

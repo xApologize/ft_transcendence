@@ -7,3 +7,9 @@ class Lobby(models.Model):
     player_3 = models.IntegerField(default=-1)
     player_4 = models.IntegerField(default=-1)
     open = models.BooleanField(default=True)
+
+class Tournament(models.Model):
+    player_1 = models.IntegerField(default=-1)
+    player_2 = models.IntegerField(default=-1)
+    player_3 = models.IntegerField(default=-1)
+    player_4 = models.IntegerField(default=-1)

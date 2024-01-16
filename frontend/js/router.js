@@ -62,25 +62,35 @@ function disposeModal(modalId) {
     }
 }
 
-export function checkModal(modalToClose = null) {
+function hideModal(modalId) {
+    const modalElement = document.getElementById(modalId);
+    if (modalElement) {
+        const modalInstance = bootstrap.Modal.getInstance(modalElement);
+        if (modalInstance) {
+            modalInstance.hide();
+        }
+    }
+}
+
+export function checkModal(deleteModal = false) {
     const modals = [
+        'lobbyTournamentModal',
         'userSettingsModal',
         'twoFAModal',
         'otherUserInfo',
         'inviteGameModal',
         'socialModal',
         'gameMenuModal',
-        'lobbyTournamentModal',
         'joinTournamentModal',
         'createTournamentModal',
         'tournamentInfoModal',
         'loadingModal'
     ];
 
-    if (modalToClose) {
-        disposeModal(modalToClose);
-    } else {
+    if (deleteModal) {
         modals.forEach(disposeModal);
+    } else {
+        modals.forEach(hideModal);
     }
 }
 

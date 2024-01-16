@@ -4,6 +4,7 @@ import { displayEveryone } from './home.js'
 import { handleInviteInteraction } from './inviteGame.js';
 import { newUser, removeUser, updateSpecificUser, handleSocialUpdate } from './socketUpdate.js'
 import { socketTournamentUser } from './tournament.js'
+import { checkModal } from '../../router.js';
 
 const interactiveSocket = {
     interactive_socket: null,
@@ -57,7 +58,7 @@ const interactiveSocket = {
         }
         switch (data.type) {
             case "Found Match":
-                hideAllUI();
+                hideAllUI(true);
                 World._instance.joinMatch( data.handle, data.paddle, data.me, data.opponent );
                 break;
             case "Refresh":
@@ -153,10 +154,10 @@ const interactiveSocket = {
 
 export default interactiveSocket;
 
-export function hideAllUI() {
-    const modal = bootstrap.Modal.getInstance(document.getElementById('loadingModal'));
-    modal.hide()
+export function hideAllUI(launchGame = false) {
+    checkModal()
     document.getElementById('toastContainer').classList.add('d-none')
     document.getElementById('ui').classList.add('d-none');
-    document.getElementById('lfp').classList.remove('d-none');
+    if (launchGame === true)
+        document.getElementById('lfp').classList.remove('d-none');
 }

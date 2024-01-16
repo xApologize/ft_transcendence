@@ -14,26 +14,64 @@
 		<div id="right-player-name" class="d-none position-absolute bottom-0 text-end p-4 nickname" style="font-size: 2rem; color: white;">Right Player</div>
 
 		<!-- RESULT SCREEN -->
-		<div id="result" class="d-none position-absolute top-50 start-50 translate-middle lowerRow bg-main-second rounded" style="max-width: 50%; max-height: 50%;">
-			<h3 id="resultTitle" class="row text-center p-0"> You Lost </h3>
-			<div class="row">
-				<div class="col text-center p-0">
-					<p id="leftName">Left</p>
-				</div>
-				<div class="col text-center p-0">
-					<p id="leftScore">LeftScore</p>
-				</div>
-				<div class="col text-center p-0">
-					<p id="rightScore">RightScore</p>
-				</div>
-				<div class="col text-center p-0">
-					<p id="rightName">Right</p>
-				</div>
-			</div>
-			<div class="row text-center p-0">brackets</div>
-			<button id="resultButton" class="row text-center p-0">Back to menu</button>
+		<div id="result" class="d-none position-absolute top-50 start-50 translate-middle bg-main-second rounded p-2" style="color: white; width: 35%;">
+            <div id="resultMatch" class="d-none">
+                <h3 id="resultTitle" class="row text-center m-0 p-2" style="display: flex; justify-content: center;"> You Lost </h3>
+                <div class="row">
+                    <div class="col text-center p-0">
+                        <p id="leftName">Left</p>
+                    </div>
+                    <div class="col text-center p-0">
+                        <p id="leftScore">LeftScore</p>
+                    </div>
+                    <div class="col text-center p-0">
+                        <p id="rightScore">RightScore</p>
+                    </div>
+                    <div class="col text-center p-0">
+                        <p id="rightName">Right</p>
+                    </div>
+                </div>
+                <div style="align-items: center; display: flex; justify-content: center;">
+                    <button id="resultButton" class="btn btn-danger text-center">Back to menu</button>
+                </div>
+            </div>
+            <!-- RESULT SCREEN -->
+            <div id="bracket" class="d-none">
+                <h1 style="display: flex; justify-content: center;">Shitty tournament</h1>
+                <main id="tournamentBracket">
+                  <ul class="round round-1">
+                    <li class="spacer">&nbsp;</li>
+                    
+                    <li id="r1-p1" class="game game-top winner"><span></span></li>
+                    <li class="game game-spacer">&nbsp;</li>
+                    <li id="r1-p2" class="game game-bottom "><span></span></li>
+                
+                    <li class="spacer">&nbsp;</li>
+                    
+                    <li id="r1-p3" class="game game-top winner"><span></span></li>
+                    <li class="game game-spacer">&nbsp;</li>
+                    <li id="r1-p4" class="game game-bottom "><span></span></li>
+                
+                    <li class="spacer">&nbsp;</li>
+                  </ul>
+                  <ul class="round round-2">
+                    <li class="spacer">&nbsp;</li>
+                    
+                    <li id="r2-p1" class="game game-top winner"><span></span></li>
+                    <li class="game game-spacer">&nbsp;</li>
+                    <li id="r1-p2" class="game game-bottom "><span></span></li>
+                
+                    <li class="spacer">&nbsp;</li>
+                    
+                  </ul>
+                  <ul class="round round-3">
+                    <li class="spacer">&nbsp;</li>
+                    <li id="r3-p1" class="game game-top winner"><span></span></li>
+                    <li class="spacer">&nbsp;</li>
+                  </ul>   
+                </main>
+            </div>
 		</div>
-		<!-- RESULT SCREEN -->
 
         <div id="ui" class="container-fluid position-absolute">
             <div class="row vh-100">
