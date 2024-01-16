@@ -281,6 +281,8 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
                 await self.leave_tournament()
             case "Cancel":
                 await self.cancel_tournament()
+            case "Start":
+                await self.start_tournament()
         # send all notif send owner id
         #     case "Start":
         # start ?????
@@ -394,6 +396,16 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         # self.send_message_list_ids()
         # notifier
 
+    async def start_tournament(self) -> None:
+        try:
+            lobby_instance: Lobby = await database_sync_to_async(Lobby.objects.get)(owner=self.user_id)
+        except Exception:
+            print("FATAL ERROR")
+            # SEND ERROR TO FRONT
+            return
+        lobby_instance.open = False
+        await database_sync_to_async(lobby_instance.save)()
+        await self.send_to_layer(ECHO, self.user_id ,"Tournament", "startTournament")
 
 
 
