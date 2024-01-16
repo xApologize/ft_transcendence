@@ -101,7 +101,7 @@ export async function handleCreateTournamentClick() {
         return;
 
     // Socket doit envoyer: createTournament -> owner ID
-
+    interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Tournament", "action": "Create"}));
     document.getElementById('startTournamentBtn').addEventListener('click', startTournament);
     lobbyModalEl.addEventListener('hide.bs.modal', cancelTournament);
 
@@ -146,6 +146,7 @@ export async function joinTournament(event) {
     lobbyModalEl.dataset.id = ownerID;
 
     // Socket doit envoyer: joinTournament -> owner ID
+    interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Tournament", "action": "Join", "owner_id": ownerID}));
 
     const leaveBtn = document.getElementById('cancelTournamentBtn');
     leaveBtn.textContent = 'Leave Tournament';

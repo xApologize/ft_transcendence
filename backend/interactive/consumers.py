@@ -2,8 +2,11 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from interactive.models import LookingForMatch
 from user_profile.models import User
 from game_invite.models import MatchInvite
+from tournament.models import Lobby
+from django.db.models import Q
 from channels.layers import get_channel_layer
 from channels.db import database_sync_to_async
+from django.db import IntegrityError
 import json
 
 ECHO = "send_message_echo"
@@ -11,6 +14,7 @@ NO_ECHO = "send_message_no_echo"
 MAILBOX = "send_mailbox_message"
 CLEAN = "send_message_and_clean_db"
 MATCH_INVITE = "send_message_match_invite"
+SEND_LIST_IDS = "send_message_list_ids"
 
 
 class UserInteractiveSocket(AsyncWebsocketConsumer):
@@ -39,6 +43,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             return
         await self.handle_lfm_cleaning()
         await self.handle_invite_cleaning()
+        # await self.handle_tourmanet_cleaning()
         await self.set_user_status("OFF")
         await self.send_to_layer(NO_ECHO, self.user_id, "Refresh", "Logout")
         await self.channel_layer.group_discard(
@@ -93,6 +98,11 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
 
     async def send_message_match_invite(self, data: any):
         if self.user_id == data["Receiver"]:
+            await self.send(text_data=json.dumps(data["message"]))
+
+    async def send_message_list_ids(self, data: any):
+        user_ids = data.get("user_ids", [])
+        if self.user_id in user_ids:
             await self.send(text_data=json.dumps(data["message"]))
 
     async def send_to_layer(self, send_type: str, user_id: int, type: str, rType: str):
@@ -258,15 +268,127 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
     
     async def tournament_handler(self, data) -> None:
         try:
-            event_type: str = data["event"]
+            action_type: str = data["action"]
         except Exception:
             print("FATAL ERROR")
             return
-        # match event_type:
-        #     case "Join":
-        #     case "Leave":
-        #     case "Refresh":
+        match action_type:
+            case "Create":
+                await self.create_tournament()
+            case "Join":
+                await self.join_tournament(data)
+            case "Leave":
+                await self.leave_tournament()
+            case "Cancel":
+                await self.cancel_tournament()
+        # send all notif send owner id
         #     case "Start":
+        # start ?????
+
+    async def create_tournament(self) -> None:
+        try:
+            await database_sync_to_async(Lobby.objects.create)(owner=self.user_id)
+        except IntegrityError:
+            # await self.send(text_data=json.dumps())
+            print("Integrity error")
+            return
+        await self.send_to_layer(ECHO, self.user_id, "Tournament", "createTournament")
+        # await self.send(text_data=json.dumps())
+        # Send notification to frontend
+    
+    async def leave_tournament(self) -> None:
+        try:
+            if self.is_owner_tourny():
+                # add cancel tournament call it?
+                return
+            lobby_instance: Lobby = await database_sync_to_async(Lobby.objects.get)(
+                Q(player_2=self.user_id) | Q(
+                    player_3=self.user_id) | Q(player_4=self.user_id))
+        except Lobby.DoesNotExist:
+            print("FATAL ERROR")
+            # NOTIFY FRONTEND
+            return
+        lobby_spot: str = self.find_lobby_spot(lobby_instance, self.user_id)
+        if lobby_spot is None:
+            print("NO USER FOUND IN LOBBY")
+            # NOTIFY FRONTEND
+            return
+        setattr(lobby_instance, lobby_spot, -1)
+        await database_sync_to_async(lobby_instance.save)()
+        # NOTIFY FRONTEND
+
+    async def join_tournament(self, data) -> None:
+        try:
+            owner_id: int = data["owner_id"]
+            lobby_instance: Lobby = await database_sync_to_async(Lobby.objects.get)(owner=owner_id)
+        except Exception:
+            print("FATAL ERROR")
+            # SEND ERROR TO FRONT
+            return
+        lobby_spot: str = self.find_lobby_spot(lobby_instance, -1)
+        if lobby_spot is None:
+            print("FATAL ERROR NO SPOT")
+            # SEND ERROR TO FRONT
+            return
+        setattr(lobby_instance, lobby_spot, self.user_id)
+        await database_sync_to_async(lobby_instance.save)()
+        await self.send_to_layer(ECHO, self.user_id, "Tournament", "joinTournament")
+        # NOTIFY FRONTEND
+
+    @staticmethod
+    def find_lobby_spot(instance: Lobby, id: int) -> str:
+        if instance.player_2 == id:
+            return "player_2"
+        elif instance.player_3 == id:
+            return "player_3"
+        elif instance.player_4 == id:
+            return "player_4"
+        return None
+
+    @staticmethod
+    def get_users_ids(lobby_instance: Lobby) -> list:
+        id_list: list = [lobby_instance.owner]
+        if lobby_instance.player_2 != -1:
+            id_list.append(lobby_instance.player_2)
+        if lobby_instance.player_3 != -1:
+            id_list.append(lobby_instance.player_3)
+        if lobby_instance.player_4 != -1:
+            id_list.append(lobby_instance.player_4)
+        return id_list
+    
+    async def get_owner_tournament(self) -> Lobby:
+        try:
+            lobby_instance = await database_sync_to_async(Lobby.objects.get)(owner=self.user_id)
+        except FileNotFoundError:
+            return None
+        return lobby_instance
+    
+    async def get_tournament(self) -> Lobby:
+        try:
+            lobby_instance = await database_sync_to_async(Lobby.objects.get)(Q(player_2=self.user_id) | Q(
+                    player_3=self.user_id) | Q(player_4=self.user_id))
+        except FileNotFoundError:
+            return None
+        return lobby_instance
+
+    async def handle_tourmanet_cleaning(self) -> None:
+        lobby_instance: Lobby = self.get_owner_tournament()
+        if lobby_instance is not None:
+            #clean
+            return
+        lobby_instance: Lobby = self.get_tournament()
+        if lobby_instance is not None:
+            # call cancel
+            pass
+    
+    async def cancel_tournament(self) -> None:
+        get_owner_tournament: Lobby = await self.get_owner_tournament()
+        if get_owner_tournament is None:
+            # SEND ERROR
+            return
+        print("Cancel")
+        return
+
 
 
 def create_layer_dict(type: str, message: str, sender: str) -> dict:

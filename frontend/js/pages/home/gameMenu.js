@@ -45,6 +45,7 @@ function setupPlay1vs1Button(world) {
         showElement('lfp');
         interactiveSocket.sendMessageSocket(
             JSON.stringify({ type: 'Find Match' })
+        // interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Tournament", "action": "Leave", "owner_id": 69})
         );
         function showElement(elementId) {
             document.getElementById(elementId).classList.remove('d-none');
