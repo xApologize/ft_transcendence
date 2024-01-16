@@ -72,7 +72,7 @@ class MatchHistoryView(View):
                     {
                         'winner_score': match.winner_score,
                         'loser_score': match.loser_score,
-                        'date_of_match': match.date_of_match.strftime("%Y-%m-%d %H:%M:%S")
+                        'date_of_match': match.date_of_match.strftime("%Y/%m/%d")
                     }
                     for match in recent_played_matches if match.winner == user
                 ],
@@ -80,7 +80,7 @@ class MatchHistoryView(View):
                     {
                         'winner_score': match.winner_score,
                         'loser_score': match.loser_score,
-                        'date_of_match': match.date_of_match.strftime("%Y-%m-%d %H:%M:%S")
+                        'date_of_match': match.date_of_match.strftime("%Y/%m/%d")
                     }
                     for match in recent_played_matches if match.loser == user
                 ],
@@ -90,7 +90,7 @@ class MatchHistoryView(View):
                         'winner_username': match.winner.nickname,
                         'loser_score': match.loser_score,
                         'loser_username': match.loser.nickname,
-                        'date_of_match': match.date_of_match.strftime("%Y-%m-%d %H:%M:%S")
+                        'date_of_match': match.date_of_match.strftime("%Y/%m/%d")
                     }
                     for match in recent_played_matches
                 ]
