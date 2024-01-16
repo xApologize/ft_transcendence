@@ -22,7 +22,7 @@ export function socketTournamentUser(action, ownerTournamentID) {
             someoneLeftLobby(ownerTournamentID);
             break;
         case 'startTournament':
-            tournamentStarting()
+            tournamentStarting(ownerTournamentID)
             break;
         default:
             socketLobbyError(ownerTournamentID);
@@ -71,9 +71,11 @@ function someoneJoinLobby(ownerTournamentID) {
     }
 }
 
-function tournamentStarting() {
-    console.log("TOURNAMENT STARTING TRIGGER BY SOCKET")
-    transferToInfoModal()
+function tournamentStarting(ownerTournamentID) {
+    console.log("TOURNAMENT STARTING TRIGGER BY OWNER SOCKET")
+    if (isModalShown('lobbyTournamentModal') && isUserInTournament(ownerTournamentID)) {
+        transferToInfoModal()
+    }
 }
 
 export function updateTournamentListNbr(action, ownerTournamentID) {
@@ -161,7 +163,6 @@ export async function joinTournament(event) {
 
 // Quand le owner start le tournoi - Trigger par event listener
 export function startTournament(event) {
-    transferToInfoModal()
 
     // [ONLY TOURNAMENT OWNER CAN START]
     // Socket doit envoyer: startTournament
