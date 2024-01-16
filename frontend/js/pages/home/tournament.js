@@ -123,6 +123,7 @@ export async function handleCreateTournamentClick() {
 export function cancelTournament() {
     console.log("CANCEL TOURNAMENT")
     // Socket doit envoyer: cancelTournament
+    interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Tournament", "action": "Cancel"}));
     document.getElementById('lobbyTournamentModal').removeEventListener('hide.bs.modal', cancelTournament);
     switchModals('lobbyTournamentModal', 'gameMenuModal')
     displayToast('The tournament has been cancelled successfully.', 'Tournament Cancelled')

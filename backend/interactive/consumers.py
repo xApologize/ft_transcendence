@@ -383,12 +383,17 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             pass
     
     async def cancel_tournament(self) -> None:
-        get_owner_tournament: Lobby = await self.get_owner_tournament()
-        if get_owner_tournament is None:
+        lobby_instance: Lobby = await self.get_owner_tournament()
+        if lobby_instance is None:
             # SEND ERROR
             return
-        print("Cancel")
-        return
+        owner_id: int = lobby_instance.owner
+        # users_list: list = self.get_users_ids(lobby_instance)
+        await database_sync_to_async(lobby_instance.delete)()
+        await self.send_to_layer(NO_ECHO, owner_id ,"Tournament", "cancelTournament")
+        # self.send_message_list_ids()
+        # notifier
+
 
 
 
