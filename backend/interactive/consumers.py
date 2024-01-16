@@ -289,8 +289,11 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         try:
             await database_sync_to_async(Lobby.objects.create)(owner=self.user_id)
         except IntegrityError:
+            # await self.send(text_data=json.dumps())
             print("Integrity error")
             return
+        await self.send_to_layer(ECHO, self.user_id, "Tournament", "createTournament")
+        # await self.send(text_data=json.dumps())
         # Send notification to frontend
     
     async def leave_tournament(self) -> None:
@@ -329,6 +332,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             return
         setattr(lobby_instance, lobby_spot, self.user_id)
         await database_sync_to_async(lobby_instance.save)()
+        await self.send_to_layer(ECHO, self.user_id, "Tournament", "joinTournament")
         # NOTIFY FRONTEND
 
     @staticmethod

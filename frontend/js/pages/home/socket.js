@@ -3,6 +3,7 @@ import { World } from '../game/src/World.js';
 import { displayEveryone } from './home.js'
 import { handleInviteInteraction } from './inviteGame.js';
 import { newUser, removeUser, updateSpecificUser, handleSocialUpdate } from './socketUpdate.js'
+import { socketTournamentUser } from './tournament.js'
 
 const interactiveSocket = {
     interactive_socket: null,
@@ -65,8 +66,8 @@ const interactiveSocket = {
             case "Match Invite":
                 this.match_invite_handler(data);
                 break;
-            // case "Tournament":
-            //     this.tournament_handler(data);
+            case "Tournament":
+                this.tournament_handler(data);
                 break;
             case "Init":
                 displayEveryone();
@@ -116,9 +117,15 @@ const interactiveSocket = {
         }
     },
 
-    // tournament_handler: function(data) {
-        
-    // },
+    tournament_handler: function(data) {
+        const id = data.id;
+        const refresh_type = data.rType;
+        if (!id || !refresh_type){
+            console.error("Refresh Handler error");
+            return;
+        }
+        socketTournamentUser(refresh_type, id)
+    },
 
     match_invite_handler: function(data) {
         console.log("hey", data);
