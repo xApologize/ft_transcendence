@@ -153,3 +153,7 @@ export const fetchIsToken = async () => {
 export const fetchGameInvite = async (method, data = null) => {
     return fetchApi(method, 'game_invite/', null, data);
 }
+
+export const fetchTournament = async (method) => {
+    return fetchApi(method, 'tournament/', null, null)
+}
