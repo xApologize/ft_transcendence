@@ -64,9 +64,7 @@ function setupCreateTournamentButton() {
 function setupJoinTournamentButton() {
     const joinBtn = document.getElementById('joinTournamentBtn');
     joinBtn.addEventListener('click', () => {
-        // FETCH ALL CURRENT TOURNAMENT AND DISPLAY IT
         switchModals('gameMenuModal', 'joinTournamentModal')
-
         updateTournamentList()
     });
 }

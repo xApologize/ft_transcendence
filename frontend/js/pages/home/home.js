@@ -14,6 +14,7 @@ import { loadAll } from '../game/src/systems/Loader.js';
 import interactiveSocket from './socket.js';
 import { closeInviteRequest } from './inviteGame.js';
 import { initGameMenu } from './gameMenu.js';
+import { checkModal } from '../../router.js';
 ////////
 
 export async function showHome() {
@@ -21,6 +22,7 @@ export async function showHome() {
 		// await CheckIfRedirectionIsntHappening (?)
 
         await loadHTMLPage('./js/pages/home/home.html');
+        checkModal()
         const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
         loadingModal.show();
         setupHomeModal();

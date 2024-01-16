@@ -70,7 +70,6 @@ export function checkModal(modalToClose = null) {
         'inviteGameModal',
         'socialModal',
         'gameMenuModal',
-        'inviteTournamentModal',
         'lobbyTournamentModal',
         'joinTournamentModal',
         'createTournamentModal',

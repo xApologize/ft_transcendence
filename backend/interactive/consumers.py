@@ -43,6 +43,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             return
         await self.handle_lfm_cleaning()
         await self.handle_invite_cleaning()
+        # await self.handle_tourmanet_cleaning()
         await self.set_user_status("OFF")
         await self.send_to_layer(NO_ECHO, self.user_id, "Refresh", "Logout")
         await self.channel_layer.group_discard(
@@ -229,6 +230,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
                     "rType": "refreshGameInvite",
                     "other_user_id": recipient_id
                     }, "Receiver": recipient_id
+                    
                 })
         await self.channel_layer.group_send(
             "interactive", {
@@ -277,7 +279,8 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
                 await self.join_tournament(data)
             case "Leave":
                 await self.leave_tournament()
-        #     case "Cancel":
+            # case "Cancel":
+            #     await self.cancel_tournament()
         # send all notif send owner id
         #     case "Start":
         # start ?????
@@ -292,6 +295,9 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
     
     async def leave_tournament(self) -> None:
         try:
+            if self.is_owner_tourny():
+                # add cancel tournament call it?
+                return
             lobby_instance: Lobby = await database_sync_to_async(Lobby.objects.get)(
                 Q(player_2=self.user_id) | Q(
                     player_3=self.user_id) | Q(player_4=self.user_id))
@@ -345,6 +351,31 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         if lobby_instance.player_4 != -1:
             id_list.append(lobby_instance.player_4)
         return id_list
+    
+    async def get_owner_tournament(self) -> Lobby:
+        try:
+            lobby_instance = await database_sync_to_async(Lobby.objects.get)(owner=self.user_id)
+        except FileNotFoundError:
+            return None
+        return lobby_instance
+    
+    async def get_tournament(self) -> Lobby:
+        try:
+            lobby_instance = await database_sync_to_async(Lobby.objects.get)(Q(player_2=self.user_id) | Q(
+                    player_3=self.user_id) | Q(player_4=self.user_id))
+        except FileNotFoundError:
+            return None
+        return lobby_instance
+
+    async def handle_tourmanet_cleaning(self) -> None:
+        lobby_instance: Lobby = self.get_owner_tournament()
+        if lobby_instance is not None:
+            #clean
+            return
+        lobby_instance: Lobby = self.get_tournament()
+        if lobby_instance is not None:
+            # call cancel
+            pass
 
 
 

@@ -122,8 +122,16 @@
         "model": "tournament.Lobby",
         "pk": 1,
         "fields":{
-            "owner": 69,
-            "player_2": 4
+            "owner": 4
+        }
+    },
+    {
+        "model": "tournament.Lobby",
+        "pk": 2,
+        "fields":{
+            "owner": 1,
+            "player_2": 4,
+            "player_3": 3
         }
     }
 ]
