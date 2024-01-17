@@ -283,15 +283,13 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
                 await self.cancel_tournament()
             case "Start":
                 await self.start_tournament()
-            # case "Round 1":
-                # await self.handle_round_1(data)
-            # case "Round 2":
-                # await self.handle_round_2(data)
+            case "Final":
+                await self.handle_round_1(data)
 
     async def create_tournament(self) -> None:
         try:
             await database_sync_to_async(Lobby.objects.create)(owner=self.user_id)
-        except Lobby.DoesNotExist:
+        except Exception:
             print("Integrity error")
             await self.send(text_data=json.dumps({"type": "Tournament", "rType": "createFailure", "id": self.user_id}))
             return

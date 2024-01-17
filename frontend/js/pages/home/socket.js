@@ -61,13 +61,6 @@ const interactiveSocket = {
                 hideAllUI(true);
                 World._instance.joinMatch( data.handle, data.paddle, data.me, data.opponent );
                 break;
-            case "Tournament Match":
-                setTimeout(() => {
-                    document.getElementById('bracket').classList.add('d-none')
-                    document.getElementById('result').classList.add('d-none')
-                    World._instance.joinMatch( data.handle, data.paddle, data.me, data.opponent );
-                }, 5000);
-                break;
             case "Refresh":
                 this.refresh_handler(data);
                 break;
@@ -76,6 +69,16 @@ const interactiveSocket = {
                 break;
             case "Tournament":
                 this.tournament_handler(data);
+                break;
+            case "Tournament Match":
+                setTimeout(() => {
+                    document.getElementById('bracket').classList.add('d-none')
+                    document.getElementById('result').classList.add('d-none')
+                    World._instance.joinMatch( data.handle, data.paddle, data.me, data.opponent );
+                }, 5000);
+                break;
+            case "Tournament Final":
+                console.log("HEy")
                 break;
             case "Init":
                 displayEveryone();
