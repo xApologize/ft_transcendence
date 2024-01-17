@@ -12,6 +12,7 @@ import {
 } from 'three';
 
 const ParametersDefault = {
+	loop: false,
 	duration: 1,
 	position: new Vector3( 0, 0, 0 ),
 	positionRandomRange: new Vector3( 0, 0, 0 ),
@@ -38,39 +39,7 @@ class ParticleSystem extends InstancedMesh {
 		this.matrix = new Matrix4();
 		this.inst = [];
 		for (let i = 0; i < count; i++) {
-			this.inst[i] = {
-				id: i,
-				pos: new Vector3(),
-				// direction: new Vector3().randomDirection(),
-				direction: parameters.direction.clone().add(
-					parameters.directionRandomRange.clone().multiply( new Vector3().randomDirection() )
-					),
-				speed: parameters.speed * (0.2 + Math.random() * 0.8),
-				speedOverTime: parameters.speedOverTime * Math.random(),
-				colliding: undefined
-			};
-			const initialPosition = parameters.position.clone().add(
-				parameters.positionRandomRange.clone().multiply( new Vector3().randomDirection() )
-				);
-			const initialEulerRotation = new Euler().setFromVector3( parameters.eulerRotation.clone().add(
-				parameters.eulerRotationRandomRange.clone().multiply( new Vector3().randomDirection() )
-				) );
-			const initialScale = parameters.scale.clone().add(
-				parameters.scaleRandomRange.clone().multiply( new Vector3().randomDirection() )
-				);
-			const initialDirection = parameters.direction.clone().add(
-				parameters.directionRandomRange.clone().multiply( new Vector3().randomDirection() )
-				);
-			// console.log( "Pos: ", initialPosition );
-			// console.log( "Rot: ", initialEulerRotation );
-			// console.log( "Scale: ", initialScale );
-			this.matrix.compose( initialPosition, new Quaternion().setFromEuler( initialEulerRotation ), initialScale );
-			this.setMatrixAt( i, this.matrix );
-			this.instanceMatrix.needsUpdate = true;
-		}
-
-
-		for (let i = 0; i < this.count; i++) {
+			this.resetInst(i);
 		}
 
 		this.renderer = new Renderer( this );
@@ -78,8 +47,38 @@ class ParticleSystem extends InstancedMesh {
 		this.updatable = new Updatable( this );
 	}
 
+	resetInst( i ) {
+		this.inst[i] = {
+			id: i,
+			pos: new Vector3(),
+			// direction: new Vector3().randomDirection(),
+			direction: this.parameters.direction.clone().add(
+				this.parameters.directionRandomRange.clone().multiply( new Vector3().randomDirection() )
+				),
+			speed: this.parameters.speed * (0.2 + Math.random() * 0.8),
+			speedOverTime: this.parameters.speedOverTime * Math.random(),
+			colliding: undefined,
+			time: 0
+		};
+		const initialPosition = this.parameters.position.clone().add(
+			this.parameters.positionRandomRange.clone().multiply( new Vector3().randomDirection() )
+			);
+		const initialEulerRotation = new Euler().setFromVector3( this.parameters.eulerRotation.clone().add(
+			this.parameters.eulerRotationRandomRange.clone().multiply( new Vector3().randomDirection() )
+			) );
+		const initialScale = this.parameters.scale.clone().add(
+			this.parameters.scaleRandomRange.clone().multiply( new Vector3().randomDirection() )
+			);
+		const initialDirection = this.parameters.direction.clone().add(
+			this.parameters.directionRandomRange.clone().multiply( new Vector3().randomDirection() )
+			);
+		this.matrix.compose( initialPosition, new Quaternion().setFromEuler( initialEulerRotation ), initialScale );
+		this.setMatrixAt( i, this.matrix );
+		this.instanceMatrix.needsUpdate = true;
+	}
+
 	update( dt ) {
-		if ( this.time == this.duration )
+		if ( this.time == this.duration && !this.parameters.loop )
 			this.delete();
 		this.time += dt;
 		if ( this.time > this.duration )
@@ -89,7 +88,7 @@ class ParticleSystem extends InstancedMesh {
 		
 		for (let i = 0; i < this.count; i++) {
 			const speed = ( this.inst[i].speedOverTime - this.inst[i].speed ) * ( this.time / this.duration) + this.inst[i].speed;
-
+			
 			this.getMatrixAt( i, this.matrix );
 			let pos = new Vector3();
 			let rot = new Quaternion();
@@ -100,6 +99,13 @@ class ParticleSystem extends InstancedMesh {
 			this.matrix.compose( pos, rot, sca );
 			this.setMatrixAt( i, this.matrix );
 			this.instanceMatrix.needsUpdate = true;
+			this.inst[i].time += dt;
+			if ( this.inst[i].time >= this.parameters.duration && this.parameters.loop ) {
+				console.log("called");
+				this.resetInst( i );
+				this.inst[i].time = 0;
+				this.time = 0;
+			}
 		}
 	}
 

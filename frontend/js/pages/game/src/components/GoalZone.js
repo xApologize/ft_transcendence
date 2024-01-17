@@ -48,6 +48,8 @@ class GoalZone extends Mesh {
 	}
 
 	goal( hit ) {
+		document.getElementById("boom").play();
+
 		parameters.position.set( this.position.x, hit.pos.y, 1 );
 		this.particles = new ParticleSystem( particles_geo, particles_mat, 100, parameters );
 		this.particles.renderer.setLayers( Layers.Buffer );

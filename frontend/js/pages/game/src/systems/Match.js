@@ -1,9 +1,8 @@
-import { Audio, AudioListener, CapsuleGeometry, MeshStandardMaterial, Vector3, WebGLRenderer } from 'three';
+import { Vector3 } from 'three';
 import { World } from '../World.js';
 import { Player } from '../components/Player.js';
 import { Opponent } from '../components/Opponent.js';
 import { GameState } from './GameStates.js';
-import { insertCoinSound } from './Loader.js';
 import { Updatable } from '../modules/Updatable.js';
 import { fetchMatchHistory } from '../../../../api/fetchData.js';
 import { assembler } from '../../../../api/assembler.js';
@@ -54,7 +53,6 @@ class Match {
 	update() {}
 
 	fixedUpdate() {
-		
 		if ( Date.now() - lastSocketTime > 3000) {
 			this.endMatch();
 			document.getElementById("loading").classList.add("d-none");
@@ -76,6 +74,7 @@ class Match {
 	initMatch() {
 		// console.log("-- Starting Match --");
 		world.currentGameState = GameState.InMatch;
+		document.getElementById("coin").play();
 
 		world.balls.hide();
 		world.score.reset();
@@ -92,16 +91,6 @@ class Match {
 	
 		this.onWebsocketReceivedEvent = (event) => this.onWebsocketReceived( event );
 		this.socket.addEventListener( "message", this.onWebsocketReceivedEvent );
-
-
-		this.audioListener = new AudioListener();
-		world.camera.add( this.audioListener );
-		this.sound = new Audio( this.audioListener );
-
-		this.sound.setBuffer( insertCoinSound );
-		// this.sound.setLoop( true );
-		this.sound.setVolume( 0.5 );
-		this.sound.play();
 	}
 
 	onWebsocketReceived( event ) {
@@ -115,6 +104,12 @@ class Match {
 		const wsData = JSON.parse( event.data );
 		if ( this.participants[wsData.id] != undefined && wsData.pos != undefined )
 			this.participants[wsData.id].position.copy( wsData.pos );
+		if ( wsData.smash != undefined ) {
+			this.opponent.smashAnimation( wsData.smash );
+		}
+		if ( wsData.dashCount != undefined ) {
+			this.opponent.dashSpheresAnimation( wsData.dashCount );
+		}
 		if ( wsData.ballInst != undefined ) {
 			if ( wsData.scored == true ) {
 				if ( world.terrain.leftGoalZone.paddle.isOpponent )
@@ -130,6 +125,33 @@ class Match {
 	endMatch() {
 		world.currentGameState = GameState.MatchEnding;
 
+		if ( world.currentGameMode === "Tournament" )
+			this.showResultTournamentUI();
+		else
+			this.showResultMatchUI();
+
+		this.participants.forEach(element => {
+			element.dashSpheresAnimation( 0 );
+			element.delete();
+		});
+		this.participants = [];
+		divNicknames.forEach(element => {
+			if (document.getElementById(element))
+				document.getElementById(element).classList.add("d-none");
+		});
+
+		world.balls.hide();
+		world.balls.updatable.setEnabled(false);
+		world.balls.renderer.setEnabled(false);
+	
+		if ( this.socket != undefined)
+			this.socket.close();
+		this.socket.removeEventListener( "message", this.onWebsocketReceivedEvent );
+
+		this.updatable.delete();
+	}
+
+	showResultMatchUI() {
 		document.getElementById('result').classList.remove('d-none')
 		document.getElementById('resultMatch').classList.remove('d-none')
 		// if TOURNAMENT
@@ -153,31 +175,16 @@ class Match {
 		document.getElementById('rightName').innerHTML = this.participants[1].nickname;
 		if ( this.self.score < maxScore && this.opponent.score < maxScore )
 			document.getElementById("resultTitle").innerHTML = "Disconnected";
-		if ( this.self.score >= maxScore )
+		if ( this.self.score >= maxScore ) {
+			document.getElementById("fanfare").play();
 			document.getElementById("resultTitle").innerHTML = "YOU WIN!";
+		}
 		if ( this.opponent.score >= maxScore )
 			document.getElementById("resultTitle").innerHTML = "YOU LOST!";
+	}
 
-
-		this.participants.forEach(element => {
-			element.delete();
-		});
-		this.participants = [];
-		divNicknames.forEach(element => {
-			if (document.getElementById(element))
-				document.getElementById(element).classList.add("d-none");
-		});
-
-		world.balls.hide();
-		world.balls.updatable.setEnabled(false);
-		world.balls.renderer.setEnabled(false);
-	
-		if ( this.socket != undefined)
-			this.socket.close();
-
-		this.socket.removeEventListener( "message", this.onWebsocketReceivedEvent );
-
-		this.updatable.delete();
+	showResultTournamentUI() {
+		
 	}
 
 
