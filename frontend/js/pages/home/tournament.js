@@ -47,10 +47,13 @@ function someoneCancelTournament(ownerTournamentID) {
 }
 
 function someoneCreateTournament(ownerTournamentID) {
-    if (isModalShown('joinTournamentModal')) {
+    if (isModalShown('joinTournamentModal') && !isUserInTournament(ownerTournamentID)) {
         updateTournamentList();
     } else if (isUserInTournament(ownerTournamentID)) {
+        updateParticipantList()
+        document.getElementById('startTournamentBtn').addEventListener('click', startTournament);
         switchModals('joinTournamentModal', 'lobbyTournamentModal')
+        document.getElementById('lobbyTournamentModal').addEventListener('hide.bs.modal', cancelTournament);
         displayToast('The tournament has been created successfully.', 'Tournament Created')
     }
 }
@@ -110,7 +113,6 @@ export async function handleCreateTournamentClick() {
     const response = await fetchMe('GET');
     if (!response) return;
     const lobbyModalEl = document.getElementById('lobbyTournamentModal')
-    const lobbyModal = bootstrap.Modal.getInstance(lobbyModalEl)
     const myID = getMyID();
     if (!myID)
         return;
@@ -121,15 +123,9 @@ export async function handleCreateTournamentClick() {
     lobbyModalEl.dataset.id = myID
 
     interactiveSocket.sendMessageSocket(JSON.stringify({ "type": "Tournament", "action": "Create" }));
-    document.getElementById('startTournamentBtn').addEventListener('click', startTournament);
-    lobbyModalEl.addEventListener('hide.bs.modal', cancelTournament);
 
-    const user = await assembler(response);
-    addParticipant(user)
     const cancelBtn = document.getElementById('cancelTournamentBtn');
     cancelBtn.textContent = 'Cancel Tournament';
-    hideModal('gameMenuModal')
-    lobbyModal.show()
 }
 
 // Quand je suis owner et cancel mon tournoi - Trigger par event listener
