@@ -5,6 +5,9 @@ import { Opponent } from '../components/Opponent.js';
 import { GameState } from './GameStates.js';
 import { Updatable } from '../modules/Updatable.js';
 import { fetchMatchHistory } from '../../../../api/fetchData.js';
+import { assembler } from '../../../../api/assembler.js';
+import { displayMatchHistory } from '../../../../components/matchHistory/matchHistory.js';
+import interactiveSocket from '../../../home/socket.js';
 
 let world;
 let lastSocketTime;
@@ -151,15 +154,20 @@ class Match {
 
 	showResultMatchUI() {
 		document.getElementById('result').classList.remove('d-none')
-
+		document.getElementById('resultMatch').classList.remove('d-none')
+		// if TOURNAMENT
+		// add other function to button
+		// else
 		document.getElementById('resultButton').onclick = function() {
 			document.getElementById('result').classList.add('d-none')
+			document.getElementById('resultMatch').classList.add('d-none')
+			updateMatchHistory();
 			world.camera.viewLarge( 1 , function() {
 				document.getElementById('ui').classList.remove("d-none");
 				document.getElementById('toastContainer').classList.remove('d-none')
 				world.changeStatus( "ONL" );
 				world.currentGameState = GameState.InMenu;
-			} );
+			});
 		}
 
 		document.getElementById('leftName').innerHTML = this.participants[0].nickname;
@@ -206,7 +214,17 @@ class Match {
 			console.error( "No response from POST MatchHistory" );
 			return;
 		}
+
+		interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Tournament", "action": "Final"}));
 	}
 }
 
 export { Match };
+
+async function updateMatchHistory() {
+	console.log("HERE")
+	const response = await fetchMatchHistory( 'GET' );
+	if (!response) return;
+	const data = await assembler(response)
+	displayMatchHistory(data)
+}

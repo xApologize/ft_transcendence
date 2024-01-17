@@ -3,6 +3,8 @@ import { World } from '../game/src/World.js';
 import { displayEveryone } from './home.js'
 import { handleInviteInteraction } from './inviteGame.js';
 import { newUser, removeUser, updateSpecificUser, handleSocialUpdate } from './socketUpdate.js'
+import { socketTournamentUser } from './tournament.js'
+import { checkModal } from '../../router.js';
 
 const interactiveSocket = {
     interactive_socket: null,
@@ -56,7 +58,7 @@ const interactiveSocket = {
         }
         switch (data.type) {
             case "Found Match":
-                hideAllUI();
+                hideAllUI(true);
                 World._instance.joinMatch( data.handle, data.paddle, data.me, data.opponent );
                 break;
             case "Refresh":
@@ -64,6 +66,19 @@ const interactiveSocket = {
                 break;
             case "Match Invite":
                 this.match_invite_handler(data);
+                break;
+            case "Tournament":
+                this.tournament_handler(data);
+                break;
+            case "Tournament Match":
+                setTimeout(() => {
+                    document.getElementById('bracket').classList.add('d-none')
+                    document.getElementById('result').classList.add('d-none')
+                    World._instance.joinMatch( data.handle, data.paddle, data.me, data.opponent );
+                }, 5000);
+                break;
+            case "Tournament Final":
+                console.log("HEy")
                 break;
             case "Init":
                 displayEveryone();
@@ -113,6 +128,17 @@ const interactiveSocket = {
         }
     },
 
+    tournament_handler: function(data) {
+        const id = data.id;
+        const refresh_type = data.rType;
+        if (!id || !refresh_type){
+            console.error("Refresh Handler error");
+            return;
+        }
+        console.log("HAAA", id, refresh_type)
+        socketTournamentUser(refresh_type, id)
+    },
+
     match_invite_handler: function(data) {
         console.log("hey", data);
     },
@@ -139,10 +165,10 @@ const interactiveSocket = {
 
 export default interactiveSocket;
 
-export function hideAllUI() {
-    const modal = bootstrap.Modal.getInstance(document.getElementById('loadingModal'));
-    modal.hide()
+export function hideAllUI(launchGame = false) {
+    checkModal()
     document.getElementById('toastContainer').classList.add('d-none')
     document.getElementById('ui').classList.add('d-none');
-    document.getElementById('lfp').classList.remove('d-none');
+    if (launchGame === true)
+        document.getElementById('lfp').classList.remove('d-none');
 }

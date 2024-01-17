@@ -31,7 +31,7 @@ export const loadHTMLComponent = async (filePath) => {
     }
 };
 
-const redirectToHome = () => {
+export const redirectToHome = () => {
     closeAllModals();
     interactiveSocket.closeSocket()
     sessionStorage.clear();
@@ -46,8 +46,8 @@ const createOptions = (method, data) => {
         method,
         credentials: 'include',
         headers: {
-          ...(accessTokenLive ? { 'jwt': `${accessTokenLive}` } : {}),
-          ...(!isFormData ? { 'Content-Type': 'application/json' } : {}),
+            ...(accessTokenLive ? { 'jwt': `${accessTokenLive}` } : {}),
+            ...(!isFormData ? { 'Content-Type': 'application/json' } : {}),
         },
         body: isFormData ? data : (data ? JSON.stringify(data) : null),
     };
@@ -89,7 +89,7 @@ const buildParams = (parameters) => {
         for (const [parameterName, parameterValue] of Object.entries(parameters)) {
             if (typeof parameterValue === 'object' && parameterValue !== null) {
                 for (const value of Object.values(parameterValue)) {
-                        params.append(parameterName, value);
+                    params.append(parameterName, value);
                 }
             } else if (parameterValue !== null && parameterValue !== undefined) {
                 params.append(parameterName, parameterValue);
@@ -122,7 +122,7 @@ export const fetchAuth = async (method, apiPath, data = null, parameters = null)
 };
 
 // Fetch own information (username, email, avatar, status, match history)
-export const fetchMe = async(method, data = null) => {
+export const fetchMe = async (method, data = null) => {
     return fetchApi(method, 'user/me/', null, data);
 };
 
@@ -152,4 +152,16 @@ export const fetchIsToken = async () => {
 
 export const fetchGameInvite = async (method, data = null) => {
     return fetchApi(method, 'game_invite/', null, data);
+}
+
+export const fetchAllLobbies = async (method) => {
+    return fetchApi(method, 'lobby/', null, null)
+}
+
+export const fetchMyLobby = async (method) => {
+    return fetchApi(method, `lobby/specific/`, null, null)
+}
+
+export const fetchPlayerNbr = async (method, owner_id) => {
+    return fetchApi(method, `lobby/players/${owner_id}`, null, null)
 }
