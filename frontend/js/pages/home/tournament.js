@@ -124,9 +124,8 @@ export async function handleCreateTournamentClick() {
     const cancelBtn = document.getElementById('cancelTournamentBtn');
     cancelBtn.textContent = 'Cancel Tournament';
     hideModal('gameMenuModal')
+    document.getElementById('tournament-name-bracket').textContent = user.nickname + '\'s tournament'
     lobbyModal.show()
-
-
 }
 
 // Quand je suis owner et cancel mon tournoi - Trigger par event listener
@@ -288,14 +287,14 @@ export async function updateParticipantList() {
 
 function updateBracket(tournament) {
     const bracket = document.getElementById('bracket');
+
+    const title = bracket.querySelector('#tournament-name-bracket');
+    title.textContent = tournament.owner.nickname + '\'s tournament'
+
     const player1 = bracket.querySelector('#r1-p1');
-    console.log(player1)
     const player2 = bracket.querySelector('#r1-p2');
-    console.log(player2)
     const player3 = bracket.querySelector('#r1-p3');
-    console.log(player3)
     const player4 = bracket.querySelector('#r1-p4');
-    console.log(player4)
 
     if (tournament.owner)
         player1.textContent = tournament.owner.nickname
