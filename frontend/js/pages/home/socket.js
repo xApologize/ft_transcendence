@@ -132,6 +132,7 @@ const interactiveSocket = {
             console.error("Refresh Handler error");
             return;
         }
+        console.log("HAAA", id, refresh_type)
         socketTournamentUser(refresh_type, id)
     },
 

@@ -293,9 +293,9 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             await database_sync_to_async(Lobby.objects.create)(owner=self.user_id)
         except Lobby.DoesNotExist:
             print("Integrity error")
+            await self.send(text_data=json.dumps({"type": "Tournament", "rType": "createFailure", "id": self.user_id}))
             return
         await self.send_to_layer(ECHO, self.user_id, "Tournament", "createTournament")
-        # Check later for extra handling?
     
     async def leave_tournament(self) -> None:
         try:
@@ -308,13 +308,13 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
                 Q(player_2=self.user_id) | Q(
                     player_3=self.user_id) | Q(player_4=self.user_id))
         except Lobby.DoesNotExist:
-            print("DOUBLE CHECK IF NORMAL PRINT TO NOT FORGET!!!")
-            # NOTIFY FRONTEND
+            print("Tried leaving tournament that doesn't exist")
+            await self.send(text_data=json.dumps({"type": "Tournament", "rType": "leaveError", "id": self.user_id}))
             return
         lobby_spot: str = self.find_lobby_spot(lobby_instance, self.user_id)
         if lobby_spot is None:
             print("NO USER FOUND IN LOBBY")
-            # NOTIFY FRONTEND
+            await self.send(text_data=json.dumps({"type": "Tournament", "rType": "spotError", "id": self.user_id}))
             return
         setattr(lobby_instance, lobby_spot, -1)
         await database_sync_to_async(lobby_instance.save)()
@@ -325,20 +325,18 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         try:
             owner_id: int = data["owner_id"]
             lobby_instance: Lobby = await database_sync_to_async(Lobby.objects.get)(owner=owner_id)
+            # Check if I was in it
         except Exception:
             print("FATAL ERROR join")
-            # SEND ERROR TO FRONT
+            await self.send(text_data=json.dumps({"type": "Tournament", "rType": "invalidJoin", "id": self.user_id}))
             return
         lobby_spot: str = self.find_lobby_spot(lobby_instance, -1)
         if lobby_spot is None:
-            print("FATAL ERROR NO SPOT")
-            # SEND ERROR TO FRONT
+            print("Lobby has no spot available")
+            await self.send(text_data=json.dumps({"type": "Tournament", "rType": "lobbyFull", "id": self.user_id}))
             return
         setattr(lobby_instance, lobby_spot, self.user_id)
         await database_sync_to_async(lobby_instance.save)()
-        # if await self.find_lobby_spot(lobby_instance, -1) is None:
-        #     lobby_instance.open = False
-        #     await database_sync_to_async(lobby_instance.save)()
         await self.send_to_layer(ECHO, owner_id ,"Tournament", "joinTournament")
 
     @staticmethod
@@ -361,7 +359,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         if lobby_instance.player_4 != -1:
             id_list.append(lobby_instance.player_4)
         return id_list
-    
+
     async def get_owner_lobby(self) -> Lobby:
         try:
             lobby_instance = await database_sync_to_async(Lobby.objects.get)(owner=self.user_id)
@@ -369,7 +367,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             print("No Lobby found has owner")
             return None
         return lobby_instance
-    
+
     async def get_lobby(self) -> Lobby:
         try:
             lobby_instance = await database_sync_to_async(Lobby.objects.get)(Q(player_2=self.user_id) | Q(
@@ -392,7 +390,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         lobby_instance: Lobby = await self.get_owner_lobby()
         if lobby_instance is None:
             print("ERROR CANCEL, NO TOURNY FOUND???")
-            # SEND ERROR
+            await self.send(text_data=json.dumps({"type": "Tournament", "rType": "lobbyFull", "id": self.user_id}))
             return
         owner_id: int = lobby_instance.owner
         await database_sync_to_async(lobby_instance.delete)()
@@ -400,7 +398,6 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         # ALERT ALERT ALERT
 
     async def start_tournament(self) -> None:
-        print("START")
         try:
             lobby_instance: Lobby = await database_sync_to_async(Lobby.objects.get)(owner=self.user_id)
             owner_id: int = lobby_instance.owner
@@ -408,12 +405,11 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             player_3_id: int = lobby_instance.player_3
             player_4_id: int = lobby_instance.player_4
             if all(x == -1 for x in [player_2_id, player_3_id, player_4_id]):
-                # MASSIVE BIG DICK ERROR HERE STOP HACKING
                 await self.cancel_tournament()
                 return
         except Lobby.DoesNotExist:
-            print("FATAL ERROR start")
-            # SEND ERROR TO FRONT
+            print("Tried to start a tournament that doesn't exist")
+            await self.send(text_data=json.dumps({"type": "Tournament", "rType": "invalidStart", "id": self.user_id}))
             return
         lobby_instance.open = False
         await database_sync_to_async(lobby_instance.save)()

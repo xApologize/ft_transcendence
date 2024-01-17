@@ -26,13 +26,47 @@ export function socketTournamentUser(action, ownerTournamentID) {
             tournamentStarting(ownerTournamentID)
             break;
         default:
-            socketLobbyError(ownerTournamentID);
+            console.log("DEFAULT")
+            socketLobbyError(action, ownerTournamentID);
             break;
     }
 }
 
 // This is handler for response to request I sent with socket and failed
-export function socketLobbyError() {
+export function socketLobbyError(action, ownerTournamentID) {
+    console.log("ZZZ", action);
+    switch (action){
+        case 'invalidStart':
+            console.log("invalidStart");
+            // Tried to start a tournament that doesn't exist
+            break;
+        case 'invalidJoin':
+            // Tried to join a tournament that doesn't exist
+            console.log("invalidJoin");
+            break;
+        case 'lobbyFull':
+            console.log("lobbyFull")
+            // Tried to join a full tournament
+            break;
+        case 'createFailure':
+            console.log("createFailure")
+            // Failed to create a lobby
+            break;
+        case 'leaveError':
+            console.log("leaveError")
+            // Tried to leave a lobby that wasn't found
+            break;
+        case 'spotError':
+            console.log("spotError")
+            // Lobby full when tried joining
+            break;
+        case 'cancelError':
+            console.log("cancelError")
+            // Tried canceling a tournament that doesn't exist
+            break;
+        default:
+            break;
+    }
     console.log("LOBBY ERROR")
 }
 
