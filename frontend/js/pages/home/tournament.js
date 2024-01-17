@@ -107,6 +107,11 @@ export async function handleCreateTournamentClick() {
     if (!myID)
         return;
 
+    document.getElementById('participantList').innerHTML = '';
+    document.getElementById('waitingMessage').textContent = 'Waiting for more players (1/4)';
+    document.getElementById('startTournamentBtn').classList.add('d-none');
+
+
     console.log("CREATE ", myID)
     // Socket doit envoyer: createTournament -> owner ID
     interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Tournament", "action": "Create"}));
@@ -265,7 +270,6 @@ export async function updateTournamentList() {
 
 export async function updateParticipantList() {
     const lobbyModalEl = document.getElementById('lobbyTournamentModal');
-    const ownerID = lobbyModalEl.dataset.id;
     const response = await fetchMyLobby('GET');
     if (!response) return;
     // Error handling if response.status >= 400
@@ -283,7 +287,26 @@ export async function updateParticipantList() {
 }
 
 function updateBracket(tournament) {
-    
+    const bracket = document.getElementById('bracket');
+    const player1 = bracket.querySelector('#r1-p1');
+    console.log(player1)
+    const player2 = bracket.querySelector('#r1-p2');
+    console.log(player2)
+    const player3 = bracket.querySelector('#r1-p3');
+    console.log(player3)
+    const player4 = bracket.querySelector('#r1-p4');
+    console.log(player4)
+
+    if (tournament.owner)
+        player1.textContent = tournament.owner.nickname
+    if (tournament.player_2)
+        player2.textContent = tournament.player_2.nickname
+    if (tournament.player_3)
+        player3.textContent = tournament.player_3.nickname
+    if (tournament.player_4)
+        player4.textContent = tournament.player_4.nickname
+
+    // player1.textContent = tournament
 }
 
 ////// FOR UTILS FILE //////
@@ -328,6 +351,7 @@ export function transferToInfoModal() {
         document.getElementById('result').classList.remove('d-none')
         document.getElementById('bracket').classList.remove('d-none')
     }, 1000);
+
 
     // switchModals('lobbyTournamentModal', 'tournamentInfoModal')
 }

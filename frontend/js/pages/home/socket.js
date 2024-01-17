@@ -64,6 +64,7 @@ const interactiveSocket = {
             case "Tournament Match":
                 setTimeout(() => {
                     document.getElementById('bracket').classList.add('d-none')
+                    document.getElementById('result').classList.add('d-none')
                     World._instance.joinMatch( data.handle, data.paddle, data.me, data.opponent );
                 }, 5000);
                 break;
