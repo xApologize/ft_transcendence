@@ -9,7 +9,6 @@ let glassNormal;
 let digitalFont;
 let texCube;
 let spriteCircle;
-let insertCoinSound;
 
 const loaderGLTF = new GLTFLoader();
 const loaderTexture = new TextureLoader();
@@ -38,7 +37,6 @@ async function loadAll() {
 		'/public/MilkyWay/dark-s_pz.jpg', '/public/MilkyWay/dark-s_nz.jpg', 
 	] ).then( (res) => texCube = res );
 	await loadFile( loaderTexture, '/public/circle_04.png' ).then( (res) => spriteCircle = res );
-	await loadFile( loaderAudio, '/public/insert-coin.mp3' ).then( (res) => insertCoinSound = res );
 }
 
 function loadFile( loader, filePath ) {
@@ -53,4 +51,4 @@ function loadFile( loader, filePath ) {
 	}, 2000)
 }
 
-export { loadAll, airHockeyTable, floorDiffuse, floorNormal, glassNormal, digitalFont, texCube, spriteCircle, insertCoinSound };
+export { loadAll, airHockeyTable, floorDiffuse, floorNormal, glassNormal, digitalFont, texCube, spriteCircle };

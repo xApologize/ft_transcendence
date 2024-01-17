@@ -1,4 +1,4 @@
-import { BoxGeometry, CameraHelper, Color, FloatType, LinearFilter, Mesh, MeshBasicMaterial, MeshPhysicalMaterial, MeshStandardMaterial, Object3D, OrthographicCamera, PerspectiveCamera, Plane, PlaneGeometry, RGBAFormat, Scene, WebGLRenderTarget } from "three";
+import { AmbientLight, BoxGeometry, CameraHelper, Color, FloatType, LinearFilter, Mesh, MeshBasicMaterial, MeshPhysicalMaterial, MeshStandardMaterial, Object3D, OrthographicCamera, PerspectiveCamera, Plane, PlaneGeometry, RGBAFormat, Scene, WebGLRenderTarget } from "three";
 import { ScreenBoardMat } from "../custom/ScreenBoardMat.js";
 import { Updatable } from "../modules/Updatable.js";
 import { World } from "../World.js";
@@ -6,7 +6,7 @@ import { Layers } from "../systems/Layers.js";
 import { floorDiffuse, texCube } from "../systems/Loader.js";
 
 class ScreenBoard extends Object3D {
-	constructor() {
+	constructor( board ) {
 		super();
 
 		this.updatable = new Updatable( this );
@@ -43,10 +43,19 @@ class ScreenBoard extends Object3D {
 
 		this.finalMat = new MeshStandardMaterial( {
 			metalness: 0.4,
-			roughness: 0.5
+			roughness: 0.5,
+			depthWrite: true
 		});
 		this.quad = new Mesh( this.plane, this.finalMat );
 		this.add( this.quad );
+		// this.quad = board;
+		// this.quad.castShadow = false;
+		// this.quad.receiveShadow = false;
+		// this.quad.material = this.finalMat;
+
+		const light = new AmbientLight( 0xffffff, 2 );
+		this.add( light );
+		light.layers.set( Layers.Buffer );
 	}
 
 	update( dt ) {
@@ -58,6 +67,7 @@ class ScreenBoard extends Object3D {
 		let tmp = this.bufA;
 		this.bufA = this.bufB;
 		this.bufB = tmp;
+		this.quad.material.map = this.bufB.texture;
 		this.quad.material.map = this.bufB.texture;
 		// this.quad.material.emissive = new Color( 0xffffff );
 		// this.quad.material.emissiveMap = this.bufB.texture;

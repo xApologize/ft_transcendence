@@ -12,7 +12,7 @@ const server = http.createServer((req, res) => {
     // }
 
     // If the requested URL doesn't have a known file extension, redirect to index.html
-    if (!/\.(html|js|css|jpg|png|map|json|glb|mp3)$/.test(req.url)) {
+    if (!/\.(html|js|css|jpg|png|map|json|glb|mp3|wav|flac|ogg)$/.test(req.url)) {
         req.url = '/index.html';
     }
 
@@ -24,6 +24,7 @@ const server = http.createServer((req, res) => {
         '.html': 'text/html',
         '.js': 'text/javascript', // Set the content type for JavaScript files
         '.css': 'text/css',
+		'.mp3': 'audio/mpeg'
     };
 
     const type = contentType[extname] || 'application/octet-stream';
