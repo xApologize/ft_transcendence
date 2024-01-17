@@ -36,37 +36,60 @@ export function socketLobbyError(action, ownerTournamentID) {
     console.log("ZZZ", action);
     switch (action){
         case 'invalidStart':
-            console.log("invalidStart");
             // Tried to start a tournament that doesn't exist
+            console.log("invalidStart");
+            cancelEverythingTournament();
+            displayToast("You retarded, tf you doing", "Tournament doesn't exist");
             break;
         case 'invalidJoin':
             // Tried to join a tournament that doesn't exist
             console.log("invalidJoin");
+            displayToast("This tournament no longer exist.", "Tournament doesn't exist");
+            updateTournamentList();
             break;
         case 'lobbyFull':
+            // Tried to join a lobby that was full
             console.log("lobbyFull")
-            // Tried to join a full tournament
+            displayToast("This lobby is full.", "Lobby Full");
             break;
         case 'createFailure':
-            console.log("createFailure")
             // Failed to create a lobby
+            console.log("createFailure")
+            displayToast("Failed to create a tournament.", "Tournament Creation Failed");
+            cancelEverythingTournament();
             break;
         case 'leaveError':
-            console.log("leaveError")
             // Tried to leave a lobby that wasn't found
+            console.log("leaveError")
+            displayToast("You tried to leave a tournament that no longer exist. Back to menu.", "Tournament Leave Failed");
+            cancelEverythingTournament();
             break;
         case 'spotError':
+            // Tried to leave a lobby you're not in
             console.log("spotError")
-            // Lobby full when tried joining
+            displayToast("You tried to leave a tournament that you're not in. Back to menu.", "Tournament Leave Failed");
+            cancelEverythingTournament();
             break;
         case 'cancelError':
-            console.log("cancelError")
             // Tried canceling a tournament that doesn't exist
+            console.log("cancelError")
+            displayToast("You tried to cancel a tournament that no longer exist. Back to menu.", "Tournament Cancel Failed");
+            cancelEverythingTournament();
             break;
         default:
+            console.error("Ayo wtf is this error: " + action)
             break;
     }
     console.log("LOBBY ERROR")
+}
+
+function cancelEverythingTournament() {
+    removeInfoLobbyModal();
+    document.getElementById('lobbyTournamentModal').removeEventListener('hide.bs.modal', leftTournament);
+    document.getElementById('lobbyTournamentModal').removeEventListener('hide.bs.modal', cancelTournament);
+    document.getElementById('startTournamentBtn').removeEventListener('click', startTournament);
+    document.getElementById('cancelTournamentBtn').removeEventListener('click', cancelTournament);
+    checkModal();
 }
 
 function someoneCancelTournament(ownerTournamentID) {
@@ -300,7 +323,6 @@ export async function updateTournamentList() {
 }
 
 export async function updateParticipantList() {
-    const lobbyModalEl = document.getElementById('lobbyTournamentModal');
     const response = await fetchMyLobby('GET');
     if (!response) return;
     // Error handling if response.status >= 400
@@ -336,8 +358,6 @@ function updateBracket(tournament) {
         player3.textContent = tournament.player_3.nickname
     if (tournament.player_4)
         player4.textContent = tournament.player_4.nickname
-
-    // player1.textContent = tournament
 }
 
 ////// FOR UTILS FILE //////
@@ -358,7 +378,6 @@ export function toggleStartBtnForOwner(shouldShow) {
 
 export function isUserInTournament(ownerTournamentID) {
     const lobbyModalEl = document.getElementById('lobbyTournamentModal');
-    // const isModalShown = lobbyModalEl.classList.contains('show');
     if (lobbyModalEl.dataset.id == ownerTournamentID) {
         return true;
     }
