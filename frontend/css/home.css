@@ -66,6 +66,11 @@ body {
     justify-content: center;
 }
 
+#own-user-card {
+    min-width: 25%;
+    max-width: 50%;
+}
+
 .divFill {
     height: calc(100% - 82px);
     width: 100%;
