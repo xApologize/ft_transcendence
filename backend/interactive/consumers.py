@@ -283,6 +283,10 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
                 await self.cancel_tournament()
             case "Start":
                 await self.start_tournament()
+            # case "Round 1":
+                # await self.handle_round_1(data)
+            # case "Round 2":
+                # await self.handle_round_2(data)
 
     async def create_tournament(self) -> None:
         try:

@@ -271,14 +271,19 @@ export async function updateParticipantList() {
     // Error handling if response.status >= 400
     let tournament = await assembler(response);
     tournament = tournament['lobby']
-    console.log(tournament)
     const participantList = document.getElementById('participantList');
     participantList.innerHTML = '';
+
     
     const players = Object.values(tournament);
     players.forEach(player => {
         addParticipant(player);
     });
+    updateBracket(tournament)
+}
+
+function updateBracket(tournament) {
+    
 }
 
 ////// FOR UTILS FILE //////
@@ -300,8 +305,6 @@ export function toggleStartBtnForOwner(shouldShow) {
 export function isUserInTournament(ownerTournamentID) {
     const lobbyModalEl = document.getElementById('lobbyTournamentModal');
     const isModalShown = lobbyModalEl.classList.contains('show');
-    console.log(isModalShown)
-    console.log(lobbyModalEl.dataset.id == ownerTournamentID)
     if (isModalShown && lobbyModalEl.dataset.id == ownerTournamentID) {
         return true;
     }
