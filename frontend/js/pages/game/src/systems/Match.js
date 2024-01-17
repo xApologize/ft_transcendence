@@ -93,7 +93,7 @@ class Match {
 
 	onWebsocketReceived( event ) {
 		if ( event.data === "Closing" ) {
-			console.log("Opponent Ragequited");
+			// console.log("Opponent Ragequited");
 			this.endMatch();
 			return;
 		}
@@ -179,7 +179,6 @@ class Match {
 	showResultTournamentUI() {
 		
 	}
-
 
 	increment( sideId ) {
 		this.participants[sideId - 1].score += 1;
