@@ -80,6 +80,7 @@ class Player extends Paddle {
 				World._instance.balls.ballInst[0].pos.y,
 				this.position.z
 			);
+			document.getElementById("crash").play();
 			World._instance.balls.ballInst[0].dir.y += this.lastDir;
 			World._instance.balls.playerCollision( World._instance.balls.ballInst[0], pos, this );
 			World._instance.balls.ballInst[0].smashed = true;

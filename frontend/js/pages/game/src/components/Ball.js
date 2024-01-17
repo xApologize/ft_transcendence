@@ -39,6 +39,23 @@ const hitParticlesParam = {
 	scaleOverTime: new Vector3( 0, 0, 0 )
 }
 
+const trailparticles_mat = new MeshBasicMaterial({ color: 'white' });
+const trailParticlesParam = {
+	loop: true,
+	duration: 0.4,
+	position: new Vector3( 0, 0, 0 ),
+	positionRandomRange: new Vector3( 0.1, 0.1, 0.1 ),
+	direction: new Vector3( 0, 0, 0 ),
+	directionRandomRange: new Vector3( 1, 1, 1 ),
+	speed: 10,
+	speedOverTime: 0,
+	eulerRotation: new Vector3( 0, 0, 0 ),
+	eulerRotationRandomRange: new Vector3( Math.PI, Math.PI, Math.PI ),
+	scale: new Vector3( 1, 1, 1 ),
+	scaleRandomRange: new Vector3( 2, 2, 2 ),
+	scaleOverTime: new Vector3( 0, 0, 0 )
+}
+
 
 class Ball extends InstancedMesh {
 	constructor( count ) {
@@ -71,7 +88,9 @@ class Ball extends InstancedMesh {
 			};
 			this.hideInst( this.ballInst[i] );
 		}
-		
+
+		this.trail = new ParticleSystem( particles_geo, trailparticles_mat, trailParticlesParam );
+		// this.trail.renderer.setLayers( Layers.Buffer );
 		
 		this.ray = new Raycaster();
 		this.ray.layers.enable( Layers.Goal );
@@ -108,6 +127,7 @@ class Ball extends InstancedMesh {
 			hitParticlesParam.position.copy( closerHit.point );
 			this.particles = new ParticleSystem( particles_geo, particles_mat, 20, hitParticlesParam );
 			this.particles.renderer.setLayers( Layers.Buffer );
+			document.getElementById("hit").play();
 
 			if ( closerHit.object.layers.isEnabled( Layers.Goal ) ) {
 				if ( closerHit.object.paddle.isOpponent == true ) {
@@ -149,9 +169,9 @@ class Ball extends InstancedMesh {
 			ballInst.dir.y /= 2;
 
 			// Match player velocity - break the game w/ Dash
-			// const dot = ballInst.dir.dot( object.movement );
-			// if ( ballInst.speed < dot * object.speed )
-			// 	ballInst.speed = dot * object.speed;
+			const dot = ballInst.dir.dot( object.movement );
+			if ( ballInst.speed < dot * object.speed )
+				ballInst.speed = dot * object.speed;
 
 			ballInst.smashed = false;
 			ballInst.spin = 0;
@@ -159,6 +179,8 @@ class Ball extends InstancedMesh {
 	}
 
 	update( dt ) {
+		trailParticlesParam.position.copy( this.ballInst[0].pos );
+		
 		for (let i = 0; i < this.count; i++) {
 			const lag = (new Date().getTime() - this.lastFixedUpdate) / 1000;
 			const newPos = this.ballInst[i].pos.clone().add(
@@ -255,6 +277,7 @@ class Ball extends InstancedMesh {
 		hitParticlesParam.position.copy( inst.pos );
 		this.particles = new ParticleSystem( particles_geo, particles_mat, 20, hitParticlesParam );
 		this.particles.renderer.setLayers( Layers.Buffer );
+		document.getElementById("hit").play();
 	}
 
 	delete() {
