@@ -43,7 +43,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             return
         await self.handle_lfm_cleaning()
         await self.handle_invite_cleaning()
-        # await self.handle_tourmanet_cleaning()
+        await self.handle_lobby_cleaning()
         await self.set_user_status("OFF")
         await self.send_to_layer(NO_ECHO, self.user_id, "Refresh", "Logout")
         await self.channel_layer.group_discard(
@@ -97,7 +97,6 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             await self.send(text_data=json.dumps(data["message"]))
 
     async def send_message_match_invite(self, data: any):
-        print("AAAA")
         if self.user_id == data["Receiver"]:
             await self.send(text_data=json.dumps(data["message"]))
 
@@ -162,10 +161,10 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             player_a_nick = await self.get_user_nickname(match.paddleA)
             player_b_nick = await self.get_user_nickname(match.paddleB)
             handle_a: dict = await self.create_match_handle(
-                match.paddleA, match.paddleB, "A", player_a_nick, player_b_nick
+                match.paddleA, match.paddleB, "A", player_a_nick, player_b_nick, "Found Match"
                 )
             handle_b: dict = await self.create_match_handle(
-                match.paddleA, match.paddleB, "B", player_b_nick, player_a_nick
+                match.paddleA, match.paddleB, "B", player_b_nick, player_a_nick, "Found Match"
                 )
             await self.channel_layer.group_send(
                 "interactive",
@@ -182,9 +181,9 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
 
     @staticmethod
     async def create_match_handle(
-            first_id: int, second_id: int, paddle: str, me: str, opponent: str) -> dict:
+            first_id: int, second_id: int, paddle: str, me: str, opponent: str, type: str) -> dict:
         handle = {
-            "type": "Found Match",
+            "type": type,
             "handle": f"wss/pong/{first_id}{second_id}/{paddle}",
             "paddle": paddle,
             "me": me,
@@ -216,10 +215,10 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         recipient_id: int = await database_sync_to_async(lambda: invite.recipient.pk)()
         recipient_nickname: str = await self.get_user_nickname(recipient_id)
         host_match_handle: dict = await self.create_match_handle(
-            self.user_id, recipient_id, "A", host_nickname, recipient_nickname
+            self.user_id, recipient_id, "A", host_nickname, recipient_nickname, "Found Match"
         )
         recipient_match_handle: dict = await self.create_match_handle(
-                self.user_id, recipient_id, "B", recipient_nickname, host_nickname
+                self.user_id, recipient_id, "B", recipient_nickname, host_nickname, "Found Match"
         )
         await database_sync_to_async(invite.delete)()
         await self.channel_layer.group_send(
@@ -271,7 +270,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         try:
             action_type: str = data["action"]
         except Exception:
-            print("FATAL ERROR")
+            print("FATAL ERROR handler")
             return
         match action_type:
             case "Create":
@@ -289,23 +288,23 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         try:
             await database_sync_to_async(Lobby.objects.create)(owner=self.user_id)
         except IntegrityError:
-            # await self.send(text_data=json.dumps())
             print("Integrity error")
             return
         await self.send_to_layer(ECHO, self.user_id, "Tournament", "createTournament")
-        # await self.send(text_data=json.dumps())
-        # Send notification to frontend
+        # Check later for extra handling?
     
     async def leave_tournament(self) -> None:
         try:
-            # if self.is_owner_tourny():
-                # add cancel tournament call it?
-                # return
+            owner_instance: Lobby = await self.get_owner_lobby()
+            if owner_instance is not None:
+                await self.cancel_tournament()
+                print("Stop hacking, owner can't call this usually")
+                return
             lobby_instance: Lobby = await database_sync_to_async(Lobby.objects.get)(
                 Q(player_2=self.user_id) | Q(
                     player_3=self.user_id) | Q(player_4=self.user_id))
         except Lobby.DoesNotExist:
-            print("FATAL ERROR")
+            print("DOUBLE CHECK IF NORMAL PRINT TO NOT FORGET!!!")
             # NOTIFY FRONTEND
             return
         lobby_spot: str = self.find_lobby_spot(lobby_instance, self.user_id)
@@ -323,7 +322,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             owner_id: int = data["owner_id"]
             lobby_instance: Lobby = await database_sync_to_async(Lobby.objects.get)(owner=owner_id)
         except Exception:
-            print("FATAL ERROR")
+            print("FATAL ERROR join")
             # SEND ERROR TO FRONT
             return
         lobby_spot: str = self.find_lobby_spot(lobby_instance, -1)
@@ -357,63 +356,64 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             id_list.append(lobby_instance.player_4)
         return id_list
     
-    async def get_owner_tournament(self) -> Lobby:
+    async def get_owner_lobby(self) -> Lobby:
         try:
             lobby_instance = await database_sync_to_async(Lobby.objects.get)(owner=self.user_id)
-        except FileNotFoundError:
+        except Exception:
+            print("No Lobby found has owner")
             return None
         return lobby_instance
     
-    async def get_tournament(self) -> Lobby:
+    async def get_lobby(self) -> Lobby:
         try:
             lobby_instance = await database_sync_to_async(Lobby.objects.get)(Q(player_2=self.user_id) | Q(
                     player_3=self.user_id) | Q(player_4=self.user_id))
-        except FileNotFoundError:
+        except Exception:
+            print("No Lobby found has player's")
             return None
         return lobby_instance
 
-    async def handle_tourmanet_cleaning(self) -> None:
-        lobby_instance: Lobby = self.get_owner_tournament()
+    async def handle_lobby_cleaning(self) -> None:
+        lobby_instance: Lobby = await self.get_owner_lobby()
         if lobby_instance is not None:
-            #clean
+            await self.cancel_tournament()
             return
-        lobby_instance: Lobby = self.get_tournament()
+        lobby_instance: Lobby = await self.get_lobby()
         if lobby_instance is not None:
-            # call cancel
-            pass
+            await self.leave_tournament()
     
     async def cancel_tournament(self) -> None:
-        lobby_instance: Lobby = await self.get_owner_tournament()
+        lobby_instance: Lobby = await self.get_owner_lobby()
         if lobby_instance is None:
+            print("ERROR CANCEL, NO TOURNY FOUND???")
             # SEND ERROR
             return
         owner_id: int = lobby_instance.owner
-        # users_list: list = self.get_users_ids(lobby_instance)
         await database_sync_to_async(lobby_instance.delete)()
         await self.send_to_layer(NO_ECHO, owner_id ,"Tournament", "cancelTournament")
-        # self.send_message_list_ids()
-        # notifier
+        # ALERT ALERT ALERT
 
     async def start_tournament(self) -> None:
         try:
             lobby_instance: Lobby = await database_sync_to_async(Lobby.objects.get)(owner=self.user_id)
         except Exception:
-            print("FATAL ERROR")
+            print("FATAL ERROR start")
             # SEND ERROR TO FRONT
             return
         lobby_instance.open = False
         await database_sync_to_async(lobby_instance.save)()
         await self.send_to_layer(ECHO, self.user_id ,"Tournament", "startTournament")
-        # await self.handle_set(lobby_instance.owner, lobby_instance.player_2)
+        await self.handle_set(lobby_instance.owner, lobby_instance.player_2)
+        await self.handle_set(lobby_instance.player_3, lobby_instance.player_4)
     
     async def handle_set(self, player_1_id: id, player_2_id: id) -> None:
         player_1_nickname: str = await self.get_user_nickname(player_1_id)
         player_2_nicknake: str = await self.get_user_nickname(player_2_id)
         player_1_handle: dict = await self.create_match_handle(
-            player_1_id, player_2_id, "A", player_1_nickname, player_2_nicknake
+            player_1_id, player_2_id, "A", player_1_nickname, player_2_nicknake, "Tournament Match"
         )
         player_2_handle: dict = await self.create_match_handle(
-            player_2_id, player_1_id, "B", player_2_nicknake, player_1_nickname
+            player_1_id, player_2_id, "B", player_2_nicknake, player_1_nickname, "Tournament Match"
         )
         await self.send_tourny_handle(player_1_handle, player_1_id)
         await self.send_tourny_handle(player_2_handle, player_2_id)
