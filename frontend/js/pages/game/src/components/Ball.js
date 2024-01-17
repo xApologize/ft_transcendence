@@ -169,9 +169,9 @@ class Ball extends InstancedMesh {
 			ballInst.dir.y /= 2;
 
 			// Match player velocity - break the game w/ Dash
-			const dot = ballInst.dir.dot( object.movement );
-			if ( ballInst.speed < dot * object.speed )
-				ballInst.speed = dot * object.speed;
+			// const dot = ballInst.dir.dot( object.movement );
+			// if ( ballInst.speed < dot * object.speed )
+			// 	ballInst.speed = dot * object.speed;
 
 			ballInst.smashed = false;
 			ballInst.spin = 0;

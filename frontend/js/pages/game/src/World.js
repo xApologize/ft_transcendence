@@ -70,7 +70,6 @@ class World {
 		this.score = new Score();
 		this.input = new InputManager();
 		
-		document.getElementById("ambient").play();
 		document.getElementById("ambient").volume = 0.2;
 
 		this.lights = new Lights();
