@@ -122,9 +122,9 @@ body {
     overflow-y: auto;
 }
 
-/* #matchHistory::-webkit-scrollbar {
+#matchHistory::-webkit-scrollbar {
     display: none;
-} */
+}
 
 .no-underline-link {
     text-decoration: none;
@@ -179,7 +179,7 @@ body {
     background-color: var(--bg-accent);
 }
 
-.about-box {
+/* .about-box {
 }
 
 #ddemers-pos {
@@ -189,7 +189,7 @@ body {
 }
 
 #fgeslin-pos {
-}
+} */
 
 #jrossign-pos {
     right: 0;
