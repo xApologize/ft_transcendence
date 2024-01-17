@@ -1,41 +1,85 @@
-<form id="signupForm" class="form-div m-3">
-    <div class="form">
-        <div class="m-3 text-center">
-            <h1>Sign up</h1>
-        </div>
-        <div class="form-floating m-3">
-            <input type="text" class="form-control" id="inputUsername" placeholder="Username" autocomplete="username" required>
-            <label for="inputUsername">Username</label>
-        </div>
-        <div class="form-floating m-3">
-            <input type="email" class="form-control" id="inputEmail" placeholder="name@example.com" autocomplete="email" required>
-            <label for="inputEmail">Email address</label>
-        </div>
-        <div class="form-floating m-3">
-            <input type="password" class="form-control" id="inputPassword" placeholder="Password" autocomplete="new-password" required>
-            <label for="inputPassword">Password</label>
-        </div>
-        <div class="form-floating m-3">
-            <input type="password" class="form-control" id="inputPasswordConfirm" placeholder="Confirm Password" autocomplete="new-password" required>
-            <label for="inputPasswordConfirm">Confirm Password</label>
-        </div>
-        <div class="m-3 text-center">
-            <button class="btn btn-secondary signupButton" id="signUpButton" type="submit">
-                Sign up
-            </button>
-        </div>
-        <div class="m-3 text-center">
-            <p>
-                Already have an account?
-                <a
-                id="loginUpButton"
-                class="link-secondary link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover linkHover"
-                >Login</a
+<div class="container1">
+    <canvas id="canvas-signup"></canvas>
+    <form id="signupForm" class="form-div">
+        <div class="form">
+            <div class="m-3 text-center textWhite">
+                <h1>Sign up</h1>
+            </div>
+            <div class="form-floating m-3">
+                <input
+                    type="text"
+                    class="form-control"
+                    id="inputUsername"
+                    placeholder="Username"
+                    autocomplete="username"
+                    required
+                />
+                <label for="inputUsername">Username</label>
+            </div>
+            <div class="form-floating m-3">
+                <input
+                    type="email"
+                    class="form-control"
+                    id="inputEmail"
+                    placeholder="name@example.com"
+                    autocomplete="email"
+                    required
+                />
+                <label for="inputEmail">Email address</label>
+            </div>
+            <div class="form-floating m-3">
+                <input
+                    type="password"
+                    class="form-control"
+                    id="inputPassword"
+                    placeholder="Password"
+                    autocomplete="new-password"
+                    required
+                />
+                <label for="inputPassword">Password</label>
+            </div>
+            <div class="form-floating m-3">
+                <input
+                    type="password"
+                    class="form-control"
+                    id="inputPasswordConfirm"
+                    placeholder="Confirm Password"
+                    autocomplete="new-password"
+                    required
+                />
+                <label for="inputPasswordConfirm">Confirm Password</label>
+            </div>
+            <div class="m-3 text-center">
+                <button
+                    class="btn btn-primary signupButton"
+                    id="signUpButton"
+                    type="submit"
                 >
-            </p>
+                    Sign up
+                </button>
+            </div>
+            <div class="m-3 text-center textWhite">
+                <p>
+                    Already have an account?
+                    <a
+                        id="loginUpButton"
+                        class="link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover linkHover textWhite"
+                        >Login</a
+                    >
+                </p>
+            </div>
+            <div
+                id="alertErrorSignup"
+                class="alert alert-danger alert-dismissible fade hide"
+                role="alert"
+            >
+                <button
+                    id="btnAlertCloseSignup"
+                    type="button"
+                    class="btn-close"
+                    aria-label="Close"
+                ></button>
+            </div>
         </div>
-        <div id="alertErrorSignup" class="alert alert-danger alert-dismissible fade hide" role="alert">
-            <button id="btnAlertCloseSignup" type="button" class="btn-close" aria-label="Close"></button>
-        </div>
-    </div>
-</form>
+    </form>
+</div>
