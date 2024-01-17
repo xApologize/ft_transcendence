@@ -1,8 +1,9 @@
 import { assembler } from '../../api/assembler.js';
-import interactiveSocket from './socket.js';
+import interactiveSocket, { hideAllUI } from './socket.js';
 import { displayToast } from './toastNotif.js';
 import { fetchUserById, getMyID, switchModals, isModalShown, hideModal } from './utils.js';
 import { fetchMe, fetchAllLobbies, fetchMyLobby } from '../../api/fetchData.js';
+import { World } from '../game/src/World.js';
 
 // This is handler for when someone sent something with socket and it worked.
 export function socketTournamentUser(action, ownerTournamentID) {
@@ -32,7 +33,7 @@ export function socketTournamentUser(action, ownerTournamentID) {
 
 // This is handler for response to request I sent with socket and failed
 export function socketLobbyError() {
-    console.log("SOMETHING WENT WRONG WITH SOCKET")
+    console.log("LOBBY ERROR")
 }
 
 function someoneCancelTournament(ownerTournamentID) {
@@ -165,10 +166,7 @@ export async function joinTournament(event) {
 
 // Quand le owner start le tournoi - Trigger par event listener
 export function startTournament(event) {
-    const lobbyModalEl = document.getElementById('lobbyTournamentModal');
-    const ownerID = lobbyModalEl.dataset.id
-
-    interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Tournament", "action": "Start", "owner_id": ownerID}));
+    interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Tournament", "action": "Start"}));
 
     // [ONLY TOURNAMENT OWNER CAN START]
     // Socket doit envoyer: startTournament
@@ -320,7 +318,13 @@ export function removeInfoLobbyModal() {
 export function transferToInfoModal() {
     document.getElementById('lobbyTournamentModal').removeEventListener('hide.bs.modal', leftTournament);
     document.getElementById('lobbyTournamentModal').removeEventListener('hide.bs.modal', cancelTournament);
+    hideAllUI();
+    World._instance.camera.viewTable(1, null);
 
-    switchModals('lobbyTournamentModal', 'tournamentInfoModal')
-    // FETCH IT'S TOURNAMENT
+    setTimeout(function() {
+        document.getElementById('result').classList.remove('d-none')
+        document.getElementById('bracket').classList.remove('d-none')
+    }, 1000);
+
+    // switchModals('lobbyTournamentModal', 'tournamentInfoModal')
 }

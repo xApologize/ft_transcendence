@@ -13,6 +13,7 @@ export async function matchHistoryComponent() {
 
 export async function displayMatchHistory(userStatJson) {
     const matchHistoryContainer = document.getElementById('matchHistory');
+    matchHistoryContainer.innerHTML = ''
     const matchHistory = await matchHistoryComponent();
     let index = 0;
 

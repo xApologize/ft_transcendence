@@ -53,3 +53,6 @@ nuke_mac:
 venv:
 	cd backend && rm -rf venv && python3 -m venv venv
 	cd backend && . venv/bin/activate && pip install -r requirements.txt
+
+off:
+	tools/all_offline.sh
