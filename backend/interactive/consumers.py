@@ -284,7 +284,8 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             case "Start":
                 await self.start_tournament()
             case "Final":
-                await self.handle_round_1(data)
+                pass
+                # await self.handle_round_1(data)
 
     async def create_tournament(self) -> None:
         try:
