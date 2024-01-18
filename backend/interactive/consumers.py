@@ -44,6 +44,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         await self.handle_lfm_cleaning()
         await self.handle_invite_cleaning()
         await self.handle_lobby_cleaning()
+        await self.handle_tourament_cleaning()
         await self.set_user_status("OFF")
         await self.send_to_layer(NO_ECHO, self.user_id, "Refresh", "Logout")
         await self.channel_layer.group_discard(
@@ -162,6 +163,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         try:
             lfm: LookingForMatch = await database_sync_to_async(LookingForMatch.objects.get)(paddleA=self.user_id)
             await database_sync_to_async(lfm.delete)()
+            self.waiting = False
             return
         except LookingForMatch.DoesNotExist:
             print("No Upgraded LFM found")
@@ -459,6 +461,22 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             return None
         return lobby_instance
 
+    async def handle_tourament_cleaning(self) -> None:
+        tournament_instance: Tournament = await self.get_tournament()
+        if tournament_instance is None:
+            print("No tourny found to update when disconnected")
+            return
+        if tournament_instance.player_1 == self.user_id:
+            tournament_instance.player_1 = -1
+        elif tournament_instance.player_2 == self.user_id:
+            tournament_instance.player_2 = -1
+        elif tournament_instance.player_3 == self.user_id:
+            tournament_instance.player_3 = -1
+        else:
+            tournament_instance.player_4 = -1
+        await database_sync_to_async(tournament_instance.save)()
+        print("Saved -1 in tournament")
+
     async def handle_lobby_cleaning(self) -> None:
         lobby_instance: Lobby = await self.get_owner_lobby()
         if lobby_instance is not None:
@@ -585,7 +603,6 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             return
 
     async def start_final(self) -> None:
-        print("Final...?")
         tournament_handle: Tournament = await self.get_tournament()
         if tournament_handle is None:
             print("No tournament handle found...?")
