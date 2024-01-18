@@ -168,8 +168,8 @@ class Match {
 		document.getElementById('resultMatch').classList.remove('d-none')
 		document.getElementById('bracket').classList.remove('d-none');
 	
-		document.getElementById('leaveTournament').addEventListener('click', this.backToMenu)
-		this.toggleLeaveBtn(true);
+		// document.getElementById('leaveTournament').addEventListener('click', this.backToMenu)
+		// this.toggleLeaveBtn(true);
 		this.setResultMatch();
 	}
 
@@ -178,8 +178,8 @@ class Match {
 		document.getElementById('resultMatch').classList.remove('d-none')
 		document.getElementById('bracket').classList.toggle('d-none', true)
 		
-		document.getElementById('resultButton').addEventListener('click', this.backToMenu)
-		this.toggleLeaveBtn(false)
+		// document.getElementById('resultButton').addEventListener('click', this.backToMenu)
+		// this.toggleLeaveBtn(false)
 		this.setResultMatch();
 	}
 
