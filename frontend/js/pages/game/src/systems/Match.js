@@ -216,6 +216,8 @@ class Match {
 			console.error( "No response from POST MatchHistory" );
 			return;
 		}
+
+		interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Tournament", "action": "Final"}));
 	}
 }
 

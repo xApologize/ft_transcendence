@@ -19,9 +19,9 @@ function initlfp(world) {
         showElement('toastContainer')
         showModal('gameMenuModal');
         world.currentGameState = GameState.InMenu;
-        // interactiveSocket.sendMessageSocket(
-        //     JSON.stringify({ type: 'Cancel Match' })
-        // );
+        interactiveSocket.sendMessageSocket(
+            JSON.stringify({ type: 'Cancel Match' })
+        );
     });
 }
 
