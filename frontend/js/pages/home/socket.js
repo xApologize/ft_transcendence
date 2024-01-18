@@ -79,7 +79,6 @@ const interactiveSocket = {
                 }, 5000);
                 break;
             case "Tournament Final":
-                console.log("HEy")
                 break;
             case "Found Match Classic":
                 hideAllUI(true);
