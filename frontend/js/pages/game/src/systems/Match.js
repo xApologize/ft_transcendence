@@ -169,14 +169,14 @@ class Match {
 		document.getElementById('result').classList.remove('d-none')
 		document.getElementById('resultMatch').classList.remove('d-none')
 		document.getElementById('bracket').classList.remove('d-none');
-	
-		document.getElementById('resultMatch').addEventListener('click', this.backToMenu)
+
+		document.getElementById('resultButton').classList.toggle('d-none', true);
 		if ( this.opponent.score >= maxScore || this.tournamentStage < 2 ) {
 			document.getElementById('timer').innerHTML = ""
-			this.toggleLeaveBtn(false);
+			document.getElementById('leaveTournament').addEventListener('click', this.backToMenu)
+			document.getElementById('leaveTournament').classList.toggle('d-none', false)
 		}
-		else
-			this.toggleLeaveBtn(true);
+			
 		this.setResultMatch();
 		// this.setBracketResult();
 	}
@@ -186,6 +186,8 @@ class Match {
 		document.getElementById('resultMatch').classList.remove('d-none')
 		document.getElementById('bracket').classList.toggle('d-none', true)
 		
+		document.getElementById('leaveTournament').classList.toggle('d-none', true)
+		document.getElementById('resultButton').classList.toggle('d-none', false);
 		document.getElementById('resultButton').addEventListener('click', this.backToMenu)
 		this.toggleLeaveBtn(false)
 		this.setResultMatch();
