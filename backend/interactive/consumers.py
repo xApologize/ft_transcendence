@@ -1,5 +1,5 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
-from interactive.models import LookingForMatch
+from interactive.models import LookingForMatch, LookingForMatchClassic
 from user_profile.models import User
 from game_invite.models import MatchInvite
 from tournament.models import Lobby, Tournament, Final
@@ -12,6 +12,7 @@ ECHO = "send_message_echo"
 NO_ECHO = "send_message_no_echo"
 MAILBOX = "send_mailbox_message"
 CLEAN = "send_message_and_clean_db"
+CLEAN_CLASSIC = "send_message_and_clean_db_classic"
 MATCH_INVITE = "send_message_match_invite"
 SEND_LIST_IDS = "send_message_list_ids"
 
@@ -74,6 +75,8 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
                 await self.send_to_layer_social(ECHO, self.user_id, rType, other_user_id)
             case "Cancel Match":
                 await self.cancel_lfm()
+            case "Find Match Classic":
+                await self.find_match_classic()
             case _:
                 await self.send_error("argument")
 
@@ -92,6 +95,15 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         if self.channel_name == data["sender"]:
             match_entry = await database_sync_to_async(
                 LookingForMatch.objects.filter(paddleA=self.user_id).first)()
+            print("REMOVED ENTRY FROM DB")
+            await database_sync_to_async(match_entry.delete)()
+            self.waiting = False
+            await self.send(text_data=json.dumps(data["message"]))
+
+    async def send_message_and_clean_db_classic(self, data: any):
+        if self.channel_name == data["sender"]:
+            match_entry = await database_sync_to_async(
+                LookingForMatchClassic.objects.filter(paddleA=self.user_id).first)()
             print("REMOVED ENTRY FROM DB")
             await database_sync_to_async(match_entry.delete)()
             self.waiting = False
@@ -149,10 +161,18 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
     async def cancel_lfm(self):
         try:
             lfm: LookingForMatch = await database_sync_to_async(LookingForMatch.objects.get)(paddleA=self.user_id)
-            print("LFM", lfm)
             await database_sync_to_async(lfm.delete)()
+            return
         except LookingForMatch.DoesNotExist:
-            print("Error cancel LFM")
+            print("No Upgraded LFM found")
+        try:
+            lfm_classic: LookingForMatchClassic = await database_sync_to_async(LookingForMatchClassic.objects.get)(paddleA=self.user_id)
+            await database_sync_to_async(lfm_classic.delete)()
+        except LookingForMatchClassic.DoesNotExist:
+            print("Tried deleting classic that doesn't exist?")
+            return
+        except Exception:
+            print("Something went really wrong")
             return
 
     async def create_lfm(self):
@@ -187,6 +207,48 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
                 )
         except Exception as e:
             print("Setup match exception caught:", e)
+            await self.send_error("lfm")
+    
+    async def find_match_classic(self):
+        match_entry = await database_sync_to_async(
+            LookingForMatchClassic.objects.filter(paddleB=-1).first)()
+        if match_entry:
+            await self.setup_match_classic(match_entry)
+        else:
+            await self.create_lfm_classic()
+
+    async def setup_match_classic(self, match: any):
+        match.paddleB = self.user_id
+        try:
+            await database_sync_to_async(match.save)()
+            player_a_nick = await self.get_user_nickname(match.paddleA)
+            player_b_nick = await self.get_user_nickname(match.paddleB)
+            handle_a: dict = await self.create_match_handle(
+                match.paddleA, match.paddleB, "A", player_a_nick, player_b_nick, "Found Match Classic"
+                )
+            handle_b: dict = await self.create_match_handle(
+                match.paddleA, match.paddleB, "B", player_b_nick, player_a_nick, "Found Match Classic"
+                )
+            await self.channel_layer.group_send(
+                "interactive",
+                create_layer_dict(
+                    CLEAN_CLASSIC, handle_a, match.mailbox_a)
+                )
+            await self.channel_layer.group_send(
+                "interactive",
+                create_layer_dict(MAILBOX, handle_b, self.channel_name)
+                )
+        except Exception as e:
+            print("Setup match exception caught:", e)
+            await self.send_error("lfm")
+    
+    async def create_lfm_classic(self):
+        try:
+            await database_sync_to_async(LookingForMatchClassic.objects.create)(
+                paddleA=self.user_id, mailbox_a=self.channel_name, paddleB=-1)
+            self.waiting: bool = True
+        except Exception as e:
+            print("Create looking for match exception caught:", e)
             await self.send_error("lfm")
 
     @staticmethod
