@@ -381,3 +381,7 @@ p {
     color: var(--bg-accent);
 }
 
+#leaveTournament {
+    display: flex;
+    justify-content: flex-end;
+}

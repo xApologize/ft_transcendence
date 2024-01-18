@@ -193,6 +193,9 @@ export function cancelTournament() {
     // Socket doit envoyer: cancelTournament
     interactiveSocket.sendMessageSocket(JSON.stringify({ "type": "Tournament", "action": "Cancel" }));
     document.getElementById('lobbyTournamentModal').removeEventListener('hide.bs.modal', cancelTournament);
+    document.getElementById('startTournamentBtn').removeEventListener('click', startTournament);
+    document.getElementById('cancelTournamentBtn').removeEventListener('click', cancelTournament);
+    document.getElementById('startTournamentBtn').classList.add('d-none');
     switchModals('lobbyTournamentModal', 'gameMenuModal')
     displayToast('The tournament has been cancelled successfully.', 'Tournament Cancelled')
     removeInfoLobbyModal()
@@ -394,6 +397,9 @@ export function removeInfoLobbyModal() {
 }
 
 export function transferToTournament() {
+    const startTournamentBtn = document.getElementById('startTournamentBtn');
+    startTournamentBtn.removeEventListener('click', startTournament);
+    startTournamentBtn.classList.add('d-none');
     document.getElementById('lobbyTournamentModal').removeEventListener('hide.bs.modal', leftTournament);
     document.getElementById('lobbyTournamentModal').removeEventListener('hide.bs.modal', cancelTournament);
     hideAllUI();

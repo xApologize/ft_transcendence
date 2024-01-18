@@ -134,10 +134,7 @@ class Match {
 		world.currentGameState = GameState.MatchEnding;
 
 		if ( world.currentGameMode === "Tournament" ) {
-			// this.showResultTournamentUI();
-			this.showResultMatchUI();
-			if ( document.getElementById('bracket').classList.contains('d-none') )
-				document.getElementById('bracket').classList.remove('d-none');
+			this.showResultTournamentUI();
 		}
 		else {
 			this.showResultMatchUI();
@@ -166,39 +163,24 @@ class Match {
 		this.updatable.delete();
 	}
 
+	showResultTournamentUI() {
+		document.getElementById('result').classList.remove('d-none')
+		document.getElementById('resultMatch').classList.remove('d-none')
+		document.getElementById('bracket').classList.remove('d-none');
+	
+		document.getElementById('leaveTournament').addEventListener('click', this.backToMenu)
+		this.toggleLeaveBtn(true);
+		this.setResultMatch();
+	}
+
 	showResultMatchUI() {
 		document.getElementById('result').classList.remove('d-none')
 		document.getElementById('resultMatch').classList.remove('d-none')
+		document.getElementById('bracket').classList.toggle('d-none', true)
 		
-		document.getElementById('resultButton').onclick = function() {
-			document.getElementById('result').classList.add('d-none')
-			document.getElementById('resultMatch').classList.add('d-none')
-			updateMatchHistory();
-			world.camera.viewLarge( 1 , function() {
-				document.getElementById('ui').classList.remove("d-none");
-				document.getElementById('toastContainer').classList.remove('d-none')
-				world.changeStatus( "ONL" );
-				world.currentGameState = GameState.InMenu;
-			});
-		}
-
-		document.getElementById('leftName').innerHTML = this.participants[0].nickname;
-		document.getElementById('leftScore').innerHTML = this.participants[0].score;
-		document.getElementById('rightScore').innerHTML = this.participants[1].score;
-		document.getElementById('rightName').innerHTML = this.participants[1].nickname;
-		if ( this.self.score < maxScore && this.opponent.score < maxScore )
-			document.getElementById("resultTitle").innerHTML = "Disconnected";
-		if ( this.self.score >= maxScore ) {
-			document.getElementById("fanfare").play();
-			document.getElementById("resultTitle").innerHTML = "YOU WIN!";
-		}
-		if ( this.opponent.score >= maxScore )
-			document.getElementById("resultTitle").innerHTML = "YOU LOST!";
-	}
-
-	showResultTournamentUI() {
-		document.getElementById('result').classList.remove('d-none')
-		document.getElementById('bracket').classList.remove('d-none')
+		document.getElementById('resultButton').addEventListener('click', this.backToMenu)
+		this.toggleLeaveBtn(false)
+		this.setResultMatch();
 	}
 
 	increment( sideId ) {
@@ -226,6 +208,55 @@ class Match {
 		if ( !response ) return;
 
 		interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Tournament", "action": "Final"}));
+	}
+
+	setResultMatch() {
+		document.getElementById('leftName').innerHTML = this.participants[0].nickname;
+		document.getElementById('leftScore').innerHTML = this.participants[0].score;
+		document.getElementById('rightScore').innerHTML = this.participants[1].score;
+		document.getElementById('rightName').innerHTML = this.participants[1].nickname;
+
+		if ( this.self.score < maxScore && this.opponent.score < maxScore )
+			document.getElementById("resultTitle").innerHTML = "Disconnected";
+		if ( this.self.score >= maxScore ) {
+			document.getElementById("fanfare").play();
+			document.getElementById("resultTitle").innerHTML = "YOU WIN!";
+		}
+		if ( this.opponent.score >= maxScore )
+			document.getElementById("resultTitle").innerHTML = "YOU LOST!";
+		}
+
+	backToMenu(event) {
+		const bracket = document.getElementById('bracket');
+		const result = document.getElementById('result');
+		const resultMatch = document.getElementById('resultMatch');
+
+		if (!bracket.classList.contains('d-none'))
+			bracket.classList.add('d-none');
+		if (!result.classList.contains('d-none'))
+			result.classList.add('d-none');
+		if (!resultMatch.classList.contains('d-none'))
+			resultMatch.classList.add('d-none');
+
+		updateMatchHistory();
+		world.camera.viewLarge( 1 , function() {
+			document.getElementById('ui').classList.remove("d-none");
+			document.getElementById('toastContainer').classList.remove('d-none')
+			world.changeStatus( "ONL" );
+			world.currentGameState = GameState.InMenu;
+		});
+
+		const currentTarget = event.currentTarget;
+		currentTarget.removeEventListener('click', this.backToMenu);
+	}
+
+	toggleLeaveBtn(isTournament) {
+		const backToMenuBtn = document.getElementById('resultButton');
+		const leaveTournamentBtn = document.getElementById('leaveTournament');
+	
+		// Toggle visibility based on isTournament flag
+		backToMenuBtn.classList.toggle('d-none', isTournament);
+		leaveTournamentBtn.classList.toggle('d-none', !isTournament);
 	}
 }
 
