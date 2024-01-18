@@ -1,7 +1,8 @@
-import { loadHTMLPage } from '../../api/fetchData.js';
+import { fetchInitLoginPage, loadHTMLPage } from '../../api/fetchData.js';
 import { navigateTo } from '../../router.js';
 import { fetchAuth } from '../../api/fetchData.js';
 import { displayAlertMsg } from '../../utils/utilityFunctions.js';
+import { assembler } from '../../api/assembler.js';
 
 let modal2FA;
 export async function showLogin() {
@@ -10,129 +11,71 @@ export async function showLogin() {
 
         modal2FA = new bootstrap.Modal(document.getElementById('twoFAModal'));
 
-        document
-            .getElementById('login-form')
-            .addEventListener('submit', function (event) {
-                event.preventDefault();
-                login();
-            });
-
-        document
-            .getElementById('signUpButton')
-            .addEventListener('click', () => {
-                navigateTo('/signUp');
-            });
-
-        document
-            .getElementById('btnAlertCloseLogin')
-            .addEventListener('click', hideLoginAlert);
-
-        document
-            .getElementById('demo-user-btn')
-            .addEventListener('click', () => {
-                login('demo-user', 'demo-user');
-            });
-
-        document
-            .getElementById('demo-user-btn2')
-            .addEventListener('click', () => {
-                login('demo-user2', 'demo-user2');
-            });
-
-        document
-            .getElementById('submit2FACode')
-            .addEventListener('click', submit2FACode);
-
-        document
-            .getElementById('close2FAModal')
-            .addEventListener('click', close2FAModal);
-        let canvas = document.querySelector('canvas');
-        let c = canvas.getContext('2d');
-
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        });
-
-        let HorizontalArray = [];
-        function Horizontal(y) {
-            this.y = y;
-            this.dy = 0.5;
-            this.opacity = 0;
-
-            this.draw = () => {
-                c.beginPath();
-                c.lineWidth = 3;
-                c.strokeStyle = `rgba(255, 0, 255, ${this.opacity})`;
-                c.moveTo(0, this.y);
-                c.lineTo(canvas.width, this.y);
-                c.stroke();
-            };
-
-            this.update = () => {
-                if (this.y >= canvas.height) {
-                    HorizontalArray.splice(HorizontalArray.indexOf(this), 1);
-                }
-
-                this.opacity += 0.003;
-
-                this.dy += 0.05;
-                this.y += this.dy;
-                this.draw();
-            };
-        }
-
-        let grad = c.createLinearGradient(0, canvas.height, 0, 0);
-        grad.addColorStop('0', 'rgba(255, 0, 255, 0.5)');
-        grad.addColorStop('0.55', 'rgba(255, 0, 255, 0)');
-        grad.addColorStop('1.0', 'rgba(255, 0, 255, 0)');
-        let VerticalArray = [];
-        function Vertical(x) {
-            this.x = x;
-
-            this.draw = () => {
-                c.beginPath();
-                c.lineWidth = 3;
-                c.strokeStyle = grad;
-                c.moveTo(canvas.width / 2, 200);
-                c.lineTo(this.x, canvas.height);
-                c.stroke();
-            };
-
-            this.update = () => {
-                this.draw();
-            };
-        }
-
-        let interval = canvas.width / 10;
-        let cross = 0 - interval * 8;
-        for (let i = 0; i < 27; i++) {
-            VerticalArray.push(new Vertical(cross));
-            cross += interval;
-        }
-
-        setInterval(() => {
-            HorizontalArray.push(new Horizontal(canvas.height / 2));
-        }, 300);
-
-        function animate() {
-            requestAnimationFrame(animate);
-            c.clearRect(0, 0, canvas.width, canvas.height);
-
-            for (let i = 0; i < HorizontalArray.length; i++) {
-                HorizontalArray[i].update();
-            }
-            for (let i = 0; i < VerticalArray.length; i++) {
-                VerticalArray[i].update();
-            }
-        }
-        animate();
+        getIntraHref();
+        initEventListeners();
+        initCss();
     } catch (error) {
         console.error('Error fetching home.html:', error);
     }
+}
+
+async function getIntraHref() {
+    const intraHrefEl = document.getElementById('intraLink');
+    const intraBtn = document.getElementById('intra-button');
+    const response = await fetchInitLoginPage();
+
+    if (!response || !response.ok) {
+        intraBtn.disabled = true;
+        intraHrefEl.removeAttribute('href');
+    } else {
+        const data = await assembler(response);
+        const intraLink = data['intra_link'];
+        if (intraLink === '') {
+            intraBtn.disabled = true;
+            intraHrefEl.removeAttribute('href');
+        } else {
+            intraHrefEl.href = intraLink;
+        }
+    }
+}
+
+function initEventListeners() {
+    document
+    .getElementById('login-form')
+    .addEventListener('submit', function (event) {
+        event.preventDefault();
+        login();
+    });
+
+    document
+        .getElementById('signUpButton')
+        .addEventListener('click', () => {
+            navigateTo('/signUp');
+        });
+
+    document
+        .getElementById('btnAlertCloseLogin')
+        .addEventListener('click', hideLoginAlert);
+
+    document
+        .getElementById('demo-user-btn')
+        .addEventListener('click', () => {
+            login('demo-user', 'demo-user');
+        });
+
+    document
+        .getElementById('demo-user-btn2')
+        .addEventListener('click', () => {
+            login('demo-user2', 'demo-user2');
+        });
+
+    document
+        .getElementById('submit2FACode')
+        .addEventListener('click', submit2FACode);
+
+    document
+        .getElementById('close2FAModal')
+        .addEventListener('click', close2FAModal);
 }
 
 async function login(username = null, password = null) {
@@ -218,4 +161,91 @@ function hideLoginAlert() {
     const alert = document.getElementById('alertErrorLogin');
     alert.classList.add('hide');
     alert.classList.remove('show');
+}
+
+function initCss() {
+    let canvas = document.querySelector('canvas');
+    let c = canvas.getContext('2d');
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
+
+    let HorizontalArray = [];
+    function Horizontal(y) {
+        this.y = y;
+        this.dy = 0.5;
+        this.opacity = 0;
+
+        this.draw = () => {
+            c.beginPath();
+            c.lineWidth = 3;
+            c.strokeStyle = `rgba(255, 0, 255, ${this.opacity})`;
+            c.moveTo(0, this.y);
+            c.lineTo(canvas.width, this.y);
+            c.stroke();
+        };
+
+        this.update = () => {
+            if (this.y >= canvas.height) {
+                HorizontalArray.splice(HorizontalArray.indexOf(this), 1);
+            }
+
+            this.opacity += 0.003;
+
+            this.dy += 0.05;
+            this.y += this.dy;
+            this.draw();
+        };
+    }
+
+    let grad = c.createLinearGradient(0, canvas.height, 0, 0);
+    grad.addColorStop('0', 'rgba(255, 0, 255, 0.5)');
+    grad.addColorStop('0.55', 'rgba(255, 0, 255, 0)');
+    grad.addColorStop('1.0', 'rgba(255, 0, 255, 0)');
+    let VerticalArray = [];
+    function Vertical(x) {
+        this.x = x;
+
+        this.draw = () => {
+            c.beginPath();
+            c.lineWidth = 3;
+            c.strokeStyle = grad;
+            c.moveTo(canvas.width / 2, 200);
+            c.lineTo(this.x, canvas.height);
+            c.stroke();
+        };
+
+        this.update = () => {
+            this.draw();
+        };
+    }
+
+    let interval = canvas.width / 10;
+    let cross = 0 - interval * 8;
+    for (let i = 0; i < 27; i++) {
+        VerticalArray.push(new Vertical(cross));
+        cross += interval;
+    }
+
+    setInterval(() => {
+        HorizontalArray.push(new Horizontal(canvas.height / 2));
+    }, 300);
+
+    function animate() {
+        requestAnimationFrame(animate);
+        c.clearRect(0, 0, canvas.width, canvas.height);
+
+        for (let i = 0; i < HorizontalArray.length; i++) {
+            HorizontalArray[i].update();
+        }
+        for (let i = 0; i < VerticalArray.length; i++) {
+            VerticalArray[i].update();
+        }
+    }
+    animate();
 }

@@ -25,6 +25,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 AUTH42_CLIENT = os.environ.get("AUTH42_CLIENT")
 AUTH42_SECRET = os.environ.get("AUTH42_SECRET")
 AUTH42_REDIRECT_URI = os.environ.get("AUTH42_REDIRECT_URI")
+AUTH42_LINK = os.environ.get("AUTH42_LINK")
 
 # SSL
 # SECURE_SSL_REDIRECT = True
