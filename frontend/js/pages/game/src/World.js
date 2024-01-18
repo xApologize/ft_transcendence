@@ -37,10 +37,22 @@ class World {
 		this.createInstance();
 		this.appendCanvas( container );
 
-		// TBD via backend ?
 		this.onDisconnectionEvent = (event) => this.forceQuit( event );
 		window.addEventListener( "beforeunload", this.onDisconnectionEvent );
 		window.addEventListener( "popstate", this.onDisconnectionEvent );
+
+		// document.getElementById("classic").onclick = () => {
+		// 	this.currentGameMode = "Classic";
+		// };
+		document.getElementById("play1vs1").onclick = () => {
+			this.currentGameMode = "Upgraded";
+		};
+		document.getElementById("createTournamentBtn").onclick = () => {
+			this.currentGameMode = "Tournament";
+		};
+		document.getElementById("joinTournamentBtn").onclick = () => {
+			this.currentGameMode = "Tournament";
+		};
 	}
 
 	forceQuit() {

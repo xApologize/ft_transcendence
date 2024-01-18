@@ -132,6 +132,7 @@ class Ball extends InstancedMesh {
 			if ( closerHit.object.layers.isEnabled( Layers.Goal ) ) {
 				if ( closerHit.object.paddle.isOpponent == true ) {
 					ballInst.speed = 0;
+					World._instance.match.waitingForGoal = true;
 					return;
 				}
 				if ( typeof closerHit.object.onCollision !== "function" )
@@ -292,6 +293,7 @@ class Ball extends InstancedMesh {
 			document.getElementById("hit").play();
 		}
 		this.particles.renderer.setLayers( Layers.Buffer );
+		World._instance.match.waitingForGoal = false;
 	}
 
 	delete() {
