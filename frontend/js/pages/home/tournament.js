@@ -97,6 +97,7 @@ function someoneCancelTournament(ownerTournamentID) {
         updateTournamentList();
     else if (isUserInTournament(ownerTournamentID)) {
         updateTournamentList();
+        removeInfoLobbyModal()
         document.getElementById('lobbyTournamentModal').removeEventListener('hide.bs.modal', leftTournament);
         switchModals('lobbyTournamentModal', 'joinTournamentModal')
         displayToast('The tournament has been cancelled by the host.', 'Tournament Cancelled')
