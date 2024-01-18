@@ -6,7 +6,6 @@ from tournament.models import Lobby, Tournament, Final
 from django.db.models import Q
 from channels.layers import get_channel_layer
 from channels.db import database_sync_to_async
-from django.db import IntegrityError
 import json
 
 ECHO = "send_message_echo"
@@ -73,6 +72,8 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
                 await self.send_to_layer(ECHO, self.user_id, "Refresh", rType)
             case "Social":
                 await self.send_to_layer_social(ECHO, self.user_id, rType, other_user_id)
+            case "Cancel Match":
+                await self.cancel_lfm()
             case _:
                 await self.send_error("argument")
 
@@ -144,6 +145,15 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             await self.setup_match(match_entry)
         else:
             await self.create_lfm()
+    
+    async def cancel_lfm(self):
+        try:
+            lfm: LookingForMatch = await database_sync_to_async(LookingForMatch.objects.get)(paddleA=self.user_id)
+            print("LFM", lfm)
+            await database_sync_to_async(lfm.delete)()
+        except LookingForMatch.DoesNotExist:
+            print("Error cancel LFM")
+            return
 
     async def create_lfm(self):
         try:
@@ -317,13 +327,17 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         setattr(lobby_instance, lobby_spot, -1)
         await database_sync_to_async(lobby_instance.save)()
         await self.send_to_layer(ECHO, lobby_instance.owner,"Tournament", "leftTournament")
-        # NOTIFY FRONTEND
 
     async def join_tournament(self, data) -> None:
         try:
             owner_id: int = data["owner_id"]
             lobby_instance: Lobby = await database_sync_to_async(Lobby.objects.get)(owner=owner_id)
-            # Check if I was in it
+            lobby_check: Lobby = await self.check_if_in_lobby()
+            print("LOBBY CHECK", lobby_check)
+            if lobby_check is not None:
+                print("FATAL ERROR join in already lobby...?")
+                await self.send(text_data=json.dumps({"type": "Tournament", "rType": "invalidJoin", "id": self.user_id}))
+                return
         except Exception:
             print("FATAL ERROR join")
             await self.send(text_data=json.dumps({"type": "Tournament", "rType": "invalidJoin", "id": self.user_id}))
@@ -336,6 +350,14 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         setattr(lobby_instance, lobby_spot, self.user_id)
         await database_sync_to_async(lobby_instance.save)()
         await self.send_to_layer(ECHO, owner_id ,"Tournament", "joinTournament")
+
+    async def check_if_in_lobby(self) -> Lobby:
+        try:
+            lobby_check: Lobby = await database_sync_to_async(Lobby.objects.get)( Q(owner=self.user_id) | Q(player_2=self.user_id) | Q(
+                player_3=self.user_id) | Q(player_4=self.user_id))
+        except Lobby.DoesNotExist:
+            return None
+        return lobby_check
 
     @staticmethod
     def find_lobby_spot(instance: Lobby, id: int) -> str:
@@ -501,6 +523,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             return
 
     async def start_final(self) -> None:
+        print("Final...?")
         tournament_handle: Tournament = await self.get_tournament()
         if tournament_handle is None:
             print("No tournament handle found...?")
@@ -508,9 +531,12 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             return
         final_handle: Final = await self.find_final(tournament_handle.pk) # Entry
         if final_handle is None:
+            print("CREATE FINAL")
             await self.create_final(tournament_handle.pk)
         else:
+            print("JOIN FINAL")
             await self.join_final(tournament_handle.pk)
+            await database_sync_to_async(tournament_handle.delete)()
 
 def create_layer_dict(type: str, message: str, sender: str) -> dict:
     return {"type": type, "message": message, "sender": sender}
