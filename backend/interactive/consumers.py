@@ -155,6 +155,9 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         match_entry = await database_sync_to_async(
             LookingForMatch.objects.filter(paddleB=-1).first)()
         if match_entry:
+            if match_entry.paddleA == self.user_id:
+                await self.cancel_lfm()
+                return
             await self.setup_match(match_entry)
         else:
             await self.create_lfm()
@@ -215,6 +218,9 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         match_entry = await database_sync_to_async(
             LookingForMatchClassic.objects.filter(paddleB=-1).first)()
         if match_entry:
+            if match_entry.paddleA == self.user_id:
+                await self.cancel_lfm()
+                return
             await self.setup_match_classic(match_entry)
         else:
             await self.create_lfm_classic()
@@ -591,10 +597,10 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             player_1_nickname: str = await self.get_user_nickname(player_1_id)
             player_2_nickname: str = await self.get_user_nickname(self.user_id)
             player_1_match_handle: dict = await self.create_match_handle(
-                player_1_id, self.user_id, "A", player_1_nickname, player_2_nickname, "Tournament Match"
+                player_1_id, self.user_id, "A", player_1_nickname, player_2_nickname, "Tournament Final"
             )
             player_2_match_handle: dict = await self.create_match_handle(
-                player_1_id, self.user_id, "B", player_2_nickname, player_1_nickname, "Tournament Match"
+                player_1_id, self.user_id, "B", player_2_nickname, player_1_nickname, "Tournament Final"
             )
             await self.send_tourny_handle(player_1_match_handle, player_1_id)
             await self.send_tourny_handle(player_2_match_handle, self.user_id)
