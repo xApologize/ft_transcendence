@@ -49,7 +49,8 @@ export async function saveAvatar() {
     }
 }
 
-export async function saveInfo() {
+export async function saveInfo(event) {
+    event.preventDefault();
     const objectData = new Object();
 
     const alert = document.getElementById('alertErrorInfo');

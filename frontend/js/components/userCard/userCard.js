@@ -18,7 +18,7 @@ export async function userCardComponent() {
 
 export async function userCardListener() {
     document.getElementById('logout').addEventListener('click', logoutUser)
-    document.getElementById('saveInfo').addEventListener('click', saveInfo)
+    document.getElementById('saveInfo').addEventListener('submit', saveInfo)
     document.getElementById('saveAvatar').addEventListener('click', saveAvatar)
     document.getElementById('userSettingsModal').addEventListener('show.bs.modal', setupSettings)
     document.getElementById('userSettingsModal').addEventListener('hide.bs.modal', clearSettings);

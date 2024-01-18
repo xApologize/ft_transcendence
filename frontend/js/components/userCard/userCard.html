@@ -75,27 +75,29 @@
                     <div class="right-column-settings w-100">
                         <!-- Menu Content 1 -->
                         <div class="collapse show" id="userMenu1">
-                            <div class="menu-content">
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <p>Nickname:</p>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <input type="text" class="form-control" id="nicknameInput">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="menu-content">
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <p>Email:</p>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <input type="email" class="form-control" id="emailInput">
+                            <form id="saveInfo">
+                                <div class="menu-content">
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <p>Nickname:</p>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input type="text" class="form-control" id="nicknameInput">
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <button id="saveInfo" type="button" class="btn btn-primary">Save Info</button>
+                                <div class="menu-content">
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <p>Email:</p>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input type="email" class="form-control" id="emailInput" aria-describedby="emailHelp">
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Save Info</button>
+                            </form>
                             <div id="alertErrorInfo" class="alert alert-danger alert-dismissible fade hide" role="alert">
                                 <button id="btnErrorInfo" type="button" class="btn-close" aria-label="Close"></button>
                             </div>
