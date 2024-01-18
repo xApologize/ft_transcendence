@@ -7,6 +7,7 @@ import { Updatable } from '../modules/Updatable.js';
 import { fetchMatchHistory } from '../../../../api/fetchData.js';
 import { assembler } from '../../../../api/assembler.js';
 import { displayMatchHistory } from '../../../../components/matchHistory/matchHistory.js';
+import interactiveSocket from '../../../home/socket.js';
 
 let world;
 let lastSocketTime;
