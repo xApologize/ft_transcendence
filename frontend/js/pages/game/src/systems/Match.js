@@ -212,10 +212,7 @@ class Match {
 			loser_score: this.opponent.score
 		}
 		const response = fetchMatchHistory( 'POST', data );
-		if ( !response ) {
-			console.error( "No response from POST MatchHistory" );
-			return;
-		}
+		if ( !response ) return;
 
 		interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Tournament", "action": "Final"}));
 	}
