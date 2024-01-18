@@ -4,12 +4,11 @@ import { fetchAuth } from '../../api/fetchData.js';
 import { displayAlertMsg } from '../../utils/utilityFunctions.js';
 import { assembler } from '../../api/assembler.js';
 
-let modal2FA;
 export async function showLogin() {
     try {
         await loadHTMLPage('./js/pages/login/login.html');
 
-        modal2FA = new bootstrap.Modal(document.getElementById('twoFAModal'));
+        new bootstrap.Modal(document.getElementById('twoFAModal'));
 
         getIntraHref();
         initEventListeners();
@@ -30,7 +29,7 @@ async function getIntraHref() {
     } else {
         const data = await assembler(response);
         const intraLink = data['intra_link'];
-        if (intraLink === '') {
+        if (!intraLink) {
             intraBtn.disabled = true;
             intraHrefEl.removeAttribute('href');
         } else {
