@@ -2,7 +2,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from interactive.models import LookingForMatch
 from user_profile.models import User
 from game_invite.models import MatchInvite
-from tournament.models import Lobby, Tournament
+from tournament.models import Lobby, Tournament, Final
 from django.db.models import Q
 from channels.layers import get_channel_layer
 from channels.db import database_sync_to_async
@@ -284,8 +284,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             case "Start":
                 await self.start_tournament()
             case "Final":
-                pass
-                # await self.handle_round_1(data)
+                await self.start_final()
 
     async def create_tournament(self) -> None:
         try:
@@ -443,6 +442,58 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
                 }
             )
 
+    async def get_tournament(self) -> Tournament:
+        try:
+            tournament_handle: Tournament = await database_sync_to_async(Lobby.objects.get(
+                Q(player_1=self.user_id) | Q(player_2=self.user_id) | Q(player_3=self.user_id) | Q(player_4=self.user_id)
+            ))
+        except Tournament.DoesNotExist:
+            return None
+        return tournament_handle
+    
+    async def find_final(self, unique_id: int) -> Final:
+        try:
+            final_handle: Final = await database_sync_to_async(Final.objects.get)(final_id=unique_id)
+        except Final.DoesNotExist:
+            return None
+        return final_handle
+    
+    async def create_final(self, unique_id: int) -> None:
+        try:
+            await database_sync_to_async(Final.objects.create)(
+                final_id = unique_id,
+                player_1 = self.user_id
+            )
+        except Exception:
+            # Add mega error handling.
+            pass
+    
+    async def join_final(self, unique_id: int) -> None:
+        try:
+            final_handle: Final = await self.find_final(unique_id)
+            if final_handle is None:
+                # Handle error, no final found...?
+                return
+            if final_handle.player_2 != -1:
+                # Handle trying to join final...?
+                return
+            final_handle.player_2 = self.user_id
+            await database_sync_to_async(final_handle.save)() # Save entry in the db
+        except Exception:
+            # Couldn't save db entry error
+            return
+
+    async def start_final(self) -> None:
+        tournament_handle: Tournament = await self.get_tournament()
+        if tournament_handle is None:
+            print("No tournament handle found...?")
+            # Send error to front to go back to the menu since the tournament handle wasn't found.
+            return
+        final_handle: Final = await self.find_final(tournament_handle.pk) # Entry
+        if final_handle is None:
+            await self.create_final()
+        else:
+            await self.join_final()
 
 def create_layer_dict(type: str, message: str, sender: str) -> dict:
     return {"type": type, "message": message, "sender": sender}
