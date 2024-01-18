@@ -26,13 +26,19 @@ function sortUser(objectAllUsers) {
 
 
 export async function displayUser(allUsers, container) {
+    if (!container) 
+        return;
     container.innerHTML = '';
     let currentUser;
     const objectAllUsers = await assembler(allUsers);
     if (typeof objectAllUsers !== 'object' && objectAllUsers !== null) {
         return;
     }
-    currentUser = document.getElementById('nickname').innerText;
+    currentUser = document.getElementById('nickname');
+    if (!currentUser) {
+        return;
+    }
+    currentUser = currentUser.innerText
 
     const sortAllUser = sortUser(objectAllUsers);
     await loopDisplayUser(sortAllUser, currentUser, container);

@@ -17,13 +17,15 @@ Including another URLconf
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-
+from .views import InitLoginPage
 
 urlpatterns = [
+    path('api/initloginpage/', InitLoginPage.as_view(), name="initloginpage"),
     path('api/user/', include('user_profile.urls')),
     path('api/friend/', include('friend_list.urls')),
     path('api/login/', include('auth.urls')),
     path('api/auth/', include('auth.urls')),
     path('api/match/', include('match_history.urls')),
     path('api/game_invite/', include('game_invite.urls')),
+    path('api/lobby/', include('tournament.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

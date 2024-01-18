@@ -135,11 +135,13 @@ async function createNotifications(rType, userId, otherUserId, currentUser) {
         const user = await fetchUserById(otherUserId);
         let imgUrl = user ? user.avatar : "https://png.pngtree.com/png-clipart/20190904/ourmid/pngtree-80-3d-text-png-image_18456.jpg";
         let userNickname = user ? user.nickname : "someone";
+        let toastType = ''
     
         switch (rType) {
             case "add":
                 toastMsg = `You have received a friend request from ${userNickname}!`;
                 toastTitle = "Friend Request";
+                toastType = 'displaySocial'
                 break;
             case "accept":
                 toastMsg = `${userNickname} has accepted your friend request!`;
@@ -158,7 +160,7 @@ async function createNotifications(rType, userId, otherUserId, currentUser) {
         }
 
         if (toastMsg)
-            displayToast(toastMsg, toastTitle, imgUrl);
+            displayToast(toastMsg, toastTitle, toastType,imgUrl);
     }
 }
 
@@ -258,3 +260,31 @@ async function getTemplateUser(user) {
 }
 
 /////////////////////
+
+export function updateSpecificUserStatus(id, rType) {
+    const friendDiv = document.getElementById('friendDisplay');
+    const everyoneDiv = document.getElementById('userDisplay')
+    const userCardFriend = friendDiv.querySelector(`div[data-id="${id}"]`);
+    const userCardEveryone = everyoneDiv.querySelector(`div[data-id="${id}"]`);
+    let color = setStatus(rType);
+    if (userCardFriend) {
+        updateBadgeSpecificColor(userCardFriend, color);
+        const inviteGameBtn = userCardFriend.querySelector('#inviteGameBtn');
+        if (rType == 'ONL') {
+            inviteGameBtn.classList.remove("disabled", "border-0");
+        } else {
+            inviteGameBtn.classList.add("disabled", "border-0");
+        }
+    }
+
+    if (userCardEveryone) {
+        updateBadgeSpecificColor(userCardEveryone, color);
+    }
+}
+
+const updateBadgeSpecificColor = (userCard, color) => {
+    const statusBadge = userCard.querySelector('#badge');
+    if (statusBadge) {
+        statusBadge.style.backgroundColor = color;
+    }
+}

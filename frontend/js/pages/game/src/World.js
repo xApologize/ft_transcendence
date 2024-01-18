@@ -91,6 +91,7 @@ class World {
 	}
 
 	changeStatus( status ) {
+		interactiveSocket.sendMessageSocket(JSON.stringify({type: 'Refresh', rType: status}))
 		const data = {
 			status: status
 		};
