@@ -5,6 +5,7 @@ import { handleInviteInteraction } from './inviteGame.js';
 import { newUser, removeUser, updateSpecificUser, handleSocialUpdate } from './socketUpdate.js'
 import { socketTournamentUser } from './tournament.js'
 import { checkModal } from '../../router.js';
+import { updateSpecificUserStatus } from './socketUpdate.js';
 
 const interactiveSocket = {
     interactive_socket: null,
@@ -109,6 +110,10 @@ const interactiveSocket = {
             case "User":
                 updateSpecificUser(id);
                 break;
+            case "ONL":
+            case "ING":
+                updateSpecificUserStatus(id, data.rType);
+                break;
             case "add":
             case "cancel":
             case "accept":
@@ -124,7 +129,7 @@ const interactiveSocket = {
                 handleInviteInteraction(refresh_type, id, other_user_id)
                 break;
             default:
-                console.error("Rtype error");
+                console.error("Rtype error: ", data.rType);
         }
     },
 

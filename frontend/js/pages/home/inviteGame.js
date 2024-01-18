@@ -39,7 +39,7 @@ function getUserIDFromEventTarget(target) {
 }
 
 function displayErrorResponse(errorMessage) {
-    displayToast(errorMessage, "Error", '',"https://png.pngtree.com/png-clipart/20190904/ourmid/pngtree-80-3d-text-png-image_18456.jpg");
+    displayToast(errorMessage, "Error");
 }
 
 function handleResponseType(rType, userID) {
@@ -188,7 +188,7 @@ async function handleOtherUserRefusedInvite(request_id) {
     resetModalContentID(inviteModalEl);
     hideModal(inviteModal);
 
-    displayToast("Your game invite has been refused.", "Game Invite", '',"https://png.pngtree.com/png-clipart/20190904/ourmid/pngtree-80-3d-text-png-image_18456.jpg");
+    displayToast("Your game invite has been refused.", "Game Invite");
 
     function resetModalContentID(inviteModalEl) {
         const modalContentDatasetID = inviteModalEl.querySelector('.modal-content');
