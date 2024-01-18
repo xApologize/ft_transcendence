@@ -43,15 +43,31 @@ function initJoinTournament() {
 
 
 function initMainGameMenu(world) {
-    setupPlay1vs1Button(world);
+    setupPlayClassicButton(world);
+    setupPlayUpgradedButton(world);
     setupCreateTournamentButton();
     setupJoinTournamentButton();
 }
 
-function setupPlay1vs1Button(world) {
-    const play1vs1 = document.getElementById('play1vs1');
-    play1vs1.addEventListener('click', () => handlePlay1vs1Click(world));
-    function handlePlay1vs1Click(world) {
+function setupPlayClassicButton(world) {
+    const playClassic = document.getElementById('joinClassicBtn');
+    playClassic.addEventListener('click', () => handlePlayClassicClick(world));
+    function handlePlayClassicClick(world) {
+        hideModal('gameMenuModal');
+        hideElement('toastContainer');
+        hideElement('ui');
+        world.currentGameState = GameState.LookingForPlayer;
+        showElement('lfp');
+        interactiveSocket.sendMessageSocket(
+            JSON.stringify({ type: 'Find Match Classic' })
+        );
+    }
+}
+
+function setupPlayUpgradedButton(world) {
+    const playUpgraded = document.getElementById('joinUpgradedBtn');
+    playUpgraded.addEventListener('click', () => handlePlayUpgradedClick(world));
+    function handlePlayUpgradedClick(world) {
         hideModal('gameMenuModal');
         hideElement('toastContainer');
         hideElement('ui');

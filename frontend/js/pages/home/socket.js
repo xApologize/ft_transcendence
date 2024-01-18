@@ -75,10 +75,15 @@ const interactiveSocket = {
                 setTimeout(() => {
                     document.getElementById('bracket').classList.add('d-none')
                     document.getElementById('result').classList.add('d-none')
-                    World._instance.joinMatch( data.handle, data.paddle, data.me, data.opponent );
+                    World._instance.joinMatch( data.handle, data.paddle, data.me, data.opponent, "Tournament Demi" );
                 }, 5000);
                 break;
             case "Tournament Final":
+				setTimeout(() => {
+					document.getElementById('bracket').classList.add('d-none')
+					document.getElementById('result').classList.add('d-none')
+					World._instance.joinMatch( data.handle, data.paddle, data.me, data.opponent, "Tournament Final" );
+				}, 5000);
                 break;
             case "Found Match Classic":
                 hideAllUI(true);

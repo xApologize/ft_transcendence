@@ -20,6 +20,7 @@ class Match {
 		world = World._instance;
 
 		world.currentGameState = GameState.Connecting;
+		this.waitingForGoal = false;
 		
 		this.socket = new WebSocket('wss://' + window.location.host + path);
 
@@ -89,20 +90,24 @@ class Match {
 				world.balls.init();
 			}
 		});
-	
+	console.log(world.currentGameMode);
 		this.onWebsocketReceivedEvent = (event) => this.onWebsocketReceived( event );
 		this.socket.addEventListener( "message", this.onWebsocketReceivedEvent );
 	}
 
 	onWebsocketReceived( event ) {
 		if ( event.data === "Closing" ) {
-			console.log("Opponent Ragequited");
+			// console.log("Opponent Ragequited");
 			this.endMatch();
 			return;
 		}
-		lastSocketTime = Date.now();
-
+		
 		const wsData = JSON.parse( event.data );
+		if ( !this.waitingForGoal || ( wsData.scored && this.waitingForGoal ) ) {
+			lastSocketTime = Date.now();
+		}
+
+		
 		if ( this.participants[wsData.id] != undefined && wsData.pos != undefined )
 			this.participants[wsData.id].position.copy( wsData.pos );
 		if ( wsData.smash != undefined ) {
@@ -113,6 +118,7 @@ class Match {
 		}
 		if ( wsData.ballInst != undefined ) {
 			if ( wsData.scored == true ) {
+				this.waitingForGoal = false;
 				if ( world.terrain.leftGoalZone.paddle.isOpponent )
 					world.terrain.leftGoalZone.goal( wsData.ballInst );
 				if ( world.terrain.rightGoalZone.paddle.isOpponent )
@@ -126,10 +132,17 @@ class Match {
 	endMatch() {
 		world.currentGameState = GameState.MatchEnding;
 
-		if ( world.currentGameMode === "Tournament" )
-			this.showResultTournamentUI();
-		else
+		if ( world.currentGameMode === "Tournament" ) {
+			// this.showResultTournamentUI();
 			this.showResultMatchUI();
+			if ( document.getElementById('bracket').classList.contains('d-none') )
+				document.getElementById('bracket').classList.remove('d-none');
+		}
+		else {
+			this.showResultMatchUI();
+			if ( !document.getElementById('bracket').classList.contains('d-none') )
+				document.getElementById('bracket').classList.add('d-none');
+		}
 
 		this.participants.forEach(element => {
 			element.dashSpheresAnimation( 0 );
@@ -155,9 +168,7 @@ class Match {
 	showResultMatchUI() {
 		document.getElementById('result').classList.remove('d-none')
 		document.getElementById('resultMatch').classList.remove('d-none')
-		// if TOURNAMENT
-		// add other function to button
-		// else
+		
 		document.getElementById('resultButton').onclick = function() {
 			document.getElementById('result').classList.add('d-none')
 			document.getElementById('resultMatch').classList.add('d-none')
@@ -185,9 +196,9 @@ class Match {
 	}
 
 	showResultTournamentUI() {
-		
+		document.getElementById('result').classList.remove('d-none')
+		document.getElementById('bracket').classList.remove('d-none')
 	}
-
 
 	increment( sideId ) {
 		this.participants[sideId - 1].score += 1;
