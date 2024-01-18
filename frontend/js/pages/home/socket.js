@@ -81,6 +81,10 @@ const interactiveSocket = {
             case "Tournament Final":
                 console.log("HEy")
                 break;
+            case "Found Match Classic":
+                hideAllUI(true);
+                World._instance.joinMatch( data.handle, data.paddle, data.me, data.opponent );
+                break;
             case "Init":
                 displayEveryone();
                 break;
