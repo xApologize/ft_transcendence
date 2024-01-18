@@ -60,7 +60,7 @@ const interactiveSocket = {
         switch (data.type) {
             case "Found Match":
                 hideAllUI(true);
-                World._instance.joinMatch( data.handle, data.paddle, data.me, data.opponent );
+                World._instance.joinMatch( data.handle, data.paddle, data.me, data.opponent, "Upgraded" );
                 break;
             case "Refresh":
                 this.refresh_handler(data);
@@ -75,19 +75,19 @@ const interactiveSocket = {
                 setTimeout(() => {
                     document.getElementById('bracket').classList.add('d-none')
                     document.getElementById('result').classList.add('d-none')
-                    World._instance.joinMatch( data.handle, data.paddle, data.me, data.opponent, "Tournament Demi" );
+                    World._instance.joinMatch( data.handle, data.paddle, data.me, data.opponent, "Upgraded", 2 );
                 }, 5000);
                 break;
             case "Tournament Final":
 				setTimeout(() => {
 					document.getElementById('bracket').classList.add('d-none')
 					document.getElementById('result').classList.add('d-none')
-					World._instance.joinMatch( data.handle, data.paddle, data.me, data.opponent, "Tournament Final" );
+					World._instance.joinMatch( data.handle, data.paddle, data.me, data.opponent, "Upgraded", 1 );
 				}, 5000);
                 break;
             case "Found Match Classic":
                 hideAllUI(true);
-                World._instance.joinMatch( data.handle, data.paddle, data.me, data.opponent );
+                World._instance.joinMatch( data.handle, data.paddle, data.me, data.opponent, "Classic" );
                 break;
             case "Init":
                 displayEveryone();

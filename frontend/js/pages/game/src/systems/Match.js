@@ -8,7 +8,7 @@ import { fetchMatchHistory } from '../../../../api/fetchData.js';
 import { assembler } from '../../../../api/assembler.js';
 import { displayMatchHistory } from '../../../../components/matchHistory/matchHistory.js';
 import interactiveSocket from '../../../home/socket.js';
-import { displayUserCard, updateUserCard } from '../../../../components/userCard/userCard.js';
+import { updateUserCard } from '../../../../components/userCard/userCard.js';
 import { getMyID } from '../../../home/utils.js';
 
 let world;
@@ -18,7 +18,7 @@ const maxScore = 3;
 const divNicknames = [ 'left-player-name', 'right-player-name' ];
 
 class Match {
-	constructor( path, myId, myNickname, opponentNickname ) {
+	constructor( path, myId, myNickname, opponentNickname, tournamentStage ) {
 		world = World._instance;
 
 		world.currentGameState = GameState.Connecting;
@@ -52,6 +52,8 @@ class Match {
 		this.updatable = new Updatable( this );
 		lastSocketTime = Date.now();
 		this.loading = false;
+
+		this.tournamentStage = tournamentStage; // 0 = no tournament, 1 = final, 2 = demi
 	}
 
 	update() {}
@@ -92,7 +94,6 @@ class Match {
 				world.balls.init();
 			}
 		});
-	console.log(world.currentGameMode);
 		this.onWebsocketReceivedEvent = (event) => this.onWebsocketReceived( event );
 		this.socket.addEventListener( "message", this.onWebsocketReceivedEvent );
 	}
@@ -134,7 +135,7 @@ class Match {
 	endMatch() {
 		world.currentGameState = GameState.MatchEnding;
 
-		if ( world.currentGameMode === "Tournament" ) {
+		if ( this.tournamentStage > 0 ) {
 			this.showResultTournamentUI();
 		}
 		else {
@@ -169,8 +170,11 @@ class Match {
 		document.getElementById('resultMatch').classList.remove('d-none')
 		document.getElementById('bracket').classList.remove('d-none');
 	
-		// document.getElementById('leaveTournament').addEventListener('click', this.backToMenu)
-		this.toggleLeaveBtn(true);
+		document.getElementById('resultMatch').addEventListener('click', this.backToMenu)
+		if ( this.opponent.score >= maxScore || this.tournamentStage < 2 )
+			this.toggleLeaveBtn(false);
+		else
+			this.toggleLeaveBtn(true);
 		this.setResultMatch();
 		// this.setBracketResult();
 	}
