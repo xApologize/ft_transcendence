@@ -393,7 +393,6 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         owner_id: int = lobby_instance.owner
         await database_sync_to_async(lobby_instance.delete)()
         await self.send_to_layer(NO_ECHO, owner_id ,"Tournament", "cancelTournament")
-        # ALERT ALERT ALERT
 
     async def start_tournament(self) -> None:
         try:
@@ -425,11 +424,9 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         player_1_handle: dict = await self.create_match_handle(
             player_1_id, player_2_id, "A", player_1_nickname, player_2_nicknake, "Tournament Match"
         )
-        print("Player 1 handle:", player_1_handle)
         player_2_handle: dict = await self.create_match_handle(
             player_1_id, player_2_id, "B", player_2_nicknake, player_1_nickname, "Tournament Match"
         )
-        print("Player 2 handle:", player_2_handle)
         await self.send_tourny_handle(player_1_handle, player_1_id)
         await self.send_tourny_handle(player_2_handle, player_2_id)
 
@@ -444,10 +441,13 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
 
     async def get_tournament(self) -> Tournament:
         try:
-            tournament_handle: Tournament = await database_sync_to_async(Lobby.objects.get(
+            tournament_handle: Tournament = await database_sync_to_async(Tournament.objects.get)(
                 Q(player_1=self.user_id) | Q(player_2=self.user_id) | Q(player_3=self.user_id) | Q(player_4=self.user_id)
-            ))
+            )
         except Tournament.DoesNotExist:
+            return None
+        except Final.MultipleObjectsReturned:
+            # what are you fucking doing?
             return None
         return tournament_handle
     
@@ -455,19 +455,24 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         try:
             final_handle: Final = await database_sync_to_async(Final.objects.get)(final_id=unique_id)
         except Final.DoesNotExist:
+            # ...What are you doing here?
+            return None
+        except Final.MultipleObjectsReturned:
+            # Multiple Object returned??? Massive issue
             return None
         return final_handle
-    
+
     async def create_final(self, unique_id: int) -> None:
         try:
             await database_sync_to_async(Final.objects.create)(
-                final_id = unique_id,
-                player_1 = self.user_id
+                final_id=unique_id,
+                player_1=self.user_id,
+                player_2=-1
             )
         except Exception:
             # Add mega error handling.
-            pass
-    
+            return
+
     async def join_final(self, unique_id: int) -> None:
         try:
             final_handle: Final = await self.find_final(unique_id)
@@ -479,6 +484,18 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
                 return
             final_handle.player_2 = self.user_id
             await database_sync_to_async(final_handle.save)() # Save entry in the db
+            player_1_id: int = final_handle.player_1
+            await database_sync_to_async(final_handle.delete)()
+            player_1_nickname: str = await self.get_user_nickname(player_1_id)
+            player_2_nickname: str = await self.get_user_nickname(self.user_id)
+            player_1_match_handle: dict = await self.create_match_handle(
+                player_1_id, self.user_id, "A", player_1_nickname, player_2_nickname, "Tournament Match"
+            )
+            player_2_match_handle: dict = await self.create_match_handle(
+                player_1_id, self.user_id, "B", player_2_nickname, player_1_nickname, "Tournament Match"
+            )
+            await self.send_tourny_handle(player_1_match_handle, player_1_id)
+            await self.send_tourny_handle(player_2_match_handle, self.user_id)
         except Exception:
             # Couldn't save db entry error
             return
@@ -491,9 +508,9 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             return
         final_handle: Final = await self.find_final(tournament_handle.pk) # Entry
         if final_handle is None:
-            await self.create_final()
+            await self.create_final(tournament_handle.pk)
         else:
-            await self.join_final()
+            await self.join_final(tournament_handle.pk)
 
 def create_layer_dict(type: str, message: str, sender: str) -> dict:
     return {"type": type, "message": message, "sender": sender}
