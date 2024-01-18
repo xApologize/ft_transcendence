@@ -8,6 +8,7 @@ import { fetchMatchHistory } from '../../../../api/fetchData.js';
 import { assembler } from '../../../../api/assembler.js';
 import { displayMatchHistory } from '../../../../components/matchHistory/matchHistory.js';
 import interactiveSocket from '../../../home/socket.js';
+import { displayUserCard, updateUserCard } from '../../../../components/userCard/userCard.js';
 
 let world;
 let lastSocketTime;
@@ -221,9 +222,9 @@ class Match {
 export { Match };
 
 async function updateMatchHistory() {
-	console.log("HERE")
 	const response = await fetchMatchHistory( 'GET' );
 	if (!response) return;
 	const data = await assembler(response)
 	displayMatchHistory(data)
+	updateUserCard(data)
 }
