@@ -4,6 +4,7 @@ import { displayToast } from './toastNotif.js';
 import { fetchUserById, getMyID, switchModals, isModalShown, hideModal, showModal } from './utils.js';
 import { fetchMe, fetchAllLobbies, fetchMyLobby } from '../../api/fetchData.js';
 import { World } from '../game/src/World.js';
+import { checkModal } from '../../router.js';
 
 // This is handler for when someone sent something with socket and it worked.
 export function socketTournamentUser(action, ownerTournamentID) {
