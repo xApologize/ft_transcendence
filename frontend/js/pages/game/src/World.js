@@ -41,10 +41,10 @@ class World {
 		window.addEventListener( "beforeunload", this.onDisconnectionEvent );
 		window.addEventListener( "popstate", this.onDisconnectionEvent );
 
-		// document.getElementById("classic").onclick = () => {
-		// 	this.currentGameMode = "Classic";
-		// };
-		document.getElementById("play1vs1").onclick = () => {
+		document.getElementById("joinClassicBtn").onclick = () => {
+			this.currentGameMode = "Classic";
+		};
+		document.getElementById("joinUpgradedBtn").onclick = () => {
 			this.currentGameMode = "Upgraded";
 		};
 		document.getElementById("createTournamentBtn").onclick = () => {

@@ -103,11 +103,10 @@ class Match {
 		}
 		
 		const wsData = JSON.parse( event.data );
-		console.log(this.waitingForGoal);
 		if ( !this.waitingForGoal || ( wsData.scored && this.waitingForGoal ) ) {
 			lastSocketTime = Date.now();
 		}
-		
+
 		
 		if ( this.participants[wsData.id] != undefined && wsData.pos != undefined )
 			this.participants[wsData.id].position.copy( wsData.pos );
@@ -133,10 +132,17 @@ class Match {
 	endMatch() {
 		world.currentGameState = GameState.MatchEnding;
 
-		if ( world.currentGameMode === "Tournament" )
-			this.showResultTournamentUI();
-		else
+		if ( world.currentGameMode === "Tournament" ) {
+			// this.showResultTournamentUI();
 			this.showResultMatchUI();
+			if ( document.getElementById('bracket').classList.contains('d-none') )
+				document.getElementById('bracket').classList.remove('d-none');
+		}
+		else {
+			this.showResultMatchUI();
+			if ( !document.getElementById('bracket').classList.contains('d-none') )
+				document.getElementById('bracket').classList.add('d-none');
+		}
 
 		this.participants.forEach(element => {
 			element.dashSpheresAnimation( 0 );
