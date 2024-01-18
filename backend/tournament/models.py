@@ -10,10 +10,11 @@ class Lobby(models.Model):
 
 class Tournament(models.Model):
     player_1 = models.IntegerField(default=-1)
-    isPlayer1Ready = models.BooleanField(default=False) 
     player_2 = models.IntegerField(default=-1)
-    isPlayer2Ready = models.BooleanField(default=False)
     player_3 = models.IntegerField(default=-1)
-    isPlayer3Ready = models.BooleanField(default=False)
     player_4 = models.IntegerField(default=-1)
-    isPlayer4Ready = models.BooleanField(default=False)
+
+class Final(models.Model):
+    final_id = models.IntegerField()
+    player_1 = models.IntegerField(default=-1)
+    player_2 = models.IntegerField(default=-1)

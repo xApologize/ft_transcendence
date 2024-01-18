@@ -260,3 +260,25 @@ async function getTemplateUser(user) {
 }
 
 /////////////////////
+
+export function updateSpecificUserStatus(id, rType) {
+    const friendDiv = document.getElementById('friendDisplay');
+    const everyoneDiv = document.getElementById('userDisplay')
+    const userCardFriend = friendDiv.querySelector(`div[data-id="${id}"]`);
+    const userCardEveryone = everyoneDiv.querySelector(`div[data-id="${id}"]`);
+    let color = setStatus(rType);
+    if (userCardFriend) {
+        updateBadgeSpecificColor(userCardFriend, color);
+    }
+
+    if (userCardEveryone) {
+        updateBadgeSpecificColor(userCardEveryone, color);
+    }
+}
+
+const updateBadgeSpecificColor = (userCard, color) => {
+    const statusBadge = userCard.querySelector('#badge');
+    if (statusBadge) {
+        statusBadge.style.backgroundColor = color;
+    }
+}
