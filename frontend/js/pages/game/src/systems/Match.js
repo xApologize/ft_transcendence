@@ -9,6 +9,7 @@ import { assembler } from '../../../../api/assembler.js';
 import { displayMatchHistory } from '../../../../components/matchHistory/matchHistory.js';
 import interactiveSocket from '../../../home/socket.js';
 import { displayUserCard, updateUserCard } from '../../../../components/userCard/userCard.js';
+import { getMyID } from '../../../home/utils.js';
 
 let world;
 let lastSocketTime;
@@ -169,8 +170,9 @@ class Match {
 		document.getElementById('bracket').classList.remove('d-none');
 	
 		// document.getElementById('leaveTournament').addEventListener('click', this.backToMenu)
-		// this.toggleLeaveBtn(true);
+		this.toggleLeaveBtn(true);
 		this.setResultMatch();
+		// this.setBracketResult();
 	}
 
 	showResultMatchUI() {
@@ -178,8 +180,8 @@ class Match {
 		document.getElementById('resultMatch').classList.remove('d-none')
 		document.getElementById('bracket').classList.toggle('d-none', true)
 		
-		// document.getElementById('resultButton').addEventListener('click', this.backToMenu)
-		// this.toggleLeaveBtn(false)
+		document.getElementById('resultButton').addEventListener('click', this.backToMenu)
+		this.toggleLeaveBtn(false)
 		this.setResultMatch();
 	}
 
@@ -257,6 +259,33 @@ class Match {
 		// Toggle visibility based on isTournament flag
 		backToMenuBtn.classList.toggle('d-none', isTournament);
 		leaveTournamentBtn.classList.toggle('d-none', !isTournament);
+	}
+
+	setBracketResult() {
+		const myID = getMyID();
+		if (!myID) return;
+
+		const firstRoundEl = document.getElementById('round-1');
+		const myPlace = firstRoundEl.querySelector(`[data-id="${myID}"]`);
+		console.log(myPlace);
+		if (!myPlace) return;
+
+		if ( this.self.score >= maxScore ) {
+			myPlace.classList.add('winner');
+			const newElement = document.createElement('span');
+			newElement.textContent = this.self.score
+			myPlace.appendChild(newElement);
+		}
+		const myPlaceID = myPlace.id 
+		if (myPlaceID === 'r1-p4') {
+			console.log("I'm r1-p4")
+		} else if (myPlaceID === 'r1-p3') {
+			console.log("I'm r1-p3")
+		} else if (myPlaceID === 'r1-p2') {
+			console.log("I'm r1-p2")
+		} else if (myPlaceID === 'r1-p1') {
+			console.log("I'm r1-p1")
+		}
 	}
 }
 
