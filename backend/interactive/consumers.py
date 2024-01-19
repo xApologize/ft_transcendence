@@ -23,7 +23,9 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             self.init: bool = False
             self.user_id: int = self.scope.get("user_id")
             status: str = await self.get_user_status()
-        except Exception:
+        except Exception as e:
+            print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA ERROR")
+            print("Exception caught:", e)
             self.user_id = -1
         if self.user_id < 0 or status != "OFF":
             await self.close()

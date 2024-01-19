@@ -90,17 +90,19 @@ async function tournamentMatchEnd(ownerTournamentID) {
     if (!myID) 
         return;
     console.log("GOT MY ID");
-
+    
     const bracket = document.getElementById('tournamentBracket');
     let players = {};
     for (let i = 1; i <= 4; i++) {
         players[`player${i}`] = bracket.querySelector(`#r1-p${i}`);
     }
+    setTimeout(async function () { // timeout to give the time to the other player to update the matchHistory
+        if (Object.values(players).some(player => player.dataset.id == myID)) {
+            console.log("I AM IN THE BRACKET");
+            await updateOnGoingBracket(players, myID);
+        }
+    }, 2000);
 
-    if (Object.values(players).some(player => player.dataset.id == myID)) {
-        console.log("I AM IN THE BRACKET");
-        await updateOnGoingBracket(players, myID);
-    }
 }
 
 async function updateOnGoingBracket(players, myID) {

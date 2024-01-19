@@ -217,9 +217,8 @@ class Match {
 		const response = fetchMatchHistory( 'POST', data );
 		if ( !response ) return;
 
-		if (this.tournamentStage > 0) {
+		if ( this.tournamentStage > 0)
 			interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Tournament", "action": "Final"}));
-		}
 	}
 
 	setResultMatch() {
@@ -228,8 +227,11 @@ class Match {
 		document.getElementById('rightScore').innerHTML = this.participants[1].score;
 		document.getElementById('rightName').innerHTML = this.participants[1].nickname;
 
-		if ( this.self.score < maxScore && this.opponent.score < maxScore )
+		if ( this.self.score < maxScore && this.opponent.score < maxScore ) {
 			document.getElementById("resultTitle").innerHTML = "Disconnected";
+			if (this.tournamentStage > 0)
+				this.toggleLeaveBtn(true)
+		}
 		if ( this.self.score >= maxScore ) {
 			document.getElementById("fanfare").play();
 			document.getElementById("resultTitle").innerHTML = "YOU WIN!";
