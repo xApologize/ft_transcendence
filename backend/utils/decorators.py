@@ -1,5 +1,6 @@
 from utils.functions import add_double_jwt, decrypt_user_id
 from django.http import HttpRequest, HttpResponse
+from user_profile.models import User
 
 EXPIRED: int = -1
 
@@ -28,4 +29,17 @@ def token_validation(func):
                 return HttpResponse("Cookie Expired jwt", status=401)
         return HttpResponse(
             "https://i.ytimg.com/vi/KEkrWRHCDQU/maxresdefault.jpg", status=401)
+    return wrapper
+
+def verify_cookies(func):
+    '''Check the cookies to prevent multiple login in the same browser if the cookies are present and valid'''
+    def wrapper(self, request: HttpRequest):
+        refresh_jwt_cookie = request.COOKIES.get("refresh_jwt")
+        if refresh_jwt_cookie is None:
+            return func(self, request)
+        decrypt_cookie_id: int = decrypt_user_id(refresh_jwt_cookie)
+        if decrypt_cookie_id < 0:
+            return func(self, request) # Cookie is out of date, or invalid, let the user login.
+        if User.objects.filter(pk=decrypt_cookie_id, status='ONL').exists():
+            return HttpResponse("Cookie Expired jwt", status=401)
     return wrapper

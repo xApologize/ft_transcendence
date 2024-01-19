@@ -1,6 +1,6 @@
 from django.http import JsonResponse, HttpResponse, Http404, HttpResponseBadRequest
 from django.views import View
-from utils.decorators import token_validation
+from utils.decorators import token_validation, verify_cookies
 from django.core.exceptions import PermissionDenied
 import json, random
 from django.contrib.auth.hashers import check_password
@@ -127,6 +127,7 @@ class Confirm2FA(View):
 
 
 class Login(View):
+    @verify_cookies
     def post(self, request):
         errorMessage = {"error": "Invalid credentials."}
         login_data = json.loads(request.body)
