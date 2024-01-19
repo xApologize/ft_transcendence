@@ -223,7 +223,7 @@ class LogoutSocket(View):
         except PermissionDenied as e:
             return HttpResponse(str(e), status=401)
         except Http404 as e:
-            return HttpResponse(str(e), status=404)
+            return HttpResponse(str(e), status=401)
         # Check if status is not OFF ?
         # user.status = "OFF"
         # user.save()
