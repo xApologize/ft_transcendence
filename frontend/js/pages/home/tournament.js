@@ -84,7 +84,7 @@ export function socketLobbyError(action, ownerTournamentID) {
     }
 }
 
-async function tournamentMatchEnd(ownerTournamentID) {
+async function tournamentMatchEnd(winnerUserID) {
     console.log("TOURNAMENT MATCH END");
     const myID = getMyID();
     if (!myID) 
@@ -96,18 +96,24 @@ async function tournamentMatchEnd(ownerTournamentID) {
     for (let i = 1; i <= 4; i++) {
         players[`player${i}`] = bracket.querySelector(`#r1-p${i}`);
     }
-    setTimeout(async function () { // timeout to give the time to the other player to update the matchHistory
-        if (Object.values(players).some(player => player.dataset.id == myID)) {
-            console.log("I AM IN THE BRACKET");
-            await updateOnGoingBracket(players, myID);
-        }
-    }, 2000);
-
+    if (Object.values(players).some(player => player.dataset.id == myID)) {
+        await updateOnGoingBracket(players, myID, winnerUserID);
+    }
 }
 
-async function updateOnGoingBracket(players, myID) {
+async function updateOnGoingBracket(players, myID, winnerUserID) {
     let response, data;
-    if ([players.player3, players.player4].some(player => player.dataset.id == myID)) {
+    console.log("I AM IN THE BRACKET");
+    const myOpponent = Object.values(players).find(player => player.dataset.id != myID);
+
+    if (!myOpponent || myOpponent.dataset.id == winnerUserID || myID == winnerUserID) {
+        console.log("FUCK THAT")
+        return;
+    }
+
+    console.log("IM IN THE OTHER MATCH. THEY HAVE FINISHED AND WANT TO UPDATE ME");
+
+    if ([players.player3, players.player4].some(player => player.dataset.id == myID) ) {
         response = await fetchMatchHistory('GET', null, {'id': players.player1.dataset.id}, 'tournament/');
         data = response && await assembler(response);
     } else if ([players.player1, players.player2].some(player => player.dataset.id == myID)) {
@@ -123,13 +129,27 @@ async function updateOnGoingBracket(players, myID) {
 
 function determineWinnerAndLoser(players, data) {
     let winner, loser;
-    if (data.winner_username === players.player2.textContent || data.winner_username === players.player4.textContent) {
-        winner = players[data.winner_username === players.player2.textContent ? 'player2' : 'player4'];
-        loser = players[data.winner_username === players.player2.textContent ? 'player1' : 'player3'];
-    } else {
-        winner = players[data.winner_username === players.player1.textContent ? 'player1' : 'player3'];
-        loser = players[data.winner_username === players.player1.textContent ? 'player2' : 'player4'];
+    if (data.winner_username === players.player1.textContent) {
+        winner = players.player1;
+        loser = players.player2;
+    } else if (data.winner_username === players.player2.textContent) {
+        winner = players.player2;
+        loser = players.player1;
+    } else if (data.winner_username === players.player3.textContent) {
+        winner = players.player3;
+        loser = players.player4;
     }
+    else if (data.winner_username === players.player4.textContent) {
+        winner = players.player4;
+        loser = players.player3;
+    }
+    // if (data.winner_username === players.player2.textContent || data.winner_username === players.player4.textContent) {
+    //     winner = players[data.winner_username === players.player2.textContent ? 'player2' : 'player4'];
+    //     loser = players[data.winner_username === players.player2.textContent ? 'player1' : 'player3'];
+    // } else {
+    //     winner = players[data.winner_username === players.player1.textContent ? 'player1' : 'player3'];
+    //     loser = players[data.winner_username === players.player1.textContent ? 'player2' : 'player4'];
+    // }
     return { winner, loser };
 }
 
@@ -474,6 +494,8 @@ export function transferToTournament() {
     startTournamentBtn.classList.add('d-none');
     document.getElementById('lobbyTournamentModal').removeEventListener('hide.bs.modal', leftTournament);
     document.getElementById('lobbyTournamentModal').removeEventListener('hide.bs.modal', cancelTournament);
+    document.getElementById('cancelTournamentBtn').removeEventListener('click', cancelTournament);
+    document.getElementById('leaveTournament').classList.toggle('d-none', true);
     hideAllUI();
     World._instance.camera.viewTable(1, null);
 

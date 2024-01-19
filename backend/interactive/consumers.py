@@ -128,6 +128,14 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
                 send_type, {"type": type, "id": user_id, "rType": rType}, self.channel_name)
             )
 
+    # async def send_to_layer_tournament(self, send_type: str, user_id: int, type: str, rType: str):
+    #     await self.channel_layer.group_send(
+    #         "interactive",
+    #         create_layer_dict(
+    #             send_type, {"type": type, "id": user_id, "rType": rType}, self.channel_name)
+    #         )
+        
+
     async def send_to_layer_social(
             self, send_type: str, user_id: int, rType: str, other_user_id: int):
         await self.channel_layer.group_send(
@@ -366,7 +374,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             case "Start":
                 await self.start_tournament()
             case "Tournament Match End":
-                await self.send_to_layer(NO_ECHO, self.user_id, "Tournament", action_type)
+                await self.send_to_layer(ECHO, self.user_id, "Tournament", action_type)
             case "Final":
                 await self.start_final()
 

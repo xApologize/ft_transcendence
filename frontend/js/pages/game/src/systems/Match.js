@@ -16,63 +16,63 @@ let world;
 let lastSocketTime;
 const maxScore = 3;
 
-const divNicknames = [ 'left-player-name', 'right-player-name' ];
+const divNicknames = ['left-player-name', 'right-player-name'];
 
 class Match {
-	constructor( path, myId, myNickname, opponentNickname, tournamentStage ) {
+	constructor(path, myId, myNickname, opponentNickname, tournamentStage) {
 		world = World._instance;
 
 		world.currentGameState = GameState.Connecting;
 		this.waitingForGoal = false;
-		
+
 		this.socket = new WebSocket('wss://' + window.location.host + path);
 
 		this.participants = [];
 
 		for (let i = 0; i < 2; i++) {
-			if ( i == myId ) {
-				this.participants.push( new Player( new Vector3( -7.2 + 14.4 * i, 0, 0 ), i ) );
+			if (i == myId) {
+				this.participants.push(new Player(new Vector3(-7.2 + 14.4 * i, 0, 0), i));
 				this.participants[i].nickname = myNickname;
 				this.self = this.participants[i];
 			} else {
-				this.participants.push( new Opponent( new Vector3( -7.2 + 14.4 * i, 0, 0 ), i ) );
+				this.participants.push(new Opponent(new Vector3(-7.2 + 14.4 * i, 0, 0), i));
 				this.participants[i].nickname = opponentNickname;
 				this.opponent = this.participants[i];
 			}
 			this.participants[i].sideId = i;
-			this.participants[i].position.setZ( -1 );
+			this.participants[i].position.setZ(-1);
 			document.getElementById(divNicknames[i]).classList.remove("d-none");
 			document.getElementById(divNicknames[i]).innerHTML = this.participants[i].nickname;
 		}
 		world.terrain.leftGoalZone.paddle = this.participants[0];
 		world.terrain.rightGoalZone.paddle = this.participants[1];
-		
+
 		this.initMatch();
 		document.getElementById('lfp').classList.add("d-none");
 
-		this.updatable = new Updatable( this );
+		this.updatable = new Updatable(this);
 		lastSocketTime = Date.now();
 		this.loading = false;
 
 		this.tournamentStage = tournamentStage; // 0 = no tournament, 1 = final, 2 = demi
 	}
 
-	update() {}
+	update() { }
 
 	fixedUpdate() {
-		if ( Date.now() - lastSocketTime > 3000) {
+		if (Date.now() - lastSocketTime > 3000) {
 			this.endMatch();
 			document.getElementById("loading").classList.add("d-none");
 			console.error("Disconnected");
 			this.loading = false;
-		} else if ( Date.now() - lastSocketTime > 500) {
+		} else if (Date.now() - lastSocketTime > 500) {
 			if (!this.loading) {
 				console.warn("Instable Connection");
 				document.getElementById("loading").classList.remove("d-none");
 				this.loading = true;
 			}
 		}
-		else if ( this.loading ) {
+		else if (this.loading) {
 			document.getElementById("loading").classList.add("d-none");
 			this.loading = false;
 		}
@@ -90,63 +90,63 @@ class Match {
 		});
 		world.balls.renderer.setEnabled(true);
 		world.balls.updatable.setEnabled(true);
-		world.camera.viewTable( 1, function() {
-			if ( world.currentGameState === GameState.InMatch ) {
+		world.camera.viewTable(1, function () {
+			if (world.currentGameState === GameState.InMatch) {
 				world.balls.init();
 			}
 		});
-		this.onWebsocketReceivedEvent = (event) => this.onWebsocketReceived( event );
-		this.socket.addEventListener( "message", this.onWebsocketReceivedEvent );
+		this.onWebsocketReceivedEvent = (event) => this.onWebsocketReceived(event);
+		this.socket.addEventListener("message", this.onWebsocketReceivedEvent);
 	}
 
-	onWebsocketReceived( event ) {
-		if ( event.data === "Closing" ) {
+	onWebsocketReceived(event) {
+		if (event.data === "Closing") {
 			// console.log("Opponent Ragequited");
 			this.endMatch();
 			return;
 		}
-		
-		const wsData = JSON.parse( event.data );
-		if ( !this.waitingForGoal || ( wsData.scored && this.waitingForGoal ) ) {
+
+		const wsData = JSON.parse(event.data);
+		if (!this.waitingForGoal || (wsData.scored && this.waitingForGoal)) {
 			lastSocketTime = Date.now();
 		}
 
-		
-		if ( this.participants[wsData.id] != undefined && wsData.pos != undefined )
-			this.participants[wsData.id].position.copy( wsData.pos );
-		if ( wsData.smash != undefined ) {
-			this.opponent.smashAnimation( wsData.smash );
+
+		if (this.participants[wsData.id] != undefined && wsData.pos != undefined)
+			this.participants[wsData.id].position.copy(wsData.pos);
+		if (wsData.smash != undefined) {
+			this.opponent.smashAnimation(wsData.smash);
 		}
-		if ( wsData.dashCount != undefined ) {
-			this.opponent.dashSpheresAnimation( wsData.dashCount );
+		if (wsData.dashCount != undefined) {
+			this.opponent.dashSpheresAnimation(wsData.dashCount);
 		}
-		if ( wsData.ballInst != undefined ) {
-			if ( wsData.scored == true ) {
+		if (wsData.ballInst != undefined) {
+			if (wsData.scored == true) {
 				this.waitingForGoal = false;
-				if ( world.terrain.leftGoalZone.paddle.isOpponent )
-					world.terrain.leftGoalZone.goal( wsData.ballInst );
-				if ( world.terrain.rightGoalZone.paddle.isOpponent )
-					world.terrain.rightGoalZone.goal( wsData.ballInst );
+				if (world.terrain.leftGoalZone.paddle.isOpponent)
+					world.terrain.leftGoalZone.goal(wsData.ballInst);
+				if (world.terrain.rightGoalZone.paddle.isOpponent)
+					world.terrain.rightGoalZone.goal(wsData.ballInst);
 			}
 			else
-				world.balls.overwriteInst( wsData.ballInst );
+				world.balls.overwriteInst(wsData.ballInst);
 		}
 	}
 
 	endMatch() {
 		world.currentGameState = GameState.MatchEnding;
 
-		if ( this.tournamentStage > 0 ) {
+		if (this.tournamentStage > 0) {
 			this.showResultTournamentUI();
 		}
 		else {
 			this.showResultMatchUI();
-			if ( !document.getElementById('bracket').classList.contains('d-none') )
+			if (!document.getElementById('bracket').classList.contains('d-none'))
 				document.getElementById('bracket').classList.add('d-none');
 		}
 
 		this.participants.forEach(element => {
-			element.dashSpheresAnimation( 0 );
+			element.dashSpheresAnimation(0);
 			element.delete();
 		});
 		this.participants = [];
@@ -158,10 +158,10 @@ class Match {
 		world.balls.hide();
 		world.balls.updatable.setEnabled(false);
 		world.balls.renderer.setEnabled(false);
-	
-		if ( this.socket != undefined)
+
+		if (this.socket != undefined)
 			this.socket.close();
-		this.socket.removeEventListener( "message", this.onWebsocketReceivedEvent );
+		this.socket.removeEventListener("message", this.onWebsocketReceivedEvent);
 
 		this.updatable.delete();
 	}
@@ -172,11 +172,11 @@ class Match {
 		document.getElementById('bracket').classList.remove('d-none');
 
 		document.getElementById('resultButton').classList.toggle('d-none', true);
-		if ( this.opponent.score >= maxScore || this.tournamentStage < 2 ) {
+		if (this.opponent.score >= maxScore || this.tournamentStage < 2) {
 			document.getElementById('leaveTournament').addEventListener('click', this.backToMenu)
 			document.getElementById('leaveTournament').classList.toggle('d-none', false)
 		}
-			
+
 		this.setResultMatch();
 		this.setBracketResult();
 	}
@@ -185,7 +185,7 @@ class Match {
 		document.getElementById('result').classList.remove('d-none')
 		document.getElementById('resultMatch').classList.remove('d-none')
 		document.getElementById('bracket').classList.toggle('d-none', true)
-		
+
 		document.getElementById('leaveTournament').classList.toggle('d-none', true)
 		document.getElementById('resultButton').classList.toggle('d-none', false);
 		document.getElementById('resultButton').addEventListener('click', this.backToMenu)
@@ -193,15 +193,15 @@ class Match {
 		this.setResultMatch();
 	}
 
-	increment( sideId ) {
+	increment(sideId) {
 		this.participants[sideId - 1].score += 1;
 
 		world.score.setText(
-			( this.participants[0].score < 10 ? "0" : "" ) + this.participants[0].score, 
-			( this.participants[1].score < 10 ? "0" : "" ) + this.participants[1].score
+			(this.participants[0].score < 10 ? "0" : "") + this.participants[0].score,
+			(this.participants[1].score < 10 ? "0" : "") + this.participants[1].score
 		);
 
-		if ( this.self.score >= maxScore ) {
+		if (this.self.score >= maxScore) {
 			this.tryPostWin();
 			this.endMatch();
 		}
@@ -214,11 +214,13 @@ class Match {
 			loser: this.opponent.nickname,
 			loser_score: this.opponent.score
 		}
-		const response = fetchMatchHistory( 'POST', data );
-		if ( !response ) return;
+		const response = fetchMatchHistory('POST', data);
+		if (!response) return;
 
-		if ( this.tournamentStage > 0)
-			interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Tournament", "action": "Final"}));
+		if (this.tournamentStage > 0) {
+			console.log("SEND FINAL")
+			interactiveSocket.sendMessageSocket(JSON.stringify({ "type": "Tournament", "action": "Final" }));
+		}
 	}
 
 	setResultMatch() {
@@ -227,18 +229,18 @@ class Match {
 		document.getElementById('rightScore').innerHTML = this.participants[1].score;
 		document.getElementById('rightName').innerHTML = this.participants[1].nickname;
 
-		if ( this.self.score < maxScore && this.opponent.score < maxScore ) {
+		if (this.self.score < maxScore && this.opponent.score < maxScore) {
 			document.getElementById("resultTitle").innerHTML = "Disconnected";
 			if (this.tournamentStage > 0)
 				this.toggleLeaveBtn(true)
 		}
-		if ( this.self.score >= maxScore ) {
+		if (this.self.score >= maxScore) {
 			document.getElementById("fanfare").play();
 			document.getElementById("resultTitle").innerHTML = "YOU WIN!";
 		}
-		if ( this.opponent.score >= maxScore )
+		if (this.opponent.score >= maxScore)
 			document.getElementById("resultTitle").innerHTML = "YOU LOST!";
-		}
+	}
 
 	backToMenu(event) {
 		const bracket = document.getElementById('bracket');
@@ -253,13 +255,13 @@ class Match {
 			resultMatch.classList.add('d-none');
 
 		updateMatchHistory();
-		world.camera.viewLarge( 1 , function() {
+		world.camera.viewLarge(1, function () {
 			document.getElementById('ui').classList.remove("d-none");
 			document.getElementById('toastContainer').classList.remove('d-none')
-			world.changeStatus( "ONL" );
+			world.changeStatus("ONL");
 			world.currentGameState = GameState.InMenu;
 		});
-		
+
 		const currentTarget = event.currentTarget;
 		currentTarget.removeEventListener('click', this.backToMenu);
 		cleanBracket();
@@ -268,7 +270,7 @@ class Match {
 	toggleLeaveBtn(isTournament) {
 		const backToMenuBtn = document.getElementById('resultButton');
 		const leaveTournamentBtn = document.getElementById('leaveTournament');
-	
+
 		// Toggle visibility based on isTournament flag
 		backToMenuBtn.classList.toggle('d-none', isTournament);
 		leaveTournamentBtn.classList.toggle('d-none', !isTournament);
@@ -277,15 +279,15 @@ class Match {
 	setBracketResult() {
 		const myID = getMyID();
 		if (!myID) return;
-		
+
 		if (this.tournamentStage === 2) {
 			const roundEl = document.getElementById('round-1');
 			const myPlace = roundEl.querySelector(`[data-id="${myID}"]`);
 			this.updateFirstRound(roundEl, myPlace);
 		} else if (this.tournamentStage === 1) {
-			// const roundEl = document.getElementById('round-2');
-			// const myPlace = roundEl.querySelector(`[data-id="${myID}"]`);
-			// this.updateFinalRound(roundEl, myPlace);
+			const roundEl = document.getElementById('round-2');
+			const myPlace = roundEl.querySelector(`[data-id="${myID}"]`);
+			this.updateFinalRound(roundEl, myPlace);
 		}
 	}
 
@@ -294,31 +296,34 @@ class Match {
 		if (this.self.score >= maxScore) {
 			myPlace.classList.add('winner');
 			console.log("I'M THE WINNER, I AM SENDING TO SOCKET");
-			interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Tournament", "action": 'Tournament Match End'}));
+			setTimeout(() => {
+				interactiveSocket.sendMessageSocket(JSON.stringify({ "type": "Tournament", "action": 'Tournament Match End', 'winner': myPlace.dataset.id }));
+			}, 1000);
+			// this.setBracketFinal(myPlace, true);
 		} else {
 			this.setOpponentWinner(myPlace.id, firstRoundEl);
 		}
 		this.updateOpponentFirstRound(myPlace.id, firstRoundEl);
 	}
-	
+
 	updateOpponentFirstRound(myPlaceID, firstRoundEl) {
 		const opponentID = this.getOpponentID(myPlaceID);
 		const opponentPlace = firstRoundEl.querySelector(`#${opponentID}`);
 		this.appendScore(opponentPlace, this.opponent.score);
 	}
-	
+
 	setOpponentWinner(myPlaceID, firstRoundEl) {
 		const opponentID = this.getOpponentID(myPlaceID);
 		const opponentPlace = firstRoundEl.querySelector(`#${opponentID}`);
 		opponentPlace.classList.add('winner');
 	}
-	
+
 	appendScore(place, score) {
 		const newElement = document.createElement('span');
 		newElement.textContent = score;
 		place.appendChild(newElement);
 	}
-	
+
 	getOpponentID(myPlaceID) {
 		const opponentMapping = {
 			'r1-p1': 'r1-p2',
@@ -329,15 +334,33 @@ class Match {
 		return opponentMapping[myPlaceID];
 	}
 
-	updateFinalRound(finalEl, myPlace) {
+	setBracketFinal(myPlace, isWinner) {
+		const finalRoundEl = document.getElementById('round-2');
+		let myNewPlace = null;
+	
+		if (isWinner) {
+			myNewPlace = finalRoundEl.querySelector(myPlace.id == 'r1-p2' || myPlace.id == 'r1-p1' ? '#r2-p1' : '#r2-p2');
+			if (myNewPlace && myPlace.firstChild.nodeType === Node.TEXT_NODE) {
+				myNewPlace.textContent = myPlace.firstChild.textContent.trim();
+			}
+		} else {
+			const opponentPlaceID = this.getOpponentID(myPlace.id);
+			const opponentPlace = document.querySelector(`#${opponentPlaceID}`);
+			const opponentNewPlace = finalRoundEl.querySelector(opponentPlaceID == 'r1-p2' || opponentPlaceID == 'r1-p1' ? '#r2-p1' : '#r2-p2');
+			if (opponentNewPlace && opponentPlace.firstChild.nodeType === Node.TEXT_NODE) {
+				opponentNewPlace.textContent = opponentPlace.firstChild.textContent.trim();
+			}
+		}
+	}
 
+	updateFinalRound(finalEl, myPlace) {
 	}
 }
 
 export { Match };
 
 async function updateMatchHistory() {
-	const response = await fetchMatchHistory( 'GET' );
+	const response = await fetchMatchHistory('GET');
 	if (!response) return;
 	const data = await assembler(response)
 	displayMatchHistory(data)
