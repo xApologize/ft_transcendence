@@ -2,6 +2,7 @@
     #left-column {
         display: none;
     }
+
     .buttonResponsive {
         max-height: 40px;
         display: block;
@@ -12,9 +13,11 @@
     #left-column {
         display: block;
     }
+
     #right-column {
         display: block !important;
     }
+
     .buttonResponsive {
         display: none;
     }
@@ -85,6 +88,7 @@ body {
     background-color: var(--bg-accent) !important;
     color: #ffffff !important;
 }
+
 .show {
     display: block !important;
 }
@@ -158,7 +162,8 @@ body {
 }
 
 .border-right {
-    border-right: 1px solid #dee2e6; /* This color is a light grey, common for Bootstrap borders */
+    border-right: 1px solid #dee2e6;
+    /* This color is a light grey, common for Bootstrap borders */
 }
 
 #copyright {
@@ -174,17 +179,13 @@ body {
     background-color: var(--bg-accent);
 }
 
-.about-box {
-}
+.about-box {}
 
-#ddemers-pos {
-}
+#ddemers-pos {}
 
-#jalevesq-pos {
-}
+#jalevesq-pos {}
 
-#fgeslin-pos {
-}
+#fgeslin-pos {}
 
 #jrossign-pos {
     right: 0;
@@ -193,59 +194,71 @@ body {
 .link-primary {
     color: white !important;
 }
+
 #joinTournamentModal .list-group-item:hover {
-    background-color: #d6d8db; /* Darker shade for hover, adjust color as needed */
+    background-color: #d6d8db;
+    /* Darker shade for hover, adjust color as needed */
     cursor: pointer;
 }
 
 /* TEST */
 
-main{
-    display:flex;
-    flex-direction:row;
+main {
+    display: flex;
+    flex-direction: row;
 }
-.round{
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    width:200px;
-    list-style:none;
-    padding:0;
-}
-.round .spacer{ flex-grow:1; }
-.round .spacer:first-child,
-.round .spacer:last-child{ flex-grow:.5; }
 
-.round .game-spacer{
-    flex-grow:1;
+.round {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 200px;
+    list-style: none;
+    padding: 0;
 }
-  
-  /*
+
+.round .spacer {
+    flex-grow: 1;
+}
+
+.round .spacer:first-child,
+.round .spacer:last-child {
+    flex-grow: .5;
+}
+
+.round .game-spacer {
+    flex-grow: 1;
+}
+
+/*
    *  General Styles
   */
 
 
-li.game{
-    padding-left:20px;
-}
-  
-li.game.winner{
-    font-weight:bold;
-}
-li.game span{
-    float:right;
-    margin-right:5px;
+li.game {
+    padding-left: 20px;
 }
 
-li.game-top{ border-bottom:1px solid #aaa; }
-
-li.game-spacer{ 
-    border-right:1px solid #aaa;
-    min-height:40px;
+li.game.winner {
+    font-weight: bold;
 }
 
-li.game-bottom{ 
-    border-top:1px solid #aaa;
+li.game span {
+    float: right;
+    margin-right: 5px;
+}
+
+li.game-top {
+    border-bottom: 1px solid #aaa;
+}
+
+li.game-spacer {
+    border-right: 1px solid #aaa;
+    min-height: 40px;
+}
+
+li.game-bottom {
+    border-top: 1px solid #aaa;
 }
 
 #canvas-callback {
@@ -263,6 +276,7 @@ li.game-bottom{
     justify-content: center;
     align-items: center;
 }
+
 .load div {
     width: 25px;
     height: 25px;
@@ -279,12 +293,15 @@ li.game-bottom{
     animation-iteration-count: infinite;
     animation-direction: alternate;
 }
+
 .load-two {
     animation-delay: 0.4s;
 }
+
 .load-three {
     animation-delay: 0.8s;
 }
+
 @keyframes loading {
     to {
         opacity: 0.3;
@@ -379,4 +396,9 @@ p {
 .icons i:hover {
     transform: scale(1.1);
     color: var(--bg-accent);
+}
+
+#leaveTournament {
+    display: flex;
+    justify-content: flex-end;
 }

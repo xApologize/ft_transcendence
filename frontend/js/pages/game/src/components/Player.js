@@ -102,14 +102,18 @@ class Player extends Paddle {
 
 		this.smashCd -= dt;
 
-		if ( this.dashCount < 3 )
-			this.dashCount += dt / initialDashCd;
-		else
-			this.dashCount = 3;
-		this.dashSpheresAnimation( this.dashCount );
-
-		if ( World._instance.currentGameMode == "Upgraded" )
+		
+		if ( World._instance.currentGameMode == "Upgraded" ) {
+			if ( this.dashCount < 3 )
+				this.dashCount += dt / initialDashCd;
+			else
+				this.dashCount = 3;
+			this.dashSpheresAnimation( this.dashCount );
+			
 			this.wsData.dashCount = this.dashCount;
+		}
+		else
+			this.wsData.dashCount = undefined;
 	}
 
 	update( dt ) {

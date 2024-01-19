@@ -165,3 +165,7 @@ export const fetchMyLobby = async (method) => {
 export const fetchPlayerNbr = async (method, owner_id) => {
     return fetchApi(method, `lobby/players/${owner_id}`, null, null)
 }
+
+export const fetchInitLoginPage = () => {
+    return fetchApi('GET', 'initloginpage/');
+}

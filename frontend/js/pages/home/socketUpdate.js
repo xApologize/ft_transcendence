@@ -269,6 +269,12 @@ export function updateSpecificUserStatus(id, rType) {
     let color = setStatus(rType);
     if (userCardFriend) {
         updateBadgeSpecificColor(userCardFriend, color);
+        const inviteGameBtn = userCardFriend.querySelector('#inviteGameBtn');
+        if (rType == 'ONL') {
+            inviteGameBtn.classList.remove("disabled", "border-0");
+        } else {
+            inviteGameBtn.classList.add("disabled", "border-0");
+        }
     }
 
     if (userCardEveryone) {

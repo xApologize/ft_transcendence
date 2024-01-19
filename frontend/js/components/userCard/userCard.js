@@ -65,6 +65,7 @@ export async function logoutUser() {
 // Call in home.js
 export async function displayUserCard(meUser) {
     let userContainer = document.getElementById('own-user-card');
+    userContainer.innerHTML = ''
 
     let userCard = await userCardComponent();
     userContainer.appendChild(userCard);
@@ -73,12 +74,16 @@ export async function displayUserCard(meUser) {
     updateUserCard(meUser);
 }
 
-function updateUserCard(userObject) {
-    const profilePicture = document.getElementById('avatar-img');
-    profilePicture.src = userObject.avatar;
+export function updateUserCard(userObject) {
+    if (userObject.avatar) {
+        const profilePicture = document.getElementById('avatar-img');
+        profilePicture.src = userObject.avatar;
+    }
 
-    const nicknameElement = document.getElementById('nickname');
-    nicknameElement.innerText = userObject.nickname;
+    if (userObject.nickname) {
+        const nicknameElement = document.getElementById('nickname');
+        nicknameElement.innerText = userObject.nickname;
+    }
 
     const winsElement = document.getElementById('wins');
     const lossesElement = document.getElementById('losses');

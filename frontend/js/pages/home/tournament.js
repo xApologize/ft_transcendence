@@ -4,6 +4,7 @@ import { displayToast } from './toastNotif.js';
 import { fetchUserById, getMyID, switchModals, isModalShown, hideModal, showModal } from './utils.js';
 import { fetchMe, fetchAllLobbies, fetchMyLobby } from '../../api/fetchData.js';
 import { World } from '../game/src/World.js';
+import { checkModal } from '../../router.js';
 
 // This is handler for when someone sent something with socket and it worked.
 export function socketTournamentUser(action, ownerTournamentID) {
@@ -97,6 +98,7 @@ function someoneCancelTournament(ownerTournamentID) {
         updateTournamentList();
     else if (isUserInTournament(ownerTournamentID)) {
         updateTournamentList();
+        removeInfoLobbyModal()
         document.getElementById('lobbyTournamentModal').removeEventListener('hide.bs.modal', leftTournament);
         switchModals('lobbyTournamentModal', 'joinTournamentModal')
         displayToast('The tournament has been cancelled by the host.', 'Tournament Cancelled')
@@ -191,6 +193,9 @@ export function cancelTournament() {
     // Socket doit envoyer: cancelTournament
     interactiveSocket.sendMessageSocket(JSON.stringify({ "type": "Tournament", "action": "Cancel" }));
     document.getElementById('lobbyTournamentModal').removeEventListener('hide.bs.modal', cancelTournament);
+    document.getElementById('startTournamentBtn').removeEventListener('click', startTournament);
+    document.getElementById('cancelTournamentBtn').removeEventListener('click', cancelTournament);
+    document.getElementById('startTournamentBtn').classList.add('d-none');
     switchModals('lobbyTournamentModal', 'gameMenuModal')
     displayToast('The tournament has been cancelled successfully.', 'Tournament Cancelled')
     removeInfoLobbyModal()
@@ -345,19 +350,26 @@ function updateBracket(tournament) {
     const title = bracket.querySelector('#tournament-name-bracket');
     title.textContent = tournament.owner.nickname + '\'s tournament'
 
+    console.log(tournament)
+
     const player1 = bracket.querySelector('#r1-p1');
     const player2 = bracket.querySelector('#r1-p2');
     const player3 = bracket.querySelector('#r1-p3');
     const player4 = bracket.querySelector('#r1-p4');
 
-    if (tournament.owner)
+    if (tournament.owner) {
         player1.textContent = tournament.owner.nickname
-    if (tournament.player_2)
+        player1.dataset.id = tournament.owner.id
+    } if (tournament.player_2) {
         player2.textContent = tournament.player_2.nickname
-    if (tournament.player_3)
+        player2.dataset.id = tournament.player_2.id
+    } if (tournament.player_3) {
         player3.textContent = tournament.player_3.nickname
-    if (tournament.player_4)
+        player3.dataset.id = tournament.player_3.id
+    } if (tournament.player_4) {
         player4.textContent = tournament.player_4.nickname
+        player4.dataset.id = tournament.player_4.id
+    }
 }
 
 ////// FOR UTILS FILE //////
@@ -392,6 +404,9 @@ export function removeInfoLobbyModal() {
 }
 
 export function transferToTournament() {
+    const startTournamentBtn = document.getElementById('startTournamentBtn');
+    startTournamentBtn.removeEventListener('click', startTournament);
+    startTournamentBtn.classList.add('d-none');
     document.getElementById('lobbyTournamentModal').removeEventListener('hide.bs.modal', leftTournament);
     document.getElementById('lobbyTournamentModal').removeEventListener('hide.bs.modal', cancelTournament);
     hideAllUI();

@@ -44,7 +44,7 @@
                         <p id="rightName">Right</p>
                     </div>
                 </div>
-                <div style="align-items: center; display: flex; justify-content: center;">
+                <div class="" style="align-items: center; display: flex; justify-content: center;">
                     <button id="resultButton" class="btn btn-danger text-center">Back to menu</button>
                 </div>
             </div>
@@ -52,7 +52,7 @@
             <div id="bracket" class="d-none">
                 <h1 id="tournament-name-bracket" style="display: flex; justify-content: center;">Shitty tournament</h1>
                 <main id="tournamentBracket">
-                  <ul class="round round-1">
+                  <ul id="round-1" class="round round-1">
                     <li class="spacer">&nbsp;</li>
                     
                     <li id="r1-p1" class="game game-top"><span></span></li>
@@ -83,6 +83,10 @@
                     <li class="spacer">&nbsp;</li>
                   </ul>   
                 </main>
+                <div id="leaveTournament" class="d-none">
+                    <button class="btn btn-danger">Leave Tournament</button>
+                </div>
+				<h1 id="timer"></h1>
             </div>
 		</div>
 
@@ -808,9 +812,8 @@
             data-bs-keyboard="false"
         >
             <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
+            <div style="background-color: rgba(0, 0, 0, 0); border: 0" class="modal-content">
                     <div class="modal-body">
-                        <!-- Content inside the modal -->
                         <div class="text-center">
                             <div class="load">
                                 <div class="load-one"></div>
