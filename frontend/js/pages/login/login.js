@@ -96,16 +96,14 @@ async function login(username = null, password = null) {
         password: passwordInput,
     };
 
-    // Response status:
-    // 404: User not found
-    // 400: User found but bad password -> will definitely change
-    // 200: Login successfull
-
     try {
         const response = await fetchAuth('POST', 'login/', loginData);
         if (!response) return;
         const result = await assembler(response);
-        if (check)
+        if (typeof result === 'string') {
+            displayLoginError({ error: result });
+            return;
+        }
         if (response.ok) {
             if (result['2fa_required']) {
                 modal2FA.show();

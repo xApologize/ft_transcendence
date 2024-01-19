@@ -147,7 +147,6 @@ async function signUp() {
     };
     const users = await fetchUser('POST', null, userData);
     if (!users) {
-        console.log('Error creating user');
         return;
     }
     const responseText = await users.text();

@@ -1,5 +1,5 @@
 from utils.functions import add_double_jwt, decrypt_user_id
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from user_profile.models import User
 from django.db.models import Q
 
@@ -45,4 +45,5 @@ def verify_cookies(func):
             Q(pk=decrypt_cookie_id, status='ONL') | Q(pk=decrypt_cookie_id, status='ING')
         ).exists():
             return HttpResponse("Cookie Expired jwt", status=401) # Return an error, a cookie existed with a token with an user already logged in, may cause issue for other browser? Double check later
+        return HttpResponse("Cookie Expired jwt", status=401) # Return an error, a cookie existed with a token with an user already logged in, may cause issue for other browser? Double check later
     return wrapper
