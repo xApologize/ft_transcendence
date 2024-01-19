@@ -4,8 +4,9 @@ import { displayEveryone } from './home.js'
 import { handleInviteInteraction } from './inviteGame.js';
 import { newUser, removeUser, updateSpecificUser, handleSocialUpdate } from './socketUpdate.js'
 import { socketTournamentUser } from './tournament.js'
-import { checkModal } from '../../router.js';
+import { checkModal, navigateTo } from '../../router.js';
 import { updateSpecificUserStatus } from './socketUpdate.js';
+import { fetchAuth } from '../../api/fetchData.js';
 
 const interactiveSocket = {
     interactive_socket: null,
@@ -17,7 +18,7 @@ const interactiveSocket = {
             this.interactive_socket = new WebSocket('wss://' + window.location.host + '/wss/pong/interactive' + "?" + sessionStorage.getItem('jwt'));
             self.interactive_socket.onerror = function(event) {
                 console.error("WebSocket error:", event);
-                logoutUser();
+                forceLogout();
             };
             this.interactive_socket.onopen = async function(event) {
                 console.log("𝕴𝖓𝖙𝖊𝖗𝖆𝖈𝖙𝖎𝖛𝖊 𝖘𝖔𝖈𝖐𝖊𝖙 𝖎𝖘 𝖓𝖔𝖜 𝖔𝖕𝖊𝖓");
@@ -184,4 +185,12 @@ export function hideAllUI(launchGame = false) {
     document.getElementById('ui').classList.add('d-none');
     if (launchGame === true)
         document.getElementById('lfp').classList.remove('d-none');
+}
+
+async function forceLogout() {
+    const logoutResponse = await fetchAuth('POST', 'logoutsocket/')
+    if (!logoutResponse) { return }
+    if (logoutResponse.status == 200) {
+        navigateTo('/')
+    }
 }

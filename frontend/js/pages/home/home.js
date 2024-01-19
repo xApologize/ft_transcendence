@@ -166,8 +166,7 @@ async function loadGame() {
     await loadAll()
     const gameContainer = document.querySelector('#sceneContainer')
     if (!gameContainer) {
-        console.error('No game container, please refresh page.');
-        return
+        return;
     }
     const world = new World(gameContainer);
     initGameMenu(world);

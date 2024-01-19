@@ -40,6 +40,7 @@ async function updateSocialInvite(userRequestTemplate) {
     const allPendingInvites = data.invites;
     
     const inviteGameContainer = document.getElementById('inviteGameReceived');
+    if (!inviteGameContainer) return;
     inviteGameContainer.innerHTML = '';
     allPendingInvites.forEach(invite => {
         const inviteNode = userRequestTemplate.cloneNode(true);
@@ -147,7 +148,9 @@ function fillRequestTemplate(requestNode, request) {
 }
 
 function updateSocialBadge() {
-    const receivedRequestCount = document.getElementById('receivedRequest').childElementCount;
+    let receivedRequestCount = document.getElementById('receivedRequest')
+    if (!receivedRequestCount) return;
+    receivedRequestCount = receivedRequestCount.childElementCount;
     const inviteGameCount = document.getElementById('inviteGameReceived').childElementCount;
     const socialBadge = document.getElementById('socialBadge');
     socialBadge.textContent = receivedRequestCount + inviteGameCount;

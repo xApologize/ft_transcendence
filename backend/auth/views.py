@@ -215,6 +215,21 @@ class Logout(View):
         response.delete_cookie('refresh_jwt')
         return response
 
+class LogoutSocket(View):
+    @token_validation
+    def post(self, request):
+        try:
+            user = get_user_obj(request)
+        except PermissionDenied as e:
+            return HttpResponse(str(e), status=401)
+        except Http404 as e:
+            return HttpResponse(str(e), status=404)
+        # Check if status is not OFF ?
+        # user.status = "OFF"
+        # user.save()
+        response : HttpResponse = HttpResponse('Logout Sucessful', status=200)
+        return response
+
 class Token(View):
     @token_validation
     def get(self, request):
