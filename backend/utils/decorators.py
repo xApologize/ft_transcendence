@@ -1,6 +1,7 @@
 from utils.functions import add_double_jwt, decrypt_user_id
 from django.http import HttpRequest, HttpResponse
 from user_profile.models import User
+from django.db.models import Q
 
 EXPIRED: int = -1
 
@@ -40,6 +41,8 @@ def verify_cookies(func):
         decrypt_cookie_id: int = decrypt_user_id(refresh_jwt_cookie)
         if decrypt_cookie_id < 0:
             return func(self, request) # Cookie is out of date, or invalid, let the user login.
-        if User.objects.filter(pk=decrypt_cookie_id, status='ONL').exists():
+        if User.objects.filter(
+            Q(pk=decrypt_cookie_id, status='ONL') | Q(pk=decrypt_cookie_id, status='ING')
+        ).exists():
             return HttpResponse("Cookie Expired jwt", status=401) # Return an error, a cookie existed with a token with an user already logged in, may cause issue for other browser? Double check later
     return wrapper
