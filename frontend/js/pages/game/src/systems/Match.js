@@ -217,7 +217,9 @@ class Match {
 		const response = fetchMatchHistory( 'POST', data );
 		if ( !response ) return;
 
-		interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Tournament", "action": "Final"}));
+		if (this.tournamentStage > 0) {
+			interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Tournament", "action": "Final"}));
+		}
 	}
 
 	setResultMatch() {
@@ -279,9 +281,9 @@ class Match {
 			const myPlace = roundEl.querySelector(`[data-id="${myID}"]`);
 			this.updateFirstRound(roundEl, myPlace);
 		} else if (this.tournamentStage === 1) {
-			const roundEl = document.getElementById('round-2');
-			const myPlace = roundEl.querySelector(`[data-id="${myID}"]`);
-			this.updateFinalRound(roundEl, myPlace);
+			// const roundEl = document.getElementById('round-2');
+			// const myPlace = roundEl.querySelector(`[data-id="${myID}"]`);
+			// this.updateFinalRound(roundEl, myPlace);
 		}
 	}
 
