@@ -260,6 +260,7 @@ export function cancelTournament() {
     switchModals('lobbyTournamentModal', 'gameMenuModal')
     displayToast('The tournament has been cancelled successfully.', 'Tournament Cancelled')
     removeInfoLobbyModal()
+    cleanBracket()
 }
 
 // Quand je quitte le tournoi - Trigger par event listener
@@ -270,6 +271,7 @@ export async function leftTournament(event) {
     switchModals('lobbyTournamentModal', 'joinTournamentModal')
     removeInfoLobbyModal()
     updateTournamentList()
+    cleanBracket()
 }
 
 // Quand je rejoins un tournoi - Trigger par event listener
@@ -486,25 +488,25 @@ export function cleanBracket() {
     const player1 = document.getElementById('r1-p1');
     if (player1) {
         player1.classList.remove('winner');
-        player1.textContent = '';
+        player1.innerHTML = '';
         player1.dataset.id = '';
     }
     const player2 = document.getElementById('r1-p2');
     if (player2) {
         player2.classList.remove('winner');
-        player2.textContent = '';
+        player2.innerHTML = '';
         player2.dataset.id = '';
     }
     const player3 = document.getElementById('r1-p3');
     if (player3) {
         player3.classList.remove('winner');
-        player3.textContent = '';
+        player3.innerHTML = '';
         player3.dataset.id = '';
     }
     const player4 = document.getElementById('r1-p4');
     if (player4) {
         player4.classList.remove('winner');
-        player4.textContent = '';
+        player4.innerHTML = '';
         player4.dataset.id = '';
     }
 }

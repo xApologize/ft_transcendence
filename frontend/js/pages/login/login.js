@@ -104,7 +104,8 @@ async function login(username = null, password = null) {
     try {
         const response = await fetchAuth('POST', 'login/', loginData);
         if (!response) return;
-        const result = await response.json();
+        const result = await assembler(response);
+        if (check)
         if (response.ok) {
             if (result['2fa_required']) {
                 modal2FA.show();
