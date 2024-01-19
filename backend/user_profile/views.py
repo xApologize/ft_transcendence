@@ -3,7 +3,7 @@ from django.db.utils import IntegrityError
 from django.http import JsonResponse, HttpResponse, HttpResponseNotFound, HttpResponseBadRequest, HttpRequest, Http404
 from match_history.models import MatchHistory
 from django.views import View
-from utils.decorators import token_validation
+from utils.decorators import token_validation, verify_cookies
 from utils.functions import get_user_obj
 from django.contrib.auth.hashers import make_password
 from friend_list.models import FriendList
@@ -80,6 +80,7 @@ class Users(View):
 
     # Create a user
     # Check quoi a été passer en param?
+    @verify_cookies
     def post(self, request: HttpRequest):
         try:
             user_data = json.loads(request.body)

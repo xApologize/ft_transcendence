@@ -25,7 +25,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             status: str = await self.get_user_status()
         except Exception:
             self.user_id = -1
-        if self.user_id < 0 or status == "ONL":
+        if self.user_id < 0 or status != "OFF":
             await self.close()
         else:
             await self.accept()
