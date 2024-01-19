@@ -54,7 +54,8 @@ export async function logoutUser() {
     const logoutResponse = await fetchAuth('POST', 'logout/')
     if (!logoutResponse) { return }
     if (logoutResponse.status == 200) {
-		World._instance.forceQuit();
+        if (World._instance)
+		    World._instance.forceQuit();
         sessionStorage.clear()
         navigateTo('/')
     }

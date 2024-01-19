@@ -90,7 +90,8 @@ function handleSocialInvInterac(action, id) {
 
 async function updateSocialFriend(userRequestTemplate, allPendingRequests) {
     function clearContainer(container) {
-        container.innerHTML = '';
+        if (container)
+            container.innerHTML = '';
     }
     const sentRequestContainer = document.getElementById('sentRequest');
     const receiveRequestContainer = document.getElementById('receivedRequest');
