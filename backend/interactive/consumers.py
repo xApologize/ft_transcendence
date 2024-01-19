@@ -558,7 +558,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             # what are you fucking doing?
             return None
         return tournament_handle
-    
+
     async def find_final(self, unique_id: int) -> Final:
         try:
             final_handle: Final = await database_sync_to_async(Final.objects.get)(final_id=unique_id)
@@ -570,16 +570,36 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             return None
         return final_handle
 
-    async def create_final(self, unique_id: int) -> None:
+    async def create_final(self, tournament_handle: Tournament) -> None:
         try:
             await database_sync_to_async(Final.objects.create)(
-                final_id=unique_id,
+                final_id=tournament_handle.pk,
                 player_1=self.user_id,
                 player_2=-1
             )
+            await self.handle_bracket(tournament_handle)
         except Exception:
-            # Add mega error handling.
+            # Add mega error handling, cancel tournament?
             return
+    
+    async def handle_bracket(self, tournament_handle: Tournament) -> None:
+        if tournament_handle.player_1 == self.user_id or tournament_handle.player_2 == self.user_id:
+            tournament_handle.player_1 = self.user_id
+            tournament_handle.player_2 = -1
+            if tournament_handle.player_3 == -1 and tournament_handle.player_4 == -1:
+                match_handle: dict = await self.create_match_handle(
+                    self.user_id, -1, "A", "nobody", "nobody", "Tournament Final")
+                await self.send_tourny_handle(match_handle, self.user_id)
+                return
+        elif tournament_handle.player_3 == self.user_id or tournament_handle.player_4 == self.user_id:
+            tournament_handle.player_3 = self.user_id
+            tournament_handle.player_4 == -1
+            if tournament_handle.player_1 == -1 and tournament_handle.player_2 == -1:
+                match_handle: dict = await self.create_match_handle(
+                    self.user_id, -1, "A", "nobody", "nobody", "Tournament Final")
+                await self.send_tourny_handle(match_handle, self.user_id)
+                return
+        await database_sync_to_async(tournament_handle.save)()
 
     async def join_final(self, unique_id: int) -> None:
         try:
@@ -617,11 +637,11 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         final_handle: Final = await self.find_final(tournament_handle.pk) # Entry
         if final_handle is None:
             print("CREATE FINAL")
-            await self.create_final(tournament_handle.pk)
+            await self.create_final(tournament_handle)
         else:
             print("JOIN FINAL")
             await self.join_final(tournament_handle.pk)
-            await database_sync_to_async(tournament_handle.delete)()
+            # await database_sync_to_async(tournament_handle.delete)()
 
 def create_layer_dict(type: str, message: str, sender: str) -> dict:
     return {"type": type, "message": message, "sender": sender}

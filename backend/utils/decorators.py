@@ -41,8 +41,10 @@ def verify_cookies(func):
         decrypt_cookie_id: int = decrypt_user_id(refresh_jwt_cookie)
         if decrypt_cookie_id < 0:
             return func(self, request) # Cookie is out of date, or invalid, let the user login.
-        if User.objects.filter(
-            Q(pk=decrypt_cookie_id, status='ONL') | Q(pk=decrypt_cookie_id, status='ING')
-        ).exists():
-            return HttpResponse("Cookie Expired jwt", status=401) # Return an error, a cookie existed with a token with an user already logged in, may cause issue for other browser? Double check later
+        try:
+            if User.objects.filter(Q(pk=decrypt_cookie_id, status='ONL') | Q(pk=decrypt_cookie_id, status='ING')).exists():
+                return HttpResponse("Cookie Expired jwt", status=401) # Return an error, a cookie existed with a token with an user already logged in, may cause issue for other browser? Double check later
+        except Exception:
+            return HttpResponse("Error checking the cookie", status=401)
+        return func(self, request)
     return wrapper

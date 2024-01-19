@@ -13,7 +13,7 @@ import { getMyID } from '../../../home/utils.js';
 
 let world;
 let lastSocketTime;
-const maxScore = 3;
+const maxScore = 1;
 
 const divNicknames = [ 'left-player-name', 'right-player-name' ];
 
