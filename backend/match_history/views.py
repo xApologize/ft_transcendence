@@ -100,5 +100,34 @@ class MatchHistoryView(View):
 
         except Exception as e:
             return HttpResponseBadRequest(str(e))
-        
-        
+
+class MatchTournament(View):
+    @token_validation
+    def get(self, request: HttpRequest):
+        userID = request.GET.get('id')
+        try:
+            user = User.objects.get(pk=userID)
+        except User.DoesNotExist:
+            return HttpResponseBadRequest("User does not exist.")
+
+        try:
+            # Fetch the most recent match for the user
+            recent_match = MatchHistory.objects.filter(
+                Q(winner=user) | Q(loser=user)
+            ).order_by('-date_of_match').first()
+
+            if not recent_match:
+                return JsonResponse({'message': 'No match history found for this user.'})
+
+            match_data = {
+                'winner_score': recent_match.winner_score,
+                'winner_username': recent_match.winner.nickname,
+                'loser_score': recent_match.loser_score,
+                'loser_username': recent_match.loser.nickname,
+                'date_of_match': recent_match.date_of_match.strftime("%Y/%m/%d")
+            }
+
+            return JsonResponse(match_data)
+        except Exception as e:
+            return HttpResponseBadRequest(str(e))
+

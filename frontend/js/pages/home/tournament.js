@@ -2,7 +2,7 @@ import { assembler } from '../../api/assembler.js';
 import interactiveSocket, { hideAllUI } from './socket.js';
 import { displayToast } from './toastNotif.js';
 import { fetchUserById, getMyID, switchModals, isModalShown, hideModal, showModal } from './utils.js';
-import { fetchMe, fetchAllLobbies, fetchMyLobby } from '../../api/fetchData.js';
+import { fetchMe, fetchAllLobbies, fetchMyLobby, fetchMatchHistory } from '../../api/fetchData.js';
 import { World } from '../game/src/World.js';
 import { checkModal } from '../../router.js';
 
@@ -25,8 +25,10 @@ export function socketTournamentUser(action, ownerTournamentID) {
         case 'startTournament':
             tournamentStarting(ownerTournamentID)
             break;
+        case 'Tournament Match End':
+            tournamentMatchEnd(ownerTournamentID);
+            break;
         default:
-            console.log("DEFAULT")
             socketLobbyError(action, ownerTournamentID);
             break;
     }
@@ -34,7 +36,6 @@ export function socketTournamentUser(action, ownerTournamentID) {
 
 // This is handler for response to request I sent with socket and failed
 export function socketLobbyError(action, ownerTournamentID) {
-    console.log("ZZZ", action);
     switch (action){
         case 'invalidStart':
             // Tried to start a tournament that doesn't exist
@@ -81,7 +82,67 @@ export function socketLobbyError(action, ownerTournamentID) {
             console.error("Ayo wtf is this error: " + action)
             break;
     }
-    console.log("LOBBY ERROR")
+}
+
+async function tournamentMatchEnd(ownerTournamentID) {
+    console.log("TOURNAMENT MATCH END");
+    const myID = getMyID();
+    if (!myID) 
+        return;
+    console.log("GOT MY ID");
+
+    const bracket = document.getElementById('tournamentBracket');
+    let players = {};
+    for (let i = 1; i <= 4; i++) {
+        players[`player${i}`] = bracket.querySelector(`#r1-p${i}`);
+    }
+
+    if (Object.values(players).some(player => player.dataset.id == myID)) {
+        console.log("I AM IN THE BRACKET");
+        await updateOnGoingBracket(players, myID);
+    }
+}
+
+async function updateOnGoingBracket(players, myID) {
+    let response, data;
+    if ([players.player3, players.player4].some(player => player.dataset.id == myID)) {
+        response = await fetchMatchHistory('GET', null, {'id': players.player1.dataset.id}, 'tournament/');
+        data = response && await assembler(response);
+    } else if ([players.player1, players.player2].some(player => player.dataset.id == myID)) {
+        response = await fetchMatchHistory('GET', null, {'id': players.player3.dataset.id}, 'tournament/');
+        data = response && await assembler(response);
+    }
+
+    if (data) {
+        const { winner, loser } = determineWinnerAndLoser(players, data);
+        appendScores(winner, loser, data);
+    }
+}
+
+function determineWinnerAndLoser(players, data) {
+    let winner, loser;
+    if (data.winner_username === players.player2.textContent || data.winner_username === players.player4.textContent) {
+        winner = players[data.winner_username === players.player2.textContent ? 'player2' : 'player4'];
+        loser = players[data.winner_username === players.player2.textContent ? 'player1' : 'player3'];
+    } else {
+        winner = players[data.winner_username === players.player1.textContent ? 'player1' : 'player3'];
+        loser = players[data.winner_username === players.player1.textContent ? 'player2' : 'player4'];
+    }
+    return { winner, loser };
+}
+
+function appendScores(winner, loser, data) {
+    winner.classList.add('winner');
+    appendScore(winner, data.winner_score);
+    appendScore(loser, data.loser_score);
+}
+
+function appendScore(player, score) {
+    if (!player.querySelector('span')) {
+        const newElement = document.createElement('span');
+        newElement.textContent = score;
+        player.appendChild(newElement);
+    }
 }
 
 function cancelEverythingTournament() {
@@ -418,4 +479,32 @@ export function transferToTournament() {
         document.getElementById('bracket').classList.remove('d-none')
     }, 1000);
     removeInfoLobbyModal();
+}
+
+
+export function cleanBracket() {
+    const player1 = document.getElementById('r1-p1');
+    if (player1) {
+        player1.classList.remove('winner');
+        player1.textContent = '';
+        player1.dataset.id = '';
+    }
+    const player2 = document.getElementById('r1-p2');
+    if (player2) {
+        player2.classList.remove('winner');
+        player2.textContent = '';
+        player2.dataset.id = '';
+    }
+    const player3 = document.getElementById('r1-p3');
+    if (player3) {
+        player3.classList.remove('winner');
+        player3.textContent = '';
+        player3.dataset.id = '';
+    }
+    const player4 = document.getElementById('r1-p4');
+    if (player4) {
+        player4.classList.remove('winner');
+        player4.textContent = '';
+        player4.dataset.id = '';
+    }
 }

@@ -239,6 +239,7 @@ class Token(View):
 
 # Utiliser pip install request ou garder lib dégueulasse ?
 class RemoteAuthToken(View):
+    @verify_cookies
     def post(self, request):
         code = request.GET.get('code')
         if not code:

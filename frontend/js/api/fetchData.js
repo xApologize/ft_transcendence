@@ -142,8 +142,8 @@ export const fetchFriendChange = async (method, parameters = null, apiPath = '')
 };
 
 // Fetch match history
-export const fetchMatchHistory = async (method, data = null) => {
-    return fetchApi(method, 'match/', null, data);
+export const fetchMatchHistory = async (method, data = null, parameters = null, apiPath = '') => {
+    return fetchApi(method, `match/${apiPath}`, parameters, data);
 };
 
 export const fetchIsToken = async () => {

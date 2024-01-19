@@ -10,6 +10,7 @@ import { displayMatchHistory } from '../../../../components/matchHistory/matchHi
 import interactiveSocket from '../../../home/socket.js';
 import { updateUserCard } from '../../../../components/userCard/userCard.js';
 import { getMyID } from '../../../home/utils.js';
+import { cleanBracket } from '../../../home/tournament.js';
 
 let world;
 let lastSocketTime;
@@ -254,9 +255,10 @@ class Match {
 			world.changeStatus( "ONL" );
 			world.currentGameState = GameState.InMenu;
 		});
-
+		
 		const currentTarget = event.currentTarget;
 		currentTarget.removeEventListener('click', this.backToMenu);
+		cleanBracket();
 	}
 
 	toggleLeaveBtn(isTournament) {
@@ -298,6 +300,8 @@ class Match {
 		myPlace.appendChild(newElement);
 		if ( this.self.score >= maxScore ) {
 			myPlace.classList.add('winner');
+			console.log("I'M THE WINNER, I AM SENDING TO SOCKET")
+			interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Tournament", "action": 'Tournament Match End'}));
 		} else {
 			this.setOpponentWinner(myPlace.id, firstRoundEl)
 		}
