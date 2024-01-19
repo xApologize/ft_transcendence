@@ -18,7 +18,7 @@ export async function userCardComponent() {
 
 export async function userCardListener() {
     document.getElementById('logout').addEventListener('click', logoutUser)
-    document.getElementById('saveInfo').addEventListener('click', saveInfo)
+    document.getElementById('saveInfo').addEventListener('submit', saveInfo)
     document.getElementById('saveAvatar').addEventListener('click', saveAvatar)
     document.getElementById('userSettingsModal').addEventListener('show.bs.modal', setupSettings)
     document.getElementById('userSettingsModal').addEventListener('hide.bs.modal', clearSettings);
@@ -54,7 +54,8 @@ export async function logoutUser() {
     const logoutResponse = await fetchAuth('POST', 'logout/')
     if (!logoutResponse) { return }
     if (logoutResponse.status == 200) {
-		World._instance.forceQuit();
+        if (World._instance)
+		    World._instance.forceQuit();
         sessionStorage.clear()
         navigateTo('/')
     }

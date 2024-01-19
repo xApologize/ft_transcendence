@@ -178,7 +178,7 @@ class Match {
 		}
 			
 		this.setResultMatch();
-		// this.setBracketResult();
+		this.setBracketResult();
 	}
 
 	showResultMatchUI() {
@@ -273,26 +273,75 @@ class Match {
 		const myID = getMyID();
 		if (!myID) return;
 
-		const firstRoundEl = document.getElementById('round-1');
-		const myPlace = firstRoundEl.querySelector(`[data-id="${myID}"]`);
-		console.log(myPlace);
-		if (!myPlace) return;
+		if (this.tournamentStage === 2) {
+			const firstRoundEl = document.getElementById('round-1');
+			const myPlace = firstRoundEl.querySelector(`[data-id="${myID}"]`);
+			this.updateFirstRound(firstRoundEl, myPlace)
+		} else if (this.tournamentStage === 1) {
 
+		}
+
+		// const myPlaceID = myPlace.id 
+		// if (myPlaceID === 'r1-p4') {
+		// 	console.log("I'm r1-p4")
+		// } else if (myPlaceID === 'r1-p3') {
+		// 	console.log("I'm r1-p3")
+		// } else if (myPlaceID === 'r1-p2') {
+		// 	console.log("I'm r1-p2")
+		// } else if (myPlaceID === 'r1-p1') {
+		// 	console.log("I'm r1-p1")
+		// }
+	}
+
+	updateFirstRound(firstRoundEl, myPlace) {
+		const newElement = document.createElement('span');
+		newElement.textContent = this.self.score
+		myPlace.appendChild(newElement);
 		if ( this.self.score >= maxScore ) {
 			myPlace.classList.add('winner');
-			const newElement = document.createElement('span');
-			newElement.textContent = this.self.score
-			myPlace.appendChild(newElement);
+		} else {
+			this.setOpponentWinner(myPlace.id, firstRoundEl)
 		}
-		const myPlaceID = myPlace.id 
-		if (myPlaceID === 'r1-p4') {
-			console.log("I'm r1-p4")
-		} else if (myPlaceID === 'r1-p3') {
-			console.log("I'm r1-p3")
+		this.updateOpponentFirstRound(myPlace.id, firstRoundEl)
+	}
+
+	updateOpponentFirstRound(myPlaceID, firstRoundEl) {
+		if (myPlaceID === 'r1-p1') {
+			const opponentPlace = firstRoundEl.querySelector(`#r1-p2`);
+			const newElement = document.createElement('span');
+			newElement.textContent = this.opponent.score
+			opponentPlace.appendChild(newElement);
 		} else if (myPlaceID === 'r1-p2') {
-			console.log("I'm r1-p2")
-		} else if (myPlaceID === 'r1-p1') {
-			console.log("I'm r1-p1")
+			const opponentPlace = firstRoundEl.querySelector(`#r1-p1`);
+			const newElement = document.createElement('span');
+			newElement.textContent = this.opponent.score
+			opponentPlace.appendChild(newElement);
+		} else if (myPlaceID === 'r1-p3') {
+			const opponentPlace = firstRoundEl.querySelector(`#r1-p4`);
+			const newElement = document.createElement('span');
+			newElement.textContent = this.opponent.score
+			opponentPlace.appendChild(newElement);
+		} else if (myPlaceID === 'r1-p4') {
+			const opponentPlace = firstRoundEl.querySelector(`#r1-p3`);
+			const newElement = document.createElement('span');
+			newElement.textContent = this.opponent.score
+			opponentPlace.appendChild(newElement);
+		}
+	}
+
+	setOpponentWinner(myPlaceID, firstRoundEl) {
+		if (myPlaceID === 'r1-p1') {
+			const opponentPlace = firstRoundEl.querySelector(`#r1-p2`);
+			opponentPlace.classList.add('winner');
+		} else if (myPlaceID === 'r1-p2') {
+			const opponentPlace = firstRoundEl.querySelector(`#r1-p1`);
+			opponentPlace.classList.add('winner');
+		} else if (myPlaceID === 'r1-p3') {
+			const opponentPlace = firstRoundEl.querySelector(`#r1-p4`);
+			opponentPlace.classList.add('winner');
+		} else if (myPlaceID === 'r1-p4') {
+			const opponentPlace = firstRoundEl.querySelector(`#r1-p3`);
+			opponentPlace.classList.add('winner');
 		}
 	}
 }
