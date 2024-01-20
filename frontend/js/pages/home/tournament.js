@@ -5,6 +5,7 @@ import { fetchUserById, getMyID, switchModals, isModalShown, hideModal, showModa
 import { fetchMe, fetchAllLobbies, fetchMyLobby, fetchMatchHistory } from '../../api/fetchData.js';
 import { World } from '../game/src/World.js';
 import { checkModal } from '../../router.js';
+import { getOpponentID } from '../game/src/systems/Match.js';
 
 // This is handler for when someone sent something with socket and it worked.
 export function socketTournamentUser(action, ownerTournamentID) {
@@ -102,22 +103,34 @@ async function tournamentMatchEnd(winnerUserID) {
 }
 
 async function updateOnGoingBracket(players, myID, winnerUserID) {
-    let response, data;
     console.log("I AM IN THE BRACKET");
-    const myOpponent = Object.values(players).find(player => player.dataset.id != myID);
+    const playerValues = Object.values(players);
+    const myPlace = playerValues.findIndex(player => player.dataset.id == myID);
+    if (myPlace === -1 || myPlace >= playerValues.length) {
+        console.error("Invalid 'myPlace' index:", myPlace);
+        return;
+    }
+    console.log("My place ID:", playerValues[myPlace])
+    const myOpponentPlace = getOpponentID(playerValues[myPlace].id);
+
+    console.log("MY PLACE IS ", myPlace, " AND MY OPPONENT PLACE IS ", myOpponentPlace);
+
+    const myOpponent = document.getElementById(myOpponentPlace);
+    console.log("MY OPPONENT IS ", myOpponent);
 
     if (!myOpponent || myOpponent.dataset.id == winnerUserID || myID == winnerUserID) {
-        console.log("FUCK THAT")
+        console.log("FUCK THAT");
         return;
     }
 
     console.log("IM IN THE OTHER MATCH. THEY HAVE FINISHED AND WANT TO UPDATE ME");
 
+    let data = null
     if ([players.player3, players.player4].some(player => player.dataset.id == myID) ) {
-        response = await fetchMatchHistory('GET', null, {'id': players.player1.dataset.id}, 'tournament/');
+        const response = await fetchMatchHistory('GET', null, {'id': players.player1.dataset.id}, 'tournament/');
         data = response && await assembler(response);
     } else if ([players.player1, players.player2].some(player => player.dataset.id == myID)) {
-        response = await fetchMatchHistory('GET', null, {'id': players.player3.dataset.id}, 'tournament/');
+        const response = await fetchMatchHistory('GET', null, {'id': players.player3.dataset.id}, 'tournament/');
         data = response && await assembler(response);
     }
 

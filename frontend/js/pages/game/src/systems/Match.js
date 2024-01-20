@@ -279,76 +279,76 @@ class Match {
 	setBracketResult() {
 		const myID = getMyID();
 		if (!myID) return;
-
+	
+		const roundId = this.tournamentStage === 2 ? 'round-1' : 'round-2';
+		const roundEl = document.getElementById(roundId);
+		const myPlace = roundEl.querySelector(`[data-id="${myID}"]`);
+	
 		if (this.tournamentStage === 2) {
-			const roundEl = document.getElementById('round-1');
-			const myPlace = roundEl.querySelector(`[data-id="${myID}"]`);
 			this.updateFirstRound(roundEl, myPlace);
 		} else if (this.tournamentStage === 1) {
-			const roundEl = document.getElementById('round-2');
-			const myPlace = roundEl.querySelector(`[data-id="${myID}"]`);
 			this.updateFinalRound(roundEl, myPlace);
 		}
 	}
-
+	
 	updateFirstRound(firstRoundEl, myPlace) {
-		this.appendScore(myPlace, this.self.score);
+		this.updateRound(firstRoundEl, myPlace, this.self.score);
 		if (this.self.score >= maxScore) {
 			myPlace.classList.add('winner');
 			console.log("I'M THE WINNER, I AM SENDING TO SOCKET");
 			setTimeout(() => {
 				interactiveSocket.sendMessageSocket(JSON.stringify({ "type": "Tournament", "action": 'Tournament Match End', 'winner': myPlace.dataset.id }));
 			}, 1000);
-			// this.setBracketFinal(myPlace, true);
+			// setBracketFinal(myPlace, true)
 		} else {
 			this.setOpponentWinner(myPlace.id, firstRoundEl);
+			// setBrack etFinal(myPlace, false)
 		}
-		this.updateOpponentFirstRound(myPlace.id, firstRoundEl);
 	}
-
-	updateOpponentFirstRound(myPlaceID, firstRoundEl) {
-		const opponentID = this.getOpponentID(myPlaceID);
-		const opponentPlace = firstRoundEl.querySelector(`#${opponentID}`);
-		this.appendScore(opponentPlace, this.opponent.score);
+	
+	updateRound(roundEl, myPlace, score) {
+		this.appendScore(myPlace, score);
+		this.updateOpponentScore(myPlace.id, roundEl, this.opponent.score);
 	}
-
-	setOpponentWinner(myPlaceID, firstRoundEl) {
-		const opponentID = this.getOpponentID(myPlaceID);
-		const opponentPlace = firstRoundEl.querySelector(`#${opponentID}`);
+	
+	updateOpponentScore(myPlaceID, roundEl, score) {
+		const opponentID = getOpponentID(myPlaceID);
+		const opponentPlace = roundEl.querySelector(`#${opponentID}`);
+		this.appendScore(opponentPlace, score);
+	}
+	
+	setOpponentWinner(myPlaceID, roundEl) {
+		const opponentID = getOpponentID(myPlaceID);
+		const opponentPlace = roundEl.querySelector(`#${opponentID}`);
 		opponentPlace.classList.add('winner');
 	}
-
+	
 	appendScore(place, score) {
 		const newElement = document.createElement('span');
 		newElement.textContent = score;
 		place.appendChild(newElement);
 	}
 
-	getOpponentID(myPlaceID) {
-		const opponentMapping = {
-			'r1-p1': 'r1-p2',
-			'r1-p2': 'r1-p1',
-			'r1-p3': 'r1-p4',
-			'r1-p4': 'r1-p3'
-		};
-		return opponentMapping[myPlaceID];
-	}
 
 	setBracketFinal(myPlace, isWinner) {
-		const finalRoundEl = document.getElementById('round-2');
-		let myNewPlace = null;
-	
-		if (isWinner) {
-			myNewPlace = finalRoundEl.querySelector(myPlace.id == 'r1-p2' || myPlace.id == 'r1-p1' ? '#r2-p1' : '#r2-p2');
-			if (myNewPlace && myPlace.firstChild.nodeType === Node.TEXT_NODE) {
-				myNewPlace.textContent = myPlace.firstChild.textContent.trim();
+		const finalEl = document.getElementById('round-2');
+		if (myPlace.id == 'r1-p1' || myPlace.id == 'r1-p2') {
+			const finalPlace = finalEl.querySelector('#r2-1');
+			if (isWinner) {
+				finalPlace.textContent = myPlace.textContent.slice(0, -1);
+			} else {
+				const opponentWinner =  getOpponentID(myPlace.id);
+				opponentNickname = document.getElementById(opponentWinner).textContent;
+				finalPlace.textContent = opponentWinner.slice(0, -1);
 			}
-		} else {
-			const opponentPlaceID = this.getOpponentID(myPlace.id);
-			const opponentPlace = document.querySelector(`#${opponentPlaceID}`);
-			const opponentNewPlace = finalRoundEl.querySelector(opponentPlaceID == 'r1-p2' || opponentPlaceID == 'r1-p1' ? '#r2-p1' : '#r2-p2');
-			if (opponentNewPlace && opponentPlace.firstChild.nodeType === Node.TEXT_NODE) {
-				opponentNewPlace.textContent = opponentPlace.firstChild.textContent.trim();
+		} else if (myPlace.id == 'r1-p3' || myPlace.id == 'r1-p4') {
+			const finalPlace = finalEl.querySelector('#r2-2');
+			if (isWinner) {
+				finalPlace.textContent = myPlace.textContent.slice(0, -1);
+			} else {
+				const opponentWinner =  getOpponentID(myPlace.id);
+				opponentNickname = document.getElementById(opponentWinner).textContent;
+				finalPlace.textContent = opponentWinner.slice(0, -1);
 			}
 		}
 	}
@@ -365,4 +365,14 @@ async function updateMatchHistory() {
 	const data = await assembler(response)
 	displayMatchHistory(data)
 	updateUserCard(data)
+}
+
+export function getOpponentID(myPlaceID) {
+	const opponentMapping = {
+		'r1-p1': 'r1-p2',
+		'r1-p2': 'r1-p1',
+		'r1-p3': 'r1-p4',
+		'r1-p4': 'r1-p3'
+	};
+	return opponentMapping[myPlaceID];
 }
