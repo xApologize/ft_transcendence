@@ -29,6 +29,9 @@ export function socketTournamentUser(action, ownerTournamentID) {
         case 'Tournament Match End':
             tournamentMatchEnd(ownerTournamentID);
             break;
+        case "Final Match End":
+            finalMatchEnd(ownerTournamentID)
+            break;
         default:
             socketLobbyError(action, ownerTournamentID);
             break;
@@ -85,6 +88,53 @@ export function socketLobbyError(action, ownerTournamentID) {
     }
 }
 
+function isUserInCurrentTournament(myID, players = null) {
+    if (!players) {
+        players = {};
+        const bracket = document.getElementById('tournamentBracket');
+        for (let i = 1; i <= 4; i++) {
+            players[`player${i}`] = bracket.querySelector(`#r1-p${i}`);
+        }
+    }
+    if (Object.values(players).some(player => player.dataset.id == myID)) {
+        return true;
+    }
+    return false;
+}
+
+async function finalMatchEnd(winnerUserID) {
+    console.log("FINAL MATCH END");
+    const myID = getMyID();
+    if (!myID) return ;
+
+
+    if (!isUserInCurrentTournament(myID)) return;
+    let players = {};
+    for (let i = 1; i <= 2; i++) {
+        players[`player${i}`] = bracket.querySelector(`#r2-p${i}`);
+    }
+
+    const response = await fetchMatchHistory('GET', null, {'id': winnerUserID}, 'tournament/');
+    const data = response && await assembler(response);
+    if (data) {
+        const { winner, loser } = determineTournamentWinner(players, data);
+        appendScores(winner, loser, data);
+    }
+
+    function determineTournamentWinner(players, data) {
+        let winner, loser;
+        if (data.winner_username === players.player1.textContent) {
+            winner = players.player1;
+            loser = players.player2;
+        } else if (data.winner_username === players.player2.textContent) {
+            winner = players.player2;
+            loser = players.player1;
+        }
+        return { winner, loser };
+    }
+
+}
+
 async function tournamentMatchEnd(winnerUserID) {
     console.log("TOURNAMENT MATCH END");
     const myID = getMyID();
@@ -97,9 +147,10 @@ async function tournamentMatchEnd(winnerUserID) {
     for (let i = 1; i <= 4; i++) {
         players[`player${i}`] = bracket.querySelector(`#r1-p${i}`);
     }
-    if (Object.values(players).some(player => player.dataset.id == myID)) {
+    if (!isUserInCurrentTournament(myID, players))
+        return;
+    else
         await updateOnGoingBracket(players, myID, winnerUserID);
-    }
 }
 
 async function updateOnGoingBracket(players, myID, winnerUserID) {
@@ -107,19 +158,11 @@ async function updateOnGoingBracket(players, myID, winnerUserID) {
     const playerValues = Object.values(players);
     const myPlace = playerValues.findIndex(player => player.dataset.id == myID);
     if (myPlace === -1 || myPlace >= playerValues.length) {
-        console.error("Invalid 'myPlace' index:", myPlace);
         return;
     }
-    console.log("My place ID:", playerValues[myPlace])
     const myOpponentPlace = getOpponentID(playerValues[myPlace].id);
-
-    console.log("MY PLACE IS ", myPlace, " AND MY OPPONENT PLACE IS ", myOpponentPlace);
-
     const myOpponent = document.getElementById(myOpponentPlace);
-    console.log("MY OPPONENT IS ", myOpponent);
-
     if (!myOpponent || myOpponent.dataset.id == winnerUserID || myID == winnerUserID) {
-        console.log("FUCK THAT");
         return;
     }
 
@@ -137,6 +180,15 @@ async function updateOnGoingBracket(players, myID, winnerUserID) {
     if (data) {
         const { winner, loser } = determineWinnerAndLoser(players, data);
         appendScores(winner, loser, data);
+        preparationFinal(winner, players, myID)
+    }
+}
+
+function preparationFinal(winner, players, myID) {
+    if ([players.player3, players.player4].some(player => player.dataset.id == myID) ) {
+        document.getElementById('r2-p1').textContent = winner.textContent.slice(0, -1);
+    } else if ([players.player1, players.player2].some(player => player.dataset.id == myID)) {
+        document.getElementById('r2-p2').textContent = winner.textContent.slice(0, -1);
     }
 }
 
@@ -156,13 +208,6 @@ function determineWinnerAndLoser(players, data) {
         winner = players.player4;
         loser = players.player3;
     }
-    // if (data.winner_username === players.player2.textContent || data.winner_username === players.player4.textContent) {
-    //     winner = players[data.winner_username === players.player2.textContent ? 'player2' : 'player4'];
-    //     loser = players[data.winner_username === players.player2.textContent ? 'player1' : 'player3'];
-    // } else {
-    //     winner = players[data.winner_username === players.player1.textContent ? 'player1' : 'player3'];
-    //     loser = players[data.winner_username === players.player1.textContent ? 'player2' : 'player4'];
-    // }
     return { winner, loser };
 }
 

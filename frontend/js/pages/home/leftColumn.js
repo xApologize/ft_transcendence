@@ -56,7 +56,9 @@ async function loopDisplayUser(objectAllUsers, currentUser, userContainer) {
     }
 
     objectAllUsers.forEach((user) => {
+        if (!templateUser)  return;
         const clonedUserTemplate = templateUser.cloneNode(true);
+
 
         const seeProfileBtn = clonedUserTemplate.querySelector('.card');
         seeProfileBtn.addEventListener('click', displayOtherUserProfile)

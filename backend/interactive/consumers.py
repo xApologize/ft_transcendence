@@ -373,10 +373,13 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
                 await self.cancel_tournament()
             case "Start":
                 await self.start_tournament()
-            case "Tournament Match End":
-                await self.send_to_layer(ECHO, self.user_id, "Tournament", action_type)
             case "Final":
                 await self.start_final()
+            case "Tournament Match End":
+                await self.send_to_layer(ECHO, self.user_id, "Tournament", action_type)
+            case "Final Match End":
+                await self.send_to_layer(ECHO, self.user_id, "Tournament", action_type)
+                
 
     async def create_tournament(self) -> None:
         try:

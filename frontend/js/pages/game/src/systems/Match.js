@@ -256,7 +256,9 @@ class Match {
 
 		updateMatchHistory();
 		world.camera.viewLarge(1, function () {
-			document.getElementById('ui').classList.remove("d-none");
+			const ui = document.getElementById('ui');
+			if (!ui) return;
+			ui.classList.remove("d-none");
 			document.getElementById('toastContainer').classList.remove('d-none')
 			world.changeStatus("ONL");
 			world.currentGameState = GameState.InMenu;
@@ -299,10 +301,10 @@ class Match {
 			setTimeout(() => {
 				interactiveSocket.sendMessageSocket(JSON.stringify({ "type": "Tournament", "action": 'Tournament Match End', 'winner': myPlace.dataset.id }));
 			}, 1000);
-			// setBracketFinal(myPlace, true)
+			this.setBracketFinal(myPlace, true)
 		} else {
 			this.setOpponentWinner(myPlace.id, firstRoundEl);
-			// setBrack etFinal(myPlace, false)
+			this.setBracketFinal(myPlace, false)
 		}
 	}
 	
@@ -331,29 +333,54 @@ class Match {
 
 
 	setBracketFinal(myPlace, isWinner) {
-		const finalEl = document.getElementById('round-2');
+		console.log("IN SET BRACKET FINAL", myPlace, isWinner)
 		if (myPlace.id == 'r1-p1' || myPlace.id == 'r1-p2') {
-			const finalPlace = finalEl.querySelector('#r2-1');
+			const finalPlace = document.getElementById('r2-p1');
+			console.log("FINAL PLACE", finalPlace)
+			if (!finalPlace) return;
 			if (isWinner) {
 				finalPlace.textContent = myPlace.textContent.slice(0, -1);
+				finalPlace.dataset.id = myPlace.dataset.id;
 			} else {
 				const opponentWinner =  getOpponentID(myPlace.id);
-				opponentNickname = document.getElementById(opponentWinner).textContent;
-				finalPlace.textContent = opponentWinner.slice(0, -1);
+				console.log("OPPONENT ID", opponentWinner, " MY PLACE ID", myPlace.id)
+				console.log("OPPONENT WINNER", opponentWinner)
+				if (!opponentWinner) return;
+				const opponentPlace = document.getElementById(opponentWinner);
+				finalPlace.textContent = opponentPlace.textContent.slice(0, -1);
+				finalPlace.dataset.id = opponentPlace.dataset.id;	
 			}
 		} else if (myPlace.id == 'r1-p3' || myPlace.id == 'r1-p4') {
-			const finalPlace = finalEl.querySelector('#r2-2');
+			const finalPlace = document.getElementById('r2-p2');
+			console.log("FINAL PLACE", finalPlace)
+			if(!finalPlace) return;
 			if (isWinner) {
 				finalPlace.textContent = myPlace.textContent.slice(0, -1);
+				finalPlace.dataset.id = myPlace.dataset.id;
 			} else {
 				const opponentWinner =  getOpponentID(myPlace.id);
-				opponentNickname = document.getElementById(opponentWinner).textContent;
-				finalPlace.textContent = opponentWinner.slice(0, -1);
+				console.log("OPPONENT ID ", opponentWinner, " MY PLACE ID", myPlace.id)
+				console.log("OPPONENT WINNER", opponentWinner)
+				if (!opponentWinner) return;
+				const opponentPlace = document.getElementById(opponentWinner);
+				finalPlace.textContent = opponentPlace.textContent.slice(0, -1);
+				finalPlace.dataset.id = opponentPlace.dataset.id;
 			}
 		}
 	}
 
 	updateFinalRound(finalEl, myPlace) {
+		console.log('UPDATE FINAL ROUND', finalEl, myPlace)
+		this.updateRound(finalEl, myPlace, this.self.score);
+		if (this.self.score >= maxScore) {
+			myPlace.classList.add('winner');
+			console.log("I'M THE WINNER, I AM SENDING TO SOCKET");
+			setTimeout(() => {
+				interactiveSocket.sendMessageSocket(JSON.stringify({ "type": "Tournament", "action": 'Final Match End', 'winner': myPlace.dataset.id }));
+			}, 1000);
+		} else {
+			this.setOpponentWinner(myPlace.id, finalEl);
+		}
 	}
 }
 
@@ -372,7 +399,9 @@ export function getOpponentID(myPlaceID) {
 		'r1-p1': 'r1-p2',
 		'r1-p2': 'r1-p1',
 		'r1-p3': 'r1-p4',
-		'r1-p4': 'r1-p3'
+		'r1-p4': 'r1-p3',
+		'r2-p1': 'r2-p2',
+		'r2-p2': 'r2-p1',
 	};
 	return opponentMapping[myPlaceID];
 }
