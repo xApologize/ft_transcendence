@@ -1,14 +1,28 @@
-import { assembler } from '../../api/assembler.js';
 import { GameState } from '../game/src/systems/GameStates.js';
 import interactiveSocket from './socket.js';
-import { getMyID } from './utils.js';
 import { handleCreateTournamentClick, updateTournamentList } from './tournament.js';
-import { switchModals, hideModal } from './utils.js';
+import { switchModals, hideModal, showModal } from './utils.js';
 
 export function initGameMenu(world) {
+    initlfp(world)
     initMainGameMenu(world)
     initLobbyTournament()
     initJoinTournament()
+}
+
+function initlfp(world) {
+    const lfpBtn = document.getElementById('cancel-lfp');
+    lfpBtn.addEventListener('click', () => {
+        console.log("Cancel Match")
+        hideElement('lfp');
+        showElement('ui')
+        showElement('toastContainer')
+        showModal('gameMenuModal');
+        world.currentGameState = GameState.InMenu;
+        interactiveSocket.sendMessageSocket(
+            JSON.stringify({ type: 'Cancel Match' })
+        );
+    });
 }
 
 function initLobbyTournament() {
@@ -29,15 +43,31 @@ function initJoinTournament() {
 
 
 function initMainGameMenu(world) {
-    setupPlay1vs1Button(world);
+    setupPlayClassicButton(world);
+    setupPlayUpgradedButton(world);
     setupCreateTournamentButton();
     setupJoinTournamentButton();
 }
 
-function setupPlay1vs1Button(world) {
-    const play1vs1 = document.getElementById('play1vs1');
-    play1vs1.addEventListener('click', () => handlePlay1vs1Click(world));
-    function handlePlay1vs1Click(world) {
+function setupPlayClassicButton(world) {
+    const playClassic = document.getElementById('joinClassicBtn');
+    playClassic.addEventListener('click', () => handlePlayClassicClick(world));
+    function handlePlayClassicClick(world) {
+        hideModal('gameMenuModal');
+        hideElement('toastContainer');
+        hideElement('ui');
+        world.currentGameState = GameState.LookingForPlayer;
+        showElement('lfp');
+        interactiveSocket.sendMessageSocket(
+            JSON.stringify({ type: 'Find Match Classic' })
+        );
+    }
+}
+
+function setupPlayUpgradedButton(world) {
+    const playUpgraded = document.getElementById('joinUpgradedBtn');
+    playUpgraded.addEventListener('click', () => handlePlayUpgradedClick(world));
+    function handlePlayUpgradedClick(world) {
         hideModal('gameMenuModal');
         hideElement('toastContainer');
         hideElement('ui');
@@ -46,13 +76,14 @@ function setupPlay1vs1Button(world) {
         interactiveSocket.sendMessageSocket(
             JSON.stringify({ type: 'Find Match' })
         );
-        function showElement(elementId) {
-            document.getElementById(elementId).classList.remove('d-none');
-        }
-        function hideElement(elementId) {
-            document.getElementById(elementId).classList.add('d-none');
-        }
     }
+}
+
+function showElement(elementId) {
+    document.getElementById(elementId).classList.remove('d-none');
+}
+function hideElement(elementId) {
+    document.getElementById(elementId).classList.add('d-none');
 }
 
 function setupCreateTournamentButton() {
@@ -63,9 +94,7 @@ function setupCreateTournamentButton() {
 function setupJoinTournamentButton() {
     const joinBtn = document.getElementById('joinTournamentBtn');
     joinBtn.addEventListener('click', () => {
-        // FETCH ALL CURRENT TOURNAMENT AND DISPLAY IT
         switchModals('gameMenuModal', 'joinTournamentModal')
-
         updateTournamentList()
     });
 }

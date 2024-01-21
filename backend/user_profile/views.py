@@ -56,7 +56,7 @@ class Users(View):
             if id:  # Process recent matches only when a specific user is requested
                 recent_played_matches = MatchHistory.objects.filter(
                     Q(winner=user) | Q(loser=user)
-                ).order_by('-date_of_match')[:10]
+                ).order_by('-date_of_match')
 
                 data['won_matches'] = [
                     {'winner_score': match.winner_score, 'loser_score': match.loser_score, 'date_of_match': match.date_of_match.strftime("%Y/%m/%d")} 

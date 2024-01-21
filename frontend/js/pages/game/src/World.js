@@ -19,6 +19,8 @@ import { Vector2 } from 'three';
 import interactiveSocket from '../../home/socket.js';
 import { fetchUser } from '../../../api/fetchData.js';
 
+let _status = "ONL";
+
 const _ballCount = 1;
 
 // Wall Collider position
@@ -37,7 +39,6 @@ class World {
 		this.createInstance();
 		this.appendCanvas( container );
 
-		// TBD via backend ?
 		this.onDisconnectionEvent = (event) => this.forceQuit( event );
 		window.addEventListener( "beforeunload", this.onDisconnectionEvent );
 		window.addEventListener( "popstate", this.onDisconnectionEvent );
@@ -53,8 +54,9 @@ class World {
 		this.currentGameState == GameState.Disconnected;
 	}
 
-	joinMatch( wsPath, side, myNickname, opponentNickname ) {
-		this.match = new Match( '/' + wsPath, side == "A" ? 0 : 1, myNickname, opponentNickname );
+	joinMatch( wsPath, side, myNickname, opponentNickname, mode, tournamentStage = 0 ) {
+		this.currentGameMode = mode;
+		this.match = new Match( '/' + wsPath, side == "A" ? 0 : 1, myNickname, opponentNickname, tournamentStage );
 		this.changeStatus( "ING" );
 	}
 
@@ -91,10 +93,14 @@ class World {
 	}
 
 	changeStatus( status ) {
+		if ( _status == status )
+			return;
+		_status = status;
+		interactiveSocket.sendMessageSocket(JSON.stringify({type: 'Refresh', rType: status}))
 		const data = {
 			status: status
 		};
-		fetchUser( 'PATCH', null, data ); // no more auto update for all users after merge
+		fetchUser( 'PATCH', null, data );
 	}
 
 	get socket() {

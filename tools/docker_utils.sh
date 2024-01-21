@@ -72,9 +72,9 @@ clean_migration() {
 	rm -rf backend/friend_list/migrations/*_initial.py
 	rm -rf backend/interactive/migrations/*_initial.py
 	rm -rf backend/match_history/migrations/*_initial.py
-	rm -rf backend/tournament_history/migrations/*_initial.py
 	rm -rf backend/user_profile/migrations/*_initial.py
 	rm -rf backend/game_invite/migrations/*_initial.py
+	rm -rf backend/tournament/migrations/*_initial.py
 }
 
 

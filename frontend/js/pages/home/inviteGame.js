@@ -39,7 +39,7 @@ function getUserIDFromEventTarget(target) {
 }
 
 function displayErrorResponse(errorMessage) {
-    displayToast(errorMessage, "Error", "https://png.pngtree.com/png-clipart/20190904/ourmid/pngtree-80-3d-text-png-image_18456.jpg");
+    displayToast(errorMessage, "Error");
 }
 
 function handleResponseType(rType, userID) {
@@ -97,7 +97,7 @@ export async function handleInviteInteraction(refresh_type, id, other_user_id) {
         if (!response) return;
         const userToNotif = await assembler(response);
         console.log(userToNotif)
-        displayToast("You have received a game invite from " + userToNotif[0].nickname, "Game Invite", userToNotif[0].avatar)
+        displayToast("You have received a game invite from " + userToNotif[0].nickname, "Game Invite", 'displaySocial',userToNotif[0].avatar)
         await updateSocial('gameInvite')
     } else if (userID == other_user_id) {
         await updateSocial('gameInvite')
@@ -153,13 +153,6 @@ async function handleOtherUserAcceptedInvite(request_id) {
     }
 
     interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Game Invite"}));
-    // const response = await fetchGameInvite('DELETE', {'recipient': request_id});
-    // if (!response) return;
-
-    // const data = await assembler(response);
-    // handleResponseErrors(data, response.status);
-
-    // notifySocialUpdate(request_id);
 
     function resetModalContentID(inviteModalEl) {
         const modalContentDatasetID = inviteModalEl.querySelector('.modal-content');
@@ -170,22 +163,7 @@ async function handleOtherUserAcceptedInvite(request_id) {
         if (inviteModal) {
             inviteModal.hide();
         }
-    }
-    
-    function handleResponseErrors(data, status) {
-        if (status >= 400) {
-            const msg = data.error;
-            displayToast(msg, "Error", "https://png.pngtree.com/png-clipart/20190904/ourmid/pngtree-80-3d-text-png-image_18456.jpg");
-        }
-    }
-    
-    function notifySocialUpdate(request_id) {
-        interactiveSocket.sendMessageSocket(JSON.stringify({
-            "type": "Social",
-            "rType": "refreshGameInvite",
-            "other_user_id": request_id
-        }));
-    }    
+    }   
 }
 
 function handleRefuseInvite(request_id, other_user_id, userID) {
@@ -210,7 +188,7 @@ async function handleOtherUserRefusedInvite(request_id) {
     resetModalContentID(inviteModalEl);
     hideModal(inviteModal);
 
-    displayToast("Your game invite has been refused.", "Game Invite", "https://png.pngtree.com/png-clipart/20190904/ourmid/pngtree-80-3d-text-png-image_18456.jpg");
+    displayToast("Your game invite has been refused.", "Game Invite");
 
     function resetModalContentID(inviteModalEl) {
         const modalContentDatasetID = inviteModalEl.querySelector('.modal-content');
