@@ -1,6 +1,7 @@
 import { GameState } from '../game/src/systems/GameStates.js';
 import interactiveSocket from './socket.js';
-import { handleCreateTournamentClick, updateTournamentList } from './tournament.js';
+import { handleCreateTournamentClick } from './tournament.js';
+import { updateTournamentList } from './tournamentUtils.js';
 import { switchModals, hideModal, showModal } from './utils.js';
 
 export function initGameMenu(world) {

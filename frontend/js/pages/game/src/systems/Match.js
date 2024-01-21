@@ -10,7 +10,7 @@ import { displayMatchHistory } from '../../../../components/matchHistory/matchHi
 import interactiveSocket from '../../../home/socket.js';
 import { updateUserCard } from '../../../../components/userCard/userCard.js';
 import { getMyID, hideElementById, resetInnerHTMLById, showElementById } from '../../../home/utils.js';
-import { cleanBracket } from '../../../home/tournament.js';
+import { cleanBracket } from '../../../home/tournamentUtils.js';
 
 let world;
 let lastSocketTime;
