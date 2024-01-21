@@ -46,10 +46,8 @@ function handleResponseType(rType, userID) {
     switch (rType) {
         case 'sendGameInvite':
             showModal('inviteGameModal', userID);
-            console.log("Socket Invite Game Sent");
             break;
         case 'acceptGameInvite':
-            console.log('Accept Game Invite');
             showModal('loadingModal');
             break;
     }
@@ -85,18 +83,15 @@ export async function closeInviteRequest(event) {
 
 // Function called by socket when a game invite is sent by someone.
 export async function handleInviteInteraction(refresh_type, id, other_user_id) {
-    console.log("handleInviteInteraction")
     const userID = getMyID();
     if (!userID || (userID != other_user_id && userID != id))
         return;
-    console.log(" I'm here for: " + refresh_type)
     if (refresh_type == "acceptGameInvite" || refresh_type == "refuseGameInvite") {
         await handleInviteUpdate(refresh_type, id, other_user_id, userID)
     } else if (refresh_type == 'sendGameInvite' && userID == other_user_id) {
         const response = await fetchUser('GET', {'id': id})
         if (!response) return;
         const userToNotif = await assembler(response);
-        console.log(userToNotif)
         displayToast("You have received a game invite from " + userToNotif[0].nickname, "Game Invite", 'displaySocial',userToNotif[0].avatar)
         await updateSocial('gameInvite')
     } else if (userID == other_user_id) {
@@ -121,7 +116,6 @@ async function handleAcceptInvite(request_id, other_user_id, userID) {
 }
 
 function handleSelfAcceptedInvite() {
-    console.log("I am the one who accepted the invite.");
     const socialModalEl = document.getElementById('socialModal');
     const socialModal = bootstrap.Modal.getInstance(socialModalEl);
     if (socialModal) {
@@ -139,8 +133,6 @@ function handleSelfAcceptedInvite() {
 }
 
 async function handleOtherUserAcceptedInvite(request_id) {
-    console.log("I am the one who sent the invite and he accepted it.");
-
     const inviteModalEl = document.getElementById('inviteGameModal');
     const inviteModal = bootstrap.Modal.getInstance(inviteModalEl);
     resetModalContentID(inviteModalEl);
@@ -175,14 +167,12 @@ function handleRefuseInvite(request_id, other_user_id, userID) {
 }
 
 async function handleSelfRefusedInvite(other_user_id) {
-    console.log("I am the one who refused the invite.");
     const response = await fetchGameInvite('DELETE', {'recipient': other_user_id});
     if (!response) return;
     updateSocial('gameInvite');
 }
 
 async function handleOtherUserRefusedInvite(request_id) {
-    console.log("I am the one who sent the invite and he refused it.");
     const inviteModalEl = document.getElementById('inviteGameModal');
     const inviteModal = bootstrap.Modal.getInstance(inviteModalEl);
     resetModalContentID(inviteModalEl);

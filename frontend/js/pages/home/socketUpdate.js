@@ -70,7 +70,6 @@ export async function updateSpecificUser(userID) {
         return;
     const assemble = await assembler(response);
     if (typeof assemble !== 'object' || assemble === null) {
-        console.log(assemble);
         return;
     } else {
         updateOtherUsersCard(assemble[0]);
@@ -179,7 +178,6 @@ export async function newUser(userID) {
         
         const assemble = await assembler(response);
         if (typeof assemble !== 'object' || assemble === null) {
-            console.log(assemble);
             return;
         }
         addNewUser(assemble[0]);
@@ -240,8 +238,6 @@ function appendToContainer(container, element, userID) {
         element.setAttribute('data-id', userID);
         element.querySelector('#inviteGameBtn').remove()
         container.appendChild(element);
-    } else {
-        console.log(`User with ID ${userID} already exists in the container.`);
     }
 }
 

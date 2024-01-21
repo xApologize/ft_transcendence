@@ -112,13 +112,11 @@ export function switchModals(hideModalId, showModalId) {
 }
 
 export function hideModal(modalId) {
-    console.log("HIDE ", modalId)
     const modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
     modal.hide();
 }
 
 export function showModal(modalId) {
-    console.log("SHOW ", modalId)
     const modal = bootstrap.Modal.getInstance(document.getElementById(modalId))
     modal.show();
 }

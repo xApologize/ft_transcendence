@@ -79,7 +79,6 @@ class Match {
 	}
 
 	initMatch() {
-		// console.log("-- Starting Match --");
 		world.currentGameState = GameState.InMatch;
 		document.getElementById("coin").play();
 
@@ -101,7 +100,6 @@ class Match {
 
 	onWebsocketReceived(event) {
 		if (event.data === "Closing") {
-			// console.log("Opponent Ragequited");
 			this.endMatch();
 			return;
 		}
@@ -219,7 +217,6 @@ class Match {
 		if (!response) return;
 
 		if (this.tournamentStage > 0) {
-			console.log("SEND FINAL")
 			interactiveSocket.sendMessageSocket(JSON.stringify({ "type": "Tournament", "action": "Final" }));
 		}
 	}

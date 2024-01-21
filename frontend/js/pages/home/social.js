@@ -78,7 +78,6 @@ function getSocialInviteReqID(event) {
     }
     const userID = ancestor.dataset.id;
     const action = event.currentTarget.dataset.action;
-    console.log("USER ID: ", userID, "\nACTION: ", action)
     handleSocialInvInterac(action, userID);
 }
 

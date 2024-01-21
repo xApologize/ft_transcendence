@@ -14,7 +14,6 @@ const interactiveSocket = {
     initSocket: function() {
         const self = this;
         if (this.interactive_socket === null){
-            console.log("INIT !")
             this.interactive_socket = new WebSocket('wss://' + window.location.host + '/wss/pong/interactive' + "?" + sessionStorage.getItem('jwt'));
             self.interactive_socket.onerror = function(event) {
                 console.error("WebSocket error:", event);

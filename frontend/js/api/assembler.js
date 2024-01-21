@@ -7,7 +7,6 @@ export const assembler = async (result) => {
         return userObject.users || userObject;
     } else {
         let response = await result.text();
-        // console.log(response)
         return response;
     }
 };

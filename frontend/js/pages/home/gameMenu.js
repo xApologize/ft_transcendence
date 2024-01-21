@@ -13,7 +13,6 @@ export function initGameMenu(world) {
 function initlfp(world) {
     const lfpBtn = document.getElementById('cancel-lfp');
     lfpBtn.addEventListener('click', () => {
-        console.log("Cancel Match")
         hideElement('lfp');
         showElement('ui')
         showElement('toastContainer')

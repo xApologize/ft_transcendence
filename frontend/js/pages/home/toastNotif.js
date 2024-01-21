@@ -29,7 +29,6 @@ function prepToastInfo(toastMsg, toastTitle, toastType, imgUrl) {
 
 async function createToast(toastInfo) {
     const toastNotif = await toastComponent();
-    console.log(toastNotif)
     toastNotif.querySelector('#toast-img').src = toastInfo['imgUrl'];
     toastNotif.querySelector('#toast-title').textContent = toastInfo['toastTitle'];
     toastNotif.querySelector('#msg-toast').textContent = toastInfo['toastMsg'];
@@ -67,13 +66,11 @@ function showNextToast() {
 
 function clickToastEnable(toastNotif) {
     const toastSmall = toastNotif.querySelector('#toast-displaySocial')
-    console.log(toastNotif)
     toastSmall.classList.remove('d-none');
     // toastNotif.querySelector('.toast').classList.add('cursor-pointer');
     toastNotif.addEventListener('click', async() => {
         checkModal();
         const socialModalEl = document.getElementById('socialModal');
-        console.log(socialModalEl)
         let socialModal = bootstrap.Modal.getInstance(socialModalEl)
         if (!socialModal) {
             socialModal = new bootstrap.Modal(socialModalEl);
