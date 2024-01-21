@@ -382,7 +382,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             await self.send(text_data=json.dumps({"type": "Tournament", "rType": "createFailure", "id": self.user_id}))
             return
         await self.send_to_layer(ECHO, self.user_id, "Tournament", "createTournament")
-    
+
     async def leave_tournament(self) -> None:
         try:
             owner_instance: Lobby = await self.get_owner_lobby()
@@ -658,36 +658,10 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         if upper_bracket is True:
             print("CREATE FINAL")
             await self.create_final(tournament_handle)
-            await self.wait_for_join_final(tournament_handle.pk)
         else:
             print("JOIN FINAL")
             await self.join_final(tournament_handle.pk)
             await database_sync_to_async(tournament_handle.delete)()
-
-    async def wait_for_join_final(self, tournament_id: int) -> None:
-        while True:
-            try:
-                tournament_handle: Tournament = await database_sync_to_async(Tournament.objects.get)(pk=tournament_id)
-                if tournament_handle.player_3 == -1 and tournament_handle.player_4 == -1:
-                    print("WAIT FOR FINAL FAILED BOTH DC???")
-                    await self.play_againts_nobody()
-                    await database_sync_to_async(tournament_handle.delete)()
-                    return
-                final_handle: Final = await database_sync_to_async(Final.objects.get)(final_id=tournament_id)
-                if final_handle.player_2 != -1:
-                    return
-            except Final.DoesNotExist:
-                print("Final doesn't exist anymore wait for final")
-                await database_sync_to_async(tournament_handle.delete)()
-                break
-            except Tournament.DoesNotExist:
-                print("Tournament doesn't exist anymore wait for final")
-                break
-            except Exception:
-                print("Exception doesn't exist anymore wait for final")
-                break
-            await asyncio.sleep(2)
-        await self.play_againts_nobody()
 
     async def check_if_upper(self, tournament_handle: Tournament) -> bool:
         if tournament_handle.player_1 == self.user_id or tournament_handle.player_2 == self.user_id:
