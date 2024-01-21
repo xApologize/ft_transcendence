@@ -116,7 +116,7 @@ async function finalMatchEnd(winnerUserID) {
     }
 
     const response = await fetchMatchHistory('GET', null, {'id': winnerUserID}, 'tournament/');
-    const data = response && await assembler(response);
+    const data = await assembler(response);
     if (data) {
         const { winner, loser } = determineTournamentWinner(players, data);
         appendScores(winner, loser, data);
@@ -213,6 +213,7 @@ function determineWinnerAndLoser(players, data) {
 }
 
 function appendScores(winner, loser, data) {
+    if (!winner) return;
     winner.classList.add('winner');
     appendScore(winner, data.winner_score);
     appendScore(loser, data.loser_score);

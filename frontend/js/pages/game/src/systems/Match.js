@@ -216,7 +216,7 @@ class Match {
 		const response = fetchMatchHistory('POST', data);
 		if (!response) return;
 
-		if (this.tournamentStage > 0) {
+		if (this.tournamentStage == 2) {
 			interactiveSocket.sendMessageSocket(JSON.stringify({ "type": "Tournament", "action": "Final" }));
 		}
 	}
