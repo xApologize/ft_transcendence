@@ -76,15 +76,19 @@ const interactiveSocket = {
                 setTimeout(() => {
                     document.getElementById('bracket').classList.add('d-none')
                     document.getElementById('result').classList.add('d-none')
+					document.getElementById('timer').innerHTML = "Waiting..."
                     World._instance.joinMatch( data.handle, data.paddle, data.me, data.opponent, "Upgraded", 2 );
-                }, 10000);
-                break;
+                }, 5000);
+				document.getElementById('timer').innerHTML = "Match starting soon"
+				break;
             case "Tournament Final":
 				setTimeout(() => {
 					document.getElementById('bracket').classList.add('d-none')
 					document.getElementById('result').classList.add('d-none')
+					document.getElementById('timer').innerHTML = "Waiting..."
 					World._instance.joinMatch( data.handle, data.paddle, data.me, data.opponent, "Upgraded", 1 );
-				}, 10000);
+				}, 5000);
+				document.getElementById('timer').innerHTML = "Match starting soon"
                 break;
             case "Found Match Classic":
                 hideAllUI(true);

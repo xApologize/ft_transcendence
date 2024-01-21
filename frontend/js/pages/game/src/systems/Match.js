@@ -172,7 +172,8 @@ class Match {
 		document.getElementById('bracket').classList.remove('d-none');
 
 		document.getElementById('resultButton').classList.toggle('d-none', true);
-		if (this.opponent.score >= maxScore || this.tournamentStage < 2) {
+		if ( this.opponent.score >= maxScore || this.tournamentStage < 2 ) {
+			document.getElementById('timer').innerHTML = ""
 			document.getElementById('leaveTournament').addEventListener('click', this.backToMenu)
 			document.getElementById('leaveTournament').classList.toggle('d-none', false)
 		}
