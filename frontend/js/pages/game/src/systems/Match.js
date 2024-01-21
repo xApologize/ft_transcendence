@@ -290,7 +290,6 @@ class Match {
 		this.updateRound(firstRoundEl, myPlace, this.self.score);
 		if (this.self.score >= maxScore) {
 			myPlace.classList.add('winner');
-			console.log("I'M THE WINNER, I AM SENDING TO SOCKET");
 			setTimeout(() => {
 				interactiveSocket.sendMessageSocket(JSON.stringify({ "type": "Tournament", "action": 'Tournament Match End', 'winner': myPlace.dataset.id }));
 			}, 1000);
@@ -301,6 +300,18 @@ class Match {
 		}
 	}
 	
+	updateFinalRound(finalEl, myPlace) {
+		this.updateRound(finalEl, myPlace, this.self.score);
+		if (this.self.score >= maxScore) {
+			myPlace.classList.add('winner');
+			setTimeout(() => {
+				interactiveSocket.sendMessageSocket(JSON.stringify({ "type": "Tournament", "action": 'Final Match End', 'winner': myPlace.dataset.id }));
+			}, 1000);
+		} else {
+			this.setOpponentWinner(myPlace.id, finalEl);
+		}
+	}
+
 	updateRound(roundEl, myPlace, score) {
 		this.appendScore(myPlace, score);
 		this.updateOpponentScore(myPlace.id, roundEl, this.opponent.score);
@@ -325,56 +336,30 @@ class Match {
 	}
 
 
+	updateFinalPlace(finalPlace, sourcePlace) {
+		if (!finalPlace || !sourcePlace) return;
+		finalPlace.textContent = sourcePlace.textContent.slice(0, -1);
+		finalPlace.dataset.id = sourcePlace.dataset.id;
+	}
+	
 	setBracketFinal(myPlace, isWinner) {
-		console.log("IN SET BRACKET FINAL", myPlace, isWinner)
-		if (myPlace.id == 'r1-p1' || myPlace.id == 'r1-p2') {
-			const finalPlace = document.getElementById('r2-p1');
-			console.log("FINAL PLACE", finalPlace)
-			if (!finalPlace) return;
-			if (isWinner) {
-				finalPlace.textContent = myPlace.textContent.slice(0, -1);
-				finalPlace.dataset.id = myPlace.dataset.id;
-			} else {
-				const opponentWinner =  getOpponentID(myPlace.id);
-				console.log("OPPONENT ID", opponentWinner, " MY PLACE ID", myPlace.id)
-				console.log("OPPONENT WINNER", opponentWinner)
-				if (!opponentWinner) return;
-				const opponentPlace = document.getElementById(opponentWinner);
-				finalPlace.textContent = opponentPlace.textContent.slice(0, -1);
-				finalPlace.dataset.id = opponentPlace.dataset.id;	
-			}
-		} else if (myPlace.id == 'r1-p3' || myPlace.id == 'r1-p4') {
-			const finalPlace = document.getElementById('r2-p2');
-			console.log("FINAL PLACE", finalPlace)
-			if(!finalPlace) return;
-			if (isWinner) {
-				finalPlace.textContent = myPlace.textContent.slice(0, -1);
-				finalPlace.dataset.id = myPlace.dataset.id;
-			} else {
-				const opponentWinner =  getOpponentID(myPlace.id);
-				console.log("OPPONENT ID ", opponentWinner, " MY PLACE ID", myPlace.id)
-				console.log("OPPONENT WINNER", opponentWinner)
-				if (!opponentWinner) return;
-				const opponentPlace = document.getElementById(opponentWinner);
-				finalPlace.textContent = opponentPlace.textContent.slice(0, -1);
-				finalPlace.dataset.id = opponentPlace.dataset.id;
-			}
+		let finalPlaceId;
+		if (myPlace.id === 'r1-p1' || myPlace.id === 'r1-p2') {
+			finalPlaceId = 'r2-p1';
+		} else if (myPlace.id === 'r1-p3' || myPlace.id === 'r1-p4') {
+			finalPlaceId = 'r2-p2';
+		}
+	
+		const finalPlace = document.getElementById(finalPlaceId);
+		if (isWinner) {
+			this.updateFinalPlace(finalPlace, myPlace);
+		} else {
+			const opponentWinner = getOpponentID(myPlace.id);
+			const opponentPlace = document.getElementById(opponentWinner);
+			this.updateFinalPlace(finalPlace, opponentPlace);
 		}
 	}
 
-	updateFinalRound(finalEl, myPlace) {
-		console.log('UPDATE FINAL ROUND', finalEl, myPlace)
-		this.updateRound(finalEl, myPlace, this.self.score);
-		if (this.self.score >= maxScore) {
-			myPlace.classList.add('winner');
-			console.log("I'M THE WINNER, I AM SENDING TO SOCKET");
-			setTimeout(() => {
-				interactiveSocket.sendMessageSocket(JSON.stringify({ "type": "Tournament", "action": 'Final Match End', 'winner': myPlace.dataset.id }));
-			}, 1000);
-		} else {
-			this.setOpponentWinner(myPlace.id, finalEl);
-		}
-	}
 }
 
 export { Match };
