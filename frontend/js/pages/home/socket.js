@@ -1,4 +1,3 @@
-import { logoutUser } from '../../components/userCard/userCard.js'
 import { World } from '../game/src/World.js';
 import { displayEveryone } from './home.js'
 import { handleInviteInteraction } from './inviteGame.js';

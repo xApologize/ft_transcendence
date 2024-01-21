@@ -1,7 +1,7 @@
 import { fetchFriendChange, fetchIsToken, fetchUser } from '../../api/fetchData.js';
 import { assembler } from '../../api/assembler.js';
-import { getUserAndDisplay, updateOtherFriendButton, updateStatusMsg } from './otherUserProfile.js';
-import { updateSocial, updateSocialFriendCard } from './social.js';
+import { updateOtherFriendButton, updateStatusMsg } from './otherUserProfile.js';
+import { updateSocialFriendCard } from './social.js';
 import interactiveSocket from './socket.js';
 
 
@@ -125,8 +125,6 @@ export function isModalShown(modalId) {
     const modalElement = document.getElementById(modalId);
     return modalElement && modalElement.classList.contains('show');
 }
-
-//////////////////////////// SOCKET FUNCTIONS ////////////////////////////
 
 export function hideElementById(id) {
     const element = document.getElementById(id);

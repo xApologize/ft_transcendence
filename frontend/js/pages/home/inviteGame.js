@@ -1,9 +1,8 @@
 import { fetchGameInvite, fetchUser } from '../../api/fetchData.js';
 import { assembler } from '../../api/assembler.js';
 import interactiveSocket from './socket.js';
-import { getMyID, hideModal } from './utils.js';
+import { getMyID } from './utils.js';
 import { updateSocial } from './social.js';
-import { checkModal } from '../../router.js';
 import { displayToast } from './toastNotif.js';
 
 

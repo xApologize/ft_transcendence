@@ -1,7 +1,7 @@
 import { assembler } from '../../api/assembler.js';
 import interactiveSocket, { hideAllUI } from './socket.js';
 import { displayToast } from './toastNotif.js';
-import { fetchUserById, getMyID, switchModals, isModalShown, hideModal, showModal } from './utils.js';
+import { getMyID, switchModals, isModalShown } from './utils.js';
 import { fetchMe, fetchAllLobbies, fetchMyLobby, fetchMatchHistory } from '../../api/fetchData.js';
 import { World } from '../game/src/World.js';
 import { checkModal } from '../../router.js';

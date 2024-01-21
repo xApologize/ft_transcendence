@@ -1,5 +1,4 @@
 import { toastComponent } from '../../components/toast/toast.js';
-import { showModal } from './utils.js';
 import { checkModal } from '../../router.js';
 
 let toastQueue = [];
