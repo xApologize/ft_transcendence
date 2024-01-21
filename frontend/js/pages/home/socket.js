@@ -31,7 +31,10 @@ const interactiveSocket = {
                 self.parseMessage(event);
             };
         } else {
-            console.error("Interactive socket already exist");
+            console.error("Failsafe activated, closing already existing socket?");
+            this.interactive_socket.close();
+            this.interactive_socket = null
+            forceLogout();
         }
     },
 

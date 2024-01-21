@@ -64,6 +64,7 @@ class Match {
 			document.getElementById("loading").classList.add("d-none");
 			console.error("Disconnected");
 			this.loading = false;
+			interactiveSocket.sendMessageSocket(JSON.stringify({ "type": "Tournament", "action": "Disconnect" }));
 		} else if ( Date.now() - lastSocketTime > 500) {
 			if (!this.loading) {
 				console.warn("Instable Connection");
