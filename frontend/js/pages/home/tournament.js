@@ -489,30 +489,24 @@ export async function updateParticipantList() {
 
 function updateBracket(tournament) {
     const bracket = document.getElementById('bracket');
-
     const title = bracket.querySelector('#tournament-name-bracket');
-    title.textContent = tournament.owner.nickname + '\'s tournament'
+    title.textContent = `${tournament.owner.nickname}'s tournament`;
 
-    console.log(tournament)
+    const playerElements = {
+        'r1-p1': tournament.owner,
+        'r1-p2': tournament.player_2,
+        'r1-p3': tournament.player_3,
+        'r1-p4': tournament.player_4
+    };
 
-    const player1 = bracket.querySelector('#r1-p1');
-    const player2 = bracket.querySelector('#r1-p2');
-    const player3 = bracket.querySelector('#r1-p3');
-    const player4 = bracket.querySelector('#r1-p4');
-
-    if (tournament.owner) {
-        player1.textContent = tournament.owner.nickname
-        player1.dataset.id = tournament.owner.id
-    } if (tournament.player_2) {
-        player2.textContent = tournament.player_2.nickname
-        player2.dataset.id = tournament.player_2.id
-    } if (tournament.player_3) {
-        player3.textContent = tournament.player_3.nickname
-        player3.dataset.id = tournament.player_3.id
-    } if (tournament.player_4) {
-        player4.textContent = tournament.player_4.nickname
-        player4.dataset.id = tournament.player_4.id
-    }
+    Object.keys(playerElements).forEach(key => {
+        const player = playerElements[key];
+        const element = bracket.querySelector(`#${key}`);
+        if (player && element) {
+            element.textContent = player.nickname;
+            element.dataset.id = player.id;
+        }
+    });
 }
 
 ////// FOR UTILS FILE //////
@@ -567,28 +561,14 @@ export function transferToTournament() {
 
 
 export function cleanBracket() {
-    const player1 = document.getElementById('r1-p1');
-    if (player1) {
-        player1.classList.remove('winner');
-        player1.innerHTML = '';
-        player1.dataset.id = '';
-    }
-    const player2 = document.getElementById('r1-p2');
-    if (player2) {
-        player2.classList.remove('winner');
-        player2.innerHTML = '';
-        player2.dataset.id = '';
-    }
-    const player3 = document.getElementById('r1-p3');
-    if (player3) {
-        player3.classList.remove('winner');
-        player3.innerHTML = '';
-        player3.dataset.id = '';
-    }
-    const player4 = document.getElementById('r1-p4');
-    if (player4) {
-        player4.classList.remove('winner');
-        player4.innerHTML = '';
-        player4.dataset.id = '';
-    }
+    const playerIds = ['r1-p1', 'r1-p2', 'r1-p3', 'r1-p4', 'r2-p1', 'r2-p2'];
+
+    playerIds.forEach(id => {
+        const player = document.getElementById(id);
+        if (player) {
+            player.classList.remove('winner');
+            player.innerHTML = '';
+            player.dataset.id = '';
+        }
+    });
 }

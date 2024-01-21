@@ -9,7 +9,7 @@ import { assembler } from '../../../../api/assembler.js';
 import { displayMatchHistory } from '../../../../components/matchHistory/matchHistory.js';
 import interactiveSocket from '../../../home/socket.js';
 import { updateUserCard } from '../../../../components/userCard/userCard.js';
-import { getMyID } from '../../../home/utils.js';
+import { getMyID, hideElementById, resetInnerHTMLById, showElementById } from '../../../home/utils.js';
 import { cleanBracket } from '../../../home/tournament.js';
 
 let world;
@@ -242,30 +242,23 @@ class Match {
 			document.getElementById("resultTitle").innerHTML = "YOU LOST!";
 	}
 
+	
 	backToMenu(event) {
-		const bracket = document.getElementById('bracket');
-		const result = document.getElementById('result');
-		const resultMatch = document.getElementById('resultMatch');
-
-		if (!bracket.classList.contains('d-none'))
-			bracket.classList.add('d-none');
-		if (!result.classList.contains('d-none'))
-			result.classList.add('d-none');
-		if (!resultMatch.classList.contains('d-none'))
-			resultMatch.classList.add('d-none');
-
+		event.currentTarget.removeEventListener('click', this.backToMenu);
+		const elementsToHide = ['bracket', 'result', 'resultMatch'];
+		elementsToHide.forEach(hideElementById);
+		
 		updateMatchHistory();
-		world.camera.viewLarge(1, function () {
-			const ui = document.getElementById('ui');
-			if (!ui) return;
-			ui.classList.remove("d-none");
-			document.getElementById('toastContainer').classList.remove('d-none')
+		world.camera.viewLarge(1, () => {
+			showElementById('ui');
+			showElementById('toastContainer')
 			world.changeStatus("ONL");
 			world.currentGameState = GameState.InMenu;
 		});
-
-		const currentTarget = event.currentTarget;
-		currentTarget.removeEventListener('click', this.backToMenu);
+		
+		const elementsToReset = ['leftName', 'leftScore', 'rightScore', 'rightName', 'resultTitle', 'tournament-name-bracket'];
+		elementsToReset.forEach(resetInnerHTMLById);
+		
 		cleanBracket();
 	}
 

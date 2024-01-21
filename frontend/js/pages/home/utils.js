@@ -129,3 +129,24 @@ export function isModalShown(modalId) {
 }
 
 //////////////////////////// SOCKET FUNCTIONS ////////////////////////////
+
+export function hideElementById(id) {
+    const element = document.getElementById(id);
+    if (element && !element.classList.contains('d-none')) {
+        element.classList.add('d-none');
+    }
+}
+
+export function showElementById(id) {
+    const element = document.getElementById(id);
+    if (element && element.classList.contains('d-none')) {
+        element.classList.remove('d-none');
+    }
+}
+
+export function resetInnerHTMLById(id) {
+    const element = document.getElementById(id);
+    if (element) {
+        element.innerHTML = "";
+    }
+}
