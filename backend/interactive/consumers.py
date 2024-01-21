@@ -16,6 +16,7 @@ CLEAN = "send_message_and_clean_db"
 CLEAN_CLASSIC = "send_message_and_clean_db_classic"
 MATCH_INVITE = "send_message_match_invite"
 SEND_LIST_IDS = "send_message_list_ids"
+ABORT_TOURNAMENT = "abort_tournament"
 
 
 class UserInteractiveSocket(AsyncWebsocketConsumer):
@@ -166,7 +167,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             await self.setup_match(match_entry)
         else:
             await self.create_lfm()
-    
+
     async def cancel_lfm(self):
         try:
             lfm: LookingForMatch = await database_sync_to_async(LookingForMatch.objects.get)(paddleA=self.user_id)
@@ -218,7 +219,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         except Exception as e:
             print("Setup match exception caught:", e)
             await self.send_error("lfm")
-    
+
     async def find_match_classic(self):
         match_entry = await database_sync_to_async(
             LookingForMatchClassic.objects.filter(paddleB=-1).first)()
@@ -254,7 +255,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         except Exception as e:
             print("Setup match exception caught:", e)
             await self.send_error("lfm")
-    
+
     async def create_lfm_classic(self):
         try:
             await database_sync_to_async(LookingForMatchClassic.objects.create)(
@@ -502,7 +503,11 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
 
     async def clean_lower(self, tournament_instance: Tournament) -> None:
         try:
-            if tournament_instance.player_3 == -1 and tournament_instance.player_4 == -1:
+            if tournament_instance.upper_done == True:
+                print("Send upper that lower dced if upper is done")
+                await self.abort_tourny(tournament_instance)
+                return
+            if tournament_instance.player_1 == -1 and tournament_instance.player_2 == -1:
                 await database_sync_to_async(tournament_instance.delete)()
                 return
             if tournament_instance.lower_done == False:
@@ -586,6 +591,16 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         return tournament_handle
 
     async def find_final(self, tournament_id: int) -> Final:
+        try:
+            tournament_handle: Tournament = await database_sync_to_async(Tournament.objects.get)(pk=tournament_id)
+            tournament_handle.lower_done = True
+            tournament_handle.player_3 = self.user_id
+            tournament_handle.player_4 = -1
+            await database_sync_to_async(tournament_handle.save)()
+        except Exception:
+            print("Why did you enter here?")
+            await self.play_againts_nobody()
+            return
         while True:
             try:
                 tournament_handle: Tournament = await database_sync_to_async(Tournament.objects.get)(pk=tournament_id)
@@ -693,6 +708,26 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             tournament_handle.player_3 = -1
             tournament_handle.player_4 = -1
         await database_sync_to_async(tournament_handle.save)()
+    
+    async def abort_tourny(self, tournament_handle: Tournament) -> None:
+        await self.channel_layer.group_send(
+            "interactive", {
+                "type": ABORT_TOURNAMENT,
+                "message": "Hello!",
+                "Receiver": id
+                }
+            )
+
+    async def abort_tournament(self, data: any) -> None:
+        if self.user_id == data["Receiver"]:
+            try:
+                final_handle: Final = await database_sync_to_async(Final.objects.get)(player_1=self.user_id)
+                await database_sync_to_async(final_handle.delete)()
+                tournament_handle: Tournament = await self.get_tournament()
+                await database_sync_to_async(tournament_handle.delete)()
+                await self.play_againts_nobody()
+            except Exception:
+                print("Abort failure")
 
 def create_layer_dict(type: str, message: str, sender: str) -> dict:
     return {"type": type, "message": message, "sender": sender}
