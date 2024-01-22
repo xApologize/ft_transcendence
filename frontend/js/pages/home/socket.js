@@ -14,12 +14,11 @@ const interactiveSocket = {
     initSocket: function() {
         const self = this;
         if (this.interactive_socket === null){
-            console.log("INIT !")
             this.interactive_socket = new WebSocket('wss://' + window.location.host + '/wss/pong/interactive' + "?" + sessionStorage.getItem('jwt'));
             self.interactive_socket.onerror = function(event) {
                 console.error("WebSocket error:", event);
                 interactiveSocket.closeSocket();
-                forceLogout();
+                logoutUser();
             };
             this.interactive_socket.onopen = async function(event) {
                 console.log("𝕴𝖓𝖙𝖊𝖗𝖆𝖈𝖙𝖎𝖛𝖊 𝖘𝖔𝖈𝖐𝖊𝖙 𝖎𝖘 𝖓𝖔𝖜 𝖔𝖕𝖊𝖓");
@@ -35,7 +34,7 @@ const interactiveSocket = {
             console.error("Failsafe activated, closing already existing socket?");
             this.interactive_socket.close();
             this.interactive_socket = null
-            forceLogout();
+            logoutUser();
         }
     },
 
@@ -100,6 +99,10 @@ const interactiveSocket = {
                 break;
             case "Init":
                 displayEveryone();
+                break;
+            case "Logout":
+                interactiveSocket.closeSocket();
+                logoutUser();
                 break;
             case "Invalid":
                 this.interactive_error_handler(data);

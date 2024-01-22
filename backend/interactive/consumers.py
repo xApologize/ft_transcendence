@@ -17,12 +17,11 @@ CLEAN_CLASSIC = "send_message_and_clean_db_classic"
 MATCH_INVITE = "send_message_match_invite"
 SEND_LIST_IDS = "send_message_list_ids"
 ABORT_TOURNAMENT = "abort_tournament"
+LOGOUT_USER = "send_user_to_the_shadow_realm"
 
 
 class UserInteractiveSocket(AsyncWebsocketConsumer):
     async def connect(self):
-        await self.close()
-        return
         try:
             self.init: bool = False
             self.user_id: int = self.scope.get("user_id")
@@ -145,6 +144,15 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
                     "other_user_id": other_user_id
                 }, self.channel_name)
             )
+    
+    async def send_user_to_the_shadow_realm(self, data: any):
+        try:
+            print("DATA", data)
+            receiver: int = data["Receiver"]
+            if self.user_id == data["Receiver"]:
+                await self.send(text_data=json.dumps({"type": "Logout"}))
+        except Exception:
+            print("Something went wrong when sending user to the shadow realm")
 
     async def send_error(self, error: str):
         await self.send(text_data=json.dumps({"type": "Invalid", "error": error}))
@@ -746,3 +754,18 @@ async def send_refresh(user_id: int) -> None:
                 "message": {"type": "Refresh", "id": user_id, "rType": "User"}
                 }
             )
+
+async def log_user(user_id: int) -> None:
+    if user_id is None:
+        return
+    channel_layer = get_channel_layer()
+    if channel_layer is not None:
+        await channel_layer.group_send(
+            "interactive", {
+                "type": LOGOUT_USER,
+                "Receiver": user_id
+                }
+            )
+    # user: User = User.objects.get(pk=user_id)
+    # user.status = "OFF"
+    # user.save()
