@@ -384,6 +384,8 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
                 await self.start_final()
             case "Disconnect":
                 await self.disconnect_tournament()
+            case _:
+                await self.send_error("argument")
 
     async def create_tournament(self) -> None:
         try:
@@ -776,6 +778,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
                 tournament_handle: Tournament = await self.get_tournament()
                 await database_sync_to_async(tournament_handle.delete)()
                 await self.play_againts_nobody()
+                await self.send(text_data=json.dumps({"type": "Tournament", "rType": "abortTournament", "id": self.user_id}))
             except Exception:
                 print("Abort failure")
 

@@ -1,5 +1,5 @@
 import { fetchAuth, loadHTMLComponent } from "../../api/fetchData.js";
-import { navigateTo, handleRoute } from "../../router.js";
+import { navigateTo, handleRoute, checkModal } from "../../router.js";
 import { closeAlertAvatar, closeAlertInfo, setupSettings, closeAlert2FA, clearSettings } from "./utils.js";
 import { disable2FA, enable2FA, updateMenu2FA, checkConfirmationCode } from "./menu2FA.js";
 import { saveAvatar, saveInfo } from "./menuInfo.js";
@@ -56,6 +56,7 @@ export async function logoutUser() {
     if (logoutResponse.status == 200) {
         if (World._instance)
 		    World._instance.forceQuit();
+        checkModal()
         sessionStorage.clear()
         navigateTo('/')
     }
