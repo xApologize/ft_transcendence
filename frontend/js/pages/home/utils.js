@@ -3,6 +3,7 @@ import { assembler } from '../../api/assembler.js';
 import { updateOtherFriendButton, updateStatusMsg } from './otherUserProfile.js';
 import { updateSocialFriendCard } from './social.js';
 import interactiveSocket from './socket.js';
+import { checkModal } from '../../router.js';
 
 
 export async function handleFriendAction(actionObj) {
