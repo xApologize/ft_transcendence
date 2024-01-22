@@ -378,10 +378,6 @@ export function startTournament(event) {
     interactiveSocket.sendMessageSocket(JSON.stringify({ "type": "Tournament", "action": "Start" }));
 }
 
-/////////////
-/// UTILS ///
-/////////////
-
 export function transferToTournament() {
     const startTournamentBtn = document.getElementById('startTournamentBtn');
     startTournamentBtn.removeEventListener('click', startTournament);

@@ -76,7 +76,6 @@ export async function closeInviteRequest(event) {
     const response = await fetchGameInvite('DELETE', {'recipient': userID})
     if (!response)
         return;
-    // If (request accepted) ... else (delete request) ... OR keep the current method ?
     interactiveSocket.sendMessageSocket(JSON.stringify({"type": "Social", "rType": "cancelGameInvite", "other_user_id": userID}));
 }
 
@@ -125,10 +124,6 @@ function handleSelfAcceptedInvite() {
     if (loadingModal) {
         loadingModal.show();
     }
-    // I ACCEPTED THE INVITE, I NEED TO JOIN THE GAME HERE
-
-    ///////////////////////////
-    // loadingModal.hide()
 }
 
 async function handleOtherUserAcceptedInvite(request_id) {

@@ -7,7 +7,6 @@ import { switchModals, hideModal, showModal } from './utils.js';
 export function initGameMenu(world) {
     initlfp(world)
     initMainGameMenu(world)
-    initLobbyTournament()
     initJoinTournament()
 }
 
@@ -23,16 +22,6 @@ function initlfp(world) {
             JSON.stringify({ type: 'Cancel Match' })
         );
     });
-}
-
-function initLobbyTournament() {
-    // const lobbyModal = document.getElementById('lobbyTournamentModal');
-    // lobbyModal.addEventListener('hide.bs.modal', () => {
-    //     const lobbyModalListener = document.getElementById('lobbyTournamentModal');
-    //     lobbyModalListener.dataset.id = ''
-    //     const participantList = lobbyModalListener.querySelector('#participantList')
-    //     participantList.innerHTML = '';
-    // });
 }
 
 function initJoinTournament() {

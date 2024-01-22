@@ -16,12 +16,9 @@ import { closeInviteRequest } from './inviteGame.js';
 import { initGameMenu } from './gameMenu.js';
 import { checkModal } from '../../router.js';
 import { redirectToHome } from '../../api/fetchData.js';
-////////
 
 export async function showHome() {
     try {
-		// await CheckIfRedirectionIsntHappening (?)
-
         await loadHTMLPage('./js/pages/home/home.html');
         checkModal()
         const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));

@@ -76,10 +76,6 @@ export async function updateSpecificUser(userID) {
     }
 }
 
-/////////////////////
-
-
-// To use when user logout
 export async function removeUser(userID) {
     const everyoneContainer = document.getElementById('userDisplay');
     const friendContainer = document.getElementById('friendDisplay');
@@ -102,9 +98,6 @@ export async function removeUser(userID) {
         }
     });
 }
-
-
-/////////////////////
 
 export function handleSocialUpdate(rType, currentUser, otherUserId) {
     const userId = getMyID();
@@ -163,9 +156,6 @@ async function createNotifications(rType, userId, otherUserId, currentUser) {
     }
 }
 
-/////////////////////
-
-// To use when user login
 export async function newUser(userID) {
     const apiParam = { id: userID };
     const currentUser = getMyID()
@@ -254,8 +244,6 @@ async function getTemplateUser(user) {
     }
     return fillOtherUserInfo(templateUser, user);
 }
-
-/////////////////////
 
 export function updateSpecificUserStatus(id, rType) {
     const friendDiv = document.getElementById('friendDisplay');

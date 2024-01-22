@@ -48,7 +48,7 @@ async function createToast(toastInfo) {
         toastNotif.addEventListener('hidden.bs.toast', () => {
             clearInterval(intervalId);
             toastNotif.remove();
-            showNextToast(); // Attempt to show the next toast in the queue
+            showNextToast();
         });
     });
 

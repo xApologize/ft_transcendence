@@ -75,7 +75,6 @@ function updateWaitingMessage() {
 }
 
 export async function updateTournamentList() {
-    // Fetch la view du backend pour update la liste de tournoi car un tournoi viens d'être cancel ou créer.
     const response = await fetchAllLobbies('GET')
     if (!response) return;
     let tournaments = await assembler(response)
