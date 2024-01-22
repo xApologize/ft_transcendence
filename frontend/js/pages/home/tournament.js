@@ -34,6 +34,9 @@ export function socketTournamentUser(action, ownerTournamentID) {
         case "Final Match End":
             finalMatchEnd(ownerTournamentID)
             break;
+        case "abortTournament":
+            console.log("ABORT TOURNAMENT")
+            break;
         default:
             socketLobbyError(action, ownerTournamentID);
             break;
@@ -187,6 +190,7 @@ async function updateOnGoingBracket(players, myID, winnerUserID) {
 }
 
 function preparationFinal(winner, players, myID) {
+    if (!winner) return;
     if ([players.player3, players.player4].some(player => player.dataset.id == myID) ) {
         document.getElementById('r2-p1').textContent = winner.textContent.slice(0, -1);
     } else if ([players.player1, players.player2].some(player => player.dataset.id == myID)) {

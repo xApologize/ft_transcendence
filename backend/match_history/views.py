@@ -35,7 +35,7 @@ class MatchHistoryView(View):
                 return HttpResponseBadRequest("Winner and loser can't be the same user.")
             if winner_score < 0 or loser_score < 0:
                 return HttpResponseBadRequest("Scores can't be negative.")
-            if winner_nickname > 20 or loser_nickname > 20:
+            if len(winner_nickname) > 20 or len(loser_nickname) > 20:
                 return HttpResponseBadRequest("Nickname can't be longer than 20 characters.")
         
             winner = User.objects.get(nickname=winner_nickname)
