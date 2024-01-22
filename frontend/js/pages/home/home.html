@@ -1,10 +1,47 @@
-<audio id="ambient" src="/public/sounds/ambient.mp3" loop preload="auto" autoplay style="display: none;"></audio>
-<audio id="boom" src="/public/sounds/boom.wav" preload="auto" style="display: none;"></audio>
-<audio id="crash" src="/public/sounds/crash.ogg" preload="auto" style="display: none;"></audio>
-<audio id="fanfare" src="/public/sounds/fanfare.mp3" preload="auto" style="display: none;"></audio>
-<audio id="hit" src="/public/sounds/hit.flac" preload="auto" style="display: none;"></audio>
-<audio id="coin" src="/public/sounds/insert-coin.mp3" preload="auto" style="display: none;"></audio>
-<audio id="notif" src="/public/sounds/notif.wav" preload="auto" style="display: none;"></audio>
+<audio
+    id="ambient"
+    src="/public/sounds/ambient.mp3"
+    loop
+    preload="auto"
+    autoplay
+    style="display: none"
+></audio>
+<audio
+    id="boom"
+    src="/public/sounds/boom.wav"
+    preload="auto"
+    style="display: none"
+></audio>
+<audio
+    id="crash"
+    src="/public/sounds/crash.ogg"
+    preload="auto"
+    style="display: none"
+></audio>
+<audio
+    id="fanfare"
+    src="/public/sounds/fanfare.mp3"
+    preload="auto"
+    style="display: none"
+></audio>
+<audio
+    id="hit"
+    src="/public/sounds/hit.flac"
+    preload="auto"
+    style="display: none"
+></audio>
+<audio
+    id="coin"
+    src="/public/sounds/insert-coin.mp3"
+    preload="auto"
+    style="display: none"
+></audio>
+<audio
+    id="notif"
+    src="/public/sounds/notif.wav"
+    preload="auto"
+    style="display: none"
+></audio>
 
 <div class="container-fluid">
 	<div class="row fill">
@@ -18,17 +55,25 @@
                 <btn id="cancel-lfp" class="btn btn-danger btn-lg">Cancel</btn>
             </div>
         </div>
-		
-		<div id="loading" class="d-none position-absolute bottom-50 start-50 translate-middle nickname">
-			<img src="https://i.gifer.com/origin/34/34338d26023e5515f6cc8969aa027bca.gif" alt="" style="width:100px">
-		</div>
 
-		<div id="left-player-name" class="d-none position-absolute bottom-0 text-start p-4 nickname" style="font-size: 2rem; color: white;">Left Player</div>
-		<div id="right-player-name" class="d-none position-absolute bottom-0 text-end p-4 nickname" style="font-size: 2rem; color: white;">Right Player</div>
+        <div
+            id="left-player-name"
+            class="d-none position-absolute bottom-0 text-start p-4 nickname"
+            style="font-size: 2rem; color: white"
+        >
+            Left Player
+        </div>
+        <div
+            id="right-player-name"
+            class="d-none position-absolute bottom-0 text-end p-4 nickname"
+            style="font-size: 2rem; color: white"
+        >
+            Right Player
+        </div>
 
 		<!-- RESULT SCREEN -->
-		<div id="result" class="d-none position-absolute top-50 start-50 translate-middle bg-main-second rounded p-2" style="color: white; width: 35%;">
-            <div id="resultMatch" class="d-none">
+		<div id="result" class="position-absolute top-50 start-50 translate-middle bg-main-second rounded p-2" style="color: white; width: 35%;">
+            <div id="resultMatch" class="">
                 <h3 id="resultTitle" class="row text-center m-0 p-2" style="display: flex; justify-content: center;"> You Lost </h3>
                 <div class="row">
                     <div class="col text-center p-0">
@@ -90,7 +135,7 @@
             </div>
 		</div>
 
-        <div id="ui" class="container-fluid position-absolute">
+        <div id="ui" class="d-none container-fluid position-absolute">
             <div class="row vh-100">
                 <div class="buttonResponsive">
                     <button
@@ -208,7 +253,7 @@
                                     <div id="copyright" class="border-top">
                                         <div class="row">
                                             <div id="team" class="col-3">
-                                                <p class="m-0 ">
+                                                <p class="m-0">
                                                     Dream team &copy 2024
                                                 </p>
                                             </div>
@@ -257,14 +302,25 @@
                                                                 <div
                                                                     class="icons textWhite"
                                                                 >
-                                                                    <i
-                                                                        class="fa fa-github"
-                                                                        aria-hidden="true"
-                                                                    ></i>
-                                                                    <i
-                                                                        class="fa fa-linkedin"
-                                                                        aria-hidden="true"
-                                                                    ></i>
+                                                                    <a
+                                                                        href="https://github.com/Producks"
+                                                                        target="_blank"
+                                                                        class="no-underline-link"
+                                                                    >
+                                                                        <i
+                                                                            class="fa fa-github"
+                                                                            aria-hidden="true"
+                                                                        ></i>
+                                                                    </a>
+                                                                    <a
+                                                                        href="https://www.speedrun.com/users/Producks"
+                                                                        target="_blank"
+                                                                        class="no-underline-link"
+                                                                    >
+                                                                        <i
+                                                                            class="fa fa-gamepad"
+                                                                        ></i>
+                                                                    </a>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -312,14 +368,26 @@
                                                                 <div
                                                                     class="icons textWhite"
                                                                 >
-                                                                    <i
-                                                                        class="fa fa-github"
-                                                                        aria-hidden="true"
-                                                                    ></i>
-                                                                    <i
-                                                                        class="fa fa-linkedin"
-                                                                        aria-hidden="true"
-                                                                    ></i>
+                                                                    <a
+                                                                        href="https://github.com/Jalevesq"
+                                                                        target="_blank"
+                                                                        class="no-underline-link"
+                                                                    >
+                                                                        <i
+                                                                            class="fa fa-github"
+                                                                            aria-hidden="true"
+                                                                        ></i>
+                                                                    </a>
+                                                                    <a
+                                                                        href="https://www.linkedin.com/in/jacob-levesque-136a89272/"
+                                                                        target="_blank"
+                                                                        class="no-underline-link"
+                                                                    >
+                                                                        <i
+                                                                            class="fa fa-linkedin"
+                                                                            aria-hidden="true"
+                                                                        ></i>
+                                                                    </a>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -363,18 +431,29 @@
                                                                 <div
                                                                     class="icons textWhite"
                                                                 >
-                                                                    <i
-                                                                        class="fa fa-github"
-                                                                        aria-hidden="true"
-                                                                    ></i>
+                                                                    <a
+                                                                        href="https://github.com/KayzaFlo"
+                                                                        target="_blank"
+                                                                        class="no-underline-link"
+                                                                    >
+                                                                        <i
+                                                                            class="fa fa-github"
+                                                                            aria-hidden="true"
+                                                                        ></i>
+                                                                    </a>
+                                                                    <a
+                                                                        href="https://www.linkedin.com/in/florian-geslin-652b1015a/"
+                                                                        target="_blank"
+                                                                        class="no-underline-link">
                                                                     <i
                                                                         class="fa fa-linkedin"
                                                                         aria-hidden="true"
                                                                     ></i>
+                                                                    </a>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <p>Fgeslin</p>
+                                                        <p>FGeslin</p>
                                                     </div>
                                                     <div
                                                         id="jrossign"
@@ -422,10 +501,16 @@
                                                                             aria-hidden="true"
                                                                         ></i>
                                                                     </a>
-                                                                    <i
-                                                                        class="fa fa-linkedin"
-                                                                        aria-hidden="true"
-                                                                    ></i>
+                                                                    <a
+                                                                        href="https://www.linkedin.com/in/jean-benoit-rossignol-168441196/"
+                                                                        target="_blank"
+                                                                        class="no-underline-link"
+                                                                    >
+                                                                        <i
+                                                                            class="fa fa-linkedin"
+                                                                            aria-hidden="true"
+                                                                        ></i>
+                                                                    </a>
                                                                 </div>
                                                             </div>
                                                         </div>

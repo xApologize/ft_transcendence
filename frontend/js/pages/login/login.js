@@ -3,6 +3,7 @@ import { navigateTo } from '../../router.js';
 import { fetchAuth } from '../../api/fetchData.js';
 import { displayAlertMsg } from '../../utils/utilityFunctions.js';
 import { assembler } from '../../api/assembler.js';
+import { hideModal } from '../home/utils.js';
 
 export async function showLogin() {
     try {
@@ -125,15 +126,15 @@ async function submit2FACode(result) {
     } // @TODO: handle error bc no token so not suppose to throw 401
     const data = await response.json();
     if (response.status == 200) {
-        modal2FA.hide();
+        hideModal('twoFAModal');
         navigateTo('/home');
     } else if (response.status == 400) {
         document.getElementById('2FAErrorMsg').textContent = data.error;
     } else if (response.status == 404 || response.status == 409) {
-        modal2FA.hide();
+        hideModal('twoFAModal');
         displayLoginError(data);
     } else {
-        modal2FA.hide();
+        hideModal('twoFAModal');
         displayLoginError({ error: 'An error occured. Please try again.' });
     }
 }

@@ -1,26 +1,42 @@
+<!DOCTYPE html>
 <html>
-<head>
-    <title>403 Forbidden - Custom Page</title>
-</head>
-<body>
-    <h1>403 Forbidden</h1>
-    <p>This is a custom error page for 403 Forbidden.</p>
-    <iframe id="videoFrame" width="1920" height="1080"
-    src="https://www.youtube.com/embed/hiRacdl02w4?autoplay=1&mute=1" frameborder="0"
-    allowfullscreen></iframe>
-    <button onclick="toggleFullscreen()">Toggle Fullscreen</button>
-
-    <script>
-        function toggleFullscreen() {
-            var iframe = document.getElementById('videoFrame');
-            if (!document.fullscreenElement) {
-                iframe.requestFullscreen().catch(err => {
-                    alert(`Error attempting to enable full-screen mode: ${err.message}`);
-                });
-            } else {
-                document.exitFullscreen();
+    <head>
+        <title>403 Forbidden - Custom Page</title>
+        <style>
+            body {
+                background-color: green;
             }
-        }
-    </script>
-</body>
+            h1 {
+                color: yellow;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>403 Forbidden</h1>
+        <p>This is a custom error page for 403 Forbidden.</p>
+        <iframe
+            id="videoFrame"
+            width="1920"
+            height="1080"
+            src="https://www.youtube.com/embed/hiRacdl02w4?autoplay=1&mute=1"
+            frameborder="0"
+            allowfullscreen
+        ></iframe>
+        <button onclick="toggleFullscreen()">Toggle Fullscreen</button>
+
+        <script>
+            function toggleFullscreen() {
+                var iframe = document.getElementById('videoFrame');
+                if (!document.fullscreenElement) {
+                    iframe.requestFullscreen().catch((err) => {
+                        alert(
+                            `Error attempting to enable full-screen mode: ${err.message}`
+                        );
+                    });
+                } else {
+                    document.exitFullscreen();
+                }
+            }
+        </script>
+    </body>
 </html>

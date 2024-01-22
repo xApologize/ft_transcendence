@@ -184,6 +184,9 @@ class Login2FA(View):
             response.delete_cookie('2fa_token')
             return response
         
+        if user.status == "ONL":
+            return JsonResponse({'error': 'This account is already logged in.'}, status=409)
+
         device = TOTPDevice.objects.filter(user=user, confirmed=True).first()
         if not device:
             response : HttpResponse = JsonResponse({'error': '2FA device not found or not confirmed.'}, 404)
@@ -292,10 +295,10 @@ class RemoteAuthToken(View):
 
     def authenticate_user(self, user):
         response = JsonResponse({'success': 'Login successful.'})
-        if user.status == "ONL":
-            return JsonResponse({'error': 'This account is already logged in.'}, status=409)
         if user.two_factor_auth:
             return handle_2fa_login(user)
+        if user.status == "ONL":
+            return JsonResponse({'error': 'This account is already logged in.'}, status=409)
         return first_token(response, user.pk)
 
     def create_user(self, user_info):
