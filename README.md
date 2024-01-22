@@ -6,7 +6,7 @@ Remind yourself the beginning of your journey in computer science.
 Look at you now. Time to shine!
 
 ## Built with
-* ![Bootstrap Version](https://img.shields.io/badge/Bootstrap-563d7c?style=flat&logo=bootstrap&logoColor=white) 
+* [![Bootstrap-logo]][Bootstrap-url] 
 * ![Django](https://img.shields.io/badge/Django-092E20?style=flat&logo=django&logoColor=white)
 * ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black)
 * ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat&logo=css3&logoColor=white)
@@ -20,5 +20,5 @@ Look at you now. Time to shine!
 
 
 
-[Bootstrap.com]: https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white
-[Bootstrap-url]: https://getbootstrap.com
+[bootstrap-logo]: https://img.shields.io/badge/Bootstrap-563d7c?style=flat&logo=bootstrap&logoColor=white
+[bootstrap-url]: https://getbootstrap.com
