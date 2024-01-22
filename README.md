@@ -25,11 +25,11 @@ Look at you now. Time to shine!
 [django-logo]: https://img.shields.io/badge/Django-092E20?style=flat&logo=django&logoColor=white
 [django-url]: https://www.djangoproject.com/
 [js-logo]: https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black
-<!-- [js-url]:  -->
+[js-url]: https://www.w3schools.com/js/
 [css-logo]: https://img.shields.io/badge/CSS-1572B6?style=flat&logo=css3&logoColor=white
-<!-- [css-url]:  -->
+[css-url]: https://www.w3schools.com/css/
 [html-logo]: https://img.shields.io/badge/HTML-E34F26?style=flat&logo=html5&logoColor=white
-<!-- [html-url]:  -->
+[html-url]: https://www.w3schools.com/html/
 [python-logo]: https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white
 [python-url]: https://www.python.org/
 [three-js-logo]: https://img.shields.io/badge/Three.js-black?style=flat&logo=three.js&logoColor=white
