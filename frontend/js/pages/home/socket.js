@@ -7,6 +7,7 @@ import { navigateTo } from '../../router.js';
 import { updateSpecificUserStatus } from './socketUpdate.js';
 import { fetchAuth } from '../../api/fetchData.js';
 import { hideAllUI, hideElementById } from './utils.js';
+import { logoutUser } from '../../components/userCard/userCard.js';
 
 const interactiveSocket = {
     interactive_socket: null,

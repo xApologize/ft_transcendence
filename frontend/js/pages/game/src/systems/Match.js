@@ -14,7 +14,7 @@ import { cleanBracket } from '../../../home/tournamentUtils.js';
 
 let world;
 let lastSocketTime;
-const maxScore = 1;
+const maxScore = 15;
 
 const divNicknames = ['left-player-name', 'right-player-name'];
 
@@ -69,12 +69,12 @@ class Match {
 		} else if ( Date.now() - lastSocketTime > 500) {
 			if (!this.loading) {
 				console.warn("Instable Connection");
-				document.getElementById("loading").classList.remove("d-none");
+				showElementById('loading')
 				this.loading = true;
 			}
 		}
 		else if (this.loading) {
-			document.getElementById("loading").classList.add("d-none");
+			hideElementById('loading')
 			this.loading = false;
 		}
 	}

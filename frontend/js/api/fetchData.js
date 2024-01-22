@@ -2,6 +2,8 @@ import { navigateTo } from "../router.js";
 import { closeAllModals } from "../utils/utilityFunctions.js";
 import interactiveSocket from '../pages/home/socket.js'
 import { handleRoute } from "../router.js";
+import { assembler } from "./assembler.js";
+import { displayLoginError } from "../pages/login/login.js";
 
 // Load frontend page.
 export const loadHTMLPage = async (filePath) => {
@@ -31,11 +33,16 @@ export const loadHTMLComponent = async (filePath) => {
     }
 };
 
-export const redirectToHome = () => {
+export const redirectToHome = (response) => {
     closeAllModals();
     interactiveSocket.closeSocket()
     sessionStorage.clear();
     navigateTo('/')
+    setTimeout(async() => {
+        const errorData = await assembler(response);
+        console.log(errorData)
+        displayLoginError(errorData);
+    }, 500);
     return null
 };
 
@@ -69,7 +76,7 @@ const performFetch = async (url, method, data = null) => {
     try {
         let response = await fetch(url, options);
         if (response.status === 401) {
-            return redirectToHome();
+            return redirectToHome(response);
         }
         const jwt_token = setNewToken(response);
         if (jwt_token && !response.headers.get('new')) {
