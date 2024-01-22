@@ -166,6 +166,11 @@ body {
     left: 50%;
 }
 
+.player-name {
+    font-size: 2rem;
+    color: white;
+}
+
 .border-right {
     border-right: 1px solid #dee2e6;
     /* This color is a light grey, common for Bootstrap borders */
@@ -406,13 +411,32 @@ p {
 
 #result {
     position: relative;
+    color: white;
+    width: 35%;
 }
 
 #resultTitle {
+    display: flex;
+    justify-content: center;
     animation-name: blink-title;
     animation-duration: 2s;
     animation-timing-function: ease-in;
     animation-iteration-count: Infinite;
+}
+
+#what-the-fuck-is-that-div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#icon {
+    font-size: 1.5rem;
+}
+
+#tournament-name-bracket {
+    display: flex;
+    justify-content: center;
 }
 
 @keyframes blink-title {

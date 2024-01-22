@@ -44,13 +44,11 @@
 ></audio>
 
 <div class="container-fluid">
-	<div class="row fill">
-		<div id="sceneContainer" class="vw-100 vh-100 p-0"></div>
-		
-        <div id="lfp" class="d-none text-center position-absolute" style="font-size: 2rem; color: white; transform: translate(-50%, -50%); top: 50%; left: 50%;">
-            <div>
-                Looking for player...
-            </div>
+    <div class="row fill">
+        <div id="sceneContainer" class="vw-100 vh-100 p-0"></div>
+
+        <div id="lfp" class="d-none text-center position-absolute">
+            <div>Looking for player...</div>
             <div>
                 <btn id="cancel-lfp" class="btn btn-danger btn-lg">Cancel</btn>
             </div>
@@ -59,22 +57,25 @@
         <div
             id="left-player-name"
             class="d-none position-absolute bottom-0 text-start p-4 nickname"
-            style="font-size: 2rem; color: white"
         >
             Left Player
         </div>
         <div
             id="right-player-name"
             class="d-none position-absolute bottom-0 text-end p-4 nickname"
-            style="font-size: 2rem; color: white"
         >
             Right Player
         </div>
 
-		<!-- RESULT SCREEN -->
-		<div id="result" class="d-none position-absolute top-50 start-50 translate-middle bg-main-second rounded p-2" style="color: white; width: 35%;">
+        <!-- RESULT SCREEN -->
+        <div
+            id="result"
+            class="d-none position-absolute top-50 start-50 translate-middle bg-main-second rounded p-2"
+        >
             <div id="resultMatch" class="d-none">
-                <h3 id="resultTitle" class="row text-center m-0 p-2" style="display: flex; justify-content: center;"> You Lost </h3>
+                <h3 id="resultTitle" class="row text-center m-0 p-2">
+                    You Lost
+                </h3>
                 <div class="row">
                     <div class="col text-center p-0">
                         <p id="leftName"></p>
@@ -89,40 +90,50 @@
                         <p id="rightName"></p>
                     </div>
                 </div>
-                <div class="" style="align-items: center; display: flex; justify-content: center;">
-                    <button id="resultButton" class="btn btn-danger text-center">Back to menu</button>
+                <div id="what-the-fuck-is-that-div">
+                    <button
+                        id="resultButton"
+                        class="btn btn-danger text-center"
+                    >
+                        Back to menu
+                    </button>
                 </div>
             </div>
             <!-- RESULT SCREEN -->
             <div id="bracket" class="d-none">
-                <h1 id="tournament-name-bracket" style="display: flex; justify-content: center;"></h1>
+                <h1 id="tournament-name-bracket"></h1>
                 <main id="tournamentBracket">
-                  <ul id="round-1" class="round round-1">
-                    <li class="spacer">&nbsp;</li>
-                    
-                    <li id="r1-p1" class="game game-top"><span></span></li>
-                    <li class="game game-spacer">&nbsp;</li>
-                    <li id="r1-p2" class="game game-bottom "><span></span></li>
-                
-                    <li class="spacer">&nbsp;</li>
-                    
-                    <li id="r1-p3" class="game game-top"><span></span></li>
-                    <li class="game game-spacer">&nbsp;</li>
-                    <li id="r1-p4" class="game game-bottom "><span></span></li>
-                
-                    <li class="spacer">&nbsp;</li>
-                  </ul>
-                  <ul id="round-2" class="round round-2">
-                    <li class="spacer">&nbsp;</li>
-                    
-                    <li id="r2-p1" class="game game-top"><span></span></li>
-                    <li class="game game-spacer">&nbsp;</li>
-                    <li id="r2-p2" class="game game-bottom "><span></span></li>
-                
-                    <li class="spacer">&nbsp;</li>
-                    
-                  </ul>
-                  <!-- <ul class="round round-3">
+                    <ul id="round-1" class="round round-1">
+                        <li class="spacer">&nbsp;</li>
+
+                        <li id="r1-p1" class="game game-top"><span></span></li>
+                        <li class="game game-spacer">&nbsp;</li>
+                        <li id="r1-p2" class="game game-bottom">
+                            <span></span>
+                        </li>
+
+                        <li class="spacer">&nbsp;</li>
+
+                        <li id="r1-p3" class="game game-top"><span></span></li>
+                        <li class="game game-spacer">&nbsp;</li>
+                        <li id="r1-p4" class="game game-bottom">
+                            <span></span>
+                        </li>
+
+                        <li class="spacer">&nbsp;</li>
+                    </ul>
+                    <ul id="round-2" class="round round-2">
+                        <li class="spacer">&nbsp;</li>
+
+                        <li id="r2-p1" class="game game-top"><span></span></li>
+                        <li class="game game-spacer">&nbsp;</li>
+                        <li id="r2-p2" class="game game-bottom">
+                            <span></span>
+                        </li>
+
+                        <li class="spacer">&nbsp;</li>
+                    </ul>
+                    <!-- <ul class="round round-3">
                     <li class="spacer">&nbsp;</li>
                     <li id="r3-p1" class="game game-top winner"><span></span></li>
                     <li class="spacer">&nbsp;</li>
@@ -131,9 +142,9 @@
                 <div id="leaveTournament" class="d-none">
                     <button class="btn btn-danger">Leave Tournament</button>
                 </div>
-				<h1 id="timer"></h1>
+                <h1 id="timer"></h1>
             </div>
-		</div>
+        </div>
 
         <div id="ui" class="container-fluid position-absolute">
             <div class="row vh-100">
@@ -142,11 +153,7 @@
                         class="btn shadow-none btn-primary textWhite"
                         id="userBtn"
                     >
-                        <i
-                            id="icon"
-                            class="fa fa-user"
-                            style="font-size: 1.5em"
-                        ></i>
+                        <i id="icon" class="fa fa-user"></i>
                     </button>
                 </div>
                 <div
@@ -444,11 +451,12 @@
                                                                     <a
                                                                         href="https://www.linkedin.com/in/florian-geslin-652b1015a/"
                                                                         target="_blank"
-                                                                        class="no-underline-link">
-                                                                    <i
-                                                                        class="fa fa-linkedin"
-                                                                        aria-hidden="true"
-                                                                    ></i>
+                                                                        class="no-underline-link"
+                                                                    >
+                                                                        <i
+                                                                            class="fa fa-linkedin"
+                                                                            aria-hidden="true"
+                                                                        ></i>
                                                                     </a>
                                                                 </div>
                                                             </div>
@@ -754,7 +762,10 @@
                                     </button>
                                 </div>
                                 <div>
-                                    <button id="joinUpgradedBtn" class="btn btn-primary">
+                                    <button
+                                        id="joinUpgradedBtn"
+                                        class="btn btn-primary"
+                                    >
                                         Special 1vs1
                                     </button>
                                 </div>
@@ -794,7 +805,13 @@
             </div>
         </div>
         <!-- Join Tournament -->
-        <div class="modal" id="joinTournamentModal" tabindex="-1" aria-labelledby="joinTournamentModalLabel" aria-hidden="true">
+        <div
+            class="modal"
+            id="joinTournamentModal"
+            tabindex="-1"
+            aria-labelledby="joinTournamentModalLabel"
+            aria-hidden="true"
+        >
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header text-center">
@@ -823,7 +840,15 @@
             </div>
         </div>
         <!-- Lobby Tournament -->
-        <div class="modal" id="lobbyTournamentModal" tabindex="-1" aria-labelledby="lobbyTournamentModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div
+            class="modal"
+            id="lobbyTournamentModal"
+            tabindex="-1"
+            aria-labelledby="lobbyTournamentModalLabel"
+            aria-hidden="true"
+            data-bs-backdrop="static"
+            data-bs-keyboard="false"
+        >
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header text-center">
@@ -897,7 +922,7 @@
             data-bs-keyboard="false"
         >
             <div class="modal-dialog modal-dialog-centered">
-            <div style="background-color: rgba(0, 0, 0, 0); border: 0" class="modal-content">
+                <div class="modal-content bg-transparent border-0">
                     <div class="modal-body">
                         <div class="text-center">
                             <div class="load">
