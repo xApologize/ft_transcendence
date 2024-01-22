@@ -397,6 +397,8 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
                 await self.send_to_layer(ECHO, self.user_id, "Tournament", action_type)
             case "Disconnect":
                 await self.disconnect_tournament()
+            case _:
+                await self.send_error("argument")
 
     async def create_tournament(self) -> None:
         try:
@@ -577,9 +579,12 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             return
         lobby_instance.open = False
         await database_sync_to_async(lobby_instance.save)()
-        await database_sync_to_async(Tournament.objects.create)(
+        tournament_handle: Tournament = await database_sync_to_async(Tournament.objects.create)(
                     player_1=owner_id, player_2=player_2_id,
                         player_3=player_3_id, player_4=player_4_id)
+        await database_sync_to_async(Final.objects.create)(
+            final_id=tournament_handle.pk
+        )
         await database_sync_to_async(lobby_instance.delete)()
         await self.send_to_layer(ECHO, self.user_id ,"Tournament", "startTournament")
         await self.handle_set(owner_id, player_2_id)
@@ -640,25 +645,65 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             except Exception:
                 return None
 
-    async def create_final(self, tournament_handle: Tournament) -> None:
+    async def upper_handling(self, tournament_handle: Tournament) -> None:
         try:
+            final_handle: Final = await database_sync_to_async(Final.objects.get)(final_id=tournament_handle.pk)
+            final_handle.player_1 = self.user_id
+            await database_sync_to_async(final_handle.save)()
             tournament_handle.player_1 = self.user_id
             tournament_handle.player_2 = -1
             await database_sync_to_async(tournament_handle.save)()
             if tournament_handle.player_3 == -1 and tournament_handle.player_4 == -1:
                 print("DOUBLE DC in create")
-                await self.play_againts_nobody() # If both user dced on the other side, play againts nobody + cleanup
+                await self.play_againts_nobody()
                 await database_sync_to_async(tournament_handle.delete)()
                 return
-            await database_sync_to_async(Final.objects.create)(
-                final_id=tournament_handle.pk,
-                player_1=self.user_id,
-                player_2=-1
-            )
+            if final_handle.player_2 != -1:
+                await self.send_final(final_handle)
+                await database_sync_to_async(tournament_handle.delete)()
         except Exception:
             print("Couldn't save to DB final")
             await self.play_againts_nobody() #  Come here if the match couldn't be created? not sure how this would happen
             await database_sync_to_async(tournament_handle.delete)()
+
+    async def lower_handling(self, tournament_handle: Tournament) -> None:
+        try:
+            final_handle: Final = await database_sync_to_async(Final.objects.get)(final_id=tournament_handle.pk)
+            final_handle.player_2 = self.user_id
+            await database_sync_to_async(final_handle.save)()
+            tournament_handle.player_3 = self.user_id
+            tournament_handle.player_4 = -1
+            await database_sync_to_async(tournament_handle.save)()
+            if tournament_handle.player_1 == -1 and tournament_handle.player_2 == -1:
+                print("DOUBLE DC in create")
+                await self.play_againts_nobody()
+                await database_sync_to_async(tournament_handle.delete)()
+                return
+            if final_handle.player_1 != -1:
+                await self.send_final(final_handle)
+                await database_sync_to_async(tournament_handle.delete)()
+        except Exception:
+            print("Couldn't save to DB final")
+            await self.play_againts_nobody() #  Come here if the match couldn't be created? not sure how this would happen
+            await database_sync_to_async(tournament_handle.delete)()
+
+    async def send_final(self, final_countdown: Final) -> None:
+        if final_countdown.player_1 == self.user_id:
+            player_1_id: int = self.user_id
+            player_2_id: int = final_countdown.player_2
+        else:
+            player_1_id: int = final_countdown.player_1
+            player_2_id: int = self.user_id
+        player_1_nickname: str = await self.get_user_nickname(player_1_id)
+        player_2_nickname: str = await self.get_user_nickname(player_2_id)
+        player_1_match_handle: dict = await self.create_match_handle(
+            player_1_id, player_2_id, "A", player_1_nickname, player_2_nickname, "Tournament Final"
+        )
+        player_2_match_handle: dict = await self.create_match_handle(
+            player_1_id, player_2_id, "B", player_2_nickname, player_1_nickname, "Tournament Final"
+        )
+        await self.send_tourny_handle(player_1_match_handle, player_1_id)
+        await self.send_tourny_handle(player_2_match_handle, player_2_id)
 
     async def join_final(self, tournament_id: int) -> None:
         try:
@@ -694,10 +739,9 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             return
         upper_bracket: bool = await self.check_if_upper(tournament_handle)
         if upper_bracket is True:
-            await self.create_final(tournament_handle)
+            await self.upper_handling(tournament_handle)
         else:
-            await self.join_final(tournament_handle.pk)
-            await database_sync_to_async(tournament_handle.delete)()
+            await self.lower_handling(tournament_handle)
 
     async def check_if_upper(self, tournament_handle: Tournament) -> bool:
         if tournament_handle.player_1 == self.user_id or tournament_handle.player_2 == self.user_id:
@@ -747,6 +791,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
                 tournament_handle: Tournament = await self.get_tournament()
                 await database_sync_to_async(tournament_handle.delete)()
                 await self.play_againts_nobody()
+                await self.send(text_data=json.dumps({"type": "Tournament", "rType": "abortTournament", "id": self.user_id}))
             except Exception:
                 print("Abort failure")
 
