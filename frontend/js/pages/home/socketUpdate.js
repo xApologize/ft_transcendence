@@ -133,7 +133,7 @@ async function createNotifications(rType, userId, otherUserId, currentUser) {
     
     if (userId == currentUser || !userId) {
         const user = await fetchUserById(otherUserId);
-        let imgUrl = user ? user.avatar : "https://png.pngtree.com/png-clipart/20190904/ourmid/pngtree-80-3d-text-png-image_18456.jpg";
+        let imgUrl = user ? user.avatar : "../../../public/80-percent.jpeg";
         let userNickname = user ? user.nickname : "someone";
         let toastType = ''
     

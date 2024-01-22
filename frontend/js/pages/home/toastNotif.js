@@ -5,7 +5,7 @@ import { checkModal } from '../../router.js';
 let toastQueue = [];
 export function displayToast(toastMsg, toastTitle, toastType = '', imgUrl = '') {
     if (imgUrl === '')
-        imgUrl = 'https://png.pngtree.com/png-clipart/20190904/ourmid/pngtree-80-3d-text-png-image_18456.jpg';
+        imgUrl = '../../../public/80-percent.jpeg';
     const toastPrep = prepToastInfo(toastMsg, toastTitle, toastType,imgUrl);
     if (document.querySelectorAll('#toastContainer .toast.show').length >= 5) {
         toastQueue.push(toastPrep);
