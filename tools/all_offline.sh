@@ -14,4 +14,4 @@ Purple='\033[0;35m'       # Purple
 Cyan='\033[0;36m'         # Cyan
 White='\033[0;37m'        # White
 
-docker exec -it $(docker ps --filter "name=postgres" --format "{{.ID}}") psql -U b -d a -c "UPDATE user_profile_user SET status = 'OFF'; DELETE FROM tournament_lobby; DELETE FROM tournament_tournament; DELETE FROM tournament_final"
+docker exec -it $(docker ps --filter "name=postgres" --format "{{.ID}}") psql -U a -d g -c "UPDATE user_profile_user SET status = 'OFF'; DELETE FROM tournament_lobby; DELETE FROM tournament_tournament; DELETE FROM tournament_final"
