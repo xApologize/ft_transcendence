@@ -47,9 +47,17 @@ export async function handleRoute() {
 }
 
 function handlePopState(event) {
+    console.log(window.location.pathname)
     checkModal(true);
-    handleRoute();
-    interactiveSocket.closeSocket();
+    if (window.location.pathname == '/') {
+        setTimeout(() => {
+            handleRoute();
+            interactiveSocket.closeSocket();
+        }, 1000);
+    } else {
+        handleRoute();
+        interactiveSocket.closeSocket();
+    }
 }
 
 function disposeModal(modalId) {

@@ -7,12 +7,11 @@ import { assembler } from '../../api/assembler.js';
 export async function showLogin() {
     try {
         await loadHTMLPage('./js/pages/login/login.html');
-
         new bootstrap.Modal(document.getElementById('twoFAModal'));
-
+        
+        initCss();
         getIntraHref();
         initEventListeners();
-        initCss();
     } catch (error) {
         console.error('Error fetching home.html:', error);
     }
