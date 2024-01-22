@@ -1,12 +1,13 @@
 import { assembler } from '../../api/assembler.js';
-import interactiveSocket, { hideAllUI } from './socket.js';
+import interactiveSocket from './socket.js';
 import { displayToast } from './toastNotif.js';
 import { getMyID, switchModals, isModalShown } from './utils.js';
-import { fetchMe, fetchAllLobbies, fetchMyLobby, fetchMatchHistory } from '../../api/fetchData.js';
+import { fetchMe, fetchMatchHistory } from '../../api/fetchData.js';
 import { World } from '../game/src/World.js';
 import { checkModal } from '../../router.js';
 import { getOpponentID } from '../game/src/systems/Match.js';
 import { cleanBracket, removeInfoLobbyModal, isUserInTournament, updateParticipantList, updateTournamentList } from './tournamentUtils.js';
+import { hideAllUI } from './utils.js';
 
 // This is handler for when someone sent something with socket and it worked.
 export function socketTournamentUser(action, ownerTournamentID) {
