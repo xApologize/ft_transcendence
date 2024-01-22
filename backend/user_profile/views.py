@@ -4,7 +4,7 @@ from django.http import JsonResponse, HttpResponse, HttpResponseNotFound, HttpRe
 from match_history.models import MatchHistory
 from django.views import View
 from utils.decorators import token_validation, verify_cookies
-from utils.functions import get_user_obj
+from utils.functions import get_user_obj, checkInputUser
 from django.contrib.auth.hashers import make_password
 from friend_list.models import FriendList
 import json, os, imghdr
@@ -129,6 +129,8 @@ class Users(View):
         allowed_fields = {'nickname', 'email', 'status'}
         try:
             data = json.loads(request.body)
+            if checkInputUser(data, allowed_fields) is False:
+                return HttpResponseBadRequest('Invalid JSON data in the request body.')
             user = get_user_obj(request)
             if ("demo-user" == user.nickname or "demo-user2" == user.nickname) and "status" not in data:
                 return HttpResponseBadRequest('Demo user cannot be updated.') # 400

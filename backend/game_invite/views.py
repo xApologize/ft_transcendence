@@ -6,7 +6,7 @@ from django.views import View
 from django.db.models import Q
 from utils.decorators import token_validation
 from django.core.exceptions import PermissionDenied
-from utils.functions import get_user_obj
+from utils.functions import get_user_obj, checkInputUser
 from user_profile.utils import get_avatar_data
 import json
 
@@ -15,7 +15,13 @@ class gameInvite(View):
     def post(self, request):
         try:
             data = json.loads(request.body)
-            recipient_id = int(data['recipient'])
+            if not checkInputUser(data, ['recipient']):
+                return JsonResponse({"error": "Invalid JSON"}, status=400)
+            try:
+                recipient_id = int(data['recipient'])
+            except ValueError:
+                return JsonResponse({"error": "Recipient must be an integer"}, status=400)
+
             user_inviting = get_user_obj(request)
             recipient = User.objects.filter(pk=recipient_id).first()  # Simplified retrieval with .first()
         except User.DoesNotExist:
@@ -53,7 +59,12 @@ class gameInvite(View):
         response_data = {"rType": "refreshGameInvite"}
         try:
             data = json.loads(request.body)
-            recipient_id = int(data['recipient'])
+            if not checkInputUser(data, ['recipient']):
+                return JsonResponse({"error": "Invalid JSON"}, status=400)
+            try:
+                recipient_id = int(data['recipient'])
+            except ValueError:
+                return JsonResponse({"error": "Recipient must be an integer"}, status=400)
             user_inviting = get_user_obj(request)
             recipient = User.objects.filter(pk=recipient_id).first()
 

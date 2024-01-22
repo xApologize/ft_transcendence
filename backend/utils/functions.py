@@ -78,3 +78,11 @@ def generate_2fa_token(id: int) -> str:
         "iat": current_time
     }
     return jwt.encode(payload, settings.SECRET_KEY, algorithm="HS256")
+
+def checkInputUser(userInput, fieldSupposeToHave):
+    for field in fieldSupposeToHave:
+        if field not in userInput:
+            return False
+    if len(userInput) != len(fieldSupposeToHave):
+        return False
+    return True

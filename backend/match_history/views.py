@@ -4,7 +4,7 @@ from django.views import View
 from .models import User, MatchHistory
 import json
 from utils.decorators import token_validation
-from utils.functions import get_user_obj
+from utils.functions import get_user_obj, checkInputUser
 from django.db.models import Q
 
 
@@ -13,6 +13,8 @@ class MatchHistoryView(View):
     def post(self, request: HttpRequest):
         try:
             gameData = json.loads(request.body)
+            if not checkInputUser(gameData, ['winner', 'loser', 'winner_score', 'loser_score']):
+                return HttpResponseBadRequest("Invalid JSON.")
             user = get_user_obj(request)
         except json.JSONDecodeError:
             return HttpResponseBadRequest("Invalid JSON.")
@@ -31,6 +33,10 @@ class MatchHistoryView(View):
             
             if winner_nickname == loser_nickname:
                 return HttpResponseBadRequest("Winner and loser can't be the same user.")
+            if winner_score < 0 or loser_score < 0:
+                return HttpResponseBadRequest("Scores can't be negative.")
+            if winner_nickname > 20 or loser_nickname > 20:
+                return HttpResponseBadRequest("Nickname can't be longer than 20 characters.")
         
             winner = User.objects.get(nickname=winner_nickname)
             loser = User.objects.get(nickname=loser_nickname)

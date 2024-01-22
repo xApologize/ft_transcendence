@@ -5,8 +5,7 @@ from django.core.exceptions import PermissionDenied
 import json, random
 from django.contrib.auth.hashers import check_password
 from user_profile.models import User
-from utils.functions import first_token
-from utils.functions import get_user_obj, generate_2fa_token, decrypt_user_id
+from utils.functions import first_token, checkInputUser, get_user_obj, decrypt_user_id
 from django_otp.plugins.otp_totp.models import TOTPDevice
 import base64, qrcode
 from io import BytesIO
@@ -80,10 +79,6 @@ class Create2FA(View):
         except Http404 as e:
             return HttpResponse(str(e), status=404)
 
-        # otp_token = request.POST.get('otp_token')
-        # if not otp_token:
-        #     return JsonResponse({'error': 'OTP token is required.'}, status=400)
-
         device = TOTPDevice.objects.filter(user=user).first()
         if device:
             TOTPDevice.objects.filter(user=user).delete()  # Delete all TOTP devices
@@ -105,6 +100,8 @@ class Confirm2FA(View):
 
         try:
             data = json.loads(request.body)
+            if not checkInputUser(data, ['otp_token']):
+                return JsonResponse({'error': 'Invalid JSON.'}, status=400)
             otp_token = data.get('otp_token')
             if not otp_token:
                 return JsonResponse({'error': 'Please enter a code.'}, status=400)
@@ -131,6 +128,8 @@ class Login(View):
     def post(self, request):
         errorMessage = {"error": "Invalid credentials."}
         login_data = json.loads(request.body)
+        if not checkInputUser(login_data, ['nickname', 'password']):
+            return JsonResponse({'error': 'Invalid JSON.'}, status=400)
         nickname = login_data.get('nickname', '')
         password = login_data.get('password', '')
  
@@ -170,6 +169,8 @@ class Login2FA(View):
     
         try:
             data = json.loads(request.body)
+            if not checkInputUser(data, ['otp_token']): # NEW
+                return JsonResponse({'error': 'Invalid JSON.'}, status=400)
             otp_token = data.get('otp_token')
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON.'}, status=400)
