@@ -14,7 +14,7 @@ import { cleanBracket } from '../../../home/tournamentUtils.js';
 
 let world;
 let lastSocketTime;
-const maxScore = 3;
+const maxScore = 1;
 
 const divNicknames = ['left-player-name', 'right-player-name'];
 
@@ -65,7 +65,8 @@ class Match {
 			document.getElementById("loading").classList.add("d-none");
 			console.error("Disconnected");
 			this.loading = false;
-		} else if (Date.now() - lastSocketTime > 500) {
+			interactiveSocket.sendMessageSocket(JSON.stringify({ "type": "Tournament", "action": "Disconnect" }));
+		} else if ( Date.now() - lastSocketTime > 500) {
 			if (!this.loading) {
 				console.warn("Instable Connection");
 				document.getElementById("loading").classList.remove("d-none");
