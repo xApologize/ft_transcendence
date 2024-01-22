@@ -21,6 +21,8 @@ ABORT_TOURNAMENT = "abort_tournament"
 
 class UserInteractiveSocket(AsyncWebsocketConsumer):
     async def connect(self):
+        await self.close()
+        return
         try:
             self.init: bool = False
             self.user_id: int = self.scope.get("user_id")
