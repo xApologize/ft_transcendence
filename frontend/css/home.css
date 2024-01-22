@@ -138,6 +138,12 @@ audio {
     left: 50%;
 }
 
+#findGame {
+    z-index: 1;
+    position: absolute;
+    right: 50%;
+}
+
 .player-name {
     font-size: 2rem;
     color: white;
