@@ -79,11 +79,6 @@ async function loopDisplayUser(objectAllUsers, currentUser, userContainer) {
             userContainer.appendChild(filledTemplate);            
         }
 
-        //this is for potential patch to prevent the text box to push the button out of the div
-        // if (user.nickname.length > 10 && window.innerWidth < 1000) console.log('greater than 10');
-        // console.log(userContainer.offsetWidth);
-        // console.log(clonedUserTemplate.querySelector('#user-name').offsetWidth);
-
         userContainer.appendChild(clonedUserTemplate);
     });
 }
