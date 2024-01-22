@@ -1,3 +1,4 @@
+import { checkModal } from '../../router.js';
 import { GameState } from '../game/src/systems/GameStates.js';
 import interactiveSocket from './socket.js';
 import { handleCreateTournamentClick } from './tournament.js';
@@ -43,6 +44,7 @@ function setupPlayClassicButton(world) {
     playClassic.addEventListener('click', () => handlePlayClassicClick(world));
     function handlePlayClassicClick(world) {
         hideModal('gameMenuModal');
+        checkModal()
         hideElement('toastContainer');
         hideElement('ui');
         world.currentGameState = GameState.LookingForPlayer;
@@ -58,6 +60,7 @@ function setupPlayUpgradedButton(world) {
     playUpgraded.addEventListener('click', () => handlePlayUpgradedClick(world));
     function handlePlayUpgradedClick(world) {
         hideModal('gameMenuModal');
+        checkModal()
         hideElement('toastContainer');
         hideElement('ui');
         world.currentGameState = GameState.LookingForPlayer;

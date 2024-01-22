@@ -35,7 +35,7 @@ export function socketTournamentUser(action, ownerTournamentID) {
             finalMatchEnd(ownerTournamentID)
             break;
         case "abortTournament":
-            console.log("ABORT TOURNAMENT")
+            abortTournament();
             break;
         default:
             socketLobbyError(action, ownerTournamentID);
@@ -50,7 +50,7 @@ export function socketLobbyError(action, ownerTournamentID) {
             // Tried to start a tournament that doesn't exist
             console.log("invalidStart");
             cancelEverythingTournament();
-            displayToast("You retarded, tf you doing", "Tournament doesn't exist");
+            displayToast("You cannot start a tournament that does not exist.", "Tournament doesn't exist");
             break;
         case 'invalidJoin':
             // Tried to join a tournament that doesn't exist
@@ -91,6 +91,13 @@ export function socketLobbyError(action, ownerTournamentID) {
             console.error("Ayo wtf is this error: " + action)
             break;
     }
+}
+
+function abortTournament() {
+    console.log("ABORT TOURNAMENT")
+
+    if (!World._instance.match) return;
+    World._instance.match.endMatch();
 }
 
 function isUserInCurrentTournament(myID, players = null) {

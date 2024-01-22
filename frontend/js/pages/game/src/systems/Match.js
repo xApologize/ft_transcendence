@@ -11,12 +11,14 @@ import interactiveSocket from '../../../home/socket.js';
 import { updateUserCard } from '../../../../components/userCard/userCard.js';
 import { getMyID, hideElementById, resetInnerHTMLById, showElementById } from '../../../home/utils.js';
 import { cleanBracket } from '../../../home/tournamentUtils.js';
+import { displayToast } from '../../../home/toastNotif.js';
 
 let world;
 let lastSocketTime;
-const maxScore = 15;
+const maxScore = 5;
 
 const divNicknames = ['left-player-name', 'right-player-name'];
+let timeoutTournamentFinal = null;
 
 class Match {
 	constructor(path, myId, myNickname, opponentNickname, tournamentStage) {
@@ -62,7 +64,7 @@ class Match {
 	fixedUpdate() {
 		if (Date.now() - lastSocketTime > 3000) {
 			this.endMatch();
-			document.getElementById("loading").classList.add("d-none");
+			hideElementById('loading')
 			console.error("Disconnected");
 			this.loading = false;
 			interactiveSocket.sendMessageSocket(JSON.stringify({ "type": "Tournament", "action": "Disconnect" }));
@@ -109,7 +111,6 @@ class Match {
 		if (!this.waitingForGoal || (wsData.scored && this.waitingForGoal)) {
 			lastSocketTime = Date.now();
 		}
-
 
 		if (this.participants[wsData.id] != undefined && wsData.pos != undefined)
 			this.participants[wsData.id].position.copy(wsData.pos);
@@ -166,9 +167,9 @@ class Match {
 	}
 
 	showResultTournamentUI() {
-		document.getElementById('result').classList.remove('d-none')
-		document.getElementById('resultMatch').classList.remove('d-none')
-		document.getElementById('bracket').classList.remove('d-none');
+		showElementById('result')
+		showElementById('resultMatch')
+		showElementById('bracket')
 
 		document.getElementById('resultButton').classList.toggle('d-none', true);
 		if ( this.opponent.score >= maxScore || this.tournamentStage < 2 ) {
@@ -177,13 +178,14 @@ class Match {
 			document.getElementById('leaveTournament').classList.toggle('d-none', false)
 		}
 
-		this.setResultMatch();
+		const isTournamentCanceled = this.setResultMatch();
+		if (isTournamentCanceled) return;
 		this.setBracketResult();
 	}
 
 	showResultMatchUI() {
-		document.getElementById('result').classList.remove('d-none')
-		document.getElementById('resultMatch').classList.remove('d-none')
+		showElementById('result')
+		showElementById('resultMatch')
 		document.getElementById('bracket').classList.toggle('d-none', true)
 
 		document.getElementById('leaveTournament').classList.toggle('d-none', true)
@@ -218,20 +220,38 @@ class Match {
 		if (!response) return;
 
 		if (this.tournamentStage == 2 ) {
+			timeoutTournamentFinal = setTimeout(() => {
+				console.log("HEEEY")
+				showUIHideGame();
+				interactiveSocket.sendMessageSocket(JSON.stringify({ "type": "Tournament", "action": "Disconnect" }));
+				displayToast("The tournament has been canceled.", "Tournament")
+				cleanBracket();
+				world.changeStatus("ONL");
+			}, 300000); // 5 minutes
 			interactiveSocket.sendMessageSocket(JSON.stringify({ "type": "Tournament", "action": "Final" }));
 		}
 	}
 
 	setResultMatch() {
-		document.getElementById('leftName').innerHTML = this.participants[0].nickname;
+		const leftName = document.getElementById('leftName');
+		if (!leftName) return;
+
+		leftName.innerHTML = this.participants[0].nickname;
 		document.getElementById('leftScore').innerHTML = this.participants[0].score;
 		document.getElementById('rightScore').innerHTML = this.participants[1].score;
 		document.getElementById('rightName').innerHTML = this.participants[1].nickname;
 
 		if (this.self.score < maxScore && this.opponent.score < maxScore) {
-			document.getElementById("resultTitle").innerHTML = "Disconnected";
-			if (this.tournamentStage > 0)
+			const resultTitle = document.getElementById("resultTitle");
+			if (this.tournamentStage > 0) {
+				resultTitle.innerHTML = "A user left. The tournament is canceled.";
+				document.getElementById('timer').innerHTML = "Canceled"
+				document.getElementById('leaveTournament').addEventListener('click', this.backToMenu)
 				this.toggleLeaveBtn(true)
+				return true
+			} else {
+				resultTitle.innerHTML = "Disconnected";
+			}
 		}
 		if (this.self.score >= maxScore) {
 			document.getElementById("fanfare").play();
@@ -257,7 +277,10 @@ class Match {
 		
 		const elementsToReset = ['leftName', 'leftScore', 'rightScore', 'rightName', 'resultTitle', 'tournament-name-bracket'];
 		elementsToReset.forEach(resetInnerHTMLById);
-		
+		if (timeoutTournamentFinal) {
+			clearTimeout(timeoutTournamentFinal)
+			timeoutTournamentFinal = null;
+		};
 		cleanBracket();
 	}
 
@@ -281,6 +304,10 @@ class Match {
 		if (this.tournamentStage === 2) {
 			this.updateFirstRound(roundEl, myPlace);
 		} else if (this.tournamentStage === 1) {
+			if (timeoutTournamentFinal) {
+				clearTimeout(timeoutTournamentFinal)
+				timeoutTournamentFinal = null;
+			};
 			this.updateFinalRound(roundEl, myPlace);
 		}
 	}
@@ -381,4 +408,12 @@ export function getOpponentID(myPlaceID) {
 		'r2-p2': 'r2-p1',
 	};
 	return opponentMapping[myPlaceID];
+}
+
+function showUIHideGame() {
+	const elementsToHide = ['bracket', 'result', 'resultMatch'];
+	elementsToHide.forEach(hideElementById);
+
+	showElementById('ui');
+	showElementById('toastContainer')
 }
