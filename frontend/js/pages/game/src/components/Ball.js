@@ -132,6 +132,7 @@ class Ball extends InstancedMesh {
 			if ( closerHit.object.layers.isEnabled( Layers.Goal ) ) {
 				if ( closerHit.object.paddle.isOpponent == true ) {
 					ballInst.speed = 0;
+					World._instance.match.waitingForGoal = true;
 					return;
 				}
 				if ( typeof closerHit.object.onCollision !== "function" )
@@ -160,7 +161,7 @@ class Ball extends InstancedMesh {
 		ballInst.pos.add( ballInst.dir.clone().multiplyScalar( dist ) );
 	}
 
-	playerCollision( ballInst, point, object ) {
+	playerCollision( ballInst, point, object, smashed = false ) {
 		if ( ballInst.dir.dot( object.dir ) > 0 ) {
 			ballInst.dir.reflect( point.x < 0 ? new Vector3( 1, 0, 0 ) : new Vector3( -1, 0, 0 ) );
 
@@ -173,8 +174,15 @@ class Ball extends InstancedMesh {
 			// if ( ballInst.speed < dot * object.speed )
 			// 	ballInst.speed = dot * object.speed;
 
-			ballInst.smashed = false;
+			ballInst.smashed = smashed;
 			ballInst.spin = 0;
+
+			if ( smashed ) {
+				hitParticlesParam.position.copy( ballInst.pos );
+				hitParticlesParam.speed = 20;
+				this.particles = new ParticleSystem( particles_geo, particles_mat, 80, hitParticlesParam );
+				this.particles.renderer.setLayers( Layers.Buffer );
+			}
 		}
 	}
 
@@ -275,9 +283,17 @@ class Ball extends InstancedMesh {
 
 
 		hitParticlesParam.position.copy( inst.pos );
-		this.particles = new ParticleSystem( particles_geo, particles_mat, 20, hitParticlesParam );
+		if (inst.smashed) {
+			hitParticlesParam.speed = 20;
+			this.particles = new ParticleSystem( particles_geo, particles_mat, 80, hitParticlesParam );
+			document.getElementById("crash").play();
+		} else {
+			hitParticlesParam.speed = 10;
+			this.particles = new ParticleSystem( particles_geo, particles_mat, 20, hitParticlesParam );
+			document.getElementById("hit").play();
+		}
 		this.particles.renderer.setLayers( Layers.Buffer );
-		document.getElementById("hit").play();
+		World._instance.match.waitingForGoal = false;
 	}
 
 	delete() {

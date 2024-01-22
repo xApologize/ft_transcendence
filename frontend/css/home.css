@@ -2,6 +2,7 @@
     #left-column {
         display: none;
     }
+
     .buttonResponsive {
         max-height: 40px;
         display: block;
@@ -12,9 +13,11 @@
     #left-column {
         display: block;
     }
+
     #right-column {
         display: block !important;
     }
+
     .buttonResponsive {
         display: none;
     }
@@ -90,6 +93,7 @@ body {
     background-color: var(--bg-accent) !important;
     color: #ffffff !important;
 }
+
 .show {
     display: block !important;
 }
@@ -163,7 +167,8 @@ body {
 }
 
 .border-right {
-    border-right: 1px solid #dee2e6; /* This color is a light grey, common for Bootstrap borders */
+    border-right: 1px solid #dee2e6;
+    /* This color is a light grey, common for Bootstrap borders */
 }
 
 #copyright {
@@ -182,11 +187,9 @@ body {
 /* .about-box {
 }
 
-#ddemers-pos {
-}
+#ddemers-pos {}
 
-#jalevesq-pos {
-}
+#jalevesq-pos {}
 
 #fgeslin-pos {
 } */
@@ -198,8 +201,10 @@ body {
 .link-primary {
     color: white !important;
 }
+
 #joinTournamentModal .list-group-item:hover {
-    background-color: #d6d8db; /* Darker shade for hover, adjust color as needed */
+    background-color: #d6d8db;
+    /* Darker shade for hover, adjust color as needed */
     cursor: pointer;
 }
 
@@ -217,9 +222,11 @@ main {
     list-style: none;
     padding: 0;
 }
+
 .round .spacer {
     flex-grow: 1;
 }
+
 .round .spacer:first-child,
 .round .spacer:last-child {
     flex-grow: 0.5;
@@ -273,6 +280,7 @@ li.game-bottom {
     justify-content: center;
     align-items: center;
 }
+
 .load div {
     width: 25px;
     height: 25px;
@@ -289,12 +297,15 @@ li.game-bottom {
     animation-iteration-count: infinite;
     animation-direction: alternate;
 }
+
 .load-two {
     animation-delay: 0.4s;
 }
+
 .load-three {
     animation-delay: 0.8s;
 }
+
 @keyframes loading {
     to {
         opacity: 0.3;
@@ -414,4 +425,9 @@ p {
     100% {
         counter-reset: white;
     }
+}
+
+#leaveTournament {
+    display: flex;
+    justify-content: flex-end;
 }

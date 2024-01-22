@@ -72,8 +72,8 @@ class Player extends Paddle {
 			// 	return;
 			// if ( Math.abs( ball.pos.x - this.position.x ) > 2 )
 			// 	return;
-			// if ( Math.sign( ball.dir.x ) != Math.sign( position.x ) )
-			// 	return;
+			if ( Math.sign( ball.dir.x ) != Math.sign( position.x ) )
+				return;
 
 			const pos = new Vector3(
 				this.position.x,
@@ -82,8 +82,8 @@ class Player extends Paddle {
 			);
 			document.getElementById("crash").play();
 			World._instance.balls.ballInst[0].dir.y += this.lastDir;
-			World._instance.balls.playerCollision( World._instance.balls.ballInst[0], pos, this );
-			World._instance.balls.ballInst[0].smashed = true;
+			World._instance.balls.playerCollision( World._instance.balls.ballInst[0], pos, this, true );
+			// World._instance.balls.ballInst[0].smashed = true;
 			World._instance.balls.ballInst[0].dir.normalize();
 			World._instance.balls.ballInst[0].spin = InputMap.movementAxis.value * Math.PI / 2;
 			this.onCollision( World._instance.balls.ballInst[0] );
@@ -102,14 +102,18 @@ class Player extends Paddle {
 
 		this.smashCd -= dt;
 
-		if ( this.dashCount < 3 )
-			this.dashCount += dt / initialDashCd;
-		else
-			this.dashCount = 3;
-		this.dashSpheresAnimation( this.dashCount );
-
-		if ( World._instance.currentGameMode == "Upgraded" )
+		
+		if ( World._instance.currentGameMode == "Upgraded" ) {
+			if ( this.dashCount < 3 )
+				this.dashCount += dt / initialDashCd;
+			else
+				this.dashCount = 3;
+			this.dashSpheresAnimation( this.dashCount );
+			
 			this.wsData.dashCount = this.dashCount;
+		}
+		else
+			this.wsData.dashCount = undefined;
 	}
 
 	update( dt ) {
