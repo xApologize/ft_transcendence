@@ -18,6 +18,7 @@ MATCH_INVITE = "send_message_match_invite"
 SEND_LIST_IDS = "send_message_list_ids"
 ABORT_TOURNAMENT = "abort_tournament"
 LOGOUT_USER = "send_user_to_the_shadow_realm"
+ABORT_ABORT = "abort_tourny_tourny"
 
 
 class UserInteractiveSocket(AsyncWebsocketConsumer):
@@ -523,8 +524,9 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             else:
                 tournament_instance.player_1 = -1
             await database_sync_to_async(tournament_instance.save)()
-        except Exception:
-            print("Couldn't save or del clean upper")
+            await self.send_cancel(tournament_instance)
+        except Exception as e:
+            print("Couldn't save or del clean upper", e)
 
     async def clean_lower(self, tournament_instance: Tournament) -> None:
         try:
@@ -541,8 +543,31 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             else:
                 tournament_instance.player_3 = -1
             await database_sync_to_async(tournament_instance.save)()
-        except Exception:
-            print("Couldn't save or del clean lower")
+            await self.send_cancel(tournament_instance)
+        except Exception as e:
+            print("Couldn't save or del clean lower", e)
+    
+    async def send_cancel(self, tournament_instance: Tournament) -> None:
+        if tournament_instance.player_1 != -1:
+            await self.send_to_cancel(tournament_instance.player_1)
+        if tournament_instance.player_2 != -1:
+            await self.send_to_cancel(tournament_instance.player_2)
+        if tournament_instance.player_3 != -1:
+            await self.send_to_cancel(tournament_instance.player_3)
+        if tournament_instance.player_4 != -1:
+            await self.send_to_cancel(tournament_instance.player_4)
+
+    async def send_to_cancel(self, concerning_id: int) -> None:
+        await self.channel_layer.group_send(
+            "interactive", {
+                "type": ABORT_ABORT,
+                "Receiver": concerning_id
+                }
+            )
+        
+    async def abort_tourny_tourny(self, data: any):
+        if self.user_id == data["Receiver"]:
+            await self.send(text_data=json.dumps({"type": "Tournament", "rType": "abortTournament", "id": self.user_id}))
 
     async def handle_lobby_cleaning(self) -> None:
         lobby_instance: Lobby = await self.get_owner_lobby()
@@ -791,7 +816,6 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
                 tournament_handle: Tournament = await self.get_tournament()
                 await database_sync_to_async(tournament_handle.delete)()
                 await self.play_againts_nobody()
-                await self.send(text_data=json.dumps({"type": "Tournament", "rType": "abortTournament", "id": self.user_id}))
             except Exception:
                 print("Abort failure")
 
