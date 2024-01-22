@@ -7,7 +7,9 @@ import { templateComponent } from './components/template/template.js';
 import { showCallback } from './pages/callback/callback.js';
 import interactiveSocket from './pages/home/socket.js'
 import { fetchIsToken } from './api/fetchData.js';
+import { disposeModal, showModal, hideModal } from './pages/home/utils.js';
 
+let currentPath;
 const routes = {
     '/': showLogin,
     '/home': showHome,
@@ -43,43 +45,28 @@ export async function handleRoute() {
     } else {
         pageFunction = show404;
     }
+    currentPath = goPath;
     showPage(pageFunction);
 }
 
-function handlePopState(event) {
-    console.log(window.location.pathname)
+function closeAndHandleRoute() {
     checkModal(true);
-    if (window.location.pathname == '/') {
-        setTimeout(() => {
-            handleRoute();
-            interactiveSocket.closeSocket();
-        }, 1000);
+    handleRoute();
+    interactiveSocket.closeSocket();
+}
+
+function handlePopState(event) {
+    checkModal();
+    showModal('loadingModal');
+
+    const specialPathnames = ['/', '/login', '/signUp'];
+    const pathname = window.location.pathname;
+    if (specialPathnames.includes(pathname) && currentPath === '/home') {
+        setTimeout(closeAndHandleRoute, 1000);
     } else {
-        handleRoute();
-        interactiveSocket.closeSocket();
+        closeAndHandleRoute();
     }
 }
-
-function disposeModal(modalId) {
-    const modalElement = document.getElementById(modalId);
-    if (modalElement) {
-        const modalInstance = bootstrap.Modal.getInstance(modalElement);
-        if (modalInstance) {
-            modalInstance.dispose();
-        }
-    }
-}
-
-function hideModal(modalId) {
-    const modalElement = document.getElementById(modalId);
-    if (modalElement) {
-        const modalInstance = bootstrap.Modal.getInstance(modalElement);
-        if (modalInstance) {
-            modalInstance.hide();
-        }
-    }
-}
-
 export function checkModal(deleteModal = false) {
     const modals = [
         'lobbyTournamentModal',

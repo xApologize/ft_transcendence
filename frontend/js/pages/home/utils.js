@@ -132,6 +132,16 @@ export function showModal(modalId) {
     modal.show();
 }
 
+export function disposeModal(modalId) {
+    const modalElement = document.getElementById(modalId);
+    if (!modalElement) return;
+
+    const modal = bootstrap.Modal.getInstance(modalElement);
+    if (!modal) return;
+
+    modal.dispose();
+}
+
 export function isModalShown(modalId) {
     const modalElement = document.getElementById(modalId);
     return modalElement && modalElement.classList.contains('show');
