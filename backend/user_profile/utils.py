@@ -29,7 +29,8 @@ def check_info_update(data, allowed_fields):
         if not all(ord(char) < 128 for char in value):
             return HttpResponseBadRequest(f'{field} contains non-ASCII characters')
             
-    if checkEmail(data.get('email', '')) == False:
+    email = data.get('email', '').strip()
+    if email and not checkEmail(email):
         return HttpResponseBadRequest('Invalid email')
 
     return None

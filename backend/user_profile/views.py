@@ -129,7 +129,7 @@ class Users(View):
         allowed_fields = {'nickname', 'email', 'status'}
         try:
             data = json.loads(request.body)
-            if checkInputUser(data, allowed_fields) is False:
+            if checkAllowedField(data, allowed_fields) is False:
                 return HttpResponseBadRequest('Invalid JSON data in the request body.')
             user = get_user_obj(request)
             if ("demo-user" == user.nickname or "demo-user2" == user.nickname) and "status" not in data:
@@ -167,6 +167,7 @@ class Users(View):
             return HttpResponseBadRequest(f'Nickname is already in use.') # 400
         except Exception as e:
             return HttpResponseBadRequest(f'Unexpected Error: {e}') # 400
+
 
 class Me(View):
     @token_validation
@@ -288,3 +289,10 @@ class Upload(View):
                 return HttpResponseBadRequest('No avatar provided.')  # 400
         except Exception as e:
             return HttpResponseBadRequest('Unexpected Error: ' + str(e))  # 400
+
+
+def checkAllowedField(data, allowed_fields):
+    for field in data:
+        if field not in allowed_fields:
+            return False
+    return True

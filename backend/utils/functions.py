@@ -60,7 +60,6 @@ def get_user_obj(request: HttpRequest) -> User:
         raise PermissionDenied("Couldn't locate access jwt")
     decrypt_result = decrypt_user_id(access_jwt_cookie)
     if decrypt_result <= 0:
-        # IF 404 DELETE COOKIE ?? IF LOG, MAKE NUKE, MAKE AND TOKEN STILL THERE, WILL NOT FIND USER
         raise Http404("User not found")
     user = get_object_or_404(User, id=decrypt_result)
     return user
@@ -82,17 +81,11 @@ def checkInputUser(userInput, fieldSupposeToHave):
     for field in fieldSupposeToHave:
         if field not in userInput:
             return False
-    if len(userInput) != len(fieldSupposeToHave):
-        return False
     return True
 
  
-# Define a function for
-# for validating an Email
 def checkEmail(email):
     regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
-    # pass the regular expression
-    # and the string into the fullmatch() method
     if(re.fullmatch(regex, email)):
         return True
     else:
