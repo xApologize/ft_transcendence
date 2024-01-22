@@ -27,6 +27,10 @@ body {
     overflow: hidden;
 }
 
+audio {
+    display: none;
+}
+
 .fill {
     height: 100%;
 }
@@ -126,20 +130,6 @@ body {
     display: none;
 }
 
-/* Illisible avec des couleurs la*/
-
-/* .modal-header {
-    background-color: var(--bg-accent);
-}
-
-.modal-body {
-    background-color: var(--bg-accent);
-}
-
-.modal-footer {
-    background-color: var(--bg-accent) !important;
-} */
-
 #lfp {
     font-size: 2rem;
     color: white;
@@ -148,9 +138,19 @@ body {
     left: 50%;
 }
 
+#findGame {
+    z-index: 1;
+    position: absolute;
+    right: 50%;
+}
+
+.player-name {
+    font-size: 2rem;
+    color: white;
+}
+
 .border-right {
     border-right: 1px solid #dee2e6;
-    /* This color is a light grey, common for Bootstrap borders */
 }
 
 #copyright {
@@ -165,75 +165,8 @@ body {
     cursor: pointer;
     background-color: var(--bg-accent);
 }
-
-/* .about-box {
-} */
-
-#jrossign-pos {
-    right: 0;
-}
-
 .link-primary {
     color: white !important;
-}
-
-#joinTournamentModal .list-group-item:hover {
-    background-color: #d6d8db;
-    /* Darker shade for hover, adjust color as needed */
-    cursor: pointer;
-}
-
-main {
-    display: flex;
-    flex-direction: row;
-}
-.round {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    width: 200px;
-    list-style: none;
-    padding: 0;
-}
-.round .spacer {
-    flex-grow: 1;
-}
-.round .spacer:first-child,
-.round .spacer:last-child {
-    flex-grow: 0.5;
-}
-
-.round .game-spacer {
-    flex-grow: 1;
-}
-
-/*
-   *  General Styles
-  */
-
-li.game {
-    padding-left: 20px;
-}
-
-li.game.winner {
-    font-weight: bold;
-}
-li.game span {
-    float: right;
-    margin-right: 5px;
-}
-
-li.game-top {
-    border-bottom: 1px solid #aaa;
-}
-
-li.game-spacer {
-    border-right: 1px solid #aaa;
-    min-height: 40px;
-}
-
-li.game-bottom {
-    border-top: 1px solid #aaa;
 }
 
 #canvas-callback {
@@ -244,156 +177,12 @@ li.game-bottom {
     height: 100%;
 }
 
-.load {
-    width: 100%;
-    /*     margin:0px; */
+#what-the-fuck-is-that-div {
     display: flex;
-    justify-content: center;
     align-items: center;
-}
-
-.load div {
-    width: 25px;
-    height: 25px;
-    background-color: orchid;
-    margin-left: 5px;
-    border-radius: 50%;
-    -webkit-border-radius: 50%;
-    -moz-border-radius: 50%;
-    -ms-border-radius: 50%;
-    -o-border-radius: 50%;
-    margin-top: calc(50px - 12.5px);
-    animation-name: loading;
-    animation-duration: 1.2s;
-    animation-iteration-count: infinite;
-    animation-direction: alternate;
-}
-
-.load-two {
-    animation-delay: 0.4s;
-}
-
-.load-three {
-    animation-delay: 0.8s;
-}
-
-@keyframes loading {
-    to {
-        opacity: 0.3;
-        transform: translateY(-25px);
-        -webkit-transform: translateY(-25px);
-        -moz-transform: translateY(-25px);
-        -ms-transform: translateY(-25px);
-        -o-transform: translateY(-25px);
-    }
-}
-
-.container-profile-card {
-    height: 450px;
-    width: 300px;
-    box-shadow: 0 10px 20px var(--bg-main);
-    background-size: cover;
     justify-content: center;
-    align-items: center;
-    text-align: center;
-    overflow: hidden;
-    font-family: 'Abel', sans-serif;
-    background-color: var(--bg-main);
-    position: absolute;
-    bottom: 0;
 }
 
-.image {
-    height: 150px;
-    width: 150px;
-    background-size: cover;
-    border-radius: 50%;
-    border: 8px solid var(--bg-accent);
-    position: relative;
-    top: 155px;
-    margin-left: 145px;
-    box-shadow: 0 2px 15px var(--bg-accent);
-    transform: rotate(-20deg);
-}
-
-#dave-photo {
-    background-image: url('https://cdn.intra.42.fr/users/e55983fa144b18fb3946b662602a3824/ddemers.jpg');
-}
-
-#jacob-photo {
-    background-image: url('https://cdn.intra.42.fr/users/75e23963e4c565efe4b153dbce6ceaaf/jalevesq.jpg');
-}
-
-#florian-photo {
-    background-image: url('https://cdn.intra.42.fr/users/f31a6394e60448464a761a4f757fb2f2/fgeslin.jpg');
-}
-
-#jeanbenoit-photo {
-    background-image: url('https://cdn.intra.42.fr/users/0f3691e253553353ed5073e0bf6e71c8/jrossign.jpg');
-}
-
-.shape {
-    height: 250px;
-    width: 400px;
-    background-color: var(--bg-main-second);
-    margin-left: -20px;
-    position: relative;
-    top: -80px;
-    box-shadow: 0 2px 15px var(--bg-main-second);
-    transform: rotate(25deg);
-}
-
-h3 {
-    margin-bottom: 10px;
-    font-family: 'Montserrat', sans-serif;
-}
-
-.title {
-    color: white;
-}
-
-p {
-    padding-left: 30px;
-    padding-right: 30px;
-}
-
-.icons {
-    margin-top: 15px;
-}
-
-.icons i {
-    margin-left: 10px;
-    font-size: 20px;
-    transition: 0.3s;
-    color: white;
-}
-
-.icons i:hover {
-    transform: scale(1.1);
-    color: var(--bg-accent);
-}
-
-#leaveTournament {
-    display: flex;
-    justify-content: flex-end;
-}
-/* result screen */
-
-#resultTitle {
-    animation-name: blink-title;
-    animation-duration: 2s;
-    animation-timing-function: ease-in;
-    animation-iteration-count: Infinite;
-}
-
-@keyframes blink-title {
-    0% {
-        color: white;
-    }
-    50% {
-        color: transparent;
-    }
-    100% {
-        counter-reset: white;
-    }
+#icon {
+    font-size: 1.5rem;
 }

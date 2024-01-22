@@ -20,20 +20,23 @@ import { redirectToHome } from '../../api/fetchData.js';
 export async function showHome() {
     try {
         await loadHTMLPage('./js/pages/home/home.html');
-        checkModal()
-        const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+        checkModal();
+        const loadingModal = new bootstrap.Modal(
+            document.getElementById('loadingModal')
+        );
         loadingModal.show();
         setupHomeModal();
-    
+        setUpTooltip();
 
-        const result = await initPage()
+
+        const result = await initPage();
         if (result === false) {
             console.error('Error with user. Redirecting to home.');
             return redirectToHome();
         }
-        
+
         leftColumnListener();
-        listenerTeamDisplay()
+        listenerTeamDisplay();
         await loadGame();
         loadingModal.hide();
     } catch (error) {
@@ -70,7 +73,7 @@ async function initPage() {
     if (!userAssembled || typeof userAssembled !== 'object') return false;
     displayUserCard(userAssembled);
     displayMatchHistory(userAssembled);
-    interactiveSocket.initSocket() // <- this is calling displayEveryone.
+    interactiveSocket.initSocket(); // <- this is calling displayEveryone.
     displayFriend();
     updateSocial();
 
@@ -119,16 +122,24 @@ function setupHomeModal() {
     new bootstrap.Modal(document.getElementById('joinTournamentModal'));
     new bootstrap.Modal(document.getElementById('tournamentInfoModal'));
 
-
     // Invite + other user modal
     new bootstrap.Modal(document.getElementById('otherUserInfo'));
     new bootstrap.Modal(document.getElementById('inviteGameModal'));
-    
-    document.getElementById('otherUserInfo').addEventListener('hide.bs.modal', () => {
-        document.getElementById('responseFriendQuery').textContent = '';
-    });
 
-    document.getElementById('inviteGameModal').addEventListener('hide.bs.modal',closeInviteRequest)
+    document
+        .getElementById('otherUserInfo')
+        .addEventListener('hide.bs.modal', () => {
+            document.getElementById('responseFriendQuery').textContent = '';
+        });
+
+    document
+        .getElementById('inviteGameModal')
+        .addEventListener('hide.bs.modal', closeInviteRequest);
+}
+
+function setUpTooltip() {
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 }
 
 //////////
@@ -151,11 +162,9 @@ function responsiveLeftColumn() {
     });
 }
 
-
-
 async function loadGame() {
-    await loadAll()
-    const gameContainer = document.querySelector('#sceneContainer')
+    await loadAll();
+    const gameContainer = document.querySelector('#sceneContainer');
     if (!gameContainer) {
         return;
     }

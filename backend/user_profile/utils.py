@@ -1,6 +1,4 @@
 from django.http import HttpResponseBadRequest
-from django.conf import settings
-from io import BytesIO
 from django.core.files.storage import default_storage
 import base64, mimetypes, imghdr, os
 from PIL import Image, UnidentifiedImageError

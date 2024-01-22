@@ -7,7 +7,7 @@ from utils.decorators import token_validation, verify_cookies
 from utils.functions import get_user_obj, checkInputUser
 from django.contrib.auth.hashers import make_password
 from friend_list.models import FriendList
-import json, os, imghdr
+import json, os
 from django.db.models import Q
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.conf import settings
