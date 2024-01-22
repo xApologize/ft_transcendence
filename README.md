@@ -8,9 +8,9 @@ Look at you now. Time to shine!
 ## Built with
 * [![bootstrap-logo]][bootstrap-url] 
 * [![django-logo]][django-url] 
-* ![js-logo][js-url]
-* ![css-logo] [css-url]
-* ![html-logo] [html-url]
+* [![js-logo]] [js-url]
+* [![css-logo]] [css-url]
+* [![html-logo]] [html-url]
 * [![python-logo]][python-url]
 * [![three-js-logo]][three-js-url]
 
