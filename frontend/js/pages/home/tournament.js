@@ -1,4 +1,4 @@
-import { assembler } from '../../api/assembler.js';
+import { assembler } from '../../api/assembler.js';2
 import interactiveSocket from './socket.js';
 import { displayToast } from './toastNotif.js';
 import { getMyID, switchModals, isModalShown } from './utils.js';

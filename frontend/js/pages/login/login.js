@@ -3,7 +3,7 @@ import { navigateTo } from '../../router.js';
 import { fetchAuth } from '../../api/fetchData.js';
 import { displayAlertMsg } from '../../utils/utilityFunctions.js';
 import { assembler } from '../../api/assembler.js';
-import { hideModal } from '../home/utils.js';
+import { hideModal, showModal } from '../home/utils.js';
 
 export async function showLogin() {
     try {
@@ -106,7 +106,7 @@ async function login(username = null, password = null) {
         }
         if (response.ok) {
             if (result['2fa_required']) {
-                modal2FA.show();
+                showModal('twoFAModal');
                 return;
             }
             navigateTo('/home');
@@ -140,7 +140,7 @@ async function submit2FACode(result) {
 }
 
 function close2FAModal() {
-    modal2FA.hide();
+    hideModal('twoFAModal');
     const error = {
         error: '2FA Authentication interrupted. Please try again.',
     };
