@@ -681,10 +681,8 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             return
         upper_bracket: bool = await self.check_if_upper(tournament_handle)
         if upper_bracket is True:
-            print("CREATE FINAL")
             await self.create_final(tournament_handle)
         else:
-            print("JOIN FINAL")
             await self.join_final(tournament_handle.pk)
             await database_sync_to_async(tournament_handle.delete)()
 
