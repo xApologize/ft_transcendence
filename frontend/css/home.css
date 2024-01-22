@@ -393,6 +393,10 @@ p {
 
 /* result screen */
 
+#result {
+    position: relative;
+}
+
 #resultTitle {
     animation-name: blink-title;
     animation-duration: 2s;
