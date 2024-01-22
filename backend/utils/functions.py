@@ -2,8 +2,7 @@ from django.conf import settings
 from django.http import HttpResponse, HttpRequest, Http404
 from user_profile.models import User
 from django.shortcuts import get_object_or_404
-import jwt
-import time
+import jwt, re, time
 from django.core.exceptions import PermissionDenied
 
 
@@ -86,3 +85,15 @@ def checkInputUser(userInput, fieldSupposeToHave):
     if len(userInput) != len(fieldSupposeToHave):
         return False
     return True
+
+ 
+# Define a function for
+# for validating an Email
+def checkEmail(email):
+    regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
+    # pass the regular expression
+    # and the string into the fullmatch() method
+    if(re.fullmatch(regex, email)):
+        return True
+    else:
+        return False

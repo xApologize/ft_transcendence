@@ -5,7 +5,7 @@ from django.core.files.storage import default_storage
 import base64, mimetypes, imghdr, os
 from PIL import Image, UnidentifiedImageError
 from django.core.exceptions import ValidationError
-
+from utils.functions import checkEmail
 
 DEFAULT_AVATAR_URL = "avatars/default.png"
 
@@ -29,7 +29,8 @@ def check_info_update(data, allowed_fields):
         if not all(ord(char) < 128 for char in value):
             return HttpResponseBadRequest(f'{field} contains non-ASCII characters')
             
-
+    if checkEmail(data.get('email', '')) == False:
+        return HttpResponseBadRequest('Invalid email')
 
     return None
 
@@ -52,6 +53,9 @@ def check_info_signup(data, allowed_fields):
     # does not contain space
     if any(' ' in data.get(field, '') for field in allowed_fields):
         return HttpResponseBadRequest('Field contain space') # 400
+
+    if checkEmail(data.get('email', '')) == False:
+        return HttpResponseBadRequest('Invalid email')
 
     for field, value in data.items():
         if len(value) < 3:
