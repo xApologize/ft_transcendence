@@ -31,5 +31,5 @@ Look at you now. Time to shine!
 [python-url]: https://www.python.org/
 [three-js-logo]: https://img.shields.io/badge/Three.js-black?style=flat&logo=three.js&logoColor=white
 [three-js-url]: https://threejs.org/
-[docker-logo]: https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white
+[docker-logo]: https://img.shields.io/badge/Docker-46a2f1.svg?logo=docker&logoColor=white
 [docker-url]: https://www.docker.com/
