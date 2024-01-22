@@ -1,24 +1,20 @@
 # ft_transcendence
 
 ## About the project
+
 This project is about doing something you’ve never done before.
 Remind yourself the beginning of your journey in computer science.
 Look at you now. Time to shine!
 
 ## Built with
-* [![bootstrap-logo]][bootstrap-url] 
-* [![django-logo]][django-url] 
-* [![js-logo]] [js-url]
-* [![css-logo]] [css-url]
-* [![html-logo]] [html-url]
-* [![python-logo]][python-url]
-* [![three-js-logo]][three-js-url]
 
-
-
-
-
-
+-   [![bootstrap-logo]][bootstrap-url]
+-   [![django-logo]][django-url]
+-   [![js-logo]][js-url]
+-   [![css-logo]][css-url]
+-   [![html-logo]][html-url]
+-   [![python-logo]][python-url]
+-   [![three-js-logo]][three-js-url]
 
 [bootstrap-logo]: https://img.shields.io/badge/Bootstrap-563d7c?style=flat&logo=bootstrap&logoColor=white
 [bootstrap-url]: https://getbootstrap.com
