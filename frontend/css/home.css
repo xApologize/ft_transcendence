@@ -335,19 +335,19 @@ li.game-bottom {
 }
 
 #dave-photo {
-    background-image: url('https://cdn.intra.42.fr/users/e55983fa144b18fb3946b662602a3824/ddemers.jpg');
+    background-image: url('../public/dev-photo/ddemers.jpeg');
 }
 
 #jacob-photo {
-    background-image: url('https://cdn.intra.42.fr/users/75e23963e4c565efe4b153dbce6ceaaf/jalevesq.jpg');
+    background-image: url('../public/dev-photo/jalevesq.jpeg');
 }
 
 #florian-photo {
-    background-image: url('https://cdn.intra.42.fr/users/f31a6394e60448464a761a4f757fb2f2/fgeslin.jpg');
+    background-image: url('../public/dev-photo/fgeslin.jpeg');
 }
 
 #jeanbenoit-photo {
-    background-image: url('https://cdn.intra.42.fr/users/0f3691e253553353ed5073e0bf6e71c8/jrossign.jpg');
+    background-image: url('../public/dev-photo/jrossign.jpeg');
 }
 
 .shape {
