@@ -112,12 +112,22 @@ export function switchModals(hideModalId, showModalId) {
 }
 
 export function hideModal(modalId) {
-    const modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
+    const modalElement = document.getElementById(modalId);
+    if (!modalElement) return;
+
+    const modal = bootstrap.Modal.getInstance(modalElement);
+    if (!modal) return;
+
     modal.hide();
 }
 
 export function showModal(modalId) {
-    const modal = bootstrap.Modal.getInstance(document.getElementById(modalId))
+    const modalElement = document.getElementById(modalId);
+    if (!modalElement) return;
+
+    const modal = bootstrap.Modal.getInstance(modalElement);
+    if (!modal) return;
+
     modal.show();
 }
 
@@ -145,4 +155,12 @@ export function resetInnerHTMLById(id) {
     if (element) {
         element.innerHTML = "";
     }
+}
+
+export function hideAllUI(launchGame = false) {
+    checkModal()
+    hideElementById('toastContainer')
+    hideElementById('ui')
+    if (launchGame === true)
+        showElementById('lfp')
 }

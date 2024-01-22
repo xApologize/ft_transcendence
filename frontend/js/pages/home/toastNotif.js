@@ -1,5 +1,6 @@
 import { toastComponent } from '../../components/toast/toast.js';
 import { checkModal } from '../../router.js';
+import { hideElementById } from './utils.js';
 
 let toastQueue = [];
 export function displayToast(toastMsg, toastTitle, toastType = '', imgUrl = '') {

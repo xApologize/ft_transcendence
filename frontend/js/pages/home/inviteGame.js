@@ -1,7 +1,7 @@
 import { fetchGameInvite, fetchUser } from '../../api/fetchData.js';
 import { assembler } from '../../api/assembler.js';
 import interactiveSocket from './socket.js';
-import { getMyID } from './utils.js';
+import { getMyID, hideModal } from './utils.js';
 import { updateSocial } from './social.js';
 import { displayToast } from './toastNotif.js';
 
@@ -44,15 +44,15 @@ function displayErrorResponse(errorMessage) {
 function handleResponseType(rType, userID) {
     switch (rType) {
         case 'sendGameInvite':
-            showModal('inviteGameModal', userID);
+            showModalAsResponse('inviteGameModal', userID);
             break;
         case 'acceptGameInvite':
-            showModal('loadingModal');
+            showModalAsResponse('loadingModal');
             break;
     }
 }
 
-function showModal(modalId, userID = null) {
+function showModalAsResponse(modalId, userID = null) {
     const modalElement = document.getElementById(modalId);
     const modal = bootstrap.Modal.getInstance(modalElement);
     if (!modal) {
@@ -114,23 +114,14 @@ async function handleAcceptInvite(request_id, other_user_id, userID) {
 }
 
 function handleSelfAcceptedInvite() {
-    const socialModalEl = document.getElementById('socialModal');
-    const socialModal = bootstrap.Modal.getInstance(socialModalEl);
-    if (socialModal) {
-        socialModal.hide();
-    }
-    const loadingModalEl = document.getElementById('loadingModal');
-    const loadingModal = bootstrap.Modal.getInstance(loadingModalEl);
-    if (loadingModal) {
-        loadingModal.show();
-    }
+    hideModal('socialModal');
+    showModal('loadingModal');
 }
 
 async function handleOtherUserAcceptedInvite(request_id) {
     const inviteModalEl = document.getElementById('inviteGameModal');
-    const inviteModal = bootstrap.Modal.getInstance(inviteModalEl);
     resetModalContentID(inviteModalEl);
-    hideModal(inviteModal);
+    hideModal('inviteGameModal')
 
     const loadingModalEl = document.getElementById('loadingModal');
     const loadingModal = bootstrap.Modal.getInstance(loadingModalEl);
@@ -144,12 +135,6 @@ async function handleOtherUserAcceptedInvite(request_id) {
         const modalContentDatasetID = inviteModalEl.querySelector('.modal-content');
         modalContentDatasetID.dataset.id = '';
     }
-    
-    function hideModal(inviteModal) {
-        if (inviteModal) {
-            inviteModal.hide();
-        }
-    }   
 }
 
 function handleRefuseInvite(request_id, other_user_id, userID) {

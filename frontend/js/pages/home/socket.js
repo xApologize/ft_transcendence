@@ -3,9 +3,10 @@ import { displayEveryone } from './home.js'
 import { handleInviteInteraction } from './inviteGame.js';
 import { newUser, removeUser, updateSpecificUser, handleSocialUpdate } from './socketUpdate.js'
 import { socketTournamentUser } from './tournament.js'
-import { checkModal, navigateTo } from '../../router.js';
+import { navigateTo } from '../../router.js';
 import { updateSpecificUserStatus } from './socketUpdate.js';
 import { fetchAuth } from '../../api/fetchData.js';
+import { hideAllUI, hideElementById } from './utils.js';
 
 const interactiveSocket = {
     interactive_socket: null,
@@ -72,8 +73,8 @@ const interactiveSocket = {
                 break;
             case "Tournament Match":
                 setTimeout(() => {
-                    document.getElementById('bracket').classList.add('d-none')
-                    document.getElementById('result').classList.add('d-none')
+                    hideElementById('bracket')
+                    hideElementById('result')
 					document.getElementById('timer').innerHTML = "Waiting..."
                     World._instance.joinMatch( data.handle, data.paddle, data.me, data.opponent, "Upgraded", 2 );
                 }, 5000);
@@ -81,8 +82,8 @@ const interactiveSocket = {
 				break;
             case "Tournament Final":
 				setTimeout(() => {
-					document.getElementById('bracket').classList.add('d-none')
-					document.getElementById('result').classList.add('d-none')
+                    hideElementById('bracket')
+                    hideElementById('result')
 					document.getElementById('timer').innerHTML = "Waiting..."
 					World._instance.joinMatch( data.handle, data.paddle, data.me, data.opponent, "Upgraded", 1 );
 				}, 5000);
@@ -179,14 +180,6 @@ const interactiveSocket = {
 };
 
 export default interactiveSocket;
-
-export function hideAllUI(launchGame = false) {
-    checkModal()
-    document.getElementById('toastContainer').classList.add('d-none')
-    document.getElementById('ui').classList.add('d-none');
-    if (launchGame === true)
-        document.getElementById('lfp').classList.remove('d-none');
-}
 
 async function forceLogout() {
     const logoutResponse = await fetchAuth('POST', 'logoutsocket/')
