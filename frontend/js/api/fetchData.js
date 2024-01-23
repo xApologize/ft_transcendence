@@ -40,7 +40,6 @@ export const redirectToHome = (response) => {
     navigateTo('/')
     setTimeout(async() => {
         const errorData = await assembler(response);
-        console.log(errorData)
         displayLoginError(errorData);
     }, 500);
     return null

@@ -48,42 +48,35 @@ export function socketLobbyError(action, ownerTournamentID) {
     switch (action){
         case 'invalidStart':
             // Tried to start a tournament that doesn't exist
-            console.log("invalidStart");
             cancelEverythingTournament();
             displayToast("You cannot start a tournament that does not exist.", "Tournament doesn't exist");
             break;
         case 'invalidJoin':
             // Tried to join a tournament that doesn't exist
-            console.log("invalidJoin");
             displayToast("This tournament no longer exist.", "Tournament doesn't exist");
             updateTournamentList();
             break;
         case 'lobbyFull':
             // Tried to join a lobby that was full
-            console.log("lobbyFull")
             displayToast("This lobby is full.", "Lobby Full");
             break;
         case 'createFailure':
             // Failed to create a lobby
-            console.log("createFailure")
             displayToast("Failed to create a tournament.", "Tournament Creation Failed");
             cancelEverythingTournament();
             break;
         case 'leaveError':
             // Tried to leave a lobby that wasn't found
-            console.log("leaveError")
             displayToast("You tried to leave a tournament that no longer exist. Back to menu.", "Tournament Leave Failed");
             cancelEverythingTournament();
             break;
         case 'spotError':
             // Tried to leave a lobby you're not in
-            console.log("spotError")
             displayToast("You tried to leave a tournament that you're not in. Back to menu.", "Tournament Leave Failed");
             cancelEverythingTournament();
             break;
         case 'cancelError':
             // Tried canceling a tournament that doesn't exist
-            console.log("cancelError")
             displayToast("You tried to cancel a tournament that no longer exist. Back to menu.", "Tournament Cancel Failed");
             cancelEverythingTournament();
             break;
@@ -94,8 +87,6 @@ export function socketLobbyError(action, ownerTournamentID) {
 }
 
 function abortTournament() {
-    console.log("ABORT TOURNAMENT")
-
     if (!World._instance.match) return;
     World._instance.match.endMatch();
 }
@@ -115,7 +106,6 @@ function isUserInCurrentTournament(myID, players = null) {
 }
 
 async function finalMatchEnd(winnerUserID) {
-    console.log("FINAL MATCH END");
     const myID = getMyID();
     if (!myID) return ;
 
@@ -148,11 +138,9 @@ async function finalMatchEnd(winnerUserID) {
 }
 
 async function tournamentMatchEnd(winnerUserID) {
-    console.log("TOURNAMENT MATCH END");
     const myID = getMyID();
     if (!myID) 
         return;
-    console.log("GOT MY ID");
     
     const bracket = document.getElementById('tournamentBracket');
     let players = {};
@@ -166,7 +154,6 @@ async function tournamentMatchEnd(winnerUserID) {
 }
 
 async function updateOnGoingBracket(players, myID, winnerUserID) {
-    console.log("I AM IN THE BRACKET");
     const playerValues = Object.values(players);
     const myPlace = playerValues.findIndex(player => player.dataset.id == myID);
     if (myPlace === -1 || myPlace >= playerValues.length) {
@@ -177,8 +164,6 @@ async function updateOnGoingBracket(players, myID, winnerUserID) {
     if (!myOpponent || myOpponent.dataset.id == winnerUserID || myID == winnerUserID) {
         return;
     }
-
-    console.log("IM IN THE OTHER MATCH. THEY HAVE FINISHED AND WANT TO UPDATE ME");
 
     let data = null
     if ([players.player3, players.player4].some(player => player.dataset.id == myID) ) {
@@ -274,7 +259,6 @@ function someoneCreateTournament(ownerTournamentID) {
 
 // Quand quelqu'un quitte un tournoi - Envpoyé par le Socket de celui qui leave un tournoi
 function someoneLeftLobby(ownerTournamentID) {
-    console.log("SOMEONE LEAVED A LOBBY")
     if (isModalShown('joinTournamentModal') && !isUserInTournament(ownerTournamentID)) {
         updateTournamentListNbr('remove', ownerTournamentID);
     } else if (isUserInTournament(ownerTournamentID)) {
@@ -284,22 +268,17 @@ function someoneLeftLobby(ownerTournamentID) {
 
 // Quand quelqu'un rejoins le tournoi - Envoyé par le Socket de celui qui join
 function someoneJoinLobby(ownerTournamentID) {
-    console.log("SOMEONE JOINED A LOBBY, UPDATE ", ownerTournamentID)
     if (isModalShown('joinTournamentModal') && !isUserInTournament(ownerTournamentID)) {
-        console.log("UPDATE TOURNAMENT PLAYER NBR LIST")
         updateTournamentListNbr('add', ownerTournamentID);
     } else if (isUserInTournament(ownerTournamentID)) {
         if (!isModalShown('lobbyTournamentModal')) {
             switchModals('joinTournamentModal', 'lobbyTournamentModal')
-            console.log("SHOW MODAL")
         }
-        console.log("UPDATE PARTICIPANT LIST")
         updateParticipantList()
     }
 }
 
 function tournamentStarting(ownerTournamentID) {
-    console.log("TOURNAMENT STARTING TRIGGER BY OWNER SOCKET")
     if (isModalShown('joinTournamentModal') && !isUserInTournament(ownerTournamentID)) {
         updateTournamentList();
     } else if (isUserInTournament(ownerTournamentID)) {
@@ -344,7 +323,6 @@ export async function handleCreateTournamentClick() {
 
 // Quand je suis owner et cancel mon tournoi - Trigger par event listener
 export function cancelTournament() {
-    console.log("CANCEL TOURNAMENT")
     // Socket doit envoyer: cancelTournament
     interactiveSocket.sendMessageSocket(JSON.stringify({ "type": "Tournament", "action": "Cancel" }));
     document.getElementById('lobbyTournamentModal').removeEventListener('hide.bs.modal', cancelTournament);
@@ -359,7 +337,6 @@ export function cancelTournament() {
 
 // Quand je quitte le tournoi - Trigger par event listener
 export async function leftTournament(event) {
-    console.log("LEFT TOURNAMENT")
     interactiveSocket.sendMessageSocket(JSON.stringify({ "type": "Tournament", "action": "Leave" }));
     document.getElementById('lobbyTournamentModal').removeEventListener('hide.bs.modal', leftTournament);
     switchModals('lobbyTournamentModal', 'joinTournamentModal')
@@ -377,7 +354,6 @@ export async function joinTournament(event) {
     lobbyModalEl.addEventListener('hide.bs.modal', leftTournament)
     lobbyModalEl.dataset.id = ownerID;
 
-    console.log("JOINING ", ownerID)
     // Socket doit envoyer: joinTournament -> owner ID
     interactiveSocket.sendMessageSocket(JSON.stringify({ "type": "Tournament", "action": "Join", "owner_id": ownerID }));
 

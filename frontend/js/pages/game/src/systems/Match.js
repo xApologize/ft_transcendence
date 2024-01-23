@@ -221,7 +221,6 @@ class Match {
 
 		if (this.tournamentStage == 2 ) {
 			timeoutTournamentFinal = setTimeout(() => {
-				console.log("HEEEY")
 				showUIHideGame();
 				interactiveSocket.sendMessageSocket(JSON.stringify({ "type": "Tournament", "action": "Disconnect" }));
 				displayToast("The tournament has been canceled.", "Tournament")

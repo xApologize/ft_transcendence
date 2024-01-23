@@ -90,13 +90,10 @@ export function checkModal(deleteModal = false) {
 }
 
 async function loadPage() {
-    console.log("LOAD PAGE")
     const body = document.getElementById('content');
     const template = await templateComponent();
     
-    console.log(body)
     body.append(template);
-    console.log(body)
     handleRoute();
 }
 
