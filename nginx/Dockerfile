@@ -90,4 +90,6 @@ COPY /modsec /etc/nginx/modsec/
 
 COPY start.sh .
 
+COPY /frontend /etc/frontend
+
 ENTRYPOINT ["dumb-init", "./start.sh"]

@@ -20,6 +20,8 @@ ABORT_TOURNAMENT = "abort_tournament"
 LOGOUT_USER = "send_user_to_the_shadow_realm"
 ABORT_ABORT = "abort_tourny_tourny"
 
+lock = asyncio.Lock()
+
 
 class UserInteractiveSocket(AsyncWebsocketConsumer):
     async def connect(self):
@@ -670,14 +672,16 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             except Exception:
                 return None
 
-    async def upper_handling(self, tournament_handle: Tournament) -> None:
+    async def upper_handling(self, tournament_id: int) -> None:
         try:
-            final_handle: Final = await database_sync_to_async(Final.objects.get)(final_id=tournament_handle.pk)
-            final_handle.player_1 = self.user_id
-            await database_sync_to_async(final_handle.save)()
-            tournament_handle.player_1 = self.user_id
-            tournament_handle.player_2 = -1
-            await database_sync_to_async(tournament_handle.save)()
+            async with lock:
+                final_handle: Final = await database_sync_to_async(Final.objects.get)(final_id=tournament_id)
+                final_handle.player_1 = self.user_id
+                await database_sync_to_async(final_handle.save)()
+                tournament_handle: Tournament = await database_sync_to_async(Tournament.objects.get)(pk=tournament_id)
+                tournament_handle.player_1 = self.user_id
+                tournament_handle.player_2 = -1
+                await database_sync_to_async(tournament_handle.save)()
             if tournament_handle.player_3 == -1 and tournament_handle.player_4 == -1:
                 print("DOUBLE DC in create")
                 await self.play_againts_nobody()
@@ -691,14 +695,16 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             await self.play_againts_nobody() #  Come here if the match couldn't be created? not sure how this would happen
             await database_sync_to_async(tournament_handle.delete)()
 
-    async def lower_handling(self, tournament_handle: Tournament) -> None:
+    async def lower_handling(self, tournament_id: int) -> None:
         try:
-            final_handle: Final = await database_sync_to_async(Final.objects.get)(final_id=tournament_handle.pk)
-            final_handle.player_2 = self.user_id
-            await database_sync_to_async(final_handle.save)()
-            tournament_handle.player_3 = self.user_id
-            tournament_handle.player_4 = -1
-            await database_sync_to_async(tournament_handle.save)()
+            async with lock:
+                final_handle: Final = await database_sync_to_async(Final.objects.get)(final_id=tournament_id)
+                final_handle.player_2 = self.user_id
+                await database_sync_to_async(final_handle.save)()
+                tournament_handle: Tournament = await database_sync_to_async(Tournament.objects.get)(pk=tournament_id)
+                tournament_handle.player_3 = self.user_id
+                tournament_handle.player_4 = -1
+                await database_sync_to_async(tournament_handle.save)()
             if tournament_handle.player_1 == -1 and tournament_handle.player_2 == -1:
                 print("DOUBLE DC in create")
                 await self.play_againts_nobody()
@@ -729,6 +735,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         )
         await self.send_tourny_handle(player_1_match_handle, player_1_id)
         await self.send_tourny_handle(player_2_match_handle, player_2_id)
+        await database_sync_to_async(final_countdown.delete)()
 
     async def join_final(self, tournament_id: int) -> None:
         try:
@@ -764,9 +771,9 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             return
         upper_bracket: bool = await self.check_if_upper(tournament_handle)
         if upper_bracket is True:
-            await self.upper_handling(tournament_handle)
+            await self.upper_handling(tournament_handle.pk)
         else:
-            await self.lower_handling(tournament_handle)
+            await self.lower_handling(tournament_handle.pk)
 
     async def check_if_upper(self, tournament_handle: Tournament) -> bool:
         if tournament_handle.player_1 == self.user_id or tournament_handle.player_2 == self.user_id:
