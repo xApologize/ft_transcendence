@@ -12,11 +12,11 @@ ENV PYTHONDONTWRITEBYTECODE 1
 
 ENV PYTHONUNBUFFERED 1
 
+ENV DJANGO_SETTINGS_MODULE src.settings
+
 RUN pip install --upgrade pip
 
-COPY requirements.txt .
-
-# COPY . . FOR CORRECTION LATER
+COPY . .
 
 RUN pip install -r requirements.txt
 

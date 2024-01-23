@@ -40,7 +40,11 @@ export const redirectToHome = (response) => {
     navigateTo('/')
     setTimeout(async() => {
         const errorData = await assembler(response);
-        displayLoginError(errorData);
+        if (errorData.error) {
+            displayLoginError(errorData);
+        } else {
+            displayLoginError({'error': errorData})
+        }
     }, 500);
     return null
 };
@@ -70,7 +74,7 @@ export const setNewToken = (response) => {
 }
 
 const performFetch = async (url, method, data = null) => {
-    console.log(url)
+    // console.log(url) JB IS HAPPY
     const options = createOptions(method, data);
     try {
         let response = await fetch(url, options);
