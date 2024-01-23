@@ -1,7 +1,7 @@
 import { assembler } from '../../api/assembler.js';2
 import interactiveSocket from './socket.js';
 import { displayToast } from './toastNotif.js';
-import { getMyID, switchModals, isModalShown } from './utils.js';
+import { getMyID, switchModals, isModalShown, hideElementById } from './utils.js';
 import { fetchMe, fetchMatchHistory } from '../../api/fetchData.js';
 import { World } from '../game/src/World.js';
 import { checkModal } from '../../router.js';
@@ -312,7 +312,7 @@ export async function handleCreateTournamentClick() {
     
     document.getElementById('participantList').innerHTML = '';
     document.getElementById('waitingMessage').textContent = 'Waiting for more players (1/4)';
-    document.getElementById('startTournamentBtn').classList.add('d-none');
+    hideElementById('startTournamentBtn')
     lobbyModalEl.dataset.id = myID
 
     interactiveSocket.sendMessageSocket(JSON.stringify({ "type": "Tournament", "action": "Create" }));

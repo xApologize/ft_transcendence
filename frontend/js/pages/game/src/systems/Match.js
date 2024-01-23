@@ -15,7 +15,7 @@ import { displayToast } from '../../../home/toastNotif.js';
 
 let world;
 let lastSocketTime;
-const maxScore = 5;
+const maxScore = 1;
 
 const divNicknames = ['left-player-name', 'right-player-name'];
 let timeoutTournamentFinal = null;
