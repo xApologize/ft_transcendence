@@ -1,5 +1,7 @@
 import { displayAlertMsg } from "../../utils/utilityFunctions.js";
 import { fetchAuth } from "../../api/fetchData.js";
+import { assembler } from "../../api/assembler.js";
+import { hideElementById, showElementById } from "../../pages/home/utils.js";
 
 export function toggle2FAButton() {
     const enable2FA = document.getElementById('enable2FA')
@@ -57,8 +59,8 @@ export async function enable2FA() {
         displayAlertMsg(info, alert2FAEnable);
         document.getElementById('qrCodeImage').src = qrCodeUrl;
         document.getElementById('secretKey').textContent = secretKey;
-        document.getElementById('twoFactorAuthDisplay').classList.add('d-none');
-        document.getElementById('twoFactorAuthEnable').classList.remove('d-none');
+        hideElementById('twoFactorAuthDisplay');
+        showElementById('twoFactorAuthEnable')
         toggle2FAButton()
     } else {
         const dataError = await response.text();
@@ -68,8 +70,8 @@ export async function enable2FA() {
         alert2FADisplay.classList.add('alert-danger');
         alert2FADisplay.classList.remove('alert-success');
         
-        document.getElementById('twoFactorAuthDisplay').classList.remove('d-none');
-        document.getElementById('twoFactorAuthEnable').classList.add('d-none');
+        showElementById('twoFactorAuthDisplay');
+        hideElementById('twoFactorAuthEnable')
     }
 }
 
@@ -79,18 +81,22 @@ export async function checkConfirmationCode(event) {
     const confirmationCode = document.getElementById('confirmationCode').value;
     const response = await fetchAuth('POST', 'confirm2fa/', {'otp_token': confirmationCode})
     if (!response) { return }
-    const data = await response.json();
+    const data = await assembler(response);
     if (response.status == 200) {
         const info = data.success;
         const alert2FADisplay = document.getElementById('2FAInfoDisplay')
         displayAlertMsg(info, alert2FADisplay);
-        document.getElementById('twoFactorAuthEnable').classList.add('d-none');
-        document.getElementById('twoFactorAuthDisplay').classList.remove('d-none');
+        hideElementById('twoFactorAuthEnable');
+        showElementById('twoFactorAuthDisplay');
         document.getElementById('confirmationCode').value = '';
         document.getElementById('disable2FA').textContent = "Disable 2FA"
-        // toggle2FAButton()
     } else {
-        const dataError = data.error;
+        let dataError = null
+        if (data.error) {
+            dataError = data.error;
+        } else {
+            dataError = data;
+        }
         const errorMsg = document.getElementById('errorConfirmCode')
         errorMsg.textContent = dataError;
         if (errorTimeout) {
@@ -104,7 +110,7 @@ export async function checkConfirmationCode(event) {
 
 function setup2FAMenu(TFAState) {
     const disable2FA = document.getElementById('disable2FA')
-    if (TFAState == true) {
+    if (TFAState) {
         disable2FA.textContent = "Disable 2FA"
     } else {
         disable2FA.textContent = "Cancel 2FA"

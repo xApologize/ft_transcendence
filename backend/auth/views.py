@@ -18,7 +18,7 @@ from .utils import handle_2fa_login
 
 class Create2FA(View):
     @token_validation
-    def post(self, request):
+    def post(self, request): 
         try:
             user = get_user_obj(request)
         except PermissionDenied as e:
@@ -104,7 +104,7 @@ class Confirm2FA(View):
             if not otp_token:
                 return JsonResponse({'error': 'Please enter a code.'}, status=400)
             elif len(otp_token) != 6 and not otp_token.isdigit():
-                return JsonResponse({'error': 'Invalid code.'}, status=400)
+                return JsonResponse({'error': 'Invalid Code.'}, status=400)
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON.'}, status=400)
 

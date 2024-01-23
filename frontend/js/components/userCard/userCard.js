@@ -66,14 +66,14 @@ export async function logoutUser() {
 }
 
 
-// Call in home.js
+// Called in home.js
 export async function displayUserCard(meUser) {
     let userContainer = document.getElementById('own-user-card');
     userContainer.innerHTML = ''
 
     let userCard = await userCardComponent();
     userContainer.appendChild(userCard);
-    userCardListener(); // enable js on the userCard
+    userCardListener();
     updateMenu2FA(meUser);
     updateUserCard(meUser);
 }

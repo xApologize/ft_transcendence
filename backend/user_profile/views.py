@@ -4,14 +4,14 @@ from django.http import JsonResponse, HttpResponse, HttpResponseNotFound, HttpRe
 from match_history.models import MatchHistory
 from django.views import View
 from utils.decorators import token_validation, verify_cookies
-from utils.functions import get_user_obj, checkInputUser
+from utils.functions import get_user_obj
 from django.contrib.auth.hashers import make_password
 from friend_list.models import FriendList
 import json, os
 from django.db.models import Q
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.conf import settings
-from .utils import get_avatar_data, check_info_update, check_info_signup, validate_image
+from .utils import get_avatar_data, check_info_update, validate_image, check_info_signup
 from django_otp.plugins.otp_totp.models import TOTPDevice
 from interactive.consumers import send_refresh
 from asgiref.sync import async_to_sync
