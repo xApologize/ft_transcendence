@@ -34,6 +34,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             self.user_id = -1
         if self.user_id < 0 or status != "OFF":
             await self.close()
+            await log_user(self.user_id)
         else:
             await self.accept()
             await self.channel_layer.group_add(
