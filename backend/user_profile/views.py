@@ -107,20 +107,16 @@ class Users(View):
             return HttpResponseBadRequest('Invalid JSON data in the request body') # 400
         response: HttpResponse =  HttpResponse(f'User {user_data["nickname"]} created successfully', status=201)
         return response
-        # Added jwt when creating user. Refacto needed
-        # primary_key = User.objects.get(nickname=user.nickname).pk
-        # return first_token(response, primary_key)
 
-    # Delete a specific users
-    def delete(self, request: HttpRequest):
-        nickname = request.GET.get('nickname')
-        if not nickname:
-            return HttpResponseBadRequest('No nickname provided for deletion.') # 400
-        user = User.objects.filter(nickname=nickname).first()
-        if not user:
-            return HttpResponseNotFound(f'No user found with the nickname: {nickname}') # 404
-        user.delete()
-        return HttpResponse(status=204)
+    # def delete(self, request: HttpRequest):
+    #     nickname = request.GET.get('nickname')
+    #     if not nickname:
+    #         return HttpResponseBadRequest('No nickname provided for deletion.') # 400
+    #     user = User.objects.filter(nickname=nickname).first()
+    #     if not user:
+    #         return HttpResponseNotFound(f'No user found with the nickname: {nickname}') # 404
+    #     user.delete()
+    #     return HttpResponse(status=204)
 
 
     # update specific user
@@ -132,8 +128,6 @@ class Users(View):
             if checkAllowedField(data, allowed_fields) is False:
                 return HttpResponseBadRequest('Invalid JSON data in the request body.')
             user = get_user_obj(request)
-            if ("demo-user" == user.nickname or "demo-user2" == user.nickname) and "status" not in data:
-                return HttpResponseBadRequest('Demo user cannot be updated.') # 400
         except PermissionDenied as e:
             return HttpResponse(str(e), status=401)
         except Http404 as e:

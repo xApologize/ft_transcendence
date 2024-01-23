@@ -21,8 +21,6 @@ class Create2FA(View):
     def post(self, request):
         try:
             user = get_user_obj(request)
-            if "demo-user" == user.nickname or "demo-user2" == user.nickname:
-                return HttpResponseBadRequest('Demo user cannot enable 2FA.') # 400
         except PermissionDenied as e:
             return HttpResponse(str(e), status=401)
         except Http404 as e:
@@ -250,20 +248,13 @@ class RemoteAuthToken(View):
             return JsonResponse({'error': 'Missing authorization code'}, status=400)
 
         access_token = self.get_access_token(code)
-        print("HERE 1")
         if access_token:
-            print("HERE 2")
             user_info = self.get_user_info(access_token)
             if user_info:
-                print("HERE 3")
                 return self.handle_user(user_info)
         return JsonResponse({'error': 'Invalid authorization code'}, status=400)
 
     def get_access_token(self, code):
-        print(settings.AUTH42_CLIENT)
-        print(settings.AUTH42_SECRET)
-        print(settings.AUTH42_REDIRECT_URI)
-        print(code)
         token_url = 'https://api.intra.42.fr/oauth/token'
         data = {
             'grant_type': 'authorization_code',

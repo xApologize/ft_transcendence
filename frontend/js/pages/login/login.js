@@ -56,18 +56,6 @@ function initEventListeners() {
         .addEventListener('click', hideLoginAlert);
 
     document
-        .getElementById('demo-user-btn')
-        .addEventListener('click', () => {
-            login('demo-user', 'demo-user');
-        });
-
-    document
-        .getElementById('demo-user-btn2')
-        .addEventListener('click', () => {
-            login('demo-user2', 'demo-user2');
-        });
-
-    document
         .getElementById('submit2FACode')
         .addEventListener('click', submit2FACode);
 
