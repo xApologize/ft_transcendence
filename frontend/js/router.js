@@ -40,10 +40,11 @@ export async function handleRoute() {
         }
     }
 
+    console.log(window.location.pathname)
     if (routes[goPath]) {
         pageFunction = routes[goPath];
     } else {
-        pageFunction = show404;
+        pageFunction = showLogin;
     }
     currentPath = goPath;
     showPage(pageFunction);
