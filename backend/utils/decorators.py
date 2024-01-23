@@ -1,5 +1,5 @@
 from utils.functions import add_double_jwt, decrypt_user_id
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from user_profile.models import User
 from django.db.models import Q
 from interactive.consumers import log_user
@@ -51,19 +51,19 @@ def token_validation(func):
             decrypt_cookie_id = decrypt_user_id(refresh_jwt_cookie)
         if decrypt_cookie_id != decrypt_cookie_id:
             async_to_sync(log_user)(decrypt_cookie_id)
-            return HttpResponse("Cookies and access don't match", status=401)
+            return JsonResponse({"error": "You are log in another tab. Please logout first."}, status=401) # Bug double login same browser
         if decrypt_result > 0:
             return func(self, request)
         elif decrypt_result == EXPIRED:
             if refresh_jwt_cookie is None:
-                return HttpResponse("Couldn't locate cookie jwt", status=401)
+                return JsonResponse({"error": "Please login before accessing home page."}, status=401) # No permission to do this
             if decrypt_cookie_id > 0:
-                response: HttpResponse = HttpResponse("Access Token Refresh", status=200)
+                response: HttpResponse = HttpResponse("Access Token Refresh", status=200) 
                 return add_double_jwt(response, decrypt_cookie_id)
             else:
-                return HttpResponse("Cookie Expired jwt", status=401)
-        return HttpResponse(
-            "https://i.ytimg.com/vi/KEkrWRHCDQU/maxresdefault.jpg", status=401)
+                return HttpResponse({"error": "Session Expired. Please login."}, status=401) # Kickout, cookie expired
+        return JsonResponse({"error": 
+            "https://i.ytimg.com/vi/KEkrWRHCDQU/maxresdefault.jpg"}, status=401)
     return wrapper
 
 def verify_cookies(func):
@@ -80,6 +80,6 @@ def verify_cookies(func):
                 async_to_sync(log_user)(decrypt_cookie_id)
                 return func(self, request)
         except Exception:
-            return HttpResponse("Error checking the cookie", status=401)
+            return HttpResponse({"error": "Error checking the cookie"}, status=401)
         return func(self, request)
     return wrapper

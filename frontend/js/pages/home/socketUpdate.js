@@ -70,17 +70,12 @@ export async function updateSpecificUser(userID) {
         return;
     const assemble = await assembler(response);
     if (typeof assemble !== 'object' || assemble === null) {
-        console.log(assemble);
         return;
     } else {
         updateOtherUsersCard(assemble[0]);
     }
 }
 
-/////////////////////
-
-
-// To use when user logout
 export async function removeUser(userID) {
     const everyoneContainer = document.getElementById('userDisplay');
     const friendContainer = document.getElementById('friendDisplay');
@@ -103,9 +98,6 @@ export async function removeUser(userID) {
         }
     });
 }
-
-
-/////////////////////
 
 export function handleSocialUpdate(rType, currentUser, otherUserId) {
     const userId = getMyID();
@@ -133,7 +125,7 @@ async function createNotifications(rType, userId, otherUserId, currentUser) {
     
     if (userId == currentUser || !userId) {
         const user = await fetchUserById(otherUserId);
-        let imgUrl = user ? user.avatar : "https://png.pngtree.com/png-clipart/20190904/ourmid/pngtree-80-3d-text-png-image_18456.jpg";
+        let imgUrl = user ? user.avatar : "../../../public/80-percent.jpeg";
         let userNickname = user ? user.nickname : "someone";
         let toastType = ''
     
@@ -164,9 +156,6 @@ async function createNotifications(rType, userId, otherUserId, currentUser) {
     }
 }
 
-/////////////////////
-
-// To use when user login
 export async function newUser(userID) {
     const apiParam = { id: userID };
     const currentUser = getMyID()
@@ -179,7 +168,6 @@ export async function newUser(userID) {
         
         const assemble = await assembler(response);
         if (typeof assemble !== 'object' || assemble === null) {
-            console.log(assemble);
             return;
         }
         addNewUser(assemble[0]);
@@ -240,8 +228,6 @@ function appendToContainer(container, element, userID) {
         element.setAttribute('data-id', userID);
         element.querySelector('#inviteGameBtn').remove()
         container.appendChild(element);
-    } else {
-        console.log(`User with ID ${userID} already exists in the container.`);
     }
 }
 
@@ -258,8 +244,6 @@ async function getTemplateUser(user) {
     }
     return fillOtherUserInfo(templateUser, user);
 }
-
-/////////////////////
 
 export function updateSpecificUserStatus(id, rType) {
     const friendDiv = document.getElementById('friendDisplay');

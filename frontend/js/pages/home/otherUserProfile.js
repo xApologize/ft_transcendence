@@ -29,7 +29,6 @@ export async function getUserAndDisplay(userID) {
         return;
     }
     if (response.status != 200)
-        // User not found
         return;
 
     const userInfo = await response.json();

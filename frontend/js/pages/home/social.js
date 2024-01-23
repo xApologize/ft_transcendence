@@ -1,8 +1,7 @@
-import { fetchFriend, fetchFriendChange, fetchGameInvite } from '../../api/fetchData.js';
+import { fetchFriendChange, fetchGameInvite } from '../../api/fetchData.js';
 import { userRequestCardComponent } from '../../components/userRequestCard/userRequestCard.js';
 import { assembler } from '../../api/assembler.js';
 import { handleFriendAction } from './utils.js';
-import { displayFriend } from './home.js';
 import interactiveSocket from './socket.js';
 
 export async function updateSocial(typeToUpdate) {
@@ -78,7 +77,6 @@ function getSocialInviteReqID(event) {
     }
     const userID = ancestor.dataset.id;
     const action = event.currentTarget.dataset.action;
-    console.log("USER ID: ", userID, "\nACTION: ", action)
     handleSocialInvInterac(action, userID);
 }
 

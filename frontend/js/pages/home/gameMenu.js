@@ -1,19 +1,19 @@
+import { checkModal } from '../../router.js';
 import { GameState } from '../game/src/systems/GameStates.js';
 import interactiveSocket from './socket.js';
-import { handleCreateTournamentClick, updateTournamentList } from './tournament.js';
+import { handleCreateTournamentClick } from './tournament.js';
+import { updateTournamentList } from './tournamentUtils.js';
 import { switchModals, hideModal, showModal } from './utils.js';
 
 export function initGameMenu(world) {
     initlfp(world)
     initMainGameMenu(world)
-    initLobbyTournament()
     initJoinTournament()
 }
 
 function initlfp(world) {
     const lfpBtn = document.getElementById('cancel-lfp');
     lfpBtn.addEventListener('click', () => {
-        console.log("Cancel Match")
         hideElement('lfp');
         showElement('ui')
         showElement('toastContainer')
@@ -23,16 +23,6 @@ function initlfp(world) {
             JSON.stringify({ type: 'Cancel Match' })
         );
     });
-}
-
-function initLobbyTournament() {
-    // const lobbyModal = document.getElementById('lobbyTournamentModal');
-    // lobbyModal.addEventListener('hide.bs.modal', () => {
-    //     const lobbyModalListener = document.getElementById('lobbyTournamentModal');
-    //     lobbyModalListener.dataset.id = ''
-    //     const participantList = lobbyModalListener.querySelector('#participantList')
-    //     participantList.innerHTML = '';
-    // });
 }
 
 function initJoinTournament() {
@@ -54,6 +44,7 @@ function setupPlayClassicButton(world) {
     playClassic.addEventListener('click', () => handlePlayClassicClick(world));
     function handlePlayClassicClick(world) {
         hideModal('gameMenuModal');
+        checkModal()
         hideElement('toastContainer');
         hideElement('ui');
         world.currentGameState = GameState.LookingForPlayer;
@@ -69,6 +60,7 @@ function setupPlayUpgradedButton(world) {
     playUpgraded.addEventListener('click', () => handlePlayUpgradedClick(world));
     function handlePlayUpgradedClick(world) {
         hideModal('gameMenuModal');
+        checkModal()
         hideElement('toastContainer');
         hideElement('ui');
         world.currentGameState = GameState.LookingForPlayer;

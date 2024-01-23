@@ -1,8 +1,9 @@
 import { fetchFriendChange, fetchIsToken, fetchUser } from '../../api/fetchData.js';
 import { assembler } from '../../api/assembler.js';
-import { getUserAndDisplay, updateOtherFriendButton, updateStatusMsg } from './otherUserProfile.js';
-import { updateSocial, updateSocialFriendCard } from './social.js';
+import { updateOtherFriendButton, updateStatusMsg } from './otherUserProfile.js';
+import { updateSocialFriendCard } from './social.js';
 import interactiveSocket from './socket.js';
+import { checkModal } from '../../router.js';
 
 
 export async function handleFriendAction(actionObj) {
@@ -112,15 +113,33 @@ export function switchModals(hideModalId, showModalId) {
 }
 
 export function hideModal(modalId) {
-    console.log("HIDE ", modalId)
-    const modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
+    const modalElement = document.getElementById(modalId);
+    if (!modalElement) return;
+
+    const modal = bootstrap.Modal.getInstance(modalElement);
+    if (!modal) return;
+
     modal.hide();
 }
 
 export function showModal(modalId) {
-    console.log("SHOW ", modalId)
-    const modal = bootstrap.Modal.getInstance(document.getElementById(modalId))
+    const modalElement = document.getElementById(modalId);
+    if (!modalElement) return;
+
+    const modal = bootstrap.Modal.getInstance(modalElement);
+    if (!modal) return;
+
     modal.show();
+}
+
+export function disposeModal(modalId) {
+    const modalElement = document.getElementById(modalId);
+    if (!modalElement) return;
+
+    const modal = bootstrap.Modal.getInstance(modalElement);
+    if (!modal) return;
+
+    modal.dispose();
 }
 
 export function isModalShown(modalId) {
@@ -128,4 +147,31 @@ export function isModalShown(modalId) {
     return modalElement && modalElement.classList.contains('show');
 }
 
-//////////////////////////// SOCKET FUNCTIONS ////////////////////////////
+export function hideElementById(id) {
+    const element = document.getElementById(id);
+    if (element && !element.classList.contains('d-none')) {
+        element.classList.add('d-none');
+    }
+}
+
+export function showElementById(id) {
+    const element = document.getElementById(id);
+    if (element && element.classList.contains('d-none')) {
+        element.classList.remove('d-none');
+    }
+}
+
+export function resetInnerHTMLById(id) {
+    const element = document.getElementById(id);
+    if (element) {
+        element.innerHTML = "";
+    }
+}
+
+export function hideAllUI(launchGame = false) {
+    checkModal()
+    hideElementById('toastContainer')
+    hideElementById('ui')
+    if (launchGame === true)
+        showElementById('lfp')
+}

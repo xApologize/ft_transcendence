@@ -3,16 +3,15 @@ import { navigateTo } from '../../router.js';
 import { fetchAuth } from '../../api/fetchData.js';
 import { displayAlertMsg } from '../../utils/utilityFunctions.js';
 import { assembler } from '../../api/assembler.js';
+import { hideModal, showModal } from '../home/utils.js';
 
 export async function showLogin() {
     try {
         await loadHTMLPage('./js/pages/login/login.html');
-
         new bootstrap.Modal(document.getElementById('twoFAModal'));
-
+        initCss();
         getIntraHref();
         initEventListeners();
-        initCss();
     } catch (error) {
         console.error('Error fetching home.html:', error);
     }
@@ -57,18 +56,6 @@ function initEventListeners() {
         .addEventListener('click', hideLoginAlert);
 
     document
-        .getElementById('demo-user-btn')
-        .addEventListener('click', () => {
-            login('demo-user', 'demo-user');
-        });
-
-    document
-        .getElementById('demo-user-btn2')
-        .addEventListener('click', () => {
-            login('demo-user2', 'demo-user2');
-        });
-
-    document
         .getElementById('submit2FACode')
         .addEventListener('click', submit2FACode);
 
@@ -96,18 +83,17 @@ async function login(username = null, password = null) {
         password: passwordInput,
     };
 
-    // Response status:
-    // 404: User not found
-    // 400: User found but bad password -> will definitely change
-    // 200: Login successfull
-
     try {
         const response = await fetchAuth('POST', 'login/', loginData);
         if (!response) return;
-        const result = await response.json();
+        const result = await assembler(response);
+        if (typeof result === 'string') {
+            displayLoginError({ error: result });
+            return;
+        }
         if (response.ok) {
             if (result['2fa_required']) {
-                modal2FA.show();
+                showModal('twoFAModal');
                 return;
             }
             navigateTo('/home');
@@ -127,21 +113,21 @@ async function submit2FACode(result) {
     } // @TODO: handle error bc no token so not suppose to throw 401
     const data = await response.json();
     if (response.status == 200) {
-        modal2FA.hide();
+        hideModal('twoFAModal');
         navigateTo('/home');
     } else if (response.status == 400) {
         document.getElementById('2FAErrorMsg').textContent = data.error;
     } else if (response.status == 404 || response.status == 409) {
-        modal2FA.hide();
+        hideModal('twoFAModal');
         displayLoginError(data);
     } else {
-        modal2FA.hide();
+        hideModal('twoFAModal');
         displayLoginError({ error: 'An error occured. Please try again.' });
     }
 }
 
 function close2FAModal() {
-    modal2FA.hide();
+    hideModal('twoFAModal');
     const error = {
         error: '2FA Authentication interrupted. Please try again.',
     };

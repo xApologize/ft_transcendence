@@ -2,8 +2,7 @@ from django.conf import settings
 from django.http import HttpResponse, HttpRequest, Http404
 from user_profile.models import User
 from django.shortcuts import get_object_or_404
-import jwt
-import time
+import jwt, re, time
 from django.core.exceptions import PermissionDenied
 
 
@@ -61,7 +60,6 @@ def get_user_obj(request: HttpRequest) -> User:
         raise PermissionDenied("Couldn't locate access jwt")
     decrypt_result = decrypt_user_id(access_jwt_cookie)
     if decrypt_result <= 0:
-        # IF 404 DELETE COOKIE ?? IF LOG, MAKE NUKE, MAKE AND TOKEN STILL THERE, WILL NOT FIND USER
         raise Http404("User not found")
     user = get_object_or_404(User, id=decrypt_result)
     return user
@@ -78,3 +76,17 @@ def generate_2fa_token(id: int) -> str:
         "iat": current_time
     }
     return jwt.encode(payload, settings.SECRET_KEY, algorithm="HS256")
+
+def checkInputUser(userInput, fieldSupposeToHave):
+    for field in fieldSupposeToHave:
+        if field not in userInput:
+            return False
+    return True
+
+ 
+def checkEmail(email):
+    regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
+    if(re.fullmatch(regex, email)):
+        return True
+    else:
+        return False

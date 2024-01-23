@@ -1,13 +1,15 @@
-import { showHome } from './pages/home/home.js';
-import { showSignUp } from './pages/signUp/signUp.js';
-import { showFirewall } from './pages/firewall/firewall.js';
-import { show404 } from './pages/404/404.js';
-import { showLogin } from './pages/login/login.js';
-import { templateComponent } from './components/template/template.js';
-import { showCallback } from './pages/callback/callback.js';
-import interactiveSocket from './pages/home/socket.js'
-import { fetchIsToken } from './api/fetchData.js';
+import { showHome } from '/js/pages/home/home.js';
+import { showSignUp } from '/js/pages/signUp/signUp.js';
+import { showFirewall } from '/js/pages/firewall/firewall.js';
+import { show404 } from '/js/pages/404/404.js';
+import { showLogin } from '/js/pages/login/login.js';
+import { templateComponent } from '/js/components/template/template.js';
+import { showCallback } from '/js/pages/callback/callback.js';
+import interactiveSocket from '/js/pages/home/socket.js'
+import { fetchIsToken } from '/js/api/fetchData.js';
+import { disposeModal, showModal, hideModal } from '/js/pages/home/utils.js';
 
+let currentPath;
 const routes = {
     '/': showLogin,
     '/home': showHome,
@@ -43,35 +45,28 @@ export async function handleRoute() {
     } else {
         pageFunction = show404;
     }
+    currentPath = goPath;
     showPage(pageFunction);
 }
 
-function handlePopState(event) {
+function closeAndHandleRoute() {
     checkModal(true);
     handleRoute();
     interactiveSocket.closeSocket();
 }
 
-function disposeModal(modalId) {
-    const modalElement = document.getElementById(modalId);
-    if (modalElement) {
-        const modalInstance = bootstrap.Modal.getInstance(modalElement);
-        if (modalInstance) {
-            modalInstance.dispose();
-        }
+function handlePopState(event) {
+    checkModal();
+    showModal('loadingModal');
+
+    const specialPathnames = ['/', '/login', '/signUp'];
+    const pathname = window.location.pathname;
+    if (specialPathnames.includes(pathname) && currentPath === '/home') {
+        setTimeout(closeAndHandleRoute, 1000);
+    } else {
+        closeAndHandleRoute();
     }
 }
-
-function hideModal(modalId) {
-    const modalElement = document.getElementById(modalId);
-    if (modalElement) {
-        const modalInstance = bootstrap.Modal.getInstance(modalElement);
-        if (modalInstance) {
-            modalInstance.hide();
-        }
-    }
-}
-
 export function checkModal(deleteModal = false) {
     const modals = [
         'lobbyTournamentModal',
@@ -97,7 +92,7 @@ export function checkModal(deleteModal = false) {
 async function loadPage() {
     const body = document.getElementById('content');
     const template = await templateComponent();
-
+    
     body.append(template);
     handleRoute();
 }

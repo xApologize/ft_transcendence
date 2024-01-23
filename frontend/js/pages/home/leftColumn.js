@@ -56,7 +56,9 @@ async function loopDisplayUser(objectAllUsers, currentUser, userContainer) {
     }
 
     objectAllUsers.forEach((user) => {
+        if (!templateUser)  return;
         const clonedUserTemplate = templateUser.cloneNode(true);
+
 
         const seeProfileBtn = clonedUserTemplate.querySelector('.card');
         seeProfileBtn.addEventListener('click', displayOtherUserProfile)
@@ -73,12 +75,9 @@ async function loopDisplayUser(objectAllUsers, currentUser, userContainer) {
 
 
         const filledTemplate = fillOtherUserInfo(clonedUserTemplate, user)
-        userContainer.appendChild(filledTemplate);
-
-        //this is for potential patch to prevent the text box to push the button out of the div
-        // if (user.nickname.length > 10 && window.innerWidth < 1000) console.log('greater than 10');
-        // console.log(userContainer.offsetWidth);
-        // console.log(clonedUserTemplate.querySelector('#user-name').offsetWidth);
+        if (!userContainer.querySelector(`[data-id="${user.id}"]`)) {
+            userContainer.appendChild(filledTemplate);            
+        }
 
         userContainer.appendChild(clonedUserTemplate);
     });

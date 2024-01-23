@@ -135,6 +135,14 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
                 send_type, {"type": type, "id": user_id, "rType": rType}, self.channel_name)
             )
 
+    # async def send_to_layer_tournament(self, send_type: str, user_id: int, type: str, rType: str):
+    #     await self.channel_layer.group_send(
+    #         "interactive",
+    #         create_layer_dict(
+    #             send_type, {"type": type, "id": user_id, "rType": rType}, self.channel_name)
+    #         )
+        
+
     async def send_to_layer_social(
             self, send_type: str, user_id: int, rType: str, other_user_id: int):
         await self.channel_layer.group_send(

@@ -11,6 +11,12 @@
     max-height: 50%;
 }
 
+@media only screen and (max-width: 1181px) {
+    .lowerRow {
+        width: 120%;
+    }
+}
+
 .lowerRow {
     color: white;
     padding: 1rem;

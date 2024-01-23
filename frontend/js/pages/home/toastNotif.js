@@ -1,11 +1,11 @@
 import { toastComponent } from '../../components/toast/toast.js';
-import { showModal } from './utils.js';
 import { checkModal } from '../../router.js';
+import { hideElementById } from './utils.js';
 
 let toastQueue = [];
 export function displayToast(toastMsg, toastTitle, toastType = '', imgUrl = '') {
     if (imgUrl === '')
-        imgUrl = 'https://png.pngtree.com/png-clipart/20190904/ourmid/pngtree-80-3d-text-png-image_18456.jpg';
+        imgUrl = '../../../public/80-percent.jpeg';
     const toastPrep = prepToastInfo(toastMsg, toastTitle, toastType,imgUrl);
     if (document.querySelectorAll('#toastContainer .toast.show').length >= 5) {
         toastQueue.push(toastPrep);
@@ -29,7 +29,6 @@ function prepToastInfo(toastMsg, toastTitle, toastType, imgUrl) {
 
 async function createToast(toastInfo) {
     const toastNotif = await toastComponent();
-    console.log(toastNotif)
     toastNotif.querySelector('#toast-img').src = toastInfo['imgUrl'];
     toastNotif.querySelector('#toast-title').textContent = toastInfo['toastTitle'];
     toastNotif.querySelector('#msg-toast').textContent = toastInfo['toastMsg'];
@@ -50,7 +49,7 @@ async function createToast(toastInfo) {
         toastNotif.addEventListener('hidden.bs.toast', () => {
             clearInterval(intervalId);
             toastNotif.remove();
-            showNextToast(); // Attempt to show the next toast in the queue
+            showNextToast();
         });
     });
 
@@ -67,13 +66,11 @@ function showNextToast() {
 
 function clickToastEnable(toastNotif) {
     const toastSmall = toastNotif.querySelector('#toast-displaySocial')
-    console.log(toastNotif)
     toastSmall.classList.remove('d-none');
     // toastNotif.querySelector('.toast').classList.add('cursor-pointer');
     toastNotif.addEventListener('click', async() => {
         checkModal();
         const socialModalEl = document.getElementById('socialModal');
-        console.log(socialModalEl)
         let socialModal = bootstrap.Modal.getInstance(socialModalEl)
         if (!socialModal) {
             socialModal = new bootstrap.Modal(socialModalEl);

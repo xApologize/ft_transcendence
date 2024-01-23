@@ -16,35 +16,29 @@ import { closeInviteRequest } from './inviteGame.js';
 import { initGameMenu } from './gameMenu.js';
 import { checkModal } from '../../router.js';
 import { redirectToHome } from '../../api/fetchData.js';
-////////
 
 export async function showHome() {
     try {
-		// await CheckIfRedirectionIsntHappening (?)
-
         await loadHTMLPage('./js/pages/home/home.html');
-        checkModal()
-        const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+        checkModal();
+        const loadingModal = new bootstrap.Modal(
+            document.getElementById('loadingModal')
+        );
         loadingModal.show();
         setupHomeModal();
-    
+        setUpTooltip();
 
-        const result = await initPage()
+
+        const result = await initPage();
         if (result === false) {
             console.error('Error with user. Redirecting to home.');
             return redirectToHome();
         }
-        
+
         leftColumnListener();
-        listenerTeamDisplay()
+        listenerTeamDisplay();
         await loadGame();
         loadingModal.hide();
-        function uuidv4() {
-            return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>
-                (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-            );
-        }
-        console.log(uuidv4());
     } catch (error) {
         console.error('Error fetching home.html:', error);
     }
@@ -79,7 +73,7 @@ async function initPage() {
     if (!userAssembled || typeof userAssembled !== 'object') return false;
     displayUserCard(userAssembled);
     displayMatchHistory(userAssembled);
-    interactiveSocket.initSocket() // <- this is calling displayEveryone.
+    interactiveSocket.initSocket(); // <- this is calling displayEveryone.
     displayFriend();
     updateSocial();
 
@@ -128,16 +122,24 @@ function setupHomeModal() {
     new bootstrap.Modal(document.getElementById('joinTournamentModal'));
     new bootstrap.Modal(document.getElementById('tournamentInfoModal'));
 
-
     // Invite + other user modal
     new bootstrap.Modal(document.getElementById('otherUserInfo'));
     new bootstrap.Modal(document.getElementById('inviteGameModal'));
-    
-    document.getElementById('otherUserInfo').addEventListener('hide.bs.modal', () => {
-        document.getElementById('responseFriendQuery').textContent = '';
-    });
 
-    document.getElementById('inviteGameModal').addEventListener('hide.bs.modal',closeInviteRequest)
+    document
+        .getElementById('otherUserInfo')
+        .addEventListener('hide.bs.modal', () => {
+            document.getElementById('responseFriendQuery').textContent = '';
+        });
+
+    document
+        .getElementById('inviteGameModal')
+        .addEventListener('hide.bs.modal', closeInviteRequest);
+}
+
+function setUpTooltip() {
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 }
 
 //////////
@@ -160,11 +162,9 @@ function responsiveLeftColumn() {
     });
 }
 
-
-
 async function loadGame() {
-    await loadAll()
-    const gameContainer = document.querySelector('#sceneContainer')
+    await loadAll();
+    const gameContainer = document.querySelector('#sceneContainer');
     if (!gameContainer) {
         return;
     }
