@@ -1,13 +1,13 @@
-import { showHome } from './pages/home/home.js';
-import { showSignUp } from './pages/signUp/signUp.js';
-import { showFirewall } from './pages/firewall/firewall.js';
-import { show404 } from './pages/404/404.js';
-import { showLogin } from './pages/login/login.js';
-import { templateComponent } from './components/template/template.js';
-import { showCallback } from './pages/callback/callback.js';
-import interactiveSocket from './pages/home/socket.js'
-import { fetchIsToken } from './api/fetchData.js';
-import { disposeModal, showModal, hideModal } from './pages/home/utils.js';
+import { showHome } from '/js/pages/home/home.js';
+import { showSignUp } from '/js/pages/signUp/signUp.js';
+import { showFirewall } from '/js/pages/firewall/firewall.js';
+import { show404 } from '/js/pages/404/404.js';
+import { showLogin } from '/js/pages/login/login.js';
+import { templateComponent } from '/js/components/template/template.js';
+import { showCallback } from '/js/pages/callback/callback.js';
+import interactiveSocket from '/js/pages/home/socket.js'
+import { fetchIsToken } from '/js/api/fetchData.js';
+import { disposeModal, showModal, hideModal } from '/js/pages/home/utils.js';
 
 let currentPath;
 const routes = {
@@ -90,10 +90,13 @@ export function checkModal(deleteModal = false) {
 }
 
 async function loadPage() {
+    console.log("LOAD PAGE")
     const body = document.getElementById('content');
     const template = await templateComponent();
-
+    
+    console.log(body)
     body.append(template);
+    console.log(body)
     handleRoute();
 }
 
