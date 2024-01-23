@@ -7,7 +7,7 @@ import { hideModal, showModal } from '../home/utils.js';
 
 export async function showLogin() {
     try {
-        await loadHTMLPage('./js/pages/login/login.html');
+        await loadHTMLPage('/js/pages/login/login.html');
         new bootstrap.Modal(document.getElementById('twoFAModal'));
         initCss();
         getIntraHref();

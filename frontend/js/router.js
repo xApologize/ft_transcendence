@@ -1,7 +1,6 @@
 import { showHome } from '/js/pages/home/home.js';
 import { showSignUp } from '/js/pages/signUp/signUp.js';
 import { showFirewall } from '/js/pages/firewall/firewall.js';
-import { show404 } from '/js/pages/404/404.js';
 import { showLogin } from '/js/pages/login/login.js';
 import { templateComponent } from '/js/components/template/template.js';
 import { showCallback } from '/js/pages/callback/callback.js';
@@ -40,10 +39,11 @@ export async function handleRoute() {
         }
     }
 
+    console.log(window.location.pathname)
     if (routes[goPath]) {
         pageFunction = routes[goPath];
     } else {
-        pageFunction = show404;
+        pageFunction = showLogin;
     }
     currentPath = goPath;
     showPage(pageFunction);
