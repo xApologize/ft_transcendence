@@ -20,6 +20,8 @@ ABORT_TOURNAMENT = "abort_tournament"
 LOGOUT_USER = "send_user_to_the_shadow_realm"
 ABORT_ABORT = "abort_tourny_tourny"
 
+lock = asyncio.Lock()
+
 
 class UserInteractiveSocket(AsyncWebsocketConsumer):
     async def connect(self):
@@ -27,7 +29,8 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             self.init: bool = False
             self.user_id: int = self.scope.get("user_id")
             status: str = await self.get_user_status()
-        except Exception:
+        except Exception as e:
+            print("Exception caught:", e)
             self.user_id = -1
         if self.user_id < 0 or status != "OFF":
             await self.close()
@@ -101,7 +104,6 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         if self.channel_name == data["sender"]:
             match_entry = await database_sync_to_async(
                 LookingForMatch.objects.filter(paddleA=self.user_id).first)()
-            print("REMOVED ENTRY FROM DB")
             if match_entry is not None:
                 await database_sync_to_async(match_entry.delete)()
             self.waiting = False
@@ -111,7 +113,6 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         if self.channel_name == data["sender"]:
             match_entry = await database_sync_to_async(
                 LookingForMatchClassic.objects.filter(paddleA=self.user_id).first)()
-            print("REMOVED ENTRY FROM DB")
             if match_entry is not None:
                 await database_sync_to_async(match_entry.delete)()
             self.waiting = False
@@ -145,12 +146,11 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
                     "other_user_id": other_user_id
                 }, self.channel_name)
             )
-    
+
     async def send_user_to_the_shadow_realm(self, data: any):
         try:
-            print("DATA", data)
             receiver: int = data["Receiver"]
-            if self.user_id == data["Receiver"]:
+            if self.user_id == receiver:
                 await self.send(text_data=json.dumps({"type": "Logout"}))
         except Exception:
             print("Something went wrong when sending user to the shadow realm")
@@ -162,7 +162,6 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         user: User = await database_sync_to_async(User.objects.get)(pk=self.user_id)
         user.status = status
         await database_sync_to_async(user.save)()
-        print("SET STATUS", status)
 
     async def get_user_status(self) -> str:
         user: User = await database_sync_to_async(User.objects.get)(pk=self.user_id)
@@ -354,7 +353,6 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
                     "other_user_id": recipient_id
                     }, "Receiver": recipient_id
                 })
-        print("Invite clean done")
 
     async def handle_lfm_cleaning(self) -> None:
         if self.waiting is True:
@@ -383,6 +381,10 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
                 await self.start_tournament()
             case "Final":
                 await self.start_final()
+            case "Tournament Match End":
+                await self.send_to_layer(ECHO, self.user_id, "Tournament", action_type)
+            case "Final Match End":
+                await self.send_to_layer(ECHO, self.user_id, "Tournament", action_type)
             case "Disconnect":
                 await self.disconnect_tournament()
             case _:
@@ -425,7 +427,6 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             owner_id: int = data["owner_id"]
             lobby_instance: Lobby = await database_sync_to_async(Lobby.objects.get)(owner=owner_id)
             lobby_check: Lobby = await self.check_if_in_lobby()
-            print("LOBBY CHECK", lobby_check)
             if lobby_check is not None:
                 print("FATAL ERROR join in already lobby...?")
                 await self.send(text_data=json.dumps({"type": "Tournament", "rType": "invalidJoin", "id": self.user_id}))
@@ -551,7 +552,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
                 "Receiver": concerning_id
                 }
             )
-        
+ 
     async def abort_tourny_tourny(self, data: any):
         if self.user_id == data["Receiver"]:
             await self.send(text_data=json.dumps({"type": "Tournament", "rType": "abortTournament", "id": self.user_id}))
@@ -657,14 +658,16 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             except Exception:
                 return None
 
-    async def upper_handling(self, tournament_handle: Tournament) -> None:
+    async def upper_handling(self, tournament_id: int) -> None:
         try:
-            final_handle: Final = await database_sync_to_async(Final.objects.get)(final_id=tournament_handle.pk)
-            final_handle.player_1 = self.user_id
-            await database_sync_to_async(final_handle.save)()
-            tournament_handle.player_1 = self.user_id
-            tournament_handle.player_2 = -1
-            await database_sync_to_async(tournament_handle.save)()
+            async with lock:
+                final_handle: Final = await database_sync_to_async(Final.objects.get)(final_id=tournament_id)
+                final_handle.player_1 = self.user_id
+                await database_sync_to_async(final_handle.save)()
+                tournament_handle: Tournament = await database_sync_to_async(Tournament.objects.get)(pk=tournament_id)
+                tournament_handle.player_1 = self.user_id
+                tournament_handle.player_2 = -1
+                await database_sync_to_async(tournament_handle.save)()
             if tournament_handle.player_3 == -1 and tournament_handle.player_4 == -1:
                 print("DOUBLE DC in create")
                 await self.play_againts_nobody()
@@ -678,14 +681,16 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             await self.play_againts_nobody() #  Come here if the match couldn't be created? not sure how this would happen
             await database_sync_to_async(tournament_handle.delete)()
 
-    async def lower_handling(self, tournament_handle: Tournament) -> None:
+    async def lower_handling(self, tournament_id: int) -> None:
         try:
-            final_handle: Final = await database_sync_to_async(Final.objects.get)(final_id=tournament_handle.pk)
-            final_handle.player_2 = self.user_id
-            await database_sync_to_async(final_handle.save)()
-            tournament_handle.player_3 = self.user_id
-            tournament_handle.player_4 = -1
-            await database_sync_to_async(tournament_handle.save)()
+            async with lock:
+                final_handle: Final = await database_sync_to_async(Final.objects.get)(final_id=tournament_id)
+                final_handle.player_2 = self.user_id
+                await database_sync_to_async(final_handle.save)()
+                tournament_handle: Tournament = await database_sync_to_async(Tournament.objects.get)(pk=tournament_id)
+                tournament_handle.player_3 = self.user_id
+                tournament_handle.player_4 = -1
+                await database_sync_to_async(tournament_handle.save)()
             if tournament_handle.player_1 == -1 and tournament_handle.player_2 == -1:
                 print("DOUBLE DC in create")
                 await self.play_againts_nobody()
@@ -716,15 +721,16 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
         )
         await self.send_tourny_handle(player_1_match_handle, player_1_id)
         await self.send_tourny_handle(player_2_match_handle, player_2_id)
+        await database_sync_to_async(final_countdown.delete)()
 
     async def join_final(self, tournament_id: int) -> None:
         try:
             final_handle: Final = await self.find_final(tournament_id)
             if final_handle is None:
-                await self.play_againts_nobody() # Found no final handle launch fake match
+                await self.play_againts_nobody()  # Found no final handle launch fake match
                 return
             if final_handle.player_2 != -1:
-                await self.play_againts_nobody() # No slot for some reason? Launch fake match
+                await self.play_againts_nobody()  # No slot for some reason? Launch fake match
                 return
             final_handle.player_2 = self.user_id
             await database_sync_to_async(final_handle.save)()
@@ -751,9 +757,9 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             return
         upper_bracket: bool = await self.check_if_upper(tournament_handle)
         if upper_bracket is True:
-            await self.upper_handling(tournament_handle)
+            await self.upper_handling(tournament_handle.pk)
         else:
-            await self.lower_handling(tournament_handle)
+            await self.lower_handling(tournament_handle.pk)
 
     async def check_if_upper(self, tournament_handle: Tournament) -> bool:
         if tournament_handle.player_1 == self.user_id or tournament_handle.player_2 == self.user_id:
@@ -785,7 +791,7 @@ class UserInteractiveSocket(AsyncWebsocketConsumer):
             tournament_handle.player_3 = -1
             tournament_handle.player_4 = -1
         await database_sync_to_async(tournament_handle.save)()
-    
+
     async def abort_tourny(self, tournament_handle: Tournament) -> None:
         await self.channel_layer.group_send(
             "interactive", {

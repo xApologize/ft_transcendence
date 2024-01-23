@@ -2,6 +2,7 @@ from django.http import JsonResponse
 from utils.functions import generate_2fa_token
 from user_profile.models import User
 
+
 def handle_2fa_login(user):
     response = JsonResponse({'2fa_required': True})
     temp_token = generate_2fa_token(user.id)

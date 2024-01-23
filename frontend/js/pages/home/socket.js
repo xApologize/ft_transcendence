@@ -49,7 +49,7 @@ const interactiveSocket = {
         if (this.interactive_socket) {
             this.interactive_socket.send(message);
         } else {
-            console.error("CRITICAL ERROR SOCKET WAS NOT SETUP, you should never see this, if you do let me know. Dave");
+            console.error("CRITICAL ERROR SOCKET WAS NOT SETUP, you should never see this, call 911 NOW, if you do let me know. Dave");
         }
     },
 
@@ -165,7 +165,7 @@ const interactiveSocket = {
     },
 
     match_invite_handler: function(data) {
-        console.log("hey", data);
+        console.log("Heyyy macarena", data);
     },
 
     interactive_error_handler: function(message) {
