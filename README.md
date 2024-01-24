@@ -42,7 +42,9 @@ To build this project you will need to have an instance of [Docker](https://www.
 * [Florian](https://github.com/KayzaFlo), our Game design, Game dev and Game visual dev.
 * [Jacob](https://github.com/Jalevesq), our Backend, Frontend and UI dev.
 * [Jean-Benoit](https://github.com/xApologize), our Frontend and UIX dev.
-* [Codepen](https://codepen.io/mattjroberts/pen/pazNdx), for the amazing animated background.
+* [Codepen](https://codepen.io/mattjroberts/pen/pazNdx), for the animated background.
+* [Codepen](https://codepen.io/mostafa_abdallah/pen/mdpdgaQ), for the animated loading icon.
+* [Positronx.io](https://www.positronx.io/css-profile-cards), for the dev card.
 
 
 
