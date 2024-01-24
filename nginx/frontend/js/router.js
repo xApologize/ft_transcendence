@@ -39,7 +39,6 @@ export async function handleRoute() {
         }
     }
 
-    console.log(window.location.pathname)
     if (routes[goPath]) {
         pageFunction = routes[goPath];
     } else {
