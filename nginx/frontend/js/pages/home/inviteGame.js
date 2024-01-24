@@ -4,6 +4,7 @@ import interactiveSocket from './socket.js';
 import { getMyID, hideModal } from './utils.js';
 import { updateSocial } from './social.js';
 import { displayToast } from './toastNotif.js';
+import { showModal } from './utils.js';
 
 
 export async function displayInviteModal(event) {
