@@ -2,9 +2,7 @@
 
 ## About the project
 
-This project is about doing something you’ve never done before.
-Remind yourself the beginning of your journey in computer science.
-Look at you now. Time to shine!
+"ft_transcendence" is a dynamic web project centered on hosting real-time multiplayer Pong games. It combines web technologies with stringent security protocols to offer a robust, single-page application, designed for Google Chrome. The project showcases modular development in areas like gameplay, user management, and cybersecurity, challenging participants to create an engaging and secure gaming platform. It also features peer-evaluation and flexible technology choices within specified constraints, making it a comprehensive showcase of web development skills.
 
 ## Built with
 
@@ -29,13 +27,14 @@ To build this project you will need to have an instance of [Docker](https://www.
     ```
     git clone https://github.com/xApologize/ft_transcendence.git
     ```
-2. Set the environment. The project come with a [tool](https://github.com/xApologize/ft_transcendence/blob/main/tools/env_maker.sh) that you can use to easily generate the .env file for the project.
+2. Set the environment. The project comes with a [tool](https://github.com/xApologize/ft_transcendence/blob/main/tools/env_maker.sh) that you can use to easily generate the .env file for the project.
       1. Additionally, if you are a 42 student and want to make use of the 42 OAuth to login, you will need to fill the .env file in the backend folder. The ```AUTH42_CLIENT``` and ```AUTH42_SECRET``` will be generated when you create your app in the intra. Fill the ```AUTH42_LINK``` with the url generated whe nyou created the app. ```AUTH42_REDIRECT_URI``` will need to be ```https://your-domain/callback```, you can also use localhost instead if you will be using it locally.
   
-3. Run the dockers with
+3. Run the containers in the project root with
    ```
    docker-compose up --build
    ```
+4. You can access the website with https://localhost
 
 ## Credits
 * [Dave](https://github.com/Producks), our Devops, Backend and Network security dev.
