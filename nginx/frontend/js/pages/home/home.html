@@ -1,0 +1,885 @@
+<audio
+    id="ambient"
+    src="/public/sounds/ambient.mp3"
+    loop
+    preload="auto"
+    autoplay
+></audio>
+<audio id="boom" src="/public/sounds/boom.wav" preload="auto"></audio>
+<audio id="crash" src="/public/sounds/crash.ogg" preload="auto"></audio>
+<audio id="fanfare" src="/public/sounds/fanfare.mp3" preload="auto"></audio>
+<audio id="hit" src="/public/sounds/hit.flac" preload="auto"></audio>
+<audio id="coin" src="/public/sounds/insert-coin.mp3" preload="auto"></audio>
+<audio id="notif" src="/public/sounds/notif.wav" preload="auto"></audio>
+
+<div class="container-fluid">
+    <div class="row fill">
+        <div id="sceneContainer" class="vw-100 vh-100 p-0"></div>
+
+        <div id="lfp" class="d-none text-center position-absolute">
+            <div>Looking for player...</div>
+            <div>
+                <btn id="cancel-lfp" class="btn btn-danger btn-lg">Cancel</btn>
+            </div>
+        </div>
+
+        <div
+            id="left-player-name"
+            class="d-none position-absolute bottom-0 text-start p-4 nickname"
+        >
+            Left Player
+        </div>
+        <div
+            id="right-player-name"
+            class="d-none position-absolute bottom-0 text-end p-4 nickname"
+        >
+            Right Player
+        </div>
+
+        <!-- RESULT SCREEN -->
+        <div
+            id="result"
+            class="d-none position-absolute top-50 start-50 translate-middle bg-main-second rounded p-2"
+        >
+            <div id="resultMatch" class="d-none">
+                <h3 id="resultTitle" class="row text-center m-0 p-2">
+                    You Lost
+                </h3>
+                <div class="row">
+                    <div class="col text-center p-0">
+                        <p id="leftName"></p>
+                    </div>
+                    <div class="col text-center p-0">
+                        <p id="leftScore"></p>
+                    </div>
+                    <div class="col text-center p-0">
+                        <p id="rightScore"></p>
+                    </div>
+                    <div class="col text-center p-0">
+                        <p id="rightName"></p>
+                    </div>
+                </div>
+                <div id="what-the-fuck-is-that-div">
+                    <button
+                        id="resultButton"
+                        class="btn btn-danger text-center"
+                    >
+                        Back to menu
+                    </button>
+                </div>
+            </div>
+            <!-- RESULT SCREEN -->
+            <div id="bracket" class="d-none">
+                <h1 id="tournament-name-bracket"></h1>
+                <main id="tournamentBracket">
+                    <ul id="round-1" class="round round-1">
+                        <li class="spacer">&nbsp;</li>
+
+                        <li id="r1-p1" class="game game-top"><span></span></li>
+                        <li class="game game-spacer">&nbsp;</li>
+                        <li id="r1-p2" class="game game-bottom">
+                            <span></span>
+                        </li>
+
+                        <li class="spacer">&nbsp;</li>
+
+                        <li id="r1-p3" class="game game-top"><span></span></li>
+                        <li class="game game-spacer">&nbsp;</li>
+                        <li id="r1-p4" class="game game-bottom">
+                            <span></span>
+                        </li>
+
+                        <li class="spacer">&nbsp;</li>
+                    </ul>
+                    <ul id="round-2" class="round round-2">
+                        <li class="spacer">&nbsp;</li>
+
+                        <li id="r2-p1" class="game game-top"><span></span></li>
+                        <li class="game game-spacer">&nbsp;</li>
+                        <li id="r2-p2" class="game game-bottom">
+                            <span></span>
+                        </li>
+
+                        <li class="spacer">&nbsp;</li>
+                    </ul>
+                    <!-- <ul class="round round-3">
+                    <li class="spacer">&nbsp;</li>
+                    <li id="r3-p1" class="game game-top winner"><span></span></li>
+                    <li class="spacer">&nbsp;</li>
+                  </ul>    -->
+                </main>
+                <div id="leaveTournament" class="d-none">
+                    <button class="btn btn-danger">Leave Tournament</button>
+                </div>
+                <h1 id="timer"></h1>
+            </div>
+        </div>
+
+        <div id="ui" class="container-fluid position-absolute">
+            <div class="row vh-100">
+                <div class="buttonResponsive">
+                    <button
+                        class="btn shadow-none btn-primary textWhite"
+                        id="userBtn"
+                    >
+                        <i id="icon" class="fa fa-user"></i>
+                    </button>
+                </div>
+                <div
+                    class="text-center userList pb-3 bg-main-second col-md-4 col-lg-4 col-xl-3 col-xxl-3"
+                    id="left-column"
+                >
+                    <div class="row">
+                        <div class="col p-0">
+                            <button
+                                type="button"
+                                id="everyoneBtn"
+                                class="active-dark btn btn-light btn-block w-100 rounded-0 border shadow-none"
+                            >
+                                Everyone
+                            </button>
+                        </div>
+                        <div class="col p-0">
+                            <button
+                                type="button"
+                                id="friendsBtn"
+                                class="active btn btn-light btn-block w-100 rounded-0 border shadow-none"
+                            >
+                                Friends
+                            </button>
+                        </div>
+                        <div class="m-0 row p-0 text-center border border-2">
+                            <button
+                                type="button"
+                                id="socialModalBtn"
+                                class="btn btn-light btn-block w-100 rounded-0 border shadow-none position-relative"
+                                data-bs-toggle="modal"
+                                data-bs-target="#socialModal"
+                            >
+                                Social
+                                <!-- Badge in the corner -->
+                                <span
+                                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                    id="socialBadge"
+                                >
+                                    0
+                                    <!-- Number of social events -->
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="divFill">
+                        <div class="row row-center" id="userDisplay"></div>
+                        <div
+                            class="row row-center d-none"
+                            id="friendDisplay"
+                        ></div>
+                    </div>
+                </div>
+                <div
+                    class="col-sm-12 col-md-8 col-lg-8 col-xl-9 col-xxl-9"
+                    id="right-column"
+                >
+                    <div id="rightPart" class="row rightPartCol">
+                        <div
+                            id="divGame"
+                            class="col-12 col-md-3 col-xl-3 text-center textWhite p-2"
+                        >
+                            <div>
+                                <button
+                                    id="findGame"
+                                    class="btn shadow-none btn-primary btn-lg textWhite"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#gameMenuModal"
+                                >
+                                    Find game
+                                </button>
+                            </div>
+                        </div>
+                        <div id="userCol" class="col-12 col-md-9 col-xl-9">
+                            <div class="rightCol text-center">
+                                <div class="upperRow">
+                                    <div
+                                        id="own-user-card"
+                                        class="user-card bg-main-second text-light mt-3 p-3"
+                                    ></div>
+                                </div>
+                                <div class="lowerRow bg-main-second">
+                                    <h1 class="m-3 text-center">
+                                        Match history
+                                    </h1>
+                                    <div class="row border-top">
+                                        <div class="col text-center p-0">
+                                            <p>Date</p>
+                                        </div>
+                                        <div class="col text-center p-0">
+                                            <p>Winner</p>
+                                        </div>
+                                        <div class="col text-center p-0">
+                                            <p>Score</p>
+                                        </div>
+                                        <div class="col text-center p-0">
+                                            <p>Loser</p>
+                                        </div>
+                                        <div class="col text-center p-0">
+                                            <p>Score</p>
+                                        </div>
+                                    </div>
+                                    <div id="matchHistory"></div>
+                                    <div id="copyright" class="border-top">
+                                        <div class="row">
+                                            <div
+                                                id="ddemers"
+                                                class="col ml-1 mr-1"
+                                            >
+                                                <p class="m-0 hover-pointer">
+                                                    DDemers
+                                                </p>
+                                                <div
+                                                    id="ddemers-box"
+                                                    class="about-box hide"
+                                                >
+                                                    <div
+                                                        id="ddemers-pos"
+                                                        class="container-profile-card"
+                                                    >
+                                                        <div class="shape">
+                                                            <div
+                                                                id="dave-photo"
+                                                                class="image"
+                                                            ></div>
+                                                        </div>
+                                                        <h3>Dave Demers 🤡</h3>
+                                                        <h3 class="title">
+                                                            Full stack
+                                                        </h3>
+                                                        <p>
+                                                            Network security,
+                                                            Backend, Devops
+                                                        </p>
+                                                        <div
+                                                            class="icons textWhite"
+                                                        >
+                                                            <a
+                                                                href="https://github.com/Producks"
+                                                                target="_blank"
+                                                                class="no-underline-link"
+                                                            >
+                                                                <i
+                                                                    class="fa fa-github"
+                                                                    aria-hidden="true"
+                                                                ></i>
+                                                            </a>
+                                                            <a
+                                                                href="https://www.speedrun.com/users/Producks"
+                                                                target="_blank"
+                                                                class="no-underline-link"
+                                                            >
+                                                                <i
+                                                                    class="fa fa-gamepad"
+                                                                ></i>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div
+                                                id="jalevesq"
+                                                class="col ml-1 mr-1"
+                                            >
+                                                <p class="m-0 hover-pointer">
+                                                    JaLevesq
+                                                </p>
+                                                <div
+                                                    id="jalevesq-box"
+                                                    class="hide about-box"
+                                                >
+                                                    <div
+                                                        id="jalevesq-pos"
+                                                        class="container-profile-card"
+                                                    >
+                                                        <div class="shape">
+                                                            <div
+                                                                id="jacob-photo"
+                                                                class="image"
+                                                            ></div>
+                                                        </div>
+                                                        <h3>Jacob Lévesque</h3>
+                                                        <h3 class="title">
+                                                            Full Stack
+                                                        </h3>
+                                                        <p>
+                                                            Backend, Frontend,
+                                                            <br />
+                                                            UI
+                                                        </p>
+                                                        <div
+                                                            class="icons textWhite"
+                                                        >
+                                                            <a
+                                                                href="https://github.com/Jalevesq"
+                                                                target="_blank"
+                                                                class="no-underline-link"
+                                                            >
+                                                                <i
+                                                                    class="fa fa-github"
+                                                                    aria-hidden="true"
+                                                                ></i>
+                                                            </a>
+                                                            <a
+                                                                href="https://www.linkedin.com/in/jacob-levesque-136a89272/"
+                                                                target="_blank"
+                                                                class="no-underline-link"
+                                                            >
+                                                                <i
+                                                                    class="fa fa-linkedin"
+                                                                    aria-hidden="true"
+                                                                ></i>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div
+                                                id="fgeslin"
+                                                class="col ml-1 mr-1"
+                                            >
+                                                <div
+                                                    id="fgeslin-box"
+                                                    class="hide about-box"
+                                                >
+                                                    <div
+                                                        id="fgeslin-pos"
+                                                        class="container-profile-card"
+                                                    >
+                                                        <div class="shape">
+                                                            <div
+                                                                id="florian-photo"
+                                                                class="image"
+                                                            ></div>
+                                                        </div>
+                                                        <h3>Florian Geslin</h3>
+                                                        <h3 class="title">
+                                                            Game Designer
+                                                        </h3>
+                                                        <p>
+                                                            Game Dev, Game
+                                                            Design,
+                                                            <br />
+                                                            Game Visual
+                                                        </p>
+                                                        <div
+                                                            class="icons textWhite"
+                                                        >
+                                                            <a
+                                                                href="https://github.com/KayzaFlo"
+                                                                target="_blank"
+                                                                class="no-underline-link"
+                                                            >
+                                                                <i
+                                                                    class="fa fa-github"
+                                                                    aria-hidden="true"
+                                                                ></i>
+                                                            </a>
+                                                            <a
+                                                                href="https://www.linkedin.com/in/florian-geslin-652b1015a/"
+                                                                target="_blank"
+                                                                class="no-underline-link"
+                                                            >
+                                                                <i
+                                                                    class="fa fa-linkedin"
+                                                                    aria-hidden="true"
+                                                                ></i>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <p>FGeslin</p>
+                                            </div>
+                                            <div
+                                                id="jrossign"
+                                                class="col ml-1 mr-1"
+                                            >
+                                                <div
+                                                    id="jrossign-box"
+                                                    class="hide about-box"
+                                                >
+                                                    <div
+                                                        id="jrossign-pos"
+                                                        class="container-profile-card"
+                                                    >
+                                                        <div class="shape">
+                                                            <div
+                                                                id="jeanbenoit-photo"
+                                                                class="image"
+                                                            ></div>
+                                                        </div>
+                                                        <h3>
+                                                            Jean-Benoit
+                                                            Rossignol
+                                                        </h3>
+                                                        <h3 class="title">
+                                                            Web Designer
+                                                        </h3>
+                                                        <p>Frontend, UIX</p>
+                                                        <div
+                                                            class="icons textWhite"
+                                                        >
+                                                            <a
+                                                                href="https://github.com/xApologize"
+                                                                target="_blank"
+                                                                class="no-underline-link"
+                                                            >
+                                                                <i
+                                                                    class="fa fa-github"
+                                                                    aria-hidden="true"
+                                                                ></i>
+                                                            </a>
+                                                            <a
+                                                                href="https://www.linkedin.com/in/jean-benoit-rossignol-168441196/"
+                                                                target="_blank"
+                                                                class="no-underline-link"
+                                                            >
+                                                                <i
+                                                                    class="fa fa-linkedin"
+                                                                    aria-hidden="true"
+                                                                ></i>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <p class="m-0 hover-pointer">
+                                                    JRossign
+                                                </p>
+                                            </div>
+                                            <div
+                                                id="team"
+                                                class="col d-none d-xxl-block"
+                                            >
+                                                <p class="m-0">
+                                                    Dream team &copy 2024
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Notification Container -->
+        <div id="toastContainer" class="toast-container end-0 top-0"></div>
+        <!-- Invite Game Modal -->
+        <div
+            class="modal fade"
+            id="inviteGameModal"
+            tabindex="-1"
+            aria-labelledby="inviteGameModalLabel"
+            aria-hidden="true"
+        >
+            <div class="modal-dialog modal-dialog-centered modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header border-0">
+                        <h5 class="modal-title" id="waitingGameModal">
+                            Waiting for user...
+                        </h5>
+                    </div>
+                    <div class="modal-footer border-0">
+                        <button class="btn btn-danger" data-bs-dismiss="modal">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Other User Profile Modal -->
+        <div
+            class="modal fade"
+            id="otherUserInfo"
+            tabindex="-1"
+            aria-labelledby="otherUserInfoLabel"
+            aria-hidden="true"
+        >
+            <div id="otherUserInfoDialog" class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div class="d-flex align-items-center flex-grow-1">
+                            <button
+                                id="addFriendBtn"
+                                class="btn btn-success d-none me-2 flex-shrink-0"
+                            ></button>
+                            <button
+                                id="deleteFriendBtn"
+                                class="btn btn-danger d-none me-2 flex-shrink-0"
+                            ></button>
+                            <p
+                                class="mb-0 flex-grow-1 text-break text-danger"
+                                id="responseFriendQuery"
+                            ></p>
+                        </div>
+                        <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"
+                        ></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="text-center mb-3">
+                            <img
+                                id="userAvatar"
+                                src=""
+                                alt="User Avatar"
+                                class="rounded-circle"
+                                width="100"
+                                height="100"
+                            />
+                        </div>
+                        <h1 id="userNickname" class="text-center mb-3">
+                            Loading...
+                        </h1>
+                        <div class="row text-center">
+                            <p class="col">
+                                Wins:
+                                <span id="userWins" class="fw-bold">0</span>
+                            </p>
+                            <p class="col">
+                                Losses:
+                                <span id="userLosses" class="fw-bold">0</span>
+                            </p>
+                            <p class="col">
+                                Matches Played:
+                                <span id="userMatchesPlayed" class="fw-bold"
+                                    >0</span
+                                >
+                            </p>
+                            <p id="winrate" class="col">
+                                Winrate:
+                                <span id="userWinrate" class="fw-bold">0</span>
+                            </p>
+                        </div>
+                        <div id="otherMatchHistory" class="d-none">
+                            <div class="col text-center mb-4">
+                                <h3>Match History</h3>
+                            </div>
+                            <div>
+                                <div
+                                    class="row text-center border-2 border mb-2"
+                                >
+                                    <div class="col">
+                                        <p class="mt-2 mb-2">Date of Match</p>
+                                    </div>
+                                    <div class="col">
+                                        <p class="mt-2 mb-2">Winner</p>
+                                    </div>
+                                    <div class="col">
+                                        <p class="mt-2 mb-2">Winner Score</p>
+                                    </div>
+                                    <div class="col">
+                                        <p class="mt-2 mb-2">Loser</p>
+                                    </div>
+                                    <div class="col">
+                                        <p class="mt-2 mb-2">Loser Score</p>
+                                    </div>
+                                </div>
+                                <div id="matchHistoryContainer"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Social Modal -->
+        <div
+            class="modal fade"
+            id="socialModal"
+            tabindex="-1"
+            aria-labelledby="socialModalLabel"
+            aria-hidden="true"
+        >
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header text-center">
+                        <h5 class="modal-title w-100" id="socialModalLabel">
+                            Social
+                        </h5>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Invite Game Receive -->
+                        <div
+                            id="invite-game-received"
+                            class="align-items-center"
+                        >
+                            <h6 class="text-center">Invite Game Received</h6>
+                            <div
+                                id="inviteGameReceived"
+                                class="list-group"
+                            ></div>
+                        </div>
+                        <hr />
+                        <!-- Separator -->
+                        <div
+                            id="friend-requests-sent"
+                            class="align-items-center"
+                        >
+                            <h6 class="text-center">Friend Requests Sent</h6>
+                            <p
+                                class="text-center"
+                                id="response-requests-sent-info"
+                            ></p>
+                            <div id="sentRequest" class="list-group">
+                                <!-- List of sent friend requests will go here -->
+                            </div>
+                        </div>
+                        <hr />
+                        <!-- Separator -->
+                        <!-- Friend Requests Received -->
+                        <div
+                            id="friend-requests-received"
+                            class="align-items-center"
+                        >
+                            <h6 class="text-center">
+                                Friend Requests Received
+                            </h6>
+                            <p
+                                class="text-center"
+                                id="response-requests-received-info"
+                            ></p>
+                            <div id="receivedRequest" class="list-group">
+                                <!-- List of received friend requests will go here -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button
+                            type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal"
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Game Menu -->
+        <div
+            class="modal fade"
+            id="gameMenuModal"
+            tabindex="-1"
+            aria-labelledby="gameMenuModalLabel"
+            aria-hidden="true"
+        >
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header text-center">
+                        <h5 class="modal-title w-100" id="gameMenuModalLabel">
+                            Game Menu
+                        </h5>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-6 text-center border-right">
+                                <div class="mb-2">
+                                    <!-- mb-2 adds a margin to the bottom of the element -->
+                                    <button
+                                        id="joinClassicBtn"
+                                        class="btn btn-primary"
+                                        data-bs-toggle="tooltip"
+                                        data-bs-html="true"
+                                        data-bs-title="Basic pong game"
+                                        data-bs-placement="top"
+                                    >
+                                        Classic 1vs1
+                                    </button>
+                                </div>
+                                <div>
+                                    <button
+                                        id="joinUpgradedBtn"
+                                        class="btn btn-primary"
+                                        data-bs-toggle="tooltip"
+                                        data-bs-html="true"
+                                        data-bs-title="- Special rules - </br> Space: smash. </br> Shift: dash."
+                                        data-bs-placement="bottom"
+                                    >
+                                        Special 1vs1
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-6 text-center">
+                                <div class="mb-2">
+                                    <!-- Same as above, for spacing -->
+                                    <button
+                                        id="createTournamentBtn"
+                                        class="btn btn-primary"
+                                        data-bs-toggle="tooltip"
+                                        data-bs-html="true"
+                                        data-bs-title="- Special rules - </br> Space: smash. </br> Shift: dash."
+                                        data-bs-placement="top"
+                                    >
+                                        Create Tournament
+                                    </button>
+                                </div>
+                                <div>
+                                    <button
+                                        id="joinTournamentBtn"
+                                        class="btn btn-primary"
+                                        data-bs-toggle="tooltip"
+                                        data-bs-html="true"
+                                        data-bs-title="- Special rules - </br> Space: smash. </br> Shift: dash."
+                                        data-bs-placement="bottom"
+                                    >
+                                        Join Tournament
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button
+                            type="button"
+                            class="btn btn-danger"
+                            data-bs-dismiss="modal"
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Join Tournament -->
+        <div
+            class="modal"
+            id="joinTournamentModal"
+            tabindex="-1"
+            aria-labelledby="joinTournamentModalLabel"
+            aria-hidden="true"
+        >
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header text-center">
+                        <h5
+                            class="modal-title w-100"
+                            id="joinTournamentModalLabel"
+                        >
+                            Join Tournament
+                        </h5>
+                    </div>
+                    <div class="modal-body">
+                        <ul class="list-group" id="tournamentList">
+                            <!-- List of lobbies will go here -->
+                        </ul>
+                    </div>
+                    <div class="modal-footer">
+                        <button
+                            id="cancelJoinTournament"
+                            type="button"
+                            class="btn btn-danger"
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Lobby Tournament -->
+        <div
+            class="modal"
+            id="lobbyTournamentModal"
+            tabindex="-1"
+            aria-labelledby="lobbyTournamentModalLabel"
+            aria-hidden="true"
+            data-bs-backdrop="static"
+            data-bs-keyboard="false"
+        >
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header text-center">
+                        <h5
+                            class="modal-title w-100"
+                            id="lobbyTournamentModalLabel"
+                        >
+                            Tournament Lobby
+                        </h5>
+                    </div>
+                    <div class="modal-body">
+                        <div class="participants">
+                            <h6>Participants:</h6>
+                            <ul id="participantList" class="list-group"></ul>
+                        </div>
+                        <!-- Waiting Message -->
+                        <div class="waiting-message text-center mt-3">
+                            <span
+                                id="waitingMessage"
+                                class="badge bg-warning text-dark"
+                                >Waiting for more players (0/4)</span
+                            >
+                        </div>
+                        <div class="invite mt-3 text-center">
+                            <button
+                                id="startTournamentBtn"
+                                type="button"
+                                class="d-none btn btn-primary"
+                            >
+                                Start Tournament
+                            </button>
+                        </div>
+                    </div>
+                    <div class="modal-footer justify-content-center">
+                        <button
+                            id="cancelTournamentBtn"
+                            type="button"
+                            class="btn btn-danger"
+                            data-bs-dismiss="modal"
+                        >
+                            Cancel Tournament
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Tournament Pre-Game Modal -->
+        <div
+            class="modal"
+            id="tournamentInfoModal"
+            tabindex="-1"
+            aria-labelledby="tournamentInfoModalLabel"
+            aria-hidden="true"
+            data-bs-backdrop="static"
+            data-bs-keyboard="false"
+        >
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-body"></div>
+                </div>
+            </div>
+        </div>
+        <!-- Loading Modal -->
+        <div
+            class="modal"
+            id="loadingModal"
+            tabindex="-1"
+            aria-labelledby="loadingModalLabel"
+            aria-hidden="true"
+            data-bs-backdrop="static"
+            data-bs-keyboard="false"
+        >
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content bg-transparent border-0">
+                    <div class="modal-body">
+                        <div class="text-center">
+                            <div class="load">
+                                <div class="load-one"></div>
+                                <div class="load-two"></div>
+                                <div class="load-three"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

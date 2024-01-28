@@ -8,9 +8,7 @@ services:
       context: backend
       dockerfile: Dockerfile
     volumes:
-      - ./backend:/usr/src/app/
-      # - media:/usr/src/app/media/ For correction later
-      - init_flag:/usr/src/init
+      - media:/usr/src/app/media/
     ports:
       - '8000:8000'
     env_file:
@@ -49,13 +47,10 @@ services:
     ports:
       - "8080:80"
       - "443:443"
-    volumes:
-      - ./frontend:/etc/frontend
     depends_on:
       - backend
 
 volumes:
-  init_flag:
   database-postgres:
   database-redis:
-  # media: For correction later
+  media:

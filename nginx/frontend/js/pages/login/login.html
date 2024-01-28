@@ -1,0 +1,132 @@
+<div class="container1">
+    <canvas id="canvas-login"></canvas>
+    <div id="login-div">
+        <div id="login-form" class="form text-center">
+            <form>
+                <div class="text-center">
+                    <div class="m-3 text-center textWhite">
+                        <h1>Login</h1>
+                    </div>
+                    <div class="form-floating m-3">
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="validationDefault01"
+                            placeholder=" "
+                            autocomplete="username"
+                            required
+                        />
+                        <label class="form-label" for="validationDefault01"
+                            >Username</label
+                        >
+                    </div>
+                    <div class="form-floating m-3">
+                        <input
+                            type="password"
+                            class="form-control"
+                            id="passwordInput"
+                            placeholder=" "
+                            autocomplete="current-password"
+                            required
+                        />
+                        <label for="passwordInput">Password</label>
+                    </div>
+                    <div class="m-3 text-center">
+                        <button
+                            type="submit"
+                            class="btn btn-primary loginButton"
+                            id="loginButton"
+                        >
+                            Login
+                        </button>
+                    </div>
+                    <div class="m-3 text-center textWhite">
+                        <p>
+                            Don't have an account?
+                            <a
+                                id="signUpButton"
+                                class="textWhite link-underline-opacity-0 linkHover"
+                                >Sign up</a
+                            >
+                        </p>
+                    </div>
+                </div>
+                <div
+                    id="alertErrorLogin"
+                    class="alert alert-danger alert-dismissible fade hide"
+                    role="alert"
+                >
+                    <button
+                        id="btnAlertCloseLogin"
+                        type="button"
+                        class="btn-close"
+                        aria-label="Close"
+                    ></button>
+                </div>
+                <div id="ruler" class="m-3">
+                    <span class="textWhite">OR</span>
+                </div>
+                <div class="m-3">
+                    <a
+                        id="intraLink"
+                        class="textWhite link-underline-opacity-0"
+                        href=""
+                    >
+                        <button
+                            type="button"
+                            id="intra-button"
+                            class="btn btn-primary loginButton"
+                        >
+                            Connect with intra
+                        </button>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div
+    class="modal fade"
+    id="twoFAModal"
+    tabindex="-1"
+    data-bs-keyboard="false"
+    data-bs-backdrop="static"
+    ria-labelledby="twoFAModalLabel"
+    aria-hidden="true"
+>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="twoFAModalLabel">
+                    Two-Factor Authentication
+                </h5>
+                <button
+                    id="close2FAModal"
+                    type="button"
+                    class="btn-close"
+                    aria-label="Close"
+                ></button>
+            </div>
+            <div class="modal-body">
+                <p>Please enter the 2FA code from your authentication app.</p>
+                <input
+                    type="text"
+                    class="form-control"
+                    id="2faCodeInput"
+                    placeholder="2FA Code"
+                />
+                <p id="2FAErrorMsg" class="text-danger"></p>
+            </div>
+            <div class="modal-footer">
+                <button
+                    type="button"
+                    class="btn btn-primary"
+                    id="submit2FACode"
+                >
+                    Submit Code
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

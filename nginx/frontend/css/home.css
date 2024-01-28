@@ -1,0 +1,193 @@
+@media only screen and (max-width: 767px) {
+    #left-column {
+        display: none;
+    }
+
+    .buttonResponsive {
+        max-height: 40px;
+        display: block;
+    }
+}
+
+@media only screen and (min-width: 768px) {
+    #left-column {
+        display: block;
+    }
+
+    #right-column {
+        display: block !important;
+    }
+
+    .buttonResponsive {
+        display: none;
+    }
+}
+
+body {
+    overflow: hidden;
+}
+
+audio {
+    display: none;
+}
+
+.fill {
+    height: 100%;
+}
+
+.userList {
+    height: 100%;
+}
+
+.rightPartCol {
+    height: 100vh;
+}
+
+.displayUserButton {
+    position: absolute;
+    height: 40px;
+    width: 40px;
+}
+
+#divGame {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+#own-user-card {
+    min-width: 25%;
+    max-width: 50%;
+}
+
+.divFill {
+    height: calc(100% - 82px);
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.divFill::-webkit-scrollbar {
+    display: none;
+}
+
+.hide {
+    display: none;
+}
+
+.active-dark {
+    background-color: var(--bg-accent) !important;
+    color: #ffffff !important;
+}
+
+.show {
+    display: block !important;
+}
+
+.bg-main-second {
+    background-color: var(--bg-main-second);
+}
+
+.bg-main {
+    background-color: var(--bg-main);
+}
+
+.textWhite {
+    color: white !important;
+}
+
+.btn-primary {
+    background-color: var(--bg-main-second) !important;
+    border-color: var(--bg-main-second) !important;
+}
+
+.btn-primary:hover {
+    background-color: var(--bg-accent) !important;
+    border-color: var(--bg-accent) !important;
+}
+
+#matchHistory {
+    height: calc(100% - 104px);
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+#matchHistory::-webkit-scrollbar {
+    display: none;
+}
+
+.no-underline-link {
+    text-decoration: none;
+}
+
+#matchHistoryContainer {
+    max-height: 250px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+#matchHistoryContainer::-webkit-scrollbar {
+    display: none;
+}
+
+#lfp {
+    font-size: 2rem;
+    color: white;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+}
+
+#findGame {
+    z-index: 1;
+    position: absolute;
+    right: 50%;
+}
+
+.player-name {
+    font-size: 2rem;
+    color: white;
+}
+
+.border-right {
+    border-right: 1px solid #dee2e6;
+}
+
+#copyright {
+    background-color: var(--bg-main-second);
+    right: 0;
+    position: absolute;
+    width: 100%;
+    height: 25px;
+}
+
+.hover-pointer:hover {
+    cursor: pointer;
+    background-color: var(--bg-accent);
+}
+.link-primary {
+    color: white !important;
+}
+
+#canvas-callback {
+    z-index: 0;
+    position: absolute;
+    background: #000;
+    width: 100%;
+    height: 100%;
+}
+
+#what-the-fuck-is-that-div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#icon {
+    font-size: 1.5rem;
+}
+
+.nickname {
+    font-size: 2rem;
+    color: white;
+}

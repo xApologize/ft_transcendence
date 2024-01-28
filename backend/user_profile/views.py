@@ -3,15 +3,15 @@ from django.db.utils import IntegrityError
 from django.http import JsonResponse, HttpResponse, HttpResponseNotFound, HttpResponseBadRequest, HttpRequest, Http404
 from match_history.models import MatchHistory
 from django.views import View
-from utils.decorators import token_validation
+from utils.decorators import token_validation, verify_cookies
 from utils.functions import get_user_obj
 from django.contrib.auth.hashers import make_password
 from friend_list.models import FriendList
-import json, os, imghdr
+import json, os
 from django.db.models import Q
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.conf import settings
-from .utils import get_avatar_data, check_info_update, check_info_signup, validate_image
+from .utils import get_avatar_data, check_info_update, validate_image, check_info_signup
 from django_otp.plugins.otp_totp.models import TOTPDevice
 from interactive.consumers import send_refresh
 from asgiref.sync import async_to_sync
@@ -80,6 +80,7 @@ class Users(View):
 
     # Create a user
     # Check quoi a été passer en param?
+    @verify_cookies
     def post(self, request: HttpRequest):
         try:
             user_data = json.loads(request.body)
@@ -106,20 +107,16 @@ class Users(View):
             return HttpResponseBadRequest('Invalid JSON data in the request body') # 400
         response: HttpResponse =  HttpResponse(f'User {user_data["nickname"]} created successfully', status=201)
         return response
-        # Added jwt when creating user. Refacto needed
-        # primary_key = User.objects.get(nickname=user.nickname).pk
-        # return first_token(response, primary_key)
 
-    # Delete a specific users
-    def delete(self, request: HttpRequest):
-        nickname = request.GET.get('nickname')
-        if not nickname:
-            return HttpResponseBadRequest('No nickname provided for deletion.') # 400
-        user = User.objects.filter(nickname=nickname).first()
-        if not user:
-            return HttpResponseNotFound(f'No user found with the nickname: {nickname}') # 404
-        user.delete()
-        return HttpResponse(status=204)
+    # def delete(self, request: HttpRequest):
+    #     nickname = request.GET.get('nickname')
+    #     if not nickname:
+    #         return HttpResponseBadRequest('No nickname provided for deletion.') # 400
+    #     user = User.objects.filter(nickname=nickname).first()
+    #     if not user:
+    #         return HttpResponseNotFound(f'No user found with the nickname: {nickname}') # 404
+    #     user.delete()
+    #     return HttpResponse(status=204)
 
 
     # update specific user
@@ -128,9 +125,9 @@ class Users(View):
         allowed_fields = {'nickname', 'email', 'status'}
         try:
             data = json.loads(request.body)
+            if checkAllowedField(data, allowed_fields) is False:
+                return HttpResponseBadRequest('Invalid JSON data in the request body.')
             user = get_user_obj(request)
-            if ("demo-user" == user.nickname or "demo-user2" == user.nickname) and "status" not in data:
-                return HttpResponseBadRequest('Demo user cannot be updated.') # 400
         except PermissionDenied as e:
             return HttpResponse(str(e), status=401)
         except Http404 as e:
@@ -164,6 +161,7 @@ class Users(View):
             return HttpResponseBadRequest(f'Nickname is already in use.') # 400
         except Exception as e:
             return HttpResponseBadRequest(f'Unexpected Error: {e}') # 400
+
 
 class Me(View):
     @token_validation
@@ -285,3 +283,10 @@ class Upload(View):
                 return HttpResponseBadRequest('No avatar provided.')  # 400
         except Exception as e:
             return HttpResponseBadRequest('Unexpected Error: ' + str(e))  # 400
+
+
+def checkAllowedField(data, allowed_fields):
+    for field in data:
+        if field not in allowed_fields:
+            return False
+    return True

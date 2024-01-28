@@ -1,0 +1,84 @@
+.container-profile-card {
+    height: 450px;
+    width: 300px;
+    box-shadow: 0 10px 20px var(--bg-main);
+    background-size: cover;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    overflow: hidden;
+    font-family: 'Abel', sans-serif;
+    background-color: var(--bg-main);
+    position: absolute;
+    bottom: 0;
+}
+
+.image {
+    height: 150px;
+    width: 150px;
+    background-size: cover;
+    border-radius: 50%;
+    border: 8px solid var(--bg-accent);
+    position: relative;
+    top: 155px;
+    margin-left: 145px;
+    box-shadow: 0 2px 15px var(--bg-accent);
+    transform: rotate(-20deg);
+}
+
+#dave-photo {
+    background-image: url('../public/dev-photo/ddemers.jpeg');
+}
+
+#jacob-photo {
+    background-image: url('../public/dev-photo/jalevesq.jpeg');
+}
+
+#florian-photo {
+    background-image: url('../public/dev-photo/fgeslin.jpeg');
+}
+
+#jeanbenoit-photo {
+    background-image: url('../public/dev-photo/jrossign.jpeg');
+}
+
+.shape {
+    height: 250px;
+    width: 400px;
+    background-color: var(--bg-main-second);
+    margin-left: -20px;
+    position: relative;
+    top: -80px;
+    box-shadow: 0 2px 15px var(--bg-main-second);
+    transform: rotate(25deg);
+}
+
+h3 {
+    margin-bottom: 10px;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.title {
+    color: white;
+}
+
+p {
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+.icons {
+    margin-top: 15px;
+}
+
+.icons i {
+    margin-left: 10px;
+    font-size: 20px;
+    transition: 0.3s;
+    color: white;
+}
+
+.icons i:hover {
+    transform: scale(1.1);
+    color: var(--bg-accent);
+}

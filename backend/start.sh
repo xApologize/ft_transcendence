@@ -1,6 +1,6 @@
 #!/bin/bash
 # Author producks 10/29/2023
-# updated 1/6/2024
+# updated 1/22/2024
 
 Reset='\033[0m'
 Black='\033[0;30m'
@@ -31,17 +31,8 @@ done
 while true; do
     if nc -z -w 2 $POSTGRES_HOST $POSTGRES_PORT; then
         echo -e "${Green}Postgres is up!"
-        if ! test -f $FLAG; then
-            echo -e "${Yellow}No migration flag were found..."
-            echo -e "${Cyan}Migrating now!"
-            python manage.py makemigrations
-            python manage.py migrate
-            echo -e "${Purple}Seeding data now..."
-            python manage.py loaddata seed.json # Remove for correction
-            touch $FLAG
-        else
-            echo -e "\e[93mMigration file was found, ignoring initialization"
-        fi
+        python manage.py makemigrations
+        python manage.py migrate
         break
     else
         echo -e "${Red}Postgres isn't up...waiting..."
@@ -50,4 +41,4 @@ while true; do
 done
 
 echo -e "\e[92mStarting backend!"
-python manage.py runserver 0.0.0.0:8000
+daphne -b 0.0.0.0 -p 8000 src.asgi:application

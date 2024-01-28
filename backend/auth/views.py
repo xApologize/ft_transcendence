@@ -1,12 +1,11 @@
 from django.http import JsonResponse, HttpResponse, Http404, HttpResponseBadRequest
 from django.views import View
-from utils.decorators import token_validation
+from utils.decorators import token_validation, verify_cookies
 from django.core.exceptions import PermissionDenied
 import json, random
 from django.contrib.auth.hashers import check_password
 from user_profile.models import User
-from utils.functions import first_token
-from utils.functions import get_user_obj, generate_2fa_token, decrypt_user_id
+from utils.functions import first_token, checkInputUser, get_user_obj, decrypt_user_id
 from django_otp.plugins.otp_totp.models import TOTPDevice
 import base64, qrcode
 from io import BytesIO
@@ -19,11 +18,9 @@ from .utils import handle_2fa_login
 
 class Create2FA(View):
     @token_validation
-    def post(self, request):
+    def post(self, request): 
         try:
             user = get_user_obj(request)
-            if "demo-user" == user.nickname or "demo-user2" == user.nickname:
-                return HttpResponseBadRequest('Demo user cannot enable 2FA.') # 400
         except PermissionDenied as e:
             return HttpResponse(str(e), status=401)
         except Http404 as e:
@@ -80,10 +77,6 @@ class Create2FA(View):
         except Http404 as e:
             return HttpResponse(str(e), status=404)
 
-        # otp_token = request.POST.get('otp_token')
-        # if not otp_token:
-        #     return JsonResponse({'error': 'OTP token is required.'}, status=400)
-
         device = TOTPDevice.objects.filter(user=user).first()
         if device:
             TOTPDevice.objects.filter(user=user).delete()  # Delete all TOTP devices
@@ -105,11 +98,13 @@ class Confirm2FA(View):
 
         try:
             data = json.loads(request.body)
+            if not checkInputUser(data, ['otp_token']):
+                return JsonResponse({'error': 'Invalid JSON.'}, status=400)
             otp_token = data.get('otp_token')
             if not otp_token:
                 return JsonResponse({'error': 'Please enter a code.'}, status=400)
             elif len(otp_token) != 6 and not otp_token.isdigit():
-                return JsonResponse({'error': 'Invalid code.'}, status=400)
+                return JsonResponse({'error': 'Invalid Code.'}, status=400)
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON.'}, status=400)
 
@@ -127,9 +122,12 @@ class Confirm2FA(View):
 
 
 class Login(View):
+    @verify_cookies
     def post(self, request):
         errorMessage = {"error": "Invalid credentials."}
         login_data = json.loads(request.body)
+        if not checkInputUser(login_data, ['nickname', 'password']):
+            return JsonResponse({'error': 'Invalid JSON.'}, status=400)
         nickname = login_data.get('nickname', '')
         password = login_data.get('password', '')
  
@@ -169,6 +167,8 @@ class Login2FA(View):
     
         try:
             data = json.loads(request.body)
+            if not checkInputUser(data, ['otp_token']): # NEW
+                return JsonResponse({'error': 'Invalid JSON.'}, status=400)
             otp_token = data.get('otp_token')
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON.'}, status=400)
@@ -183,6 +183,9 @@ class Login2FA(View):
             response.delete_cookie('2fa_token')
             return response
         
+        if user.status == "ONL":
+            return JsonResponse({'error': 'This account is already logged in.'}, status=409)
+
         device = TOTPDevice.objects.filter(user=user, confirmed=True).first()
         if not device:
             response : HttpResponse = JsonResponse({'error': '2FA device not found or not confirmed.'}, 404)
@@ -215,6 +218,21 @@ class Logout(View):
         response.delete_cookie('refresh_jwt')
         return response
 
+class LogoutSocket(View):
+    @token_validation
+    def post(self, request):
+        try:
+            user = get_user_obj(request)
+        except PermissionDenied as e:
+            return HttpResponse(str(e), status=401)
+        except Http404 as e:
+            return HttpResponse(str(e), status=401)
+        # Check if status is not OFF ?
+        # user.status = "OFF"
+        # user.save()
+        response : HttpResponse = HttpResponse('Logout Sucessful', status=200)
+        return response
+
 class Token(View):
     @token_validation
     def get(self, request):
@@ -223,6 +241,7 @@ class Token(View):
 
 # Utiliser pip install request ou garder lib dégueulasse ?
 class RemoteAuthToken(View):
+    @verify_cookies
     def post(self, request):
         code = request.GET.get('code')
         if not code:
@@ -275,10 +294,10 @@ class RemoteAuthToken(View):
 
     def authenticate_user(self, user):
         response = JsonResponse({'success': 'Login successful.'})
-        if user.status == "ONL":
-            return JsonResponse({'error': 'This account is already logged in.'}, status=409)
         if user.two_factor_auth:
             return handle_2fa_login(user)
+        if user.status == "ONL":
+            return JsonResponse({'error': 'This account is already logged in.'}, status=409)
         return first_token(response, user.pk)
 
     def create_user(self, user_info):

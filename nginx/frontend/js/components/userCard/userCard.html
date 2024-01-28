@@ -1,0 +1,170 @@
+<div class="m-0 p-0">
+    <!-- Top part with round profile picture -->
+    <div class="d-flex align-items-center mb-3">
+        <img
+            src="../../../public/80-percent.jpeg"
+            alt="User Img"
+            class="rounded-circle"
+            id="avatar-img"
+            width="50"
+            height="50"
+        />
+        <div class="ms-3">
+            <h5>Nickname: <span id="nickname">Loading...</span></h5>
+        </div>
+    </div>
+
+    <!-- Stats section -->
+    <div class="text-center">
+        <!-- Wins -->
+        <div
+            class="d-flex justify-content-between align-items-center"
+        >
+            <h6>Wins</h6>
+            <p id="wins">Loading...</p>
+        </div>
+
+        <!-- Losses -->
+        <div
+            class="d-flex justify-content-between align-items-center"
+        >
+            <h6>Losses</h6>
+            <p id="losses">Loading...</p>
+        </div>
+
+        <!-- Games Played -->
+        <div
+            class="d-flex justify-content-between align-items-center"
+        >
+            <h6>Games Played</h6>
+            <p id="game-played">Loading...</p>
+        </div>
+    </div>
+
+    <!-- Settings button -->
+    <div class="mt-3">
+        <button id="settingsButton" type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#userSettingsModal">
+            <i class="fa fa-gear me-1"></i>
+            Settings
+        </button>
+        <button id="logout" class="btn btn-danger btn-sm">
+            <i class="fa fa-sign-out"></i>
+            Logout
+        </button>
+    </div>
+
+    <!-- User Settings Modal -->
+    <div class="modal fade" id="userSettingsModal" tabindex="-1" aria-labelledby="useSettingsModal-title" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" id="userSettingsModal-content">
+        
+                <!-- Modal Header -->
+                <div class="modal-header text-center">
+                    <h5 class="modal-title w-100" id="useSettingsModal-title">Settings</h5>
+                </div>
+        
+                <!-- Modal Body -->
+                <div class="modal-body d-flex">
+                    <!-- Left Column with Icon -->
+                    <div class="left-column-settings d-flex flex-column">
+                        <i class="fa fa-cog fa-lg mb-2 active" data-bs-target="#userMenu1" aria-expanded="false" aria-controls="userMenu1"></i>
+                        <i class="fa fa-wrench fa-lg" data-bs-target="#userMenu2" aria-expanded="false" aria-controls="userMenu2"></i>
+                        <!-- Add more icons as needed -->
+                    </div>                
+
+                    <div class="right-column-settings w-100">
+                        <!-- Menu Content 1 -->
+                        <div class="collapse show" id="userMenu1">
+                            <form id="saveInfo">
+                                <div class="menu-content">
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <p>Nickname:</p>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input type="text" class="form-control" id="nicknameInput">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="menu-content">
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <p>Email:</p>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input type="email" class="form-control" id="emailInput" aria-describedby="emailHelp">
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Save Info</button>
+                            </form>
+                            <div id="alertErrorInfo" class="alert alert-danger alert-dismissible fade hide" role="alert">
+                                <button id="btnErrorInfo" type="button" class="btn-close" aria-label="Close"></button>
+                            </div>
+                            <hr>
+                            <div class="menu-content">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <p>Update Profile Picture:</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input type="file" class="form-control" id="avatarInput">
+                                    </div>
+                                </div>
+                                <button id="saveAvatar" type="button" class="btn btn-primary">Save Avatar</button>
+                                <div id="alertErrorAvatar" class="alert alert-danger alert-dismissible fade hide" role="alert">
+                                    <button id="btnErrorAvatar" type="button" class="btn-close" aria-label="Close"></button>
+                                </div>
+                            </div>
+                        </div>   
+                        <!-- Menu Content 2 -->
+                        <div class="collapse" id="userMenu2" data-bs-parent=".right-column-settings">
+                            <div class="menu-content">
+                                <div class="row mb-3">
+                                    <div class="col-md-4">
+                                        <p>Two-factor authentication: </p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button id="enable2FA" class="btn btn-primary">Enable 2FA</button>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button id="disable2FA" class="btn btn-danger" disabled>Disable 2FA</button>
+                                    </div>
+                                </div>
+                                <!-- Hidden section for 2FA details -->
+                                <div class="row mb-3 d-none" id="twoFactorAuthEnable">
+                                    <div class="col-md-12">
+                                        <div id="2FAInfoEnable" class="alert alert-warning" role="alert">
+                                            <form id="2FAForm">
+                                                <div class="row justify-content-center">
+                                                    <div class="col-md-6">
+                                                        <input id="confirmationCode" type="text" class="form-control" placeholder="Enter 2FA Code">
+                                                        <p id="errorConfirmCode" class="text-danger mt-2 mb-2"></p>
+                                                        <button type="submit" id="2FAConfirmBtn" class="btn btn-primary d-block mx-auto">Confirm 2FA</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <p><strong>Secret Key:</strong> <span id="secretKey"></span></p>
+                                        <p><strong>QR Code:</strong></p>
+                                        <img id="qrCodeImage" src="" alt="QR Code" />
+                                    </div>
+                                </div>
+                                <div id="twoFactorAuthDisplay" class="row col-md-12 mb-3 d-none">
+                                    <div id="2FAInfoDisplay" class="alert alert-success" role="alert">
+                                        <button id="closeAlert2FA" type="button" class="btn-close" aria-label="Close"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

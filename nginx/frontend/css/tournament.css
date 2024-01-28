@@ -1,0 +1,42 @@
+#result {
+    position: relative;
+    color: white;
+    width: 35%;
+}
+
+#resultTitle {
+    display: flex;
+    justify-content: center;
+    animation-name: blink-title;
+    animation-duration: 2s;
+    animation-timing-function: ease-in;
+    animation-iteration-count: Infinite;
+}
+
+#tournament-name-bracket {
+    display: flex;
+    justify-content: center;
+}
+
+@keyframes blink-title {
+    0% {
+        color: white;
+    }
+    50% {
+        color: transparent;
+    }
+    100% {
+        counter-reset: white;
+    }
+}
+
+#leaveTournament {
+    display: flex;
+    justify-content: flex-end;
+}
+
+#joinTournamentModal .list-group-item:hover {
+    background-color: #d6d8db;
+    /* Darker shade for hover, adjust color as needed */
+    cursor: pointer;
+}

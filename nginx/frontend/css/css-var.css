@@ -1,0 +1,18 @@
+@import url('./about.css');
+@import url('./bracket.css');
+@import url('./devTeamCard.css');
+@import url('./home.css');
+@import url('./loading.css');
+@import url('./login.css');
+@import url('./matchHistory.css');
+@import url('./signup.css');
+@import url('./style.css');
+@import url('./user.css');
+@import url('./usercard.css');
+@import url('./tournament.css');
+
+:root {
+    --bg-main: #00A8CC;
+    --bg-main-second: #142850;
+    --bg-accent: #0C7B93;
+}
